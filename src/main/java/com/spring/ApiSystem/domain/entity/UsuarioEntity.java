@@ -7,11 +7,10 @@ import lombok.*;
 @Table(name = "usuarios")
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
 @Builder
 
-public class Usuario {
+public class UsuarioEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +28,15 @@ public class Usuario {
 
     private boolean ativo = true;
 
+    public UsuarioEntity(boolean ativo, Long cpf, String email, Long id, String nome, String senha) {
+        this.ativo = ativo;
+        this.cpf = cpf;
+        this.email = email;
+        this.id = id;
+        this.nome = nome;
+        this.senha = senha;
+    }
+
+    public UsuarioEntity() {
+    }
 }
