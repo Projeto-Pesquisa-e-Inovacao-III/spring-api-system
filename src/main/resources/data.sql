@@ -8,4 +8,4 @@ INSERT INTO usuarios (email, cpf, senha, nome, ativo) VALUES
 ('bruno@email.com', '78901234567', 'senha741', 'Bruno Rocha', true),
 ('juliana@email.com', '89012345678', 'senha852', 'Juliana Martins', true),
 ('rafael@email.com', '90123456789', 'senha963', 'Rafael Lima', false),
-('beatriz@email.com', '11223344556', 'senha159', 'Beatriz Santos', true);
+('beatriz@email.com', '11223344556', 'senha159', 'Beatriz Soares', true);
