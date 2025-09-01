@@ -20,7 +20,7 @@ public class UsuarioEntity {
     private String email;
 
     @Column(nullable = false, unique = true)
-    private Long cpf;
+    private String cpf;
 
     @Column(nullable = false)
     private String senha;
@@ -28,7 +28,7 @@ public class UsuarioEntity {
 
     private boolean ativo = true;
 
-    public UsuarioEntity(boolean ativo, Long cpf, String email, Long id, String nome, String senha) {
+    public UsuarioEntity(boolean ativo, String cpf, String email, Long id, String nome, String senha) {
         this.ativo = ativo;
         this.cpf = cpf;
         this.email = email;

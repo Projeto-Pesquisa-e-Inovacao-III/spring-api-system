@@ -1,14 +1,12 @@
 package com.spring.ApiSystem.interfaces.controller;
 
 
-import com.spring.ApiSystem.application.service.CadastroUsuarioDTO;
-import com.spring.ApiSystem.application.service.EditarUsuarioDTO;
+import com.spring.ApiSystem.application.dto.CadastroUsuarioDTO;
+import com.spring.ApiSystem.application.dto.EditarUsuarioDTO;
 import com.spring.ApiSystem.application.service.UsuarioService;
 import com.spring.ApiSystem.domain.entity.UsuarioEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Provider;
 
 @RequestMapping("/usuarios")
 @RestController
@@ -37,8 +35,8 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.atualizarUsuario(id, dto));
     }
 
-
-    @DeleteMapping("/{id}")
+    // Alterar para PatchMapping pois irá apenas atualizar para true or false
+    @PatchMapping("/{id}")
     public ResponseEntity<UsuarioEntity> deletarUsuario(@PathVariable Long id) {
         usuarioService.removerUsuario(id);
         return ResponseEntity.ok().build();

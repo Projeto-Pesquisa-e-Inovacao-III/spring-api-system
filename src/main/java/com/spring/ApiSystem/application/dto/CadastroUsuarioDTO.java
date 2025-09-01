@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.application.service;
+package com.spring.ApiSystem.application.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -21,5 +21,6 @@ public class CadastroUsuarioDTO {
     private String senha;
 
     @NotNull(message = "O CPF é obrigatório")
-    private Long cpf;
+    @Size(min = 11, message = "O CPF deve conter 11 dígitos")
+    private String cpf;
 }

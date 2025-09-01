@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.application.service;
 
+import com.spring.ApiSystem.application.dto.EditarUsuarioDTO;
 import com.spring.ApiSystem.domain.entity.UsuarioEntity;
 import com.spring.ApiSystem.infrastructure.repository.UsuarioRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class UsuarioService {
     }
 
     public Optional<UsuarioEntity> loginUsuario (String email, String senha) {
+
         Optional<UsuarioEntity> userOpt = usuarioRepository.findByEmail(email);
         if (userOpt.isPresent() && userOpt.get().getSenha().equals(senha)) {
             return userOpt;
@@ -32,6 +34,8 @@ public class UsuarioService {
 
             usuario.setNome(dto.getNome());
             usuario.setEmail(dto.getEmail());
+            usuario.setSenha(dto.getSenha());
+            usuario.setCpf(dto.getCpf());
 
             return usuarioRepository.save(usuario);
 

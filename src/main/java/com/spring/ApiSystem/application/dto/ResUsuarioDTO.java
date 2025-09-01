@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.application.service;
+package com.spring.ApiSystem.application.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +13,6 @@ public class ResUsuarioDTO {
     private Long id;
     private String nome;
     private String email;
-    private Long cpf;
+    private String cpf;
     private boolean ativo;
 }
