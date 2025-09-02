@@ -11,6 +11,6 @@ public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
     // tem ciencia que minha entidade de dominio é o UsuarioEntity.
 
     Optional<UsuarioEntity> findByEmail(String email);
-    Optional<UsuarioEntity> findByCpf(Long cpf);
+    Optional<UsuarioEntity> findByCpf(String cpf);
 
 }
