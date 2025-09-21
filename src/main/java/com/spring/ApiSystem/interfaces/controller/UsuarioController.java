@@ -1,10 +1,11 @@
 package com.spring.ApiSystem.interfaces.controller;
 
 
-import com.spring.ApiSystem.interfaces.dto.CadastroUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.EditarUsuarioDTO;
+import com.spring.ApiSystem.domain.entity.Usuario;
+import com.spring.ApiSystem.interfaces.dto.usuario.CadastroUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.usuario.EditarUsuarioDTO;
 import com.spring.ApiSystem.application.service.UsuarioService;
-import com.spring.ApiSystem.infrastructure.entity.UsuarioEntity;
+import com.spring.ApiSystem.interfaces.dto.usuario.ResUsuarioDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,25 +20,25 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastro")
-    public ResponseEntity<UsuarioEntity> cadastrarUsuario(@RequestBody UsuarioEntity usuarioEntity){
-        return ResponseEntity.ok(usuarioService.cadastrarUsuario(usuarioEntity));
+    public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
+        return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioEntity> loginUsuario(@RequestBody CadastroUsuarioDTO dto) {
+    public ResponseEntity<Usuario> loginUsuario(@RequestBody CadastroUsuarioDTO dto) {
         return usuarioService.loginUsuario(dto.getEmail(), dto.getSenha())
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.status(401).build());
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<UsuarioEntity> atualizarUsuario(@PathVariable Long id, @RequestBody EditarUsuarioDTO dto) {
+    public ResponseEntity<Usuario> atualizarUsuario(@PathVariable Long id, @RequestBody EditarUsuarioDTO dto) {
         return ResponseEntity.ok(usuarioService.atualizarUsuario(id, dto));
     }
 
     // Alterar para PatchMapping pois irá apenas atualizar para true or false
     @PatchMapping("/{id}")
-    public ResponseEntity<UsuarioEntity> deletarUsuario(@PathVariable Long id) {
+    public ResponseEntity<Usuario> deletarUsuario(@PathVariable Long id) {
         usuarioService.removerUsuario(id);
         return ResponseEntity.ok().build();
     }

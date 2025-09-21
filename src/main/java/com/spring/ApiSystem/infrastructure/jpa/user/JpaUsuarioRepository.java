@@ -1,13 +1,14 @@
-package com.spring.ApiSystem.domain.repository;
+package com.spring.ApiSystem.infrastructure.jpa.user;
+
 import com.spring.ApiSystem.domain.entity.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UsuarioRepository {
+public interface JpaUsuarioRepository extends JpaRepository<Usuario,Long> {
 
     Optional<Usuario> findByEmail(String email);
     Optional<Usuario> findByCpf(String cpf);
-    Usuario save(Usuario usuario);
     Optional<Usuario> findById(Long id);
 
 }

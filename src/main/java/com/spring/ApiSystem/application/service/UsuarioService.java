@@ -1,10 +1,11 @@
 package com.spring.ApiSystem.application.service;
 
-import com.spring.ApiSystem.interfaces.dto.CadastroUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.EditarUsuarioDTO;
-import com.spring.ApiSystem.infrastructure.entity.UsuarioEntity;
-import com.spring.ApiSystem.infrastructure.jpa.UsuarioImplement;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.spring.ApiSystem.application.mapper.UsuarioMapper;
+import com.spring.ApiSystem.domain.entity.Usuario;
+import com.spring.ApiSystem.domain.repository.UsuarioRepository;
+import com.spring.ApiSystem.interfaces.dto.usuario.CadastroUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.usuario.EditarUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.usuario.ResUsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -12,23 +13,29 @@ import java.util.Optional;
 @Service
 public class UsuarioService {
 
-    @Autowired
-    private UsuarioImplement usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
+    private final UsuarioMapper usuarioMapper;
 
-    public UsuarioEntity cadastrarUsuario (CadastroUsuarioDTO usuario) {
-        return usuarioRepository.save(usuario);
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
+        this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
     }
 
-    public Optional<UsuarioEntity> loginUsuario (String email, String senha) {
+    public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
+        Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
+        return usuarioMapper.toDto(usuarioRepository.save(usuarioEntity));
+    }
 
-        Optional<UsuarioEntity> userOpt = usuarioRepository.findByEmail(email);
+    public Optional<Usuario> loginUsuario (String email, String senha) {
+
+        Optional<Usuario> userOpt = usuarioRepository.findByEmail(email);
         if (userOpt.isPresent() && userOpt.get().getSenha().equals(senha)) {
             return userOpt;
         }
         return Optional.empty();
     }
 
-    public UsuarioEntity atualizarUsuario(Long id, EditarUsuarioDTO dto){
+    public Usuario atualizarUsuario(Long id, EditarUsuarioDTO dto){
         return usuarioRepository.findById(id).map(usuario -> {
 
             usuario.setNome(dto.getNome());
@@ -47,6 +54,5 @@ public class UsuarioService {
             usuarioRepository.save(usuario);
         });
     }
-
 
 }

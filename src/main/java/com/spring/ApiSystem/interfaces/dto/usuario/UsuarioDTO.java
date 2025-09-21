@@ -1,11 +1,11 @@
-package com.spring.ApiSystem.interfaces.dto;
+package com.spring.ApiSystem.interfaces.dto.usuario;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class CadastroUsuarioDTO {
+public class UsuarioDTO {
 
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
@@ -21,6 +21,15 @@ public class CadastroUsuarioDTO {
     @NotNull(message = "O CPF é obrigatório")
     @Size(min = 11, message = "O CPF deve conter 11 dígitos")
     private String cpf;
+
+    public UsuarioDTO() {}
+
+    public UsuarioDTO(String nome, String email, String senha, String cpf) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.cpf = cpf;
+    }
 
     public String getNome() {
         return nome;

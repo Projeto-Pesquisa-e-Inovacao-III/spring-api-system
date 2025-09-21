@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.interfaces.dto;
+package com.spring.ApiSystem.interfaces.dto.usuario;
 
 public class ResUsuarioDTO {
 

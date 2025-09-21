@@ -1,28 +1,24 @@
-package com.spring.ApiSystem.infrastructure.entity;
+package com.spring.ApiSystem.domain.entity;
 
 import jakarta.persistence.*;
 
-@Entity
-@Table(name = "usuarios")
-public class UsuarioEntity {
+@Entity(name = "usuario")
+public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
-
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
-
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String cpf;
-
-    @Column(nullable = false)
+    @Column(unique = true, nullable = false)
     private String senha;
     private String nome;
 
     private boolean ativo = true;
 
-    public UsuarioEntity(boolean ativo, String cpf, String email, Long id, String nome, String senha) {
+    public Usuario(boolean ativo, String cpf, String email, Long id, String nome, String senha) {
         this.ativo = ativo;
         this.cpf = cpf;
         this.email = email;
@@ -31,7 +27,7 @@ public class UsuarioEntity {
         this.senha = senha;
     }
 
-    public UsuarioEntity() {
+    public Usuario() {
     }
 
     public Long getId() {
