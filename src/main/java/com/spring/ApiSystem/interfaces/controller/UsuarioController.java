@@ -1,10 +1,10 @@
 package com.spring.ApiSystem.interfaces.controller;
 
 
-import com.spring.ApiSystem.application.dto.CadastroUsuarioDTO;
-import com.spring.ApiSystem.application.dto.EditarUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.CadastroUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.EditarUsuarioDTO;
 import com.spring.ApiSystem.application.service.UsuarioService;
-import com.spring.ApiSystem.domain.entity.UsuarioEntity;
+import com.spring.ApiSystem.infrastructure.entity.UsuarioEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

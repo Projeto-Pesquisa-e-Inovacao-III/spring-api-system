@@ -1,22 +1,21 @@
 package com.spring.ApiSystem.application.service;
 
-import com.spring.ApiSystem.application.dto.EditarUsuarioDTO;
-import com.spring.ApiSystem.domain.entity.UsuarioEntity;
-import com.spring.ApiSystem.infrastructure.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
+import com.spring.ApiSystem.interfaces.dto.CadastroUsuarioDTO;
+import com.spring.ApiSystem.interfaces.dto.EditarUsuarioDTO;
+import com.spring.ApiSystem.infrastructure.entity.UsuarioEntity;
+import com.spring.ApiSystem.infrastructure.jpa.UsuarioImplement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class UsuarioService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioImplement usuarioRepository;
 
-    public UsuarioEntity cadastrarUsuario (UsuarioEntity usuario) {
+    public UsuarioEntity cadastrarUsuario (CadastroUsuarioDTO usuario) {
         return usuarioRepository.save(usuario);
     }
 
