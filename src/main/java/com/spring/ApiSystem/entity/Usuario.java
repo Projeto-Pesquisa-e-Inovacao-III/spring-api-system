@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.entity;
+package com.spring.ApiSystem.entity;
 
 import jakarta.persistence.*;
 

@@ -1,17 +1,20 @@
-package com.spring.ApiSystem.interfaces.dto.usuario;
+package com.spring.ApiSystem.dto.usuario.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public class EditarUsuarioDTO {
+public class UsuarioDTO {
+
+    @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @Email(message = "Email deve ter formato válido")
+    @NotBlank(message = "O email é obrigatório")
+    @Email(message = "O email deve ser válido")
     private String email;
 
-    @NotBlank(message = "A senha deve ser válida")
+    @NotBlank(message = "A senha é obrigatória")
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     private String senha;
 
@@ -19,9 +22,9 @@ public class EditarUsuarioDTO {
     @Size(min = 11, message = "O CPF deve conter 11 dígitos")
     private String cpf;
 
-    public EditarUsuarioDTO() {}
+    public UsuarioDTO() {}
 
-    public EditarUsuarioDTO(String nome, String email, String senha, String cpf) {
+    public UsuarioDTO(String nome, String email, String senha, String cpf) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;

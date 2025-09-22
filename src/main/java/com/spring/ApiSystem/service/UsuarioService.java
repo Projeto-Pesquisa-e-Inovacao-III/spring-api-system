@@ -1,11 +1,11 @@
-package com.spring.ApiSystem.application.service;
+package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.application.mapper.UsuarioMapper;
-import com.spring.ApiSystem.domain.entity.Usuario;
-import com.spring.ApiSystem.domain.repository.UsuarioRepository;
-import com.spring.ApiSystem.interfaces.dto.usuario.CadastroUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.usuario.EditarUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.usuario.ResUsuarioDTO;
+import com.spring.ApiSystem.mapper.UsuarioMapper;
+import com.spring.ApiSystem.entity.Usuario;
+import com.spring.ApiSystem.repository.UsuarioRepository;
+import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
+import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
+import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

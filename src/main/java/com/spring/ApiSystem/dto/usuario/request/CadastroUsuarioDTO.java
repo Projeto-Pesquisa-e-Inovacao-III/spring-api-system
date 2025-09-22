@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.interfaces.dto.usuario;
+package com.spring.ApiSystem.dto.usuario.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

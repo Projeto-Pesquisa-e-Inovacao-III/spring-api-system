@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.application.mapper;
-import com.spring.ApiSystem.domain.entity.Usuario;
-import com.spring.ApiSystem.interfaces.dto.usuario.CadastroUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.usuario.EditarUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.usuario.ResUsuarioDTO;
+package com.spring.ApiSystem.mapper;
+import com.spring.ApiSystem.entity.Usuario;
+import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
+import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
+import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

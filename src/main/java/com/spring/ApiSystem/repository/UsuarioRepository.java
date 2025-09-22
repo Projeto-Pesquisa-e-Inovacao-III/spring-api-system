@@ -1,5 +1,6 @@
-package com.spring.ApiSystem.domain.repository;
-import com.spring.ApiSystem.domain.entity.Usuario;
+package com.spring.ApiSystem.repository;
+import com.spring.ApiSystem.entity.Usuario;
+import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 

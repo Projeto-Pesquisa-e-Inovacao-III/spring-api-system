@@ -1,11 +1,11 @@
-package com.spring.ApiSystem.interfaces.controller;
+package com.spring.ApiSystem.controller;
 
 
-import com.spring.ApiSystem.domain.entity.Usuario;
-import com.spring.ApiSystem.interfaces.dto.usuario.CadastroUsuarioDTO;
-import com.spring.ApiSystem.interfaces.dto.usuario.EditarUsuarioDTO;
-import com.spring.ApiSystem.application.service.UsuarioService;
-import com.spring.ApiSystem.interfaces.dto.usuario.ResUsuarioDTO;
+import com.spring.ApiSystem.entity.Usuario;
+import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
+import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
+import com.spring.ApiSystem.service.UsuarioService;
+import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
