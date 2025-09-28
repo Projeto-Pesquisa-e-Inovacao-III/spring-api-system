@@ -1,57 +1,63 @@
 package com.spring.ApiSystem.service;
 
+import com.spring.ApiSystem.dto.usuario.response.UsuarioAutenticado;
 import com.spring.ApiSystem.mapper.UsuarioMapper;
-import com.spring.ApiSystem.entity.Usuario;
-import com.spring.ApiSystem.repository.UsuarioRepository;
+import com.spring.ApiSystem.model.User;
+import com.spring.ApiSystem.repository.UserRepository;
 import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
 import org.springframework.stereotype.Service;
 
+import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    private final UserRepository userRepository;
     private final UsuarioMapper usuarioMapper;
+    private final TokenService tokenService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper) {
-        this.usuarioRepository = usuarioRepository;
+    public UsuarioService(UserRepository userRepository, UsuarioMapper usuarioMapper, TokenService tokenService) {
+        this.userRepository = userRepository;
         this.usuarioMapper = usuarioMapper;
+        this.tokenService = tokenService;
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
-        Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
-        return usuarioMapper.toDto(usuarioRepository.save(usuarioEntity));
+        User userEntity = usuarioMapper.toEntity(usuarioDTO);
+        return usuarioMapper.toDto(userRepository.save(userEntity));
     }
 
-    public Optional<Usuario> loginUsuario (String email, String senha) {
+    public String loginUsuario (String email, String senha) {
 
-        Optional<Usuario> userOpt = usuarioRepository.findByEmail(email);
-        if (userOpt.isPresent() && userOpt.get().getSenha().equals(senha)) {
-            return userOpt;
+        Optional<User> userOpt = userRepository.findByEmailAndSenha(email, senha);
+        if (userOpt.isPresent()) {
+            return tokenService.gerarToken(email);
         }
-        return Optional.empty();
+        return null;
     }
 
-    public Usuario atualizarUsuario(Long id, EditarUsuarioDTO dto){
-        return usuarioRepository.findById(id).map(usuario -> {
+    public User atualizarUsuario(Long id, EditarUsuarioDTO dto){
+        Optional<User> usuarioEncontrado = userRepository.findById(id);
 
-            usuario.setNome(dto.getNome());
-            usuario.setEmail(dto.getEmail());
-            usuario.setSenha(dto.getSenha());
-            usuario.setCpf(dto.getCpf());
+        if(usuarioEncontrado.isPresent()){
+            usuarioEncontrado.get().setNome(dto.getNome());
+            usuarioEncontrado.get().setEmail(dto.getEmail());
+            usuarioEncontrado.get().setSenha(dto.getSenha());
+            usuarioEncontrado.get().setCpf(dto.getCpf());
 
-            return usuarioRepository.save(usuario);
+            return userRepository.save(usuarioEncontrado.get());
+        }
 
-        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        throw new RuntimeException("Usuário não encontrado");
     }
 
     public void removerUsuario(Long id) {
-        usuarioRepository.findById(id).ifPresent(usuario -> {
-            usuario.setAtivo(false);
-            usuarioRepository.save(usuario);
+        userRepository.findById(id).ifPresent(user -> {
+            user.setAtivo(false);
+            userRepository.save(user);
         });
     }
 

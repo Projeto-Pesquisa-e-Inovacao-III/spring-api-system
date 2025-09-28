@@ -1,33 +1,43 @@
-package com.spring.ApiSystem.entity;
+package com.spring.ApiSystem.model;
 
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
 
 @Entity(name = "usuario")
-public class Usuario {
+public class User{
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
+
     @Column(unique = true, nullable = false)
     private String email;
+
     @Column(unique = true, nullable = false)
     private String cpf;
-    @Column(unique = true, nullable = false)
+
+    @Column(nullable = false)
     private String senha;
+
     private String nome;
 
     private boolean ativo = true;
 
-    public Usuario(boolean ativo, String cpf, String email, Long id, String nome, String senha) {
-        this.ativo = ativo;
-        this.cpf = cpf;
-        this.email = email;
+    public User(Long id, String email, String cpf, String senha, String nome, boolean ativo, String role) {
         this.id = id;
-        this.nome = nome;
+        this.email = email;
+        this.cpf = cpf;
         this.senha = senha;
+        this.nome = nome;
+        this.ativo = ativo;
     }
 
-    public Usuario() {
+    public User() {
     }
 
     public Long getId() {

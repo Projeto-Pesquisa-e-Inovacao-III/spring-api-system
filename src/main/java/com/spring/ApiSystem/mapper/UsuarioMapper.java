@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.mapper;
-import com.spring.ApiSystem.entity.Usuario;
+import com.spring.ApiSystem.dto.usuario.request.LoginUsuarioDTO;
+import com.spring.ApiSystem.model.User;
 import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
@@ -10,14 +11,17 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface UsuarioMapper {
 
-    ResUsuarioDTO toDto(Usuario usuario);
+    ResUsuarioDTO toDto(User user);
 
     @Mapping(target = "id", ignore = true)
-    Usuario toEntity(CadastroUsuarioDTO usuarioDTO);
+    User toEntity(CadastroUsuarioDTO usuarioDTO);
 
-    Usuario toEntity(ResUsuarioDTO usuarioDTO);
+    User toEntity(ResUsuarioDTO usuarioDTO);
 
     @Mapping(target = "id", ignore = true)
-    Usuario toEntity(EditarUsuarioDTO usuarioDTO);
+    User toEntity(EditarUsuarioDTO usuarioDTO);
+
+    @Mapping(target = "id", ignore = true)
+    User toEntity(LoginUsuarioDTO usuarioDTO);
 
 }
