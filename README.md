@@ -16,7 +16,7 @@ segurança e integridade nas comunicações.
 
 ---
 
-## ⚙️ Utilização
+## ⚙️ Como Utilizar
 
 Como o projeto utiliza JWT com assinatura assimétrica, 
 é necessário gerar um par de chaves RSA. Siga os passos abaixo:
@@ -33,7 +33,7 @@ openssl rsa -in private.pem -pubout -out public.pem
 
 ### 3️⃣ Onde colocar as chaves
 
-Agora basta abrir o projeto e seguir o exemplo abaixo
+Agora basta abrir o projeto e seguir o exemplo abaixo:
 
 ```
 spring-api-system/
@@ -47,4 +47,11 @@ spring-api-system/
 │   │           └── public.pem           
 ```
 
-Após finalizar, pronto! Sua aplicação estará pronto para uso
+### 4️⃣ Execução
+
+Com tudo configurado, chegou a hora de rodar a aplicação!
+
+Localize a classe `ApiSystemApplication.java`, que está no pacote principal do projeto, e execute-a.
+Essa é a classe responsável por iniciar o Spring Boot.
+
+Pronto! Sua API estará disponível e pronta para receber requisições.

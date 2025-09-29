@@ -30,13 +30,9 @@ public class UsuarioService {
         return usuarioMapper.toDto(userRepository.save(userEntity));
     }
 
-    public String loginUsuario (String email, String senha) {
-
+    public Boolean loginUsuario (String email, String senha) {
         Optional<User> userOpt = userRepository.findByEmailAndSenha(email, senha);
-        if (userOpt.isPresent()) {
-            return tokenService.gerarToken(email);
-        }
-        return null;
+        return userOpt.isPresent();
     }
 
     public User atualizarUsuario(Long id, EditarUsuarioDTO dto){
@@ -51,14 +47,18 @@ public class UsuarioService {
             return userRepository.save(usuarioEncontrado.get());
         }
 
-        throw new RuntimeException("Usuário não encontrado");
+        return null;
     }
 
-    public void removerUsuario(Long id) {
-        userRepository.findById(id).ifPresent(user -> {
-            user.setAtivo(false);
-            userRepository.save(user);
-        });
+    public Boolean removerUsuario(Long id) {
+        Optional<User> usuarioEncontrado = userRepository.findById(id);
+
+        if(usuarioEncontrado.isPresent()){
+            usuarioEncontrado.get().setAtivo(false);
+            userRepository.save(usuarioEncontrado.get());
+            return true;
+        }
+        return false;
     }
 
 }

@@ -1,11 +1,15 @@
 package com.spring.ApiSystem.controller;
 
 
+import com.spring.ApiSystem.dto.usuario.request.LoginUsuarioDTO;
 import com.spring.ApiSystem.model.User;
 import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
+import com.spring.ApiSystem.service.FilterService;
 import com.spring.ApiSystem.service.UsuarioService;
 import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,31 +18,47 @@ import org.springframework.web.bind.annotation.*;
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final FilterService filterService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(UsuarioService usuarioService, FilterService filterService) {
         this.usuarioService = usuarioService;
+        this.filterService = filterService;
     }
-    
+
     @PostMapping("/cadastro")
-    public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
+    public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@Valid @RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> loginUsuario(@RequestBody CadastroUsuarioDTO dto) {
-        String token = usuarioService.loginUsuario(dto.getEmail(), dto.getSenha());
+    public ResponseEntity<String> loginUsuario(@Valid @RequestBody LoginUsuarioDTO dto, HttpServletResponse response) {
+        Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.getEmail(), dto.getSenha());
 
-        return ResponseEntity.ok(token);
+        if(isUsuarioEncontrado){
+            filterService.gerarCookie(response, dto.getEmail());
+            return ResponseEntity.ok().build();
+        }
+
+        return ResponseEntity.notFound().build();
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> atualizarUsuario(@PathVariable Long id, @RequestBody EditarUsuarioDTO dto) {
-        return ResponseEntity.ok(usuarioService.atualizarUsuario(id, dto));
+    public ResponseEntity<User> atualizarUsuario(@PathVariable Long id, @Valid @RequestBody EditarUsuarioDTO dto) {
+        User usuarioEditado = usuarioService.atualizarUsuario(id, dto);
+
+        if(usuarioEditado == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(usuarioEditado);
     }
 
     @PatchMapping("/{id}")
     public ResponseEntity<User> deletarUsuario(@PathVariable Long id) {
-        usuarioService.removerUsuario(id);
+        Boolean isUsuarioDeletado = usuarioService.removerUsuario(id);
+
+        if(!isUsuarioDeletado){
+            return ResponseEntity.notFound().build();
+        }
         return ResponseEntity.ok().build();
     }
 }
