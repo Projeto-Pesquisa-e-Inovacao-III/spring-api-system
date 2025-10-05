@@ -68,7 +68,7 @@ public class FilterService extends OncePerRequestFilter {
     /*
     Acessa a requisição e procura pelo cookie jwt onde estará o token
      */
-    private String recuperarCookie(HttpServletRequest request){
+    public String recuperarCookie(HttpServletRequest request){
         for (Cookie cookie : request.getCookies()) {
             if(cookie.getName().equals("jwt")){
                 return cookie.getValue();
