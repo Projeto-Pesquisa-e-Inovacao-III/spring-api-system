@@ -16,21 +16,27 @@ public class UsuarioService {
     private final UserRepository userRepository;
     private final UsuarioMapper usuarioMapper;
     private final TokenService tokenService;
+    private final ArgonService argonService;
 
-    public UsuarioService(UserRepository userRepository, UsuarioMapper usuarioMapper, TokenService tokenService) {
+    public UsuarioService(UserRepository userRepository,
+                          UsuarioMapper usuarioMapper,
+                          TokenService tokenService,
+                          ArgonService argonService) {
         this.userRepository = userRepository;
         this.usuarioMapper = usuarioMapper;
         this.tokenService = tokenService;
+        this.argonService = argonService;
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
         User userEntity = usuarioMapper.toEntity(usuarioDTO);
+        userEntity.setSenha(argonService.criptografarSenha(userEntity.getSenha()));
         return usuarioMapper.toDto(userRepository.save(userEntity));
     }
 
     public Boolean loginUsuario (String email, String senha) {
-        Optional<User> userOpt = userRepository.findByEmailAndSenha(email, senha);
-        return userOpt.isPresent();
+        Optional<User> userOpt = userRepository.findByEmail(email);
+        return userOpt.isPresent() && argonService.validarSenha(senha, userOpt.get().getSenha());
     }
 
     public User atualizarUsuario(Long id, EditarUsuarioDTO dto){
