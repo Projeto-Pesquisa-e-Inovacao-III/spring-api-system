@@ -1,13 +1,11 @@
 package com.spring.ApiSystem.controller;
 
-import com.spring.ApiSystem.dto.usuario.request.EditarEnderecoDTO;
+import com.spring.ApiSystem.dto.usuario.request.EnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
-import com.spring.ApiSystem.model.User;
 import com.spring.ApiSystem.service.EnderecoService;
 import com.spring.ApiSystem.service.FilterService;
 import com.spring.ApiSystem.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +47,7 @@ public class EnderecoController {
 
     @PutMapping("/{id}")
     public ResponseEntity atualizarEndereco(@PathVariable Long id,
-                                            @RequestBody EditarEnderecoDTO endereco,
+                                            @RequestBody EnderecoDTO endereco,
                                             HttpServletRequest request){
         String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
         Endereco enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);

@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.dto.usuario.request.EditarEnderecoDTO;
+import com.spring.ApiSystem.dto.usuario.request.EnderecoDTO;
 import com.spring.ApiSystem.mapper.EnderecoMapper;
 import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.model.User;
@@ -8,6 +8,7 @@ import com.spring.ApiSystem.repository.EnderecoRepository;
 import com.spring.ApiSystem.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,7 @@ public class EnderecoService {
 
         if(usuarioEncontrado.isPresent()){
             endereco.setUsuario(usuarioEncontrado.get());
+            endereco.setData_criacao(LocalDateTime.now());
             return enderecoRepository.save(endereco);
         }
 
@@ -46,12 +48,13 @@ public class EnderecoService {
         return null;
     }
 
-    public Endereco atualizarEndereco(Long id , EditarEnderecoDTO endereco, String email){
+    public Endereco atualizarEndereco(Long id , EnderecoDTO endereco, String email){
         Optional<User> usuarioEncontrado = userRepository.findByEmail(email);
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
         if(enderecoEncontrado.isPresent()){
             enderecoMapper.atualizarEnderecoFromDto(endereco, enderecoEncontrado.get());
+            enderecoEncontrado.get().setData_atualizacao(LocalDateTime.now());
             return enderecoRepository.save(enderecoEncontrado.get());
         }
 

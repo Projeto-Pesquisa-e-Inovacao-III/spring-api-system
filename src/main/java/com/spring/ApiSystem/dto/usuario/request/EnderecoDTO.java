@@ -1,11 +1,9 @@
 package com.spring.ApiSystem.dto.usuario.request;
 
-import java.time.LocalDateTime;
-
-public class EditarEnderecoDTO {
+public class EnderecoDTO {
     private String cep;
     private String logradouro;
-    private Integer numero;
+    private String numero;
     private String complemento;
     private String unidade;
     private String bairro;
@@ -13,12 +11,12 @@ public class EditarEnderecoDTO {
     private String uf;
     private String descricao;
 
-    public EditarEnderecoDTO() {
+    public EnderecoDTO() {
     }
 
-    public EditarEnderecoDTO(String cep, String logradouro, Integer numero,
-                             String complemento, String unidade, String bairro,
-                             String localidade, String uf, String descricao) {
+    public EnderecoDTO(String cep, String logradouro, String numero,
+                       String complemento, String unidade, String bairro,
+                       String localidade, String uf, String descricao) {
         this.cep = cep;
         this.logradouro = logradouro;
         this.numero = numero;
@@ -46,11 +44,11 @@ public class EditarEnderecoDTO {
         this.logradouro = logradouro;
     }
 
-    public Integer getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(Integer numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 
