@@ -39,9 +39,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/usuarios/cadastro").permitAll()
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                        .requestMatchers(HttpMethod.GET,
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/doc"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
+                                 UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

@@ -5,6 +5,8 @@ import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.service.EnderecoService;
 import com.spring.ApiSystem.service.FilterService;
 import com.spring.ApiSystem.service.TokenService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Tag(name = "Endereços", description = "Operações relacionadas a endereços")
 @RestController
 @RequestMapping("/enderecos")
 public class EnderecoController {
@@ -27,6 +30,8 @@ public class EnderecoController {
         this.tokenService = tokenService;
     }
 
+    @Operation(summary = "Criar endereço (necessário login)",
+            description = "Endpoint para cadastro de endereços no sistema")
     @PostMapping
     public ResponseEntity<Endereco> cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
                                             HttpServletRequest request){
@@ -41,6 +46,8 @@ public class EnderecoController {
         return ResponseEntity.ok(enderecoCadastrado);
     }
 
+    @Operation(summary = "Listar endereços (necessário login)",
+            description = "Endpoint para listagem de endereços no sistema")
     @GetMapping
     public ResponseEntity<List<Endereco>> listarEnderecos(HttpServletRequest request){
         String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
@@ -48,6 +55,8 @@ public class EnderecoController {
         return ResponseEntity.ok(enderecoService.listarEnderecos(emailUsuario));
     }
 
+    @Operation(summary = "Editar endereço (necessário login)",
+            description = "Endpoint para edição de endereços no sistema")
     @PutMapping("/{id}")
     public ResponseEntity<Endereco> atualizarEndereco(@PathVariable Long id,
                                             @Valid @RequestBody EnderecoDTO endereco,
@@ -61,6 +70,8 @@ public class EnderecoController {
         return ResponseEntity.ok(enderecoEditado);
     }
 
+    @Operation(summary = "Excluir endereço (necessário login)",
+            description = "Endpoint para exclusão de endereços no sistema")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removerEndereco(@PathVariable Long id,
                                           HttpServletRequest request){

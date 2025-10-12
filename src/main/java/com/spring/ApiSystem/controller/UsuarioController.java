@@ -9,12 +9,15 @@ import com.spring.ApiSystem.service.FilterService;
 import com.spring.ApiSystem.service.TokenService;
 import com.spring.ApiSystem.service.UsuarioService;
 import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Usuários", description = "Operações relacionadas a usuários")
 @RequestMapping("/usuarios")
 @RestController
 public class UsuarioController {
@@ -31,11 +34,15 @@ public class UsuarioController {
         this.tokenService = tokenService;
     }
 
+    @Operation(summary = "Criar usuário",
+               description = "Endpoint para cadastro de usuários no sistema")
     @PostMapping("/cadastro")
     public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@Valid @RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
+    @Operation(summary = "Realizar login (necessário cadastro)",
+            description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
     public ResponseEntity<String> loginUsuario(@Valid @RequestBody LoginUsuarioDTO dto,
                                                HttpServletResponse response) {
@@ -49,12 +56,16 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
+    @Operation(summary = "Realizar logout",
+            description = "Endpoint para o logout de usuários no sistema")
     @GetMapping("/logout")
-    public ResponseEntity<?> LogoutUsuario(HttpServletResponse response){
+    public ResponseEntity<?> logoutUsuario(HttpServletResponse response){
         filterService.removerCookie(response);
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Editar usuário (necessário login)",
+            description = "Endpoint para a edição de dados de usuários no sistema")
     @PutMapping
     public ResponseEntity<Usuario> atualizarUsuario(@Valid @RequestBody EditarUsuarioDTO dto,
                                                     HttpServletRequest request,
@@ -72,6 +83,9 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioEditado);
     }
 
+    @Operation(summary = "Excluir usuário (necessário login)",
+            description = "Endpoint para a exclusão de usuários no sistema, " +
+                    "onde o atributo 'ativo' define o seus status")
     @PatchMapping
     public ResponseEntity<Usuario> deletarUsuario(HttpServletRequest request,
                                                   HttpServletResponse response) {

@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
 @Service
 public class FilterService extends OncePerRequestFilter {
@@ -21,11 +20,14 @@ public class FilterService extends OncePerRequestFilter {
     private final TokenService tokenService;
     private final JpaUserDetailsService jpaUserDetailsService;
 
+
     public FilterService(TokenService tokenService,
                          JpaUserDetailsService jpaUserDetailsService) {
         this.tokenService = tokenService;
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
+
+    private String perfilAtivo = "dev";
 
     /*
     Função executada a cada requisição que pega o token informado
@@ -35,6 +37,7 @@ public class FilterService extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         String cookie = this.recuperarCookie(request);
         if(cookie != null){
             String email = tokenService.validarToken(cookie);
@@ -54,7 +57,12 @@ public class FilterService extends OncePerRequestFilter {
         String token = tokenService.gerarToken(email);
 
         Cookie cookie = new Cookie("jwt", token);
-        cookie.setHttpOnly(true); // protege contra acesso via JavaScript
+        if(perfilAtivo.equals("dev")){
+            cookie.setHttpOnly(false); // protege contra acesso via JavaScript
+        }
+        else{
+            cookie.setHttpOnly(true);
+        }
         cookie.setSecure(true);   // só envia em HTTPS
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
@@ -66,9 +74,11 @@ public class FilterService extends OncePerRequestFilter {
     Acessa a requisição e procura pelo cookie jwt onde estará o token
      */
     public String recuperarCookie(HttpServletRequest request){
-        for (Cookie cookie : request.getCookies()) {
-            if(cookie.getName().equals("jwt")){
-                return cookie.getValue();
+        if(request.getCookies() != null){
+            for (Cookie cookie : request.getCookies()) {
+                if(cookie.getName().equals("jwt")){
+                    return cookie.getValue();
+                }
             }
         }
 
