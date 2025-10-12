@@ -1,15 +1,14 @@
 package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.model.User;
-import com.spring.ApiSystem.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -20,11 +19,12 @@ import java.util.List;
 public class FilterService extends OncePerRequestFilter {
 
     private final TokenService tokenService;
-    private final UserRepository userRepository;
+    private final JpaUserDetailsService jpaUserDetailsService;
 
-    public FilterService(TokenService tokenService, UserRepository userRepository) {
+    public FilterService(TokenService tokenService,
+                         JpaUserDetailsService jpaUserDetailsService) {
         this.tokenService = tokenService;
-        this.userRepository = userRepository;
+        this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
     /*
@@ -32,18 +32,15 @@ public class FilterService extends OncePerRequestFilter {
     e valida
      */
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request,
+                                    HttpServletResponse response,
+                                    FilterChain filterChain) throws ServletException, IOException {
         String cookie = this.recuperarCookie(request);
         if(cookie != null){
             String email = tokenService.validarToken(cookie);
-            List<SimpleGrantedAuthority> rolePadrao = null;
-            User usuarioEncontrado = null;
-            if(userRepository.findByEmail(email).isPresent()){
-                usuarioEncontrado = userRepository.findByEmail(email).get();
-                rolePadrao = List.of(new SimpleGrantedAuthority("ROLE_USER"));
-            }
-
-            var authentication = new UsernamePasswordAuthenticationToken(usuarioEncontrado, null, rolePadrao);
+            UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
+            Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
+                    null, usuario.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         // Fazer o próximo filtro
@@ -76,5 +73,13 @@ public class FilterService extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    public void removerCookie(HttpServletResponse response){
+        Cookie remover = new Cookie("jwt", null);
+        remover.setPath("/");
+        remover.setMaxAge(0);
+        remover.setHttpOnly(true);
+        response.addCookie(remover);
     }
 }

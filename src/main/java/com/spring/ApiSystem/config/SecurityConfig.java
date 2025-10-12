@@ -11,15 +11,18 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
     private final FilterService filterService;
+    private final CorsConfig corsConfig;
 
-    public SecurityConfig(FilterService filterService) {
+    public SecurityConfig(FilterService filterService, CorsConfig corsConfig){
         this.filterService = filterService;
+        this.corsConfig = corsConfig;
     }
 
     /*
@@ -38,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

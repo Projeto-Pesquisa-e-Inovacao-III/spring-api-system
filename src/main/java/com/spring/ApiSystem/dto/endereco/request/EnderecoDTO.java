@@ -1,15 +1,41 @@
-package com.spring.ApiSystem.dto.usuario.request;
+package com.spring.ApiSystem.dto.endereco.request;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 public class EnderecoDTO {
+    @NotBlank(message = "CEP é obrigatório")
+    @Size(min = 8, max = 8, message = "CEP deve ter 8 caracteres")
     private String cep;
+
+    @NotBlank(message = "Logradouro é obrigatório")
+    @Size(max = 100, message = "Logradouro pode ter no máximo 100 caracteres")
     private String logradouro;
+
+    @NotBlank(message = "Número é obrigatório")
     private String numero;
+
+    @Size(max = 45, message = "Complemento pode ter no máximo 45 caracteres")
     private String complemento;
+
+    @Size(max = 45, message = "Unidade pode ter no máximo 45 caracteres")
     private String unidade;
+
+    @NotBlank(message = "Bairro é obrigatório")
+    @Size(max = 45, message = "Bairro pode ter no máximo 45 caracteres")
     private String bairro;
+
+    @NotBlank(message = "Localidade é obrigatória")
+    @Size(max = 45, message = "Localidade pode ter no máximo 45 caracteres")
     private String localidade;
+
+    @NotBlank(message = "UF é obrigatória")
+    @Size(min = 2, max = 2, message = "UF deve ter exatamente 2 caracteres")
     private String uf;
+
+    @Size(max = 255, message = "Descrição pode ter no máximo 255 caracteres")
     private String descricao;
+
 
     public EnderecoDTO() {
     }

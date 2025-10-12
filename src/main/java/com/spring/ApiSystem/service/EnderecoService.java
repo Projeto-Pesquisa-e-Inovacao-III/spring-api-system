@@ -1,9 +1,9 @@
 package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.dto.usuario.request.EnderecoDTO;
+import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
 import com.spring.ApiSystem.mapper.EnderecoMapper;
 import com.spring.ApiSystem.model.Endereco;
-import com.spring.ApiSystem.model.User;
+import com.spring.ApiSystem.model.Usuario;
 import com.spring.ApiSystem.repository.EnderecoRepository;
 import com.spring.ApiSystem.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -26,10 +26,11 @@ public class EnderecoService {
         this.enderecoMapper = enderecoMapper;
     }
 
-    public Endereco cadastrarEndereco(Endereco endereco, String email){
-        Optional<User> usuarioEncontrado = userRepository.findByEmail(email);
+    public Endereco cadastrarEndereco(EnderecoDTO enderecoDTO, String email){
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
+            Endereco endereco = enderecoMapper.toEntity(enderecoDTO);
             endereco.setUsuario(usuarioEncontrado.get());
             endereco.setData_criacao(LocalDateTime.now());
             return enderecoRepository.save(endereco);
@@ -39,7 +40,7 @@ public class EnderecoService {
     }
 
     public List<Endereco> listarEnderecos(String email){
-        Optional<User> usuarioEncontrado = userRepository.findByEmail(email);
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
             return enderecoRepository.findByUsuario(usuarioEncontrado.get());
@@ -49,7 +50,7 @@ public class EnderecoService {
     }
 
     public Endereco atualizarEndereco(Long id , EnderecoDTO endereco, String email){
-        Optional<User> usuarioEncontrado = userRepository.findByEmail(email);
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
         if(enderecoEncontrado.isPresent()){
@@ -62,7 +63,7 @@ public class EnderecoService {
     }
 
     public Boolean removerEndereco(Long id, String email){
-        Optional<User> usuarioEncontrado = userRepository.findByEmail(email);
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
         if(enderecoEncontrado.isPresent()){

@@ -1,7 +1,11 @@
 package com.spring.ApiSystem.service;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
+import com.nimbusds.jose.jwk.JWKSet;
+import com.nimbusds.jose.jwk.RSAKey;
+import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
+import com.nimbusds.jose.jwk.source.JWKSource;
+import com.nimbusds.jose.proc.SecurityContext;
+import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -16,16 +20,28 @@ public class TokenService {
         this.pemService = pemService;
     }
 
+    public JwtEncoder jwtEncoder() throws Exception {
+        RSAKey rsaKey = new RSAKey.Builder(pemService.getPublicKey())
+                .privateKey(pemService.getPrivateKey())
+                .build();
+        JWKSource<SecurityContext> jwkSource = new ImmutableJWKSet<>(new JWKSet(rsaKey));
+        return new NimbusJwtEncoder(jwkSource);
+    }
+
+    public JwtDecoder jwtDecoder() throws Exception {
+        return NimbusJwtDecoder.withPublicKey(pemService.getPublicKey()).build();
+    }
+
     public String gerarToken(String email){
         try{
-            Algorithm algorithm = Algorithm.RSA256(null,
-                                                   pemService.getPrivateKey());
+            JwtClaimsSet token = JwtClaimsSet.builder()
+                    .issuer("spring-api")
+                    .subject(email)
+                    .issuedAt(Instant.now())
+                    .expiresAt(gerarDataExpiracao())
+                    .build();
 
-            return JWT.create()
-                    .withIssuer("spring-api")
-                    .withSubject(email)
-                    .withExpiresAt(gerarDataExpiracao())
-                    .sign(algorithm);
+            return jwtEncoder().encode(JwtEncoderParameters.from(token)).getTokenValue();
         }catch (Exception exception){
             throw new RuntimeException("Erro ao gerar o token: ", exception);
         }
@@ -33,15 +49,8 @@ public class TokenService {
 
     public String validarToken(String token){
         try{
-            Algorithm algorithm = Algorithm.RSA256(pemService.getPublicKey(),
-                                          null);
-
-            return JWT.require(algorithm)
-                    .withIssuer("spring-api")
-                    .build()
-                    .verify(token)
-                    .getSubject();
-
+            Jwt jwt = jwtDecoder().decode(token);
+            return jwt.getSubject();
         }catch (Exception exception){
             throw new RuntimeException("Token inválido: ", exception);
         }

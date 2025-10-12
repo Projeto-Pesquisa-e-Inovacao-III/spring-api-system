@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.service;
 
 import com.spring.ApiSystem.mapper.UsuarioMapper;
-import com.spring.ApiSystem.model.User;
+import com.spring.ApiSystem.model.Usuario;
 import com.spring.ApiSystem.repository.UserRepository;
 import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
@@ -15,37 +15,37 @@ public class UsuarioService {
 
     private final UserRepository userRepository;
     private final UsuarioMapper usuarioMapper;
-    private final TokenService tokenService;
     private final ArgonService argonService;
 
     public UsuarioService(UserRepository userRepository,
                           UsuarioMapper usuarioMapper,
-                          TokenService tokenService,
                           ArgonService argonService) {
         this.userRepository = userRepository;
         this.usuarioMapper = usuarioMapper;
-        this.tokenService = tokenService;
         this.argonService = argonService;
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
-        User userEntity = usuarioMapper.toEntity(usuarioDTO);
-        userEntity.setSenha(argonService.criptografarSenha(userEntity.getSenha()));
-        return usuarioMapper.toDto(userRepository.save(userEntity));
+        Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
+        usuarioEntity.setSenha(argonService.criptografarSenha(usuarioEntity.getSenha()));
+        return usuarioMapper.toDto(userRepository.save(usuarioEntity));
     }
 
     public Boolean loginUsuario (String email, String senha) {
-        Optional<User> userOpt = userRepository.findByEmail(email);
-        return userOpt.isPresent() && argonService.validarSenha(senha, userOpt.get().getSenha());
+        Optional<Usuario> userOpt = userRepository.findByEmail(email);
+        return userOpt.isPresent() &&
+                userOpt.get().isAtivo() &&
+                argonService.validarSenha(senha, userOpt.get().getSenha());
     }
 
-    public User atualizarUsuario(Long id, EditarUsuarioDTO dto){
-        Optional<User> usuarioEncontrado = userRepository.findById(id);
+    public Usuario atualizarUsuario(EditarUsuarioDTO dto, String email){
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
+            usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
             usuarioEncontrado.get().setNome(dto.getNome());
             usuarioEncontrado.get().setEmail(dto.getEmail());
-            usuarioEncontrado.get().setSenha(dto.getSenha());
+            usuarioEncontrado.get().setSenha(argonService.criptografarSenha(usuarioEncontrado.get().getSenha()));
             usuarioEncontrado.get().setCpf(dto.getCpf());
 
             return userRepository.save(usuarioEncontrado.get());
@@ -54,8 +54,8 @@ public class UsuarioService {
         return null;
     }
 
-    public Boolean removerUsuario(Long id) {
-        Optional<User> usuarioEncontrado = userRepository.findById(id);
+    public Boolean removerUsuario(String email) {
+        Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
             usuarioEncontrado.get().setAtivo(false);

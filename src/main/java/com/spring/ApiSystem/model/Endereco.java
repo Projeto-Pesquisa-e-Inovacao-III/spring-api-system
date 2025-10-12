@@ -10,26 +10,47 @@ public class Endereco {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(length = 8, nullable = false)
     private String cep;
+
+    @Column(length = 45, nullable = false)
     private String logradouro;
-    private Integer numero;
+
+    @Column(nullable = false)
+    private String numero;
+
+    @Column(length = 45)
     private String complemento;
+
+    @Column(length = 45)
     private String unidade;
+
+    @Column(length = 45, nullable = false)
     private String bairro;
+
+    @Column(length = 45, nullable = false)
     private String localidade;
+
+    @Column(length = 2, nullable = false)
     private String uf;
+
+    @Column(length = 255)
     private String descricao;
+
+    @Column(nullable = false, updatable = false)
     private LocalDateTime data_criacao;
+
     private LocalDateTime data_atualizacao;
 
+
     @ManyToOne
-    private User usuario;
+    private Usuario usuario;
 
     public Endereco(Long id,String cep, String logradouro,
-                    Integer numero, String complemento, String unidade,
+                    String numero, String complemento, String unidade,
                     String bairro, String localidade, String uf,
                     String descricao, LocalDateTime data_criacao,
-                    LocalDateTime data_atualizacao, User usuario) {
+                    LocalDateTime data_atualizacao, Usuario usuario) {
         this.id = id;
         this.cep = cep;
         this.logradouro = logradouro;
@@ -72,11 +93,11 @@ public class Endereco {
         this.logradouro = logradouro;
     }
 
-    public Integer getNumero() {
+    public String getNumero() {
         return numero;
     }
 
-    public void setNumero(Integer numero) {
+    public void setNumero(String numero) {
         this.numero = numero;
     }
 
@@ -144,11 +165,11 @@ public class Endereco {
         this.data_atualizacao = data_atualizacao;
     }
 
-    public User getUsuario() {
+    public Usuario getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(User usuario) {
+    public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
 }

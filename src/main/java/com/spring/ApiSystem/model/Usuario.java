@@ -3,10 +3,10 @@ package com.spring.ApiSystem.model;
 import jakarta.persistence.*;
 
 @Entity(name = "usuario")
-public class User{
+public class Usuario {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(unique = true, nullable = false)
@@ -18,11 +18,12 @@ public class User{
     @Column(nullable = false)
     private String senha;
 
+    @Column(nullable = false)
     private String nome;
 
     private boolean ativo = true;
 
-    public User(Long id, String email, String cpf, String senha, String nome, boolean ativo, String role) {
+    public Usuario(Long id, String email, String cpf, String senha, String nome, boolean ativo, String role) {
         this.id = id;
         this.email = email;
         this.cpf = cpf;
@@ -31,7 +32,7 @@ public class User{
         this.ativo = ativo;
     }
 
-    public User() {
+    public Usuario() {
     }
 
     public Long getId() {
