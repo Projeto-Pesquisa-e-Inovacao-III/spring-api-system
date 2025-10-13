@@ -1,4 +1,4 @@
-INSERT INTO usuarios (email, cpf, senha, nome, ativo) VALUES
+INSERT INTO usuario (email, cpf, senha, nome, ativo) VALUES
 ('joao@email.com', '12345678901', 'senha123', 'João Silva', true),
 ('maria@email.com', '23456789012', 'senha456', 'Maria Souza', true),
 ('pedro@email.com', '34567890123', 'senha789', 'Pedro Lima', false),
@@ -9,3 +9,5 @@ INSERT INTO usuarios (email, cpf, senha, nome, ativo) VALUES
 ('juliana@email.com', '89012345678', 'senha852', 'Juliana Martins', true),
 ('rafael@email.com', '90123456789', 'senha963', 'Rafael Lima', false),
 ('beatriz@email.com', '11223344556', 'senha159', 'Beatriz Soares', true);
+
+ALTER TABLE usuario ALTER COLUMN id RESTART WITH 11;
