@@ -40,7 +40,7 @@ public class FilterService extends OncePerRequestFilter {
 
         String cookie = this.recuperarCookie(request);
         if(cookie != null){
-            String email = tokenService.validarToken(cookie);
+            String email = tokenService.subjectToken(cookie);
             UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
             Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
                     null, usuario.getAuthorities());

@@ -47,7 +47,7 @@ public class TokenService {
         }
     }
 
-    public String validarToken(String token){
+    public String subjectToken(String token){
         try{
             Jwt jwt = jwtDecoder().decode(token);
             return jwt.getSubject();

@@ -71,7 +71,7 @@ public class UsuarioController {
                                                     HttpServletRequest request,
                                                     HttpServletResponse response) {
         String valorCookie = filterService.recuperarCookie(request);
-        String email = tokenService.validarToken(valorCookie);
+        String email = tokenService.subjectToken(valorCookie);
         Usuario usuarioEditado = usuarioService.atualizarUsuario(dto, email);
 
         if(usuarioEditado == null){
@@ -90,7 +90,7 @@ public class UsuarioController {
     public ResponseEntity<Usuario> deletarUsuario(HttpServletRequest request,
                                                   HttpServletResponse response) {
         String valorCookie = filterService.recuperarCookie(request);
-        String email = tokenService.validarToken(valorCookie);
+        String email = tokenService.subjectToken(valorCookie);
         Boolean isUsuarioDeletado = usuarioService.removerUsuario(email);
 
         if(!isUsuarioDeletado){

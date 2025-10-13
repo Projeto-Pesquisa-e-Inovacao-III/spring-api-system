@@ -1,10 +1,12 @@
 package com.spring.ApiSystem.controller;
 
+import com.spring.ApiSystem.dto.endereco.request.EdicaoEnderecoDTO;
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.service.EnderecoService;
 import com.spring.ApiSystem.service.FilterService;
 import com.spring.ApiSystem.service.TokenService;
+import com.spring.ApiSystem.service.ViaCepService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -24,18 +26,20 @@ public class EnderecoController {
 
     public EnderecoController(EnderecoService enderecoService,
                               FilterService filterService,
-                              TokenService tokenService) {
+                              TokenService tokenService,
+                              ViaCepService viaCepService) {
         this.enderecoService = enderecoService;
         this.filterService = filterService;
-        this.tokenService = tokenService;
+        this.tokenService = tokenService;;
     }
 
     @Operation(summary = "Criar endereço (necessário login)",
             description = "Endpoint para cadastro de endereços no sistema")
     @PostMapping
-    public ResponseEntity<Endereco> cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
-                                            HttpServletRequest request){
-        String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
+    public ResponseEntity<Endereco> cadastrarEndereco(@Valid @RequestBody EdicaoEnderecoDTO endereco,
+                                                      HttpServletRequest request){
+
+        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
 
         Endereco enderecoCadastrado = enderecoService.cadastrarEndereco(endereco, emailUsuario);
 
@@ -50,7 +54,7 @@ public class EnderecoController {
             description = "Endpoint para listagem de endereços no sistema")
     @GetMapping
     public ResponseEntity<List<Endereco>> listarEnderecos(HttpServletRequest request){
-        String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
+        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
 
         return ResponseEntity.ok(enderecoService.listarEnderecos(emailUsuario));
     }
@@ -59,9 +63,9 @@ public class EnderecoController {
             description = "Endpoint para edição de endereços no sistema")
     @PutMapping("/{id}")
     public ResponseEntity<Endereco> atualizarEndereco(@PathVariable Long id,
-                                            @Valid @RequestBody EnderecoDTO endereco,
+                                            @Valid @RequestBody EdicaoEnderecoDTO endereco,
                                             HttpServletRequest request){
-        String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
+        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
         Endereco enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);
 
         if(enderecoEditado == null){
@@ -75,7 +79,7 @@ public class EnderecoController {
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removerEndereco(@PathVariable Long id,
                                           HttpServletRequest request){
-        String emailUsuario = tokenService.validarToken(filterService.recuperarCookie(request));
+        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
         Boolean isEnderecoDeletado = enderecoService.removerEndereco(id, emailUsuario);
 
         if(!isEnderecoDeletado){
