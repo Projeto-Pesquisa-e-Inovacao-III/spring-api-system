@@ -30,7 +30,7 @@ public class EnderecoController {
                               ViaCepService viaCepService) {
         this.enderecoService = enderecoService;
         this.filterService = filterService;
-        this.tokenService = tokenService;;
+        this.tokenService = tokenService;
     }
 
     @Operation(summary = "Criar endereço (necessário login)",

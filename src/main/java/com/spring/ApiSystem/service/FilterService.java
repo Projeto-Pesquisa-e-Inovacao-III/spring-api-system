@@ -5,6 +5,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -26,8 +27,6 @@ public class FilterService extends OncePerRequestFilter {
         this.tokenService = tokenService;
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
-
-    private String perfilAtivo = "dev";
 
     /*
     Função executada a cada requisição que pega o token informado
@@ -57,12 +56,8 @@ public class FilterService extends OncePerRequestFilter {
         String token = tokenService.gerarToken(email);
 
         Cookie cookie = new Cookie("jwt", token);
-        if(perfilAtivo.equals("dev")){
-            cookie.setHttpOnly(false); // protege contra acesso via JavaScript
-        }
-        else{
-            cookie.setHttpOnly(true);
-        }
+
+        cookie.setHttpOnly(true); // protege contra acesso via JavaScript
         cookie.setSecure(true);   // só envia em HTTPS
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)

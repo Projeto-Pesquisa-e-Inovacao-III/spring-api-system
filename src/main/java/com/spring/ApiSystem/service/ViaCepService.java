@@ -11,16 +11,16 @@ public class ViaCepService {
     public EnderecoDTO verificarCep(String cep){
         RestTemplate rest = new RestTemplate();
 
-        String url = "https://viacep.com.br/ws/" +
-                     cep +
-                     "/json/";
-        ResponseEntity<EnderecoDTO> resposta = rest.getForEntity(url, EnderecoDTO.class);
-        EnderecoDTO respostaCorpo = resposta.getBody();
-        if(respostaCorpo.getCep() != null){
+        try{
+            String url = "https://viacep.com.br/ws/" +
+                         cep +
+                         "/json/";
+            ResponseEntity<EnderecoDTO> resposta = rest.getForEntity(url, EnderecoDTO.class);
+            EnderecoDTO respostaCorpo = resposta.getBody();
             respostaCorpo.setCep(respostaCorpo.getCep().replace("-", ""));
             return respostaCorpo;
+        } catch (RuntimeException e) {
+            throw new RuntimeException("Não foi possível encontrar o CEP informado");
         }
-
-        return null;
     }
 }
