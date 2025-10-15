@@ -7,6 +7,18 @@ segurança e integridade nas comunicações.
 
 ---
 
+## 📑 Índice
+
+- [Tecnologias Utilizadas](#-tecnologias-utilizadas)
+- [Como Utilizar](#-como-utilizar)
+    - [1️⃣ Gerar a chave privada](#1-gerar-a-chave-privada)
+    - [2️⃣ Gerar chave pública a partir da chave privada](#2-gerar-chave-pública-a-partir-da-chave-privada)
+    - [3️⃣ Onde colocar as chaves](#3-onde-colocar-as-chaves)
+    - [4️⃣ Execução](#4-execução)
+- [Documentação](#-documentação)
+
+---
+
 ## 🚀 Tecnologias Utilizadas
 
 - Java 21
@@ -55,3 +67,17 @@ Localize a classe `ApiSystemApplication.java`, que está no pacote principal do 
 Essa é a classe responsável por iniciar o Spring Boot.
 
 Pronto! Sua API estará disponível e pronta para receber requisições.
+
+---
+
+## 📚 Documentação
+
+Durante a execução do ambiente, você pode acessar a documentação da API
+diretamente pelo navegador, utilizando a URL abaixo:
+
+```
+http://localhost:8080/doc
+```
+
+Essa interface fornece uma visão completa dos endpoints disponíveis,
+facilitando testes e integração com outras aplicações.
