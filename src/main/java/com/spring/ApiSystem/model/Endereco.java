@@ -42,7 +42,6 @@ public class Endereco {
 
     private LocalDateTime data_atualizacao;
 
-
     @ManyToOne
     private Usuario usuario;
 

@@ -44,9 +44,10 @@ public class UsuarioService {
         if(usuarioEncontrado.isPresent()){
             usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
             usuarioEncontrado.get().setNome(dto.getNome());
+            usuarioEncontrado.get().setSexo(dto.getSexo());
+            usuarioEncontrado.get().setDataNascimento(dto.getDataNascimento());
             usuarioEncontrado.get().setEmail(dto.getEmail());
             usuarioEncontrado.get().setSenha(argonService.criptografarSenha(usuarioEncontrado.get().getSenha()));
-            usuarioEncontrado.get().setCpf(dto.getCpf());
 
             return userRepository.save(usuarioEncontrado.get());
         }

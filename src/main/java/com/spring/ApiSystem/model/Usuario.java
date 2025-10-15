@@ -2,37 +2,42 @@ package com.spring.ApiSystem.model;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
+
 @Entity(name = "usuario")
 public class Usuario {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
-    private String email;
+    @Column(nullable = false)
+    private String nome;
+
+    private String sexo;
+
+    private Date dataNascimento;
 
     @Column(unique = true, nullable = false)
-    private String cpf;
+    private String email;
 
     @Column(nullable = false)
     private String senha;
 
-    @Column(nullable = false)
-    private String nome;
-
     private boolean ativo = true;
 
-    public Usuario(Long id, String email, String cpf, String senha, String nome, boolean ativo, String role) {
-        this.id = id;
-        this.email = email;
-        this.cpf = cpf;
-        this.senha = senha;
-        this.nome = nome;
-        this.ativo = ativo;
+    public Usuario() {
     }
 
-    public Usuario() {
+    public Usuario(Long id, String nome, String sexo,
+                   Date dataNascimento, String email,
+                   String senha, boolean ativo) {
+        this.id = id;
+        this.nome = nome;
+        this.sexo = sexo;
+        this.dataNascimento = dataNascimento;
+        this.email = email;
+        this.senha = senha;
+        this.ativo = ativo;
     }
 
     public Long getId() {
@@ -43,6 +48,30 @@ public class Usuario {
         this.id = id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
+    }
+
     public String getEmail() {
         return email;
     }
@@ -51,28 +80,12 @@ public class Usuario {
         this.email = email;
     }
 
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
-    }
-
     public String getSenha() {
         return senha;
     }
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
     }
 
     public boolean isAtivo() {

@@ -5,8 +5,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.Date;
+
 public class EditarUsuarioDTO {
+    @NotBlank(message = "O nome não pode ficar vazio ou nulo")
     private String nome;
+
+    @NotBlank(message = "O sexo não pode ficar vazio ou nulo")
+    private String sexo;
+
+    @NotBlank(message = "A data de nascimento não pode ficar vazio ou nulo")
+    private Date dataNascimento;
 
     @Email(message = "Email deve ter formato válido")
     private String email;
@@ -15,17 +24,13 @@ public class EditarUsuarioDTO {
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     private String senha;
 
-    @NotNull(message = "O CPF é obrigatório")
-    @Size(min = 11, message = "O CPF deve conter 11 dígitos")
-    private String cpf;
-
     public EditarUsuarioDTO() {}
 
-    public EditarUsuarioDTO(String nome, String email, String senha, String cpf) {
+    public EditarUsuarioDTO(String nome, String email,
+                            String senha) {
         this.nome = nome;
         this.email = email;
         this.senha = senha;
-        this.cpf = cpf;
     }
 
     public String getNome() {
@@ -34,6 +39,22 @@ public class EditarUsuarioDTO {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getSexo() {
+        return sexo;
+    }
+
+    public void setSexo(String sexo) {
+        this.sexo = sexo;
+    }
+
+    public Date getDataNascimento() {
+        return dataNascimento;
+    }
+
+    public void setDataNascimento(Date dataNascimento) {
+        this.dataNascimento = dataNascimento;
     }
 
     public String getEmail() {
@@ -50,13 +71,5 @@ public class EditarUsuarioDTO {
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public String getCpf() {
-        return cpf;
-    }
-
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
     }
 }
