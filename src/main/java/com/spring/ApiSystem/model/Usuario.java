@@ -20,6 +20,8 @@ public class Usuario {
     @Column(unique = true, nullable = false)
     private String email;
 
+    private String salt;
+
     @Column(nullable = false)
     private String senha;
 
@@ -28,14 +30,16 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nome, String sexo,
-                   Date dataNascimento, String email,
+    public Usuario(Long id, String nome,
+                   String sexo, Date dataNascimento,
+                   String email, String salt,
                    String senha, boolean ativo) {
         this.id = id;
         this.nome = nome;
         this.sexo = sexo;
         this.dataNascimento = dataNascimento;
         this.email = email;
+        this.salt = salt;
         this.senha = senha;
         this.ativo = ativo;
     }
@@ -78,6 +82,14 @@ public class Usuario {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getSalt() {
+        return salt;
+    }
+
+    public void setSalt(String salt) {
+        this.salt = salt;
     }
 
     public String getSenha() {

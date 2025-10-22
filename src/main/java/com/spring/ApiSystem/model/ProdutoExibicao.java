@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public class Pacote {
+public class ProdutoExibicao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,9 +22,6 @@ public class Pacote {
     private Double preco;
 
     @Column(nullable = false)
-    private String tipo;
-
-    @Column(nullable = false)
     private String periodo;
 
     @Column(nullable = false)
@@ -35,23 +32,36 @@ public class Pacote {
 
     private LocalDateTime dataAtualizacao;
 
-    public Pacote() {
+    @Column(nullable = false)
+    private String tipoAula;
+
+    @Column(nullable = false)
+    private Integer quantidadeAula;
+
+    @Column(nullable = false)
+    private Integer duracaoMes;
+
+    public ProdutoExibicao() {
     }
 
-    public Pacote(Long id, String titulo, String subtitulo,
-                  String descricao, Double preco, String tipo,
-                  String periodo, String status, LocalDateTime dataCriacao,
-                  LocalDateTime dataAtualizacao) {
+    public ProdutoExibicao(Long id, String titulo,
+                           String subtitulo, String descricao,
+                           Double preco, String periodo,
+                           String status, LocalDateTime dataCriacao,
+                           LocalDateTime dataAtualizacao, String tipoAula,
+                           Integer quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
         this.descricao = descricao;
         this.preco = preco;
-        this.tipo = tipo;
         this.periodo = periodo;
         this.status = status;
         this.dataCriacao = dataCriacao;
         this.dataAtualizacao = dataAtualizacao;
+        this.tipoAula = tipoAula;
+        this.quantidadeAula = quantidadeAula;
+        this.duracaoMes = duracaoMes;
     }
 
     public Long getId() {
@@ -94,14 +104,6 @@ public class Pacote {
         this.preco = preco;
     }
 
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
     public String getPeriodo() {
         return periodo;
     }
@@ -132,5 +134,29 @@ public class Pacote {
 
     public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
         this.dataAtualizacao = dataAtualizacao;
+    }
+
+    public String getTipoAula() {
+        return tipoAula;
+    }
+
+    public void setTipoAula(String tipoAula) {
+        this.tipoAula = tipoAula;
+    }
+
+    public Integer getQuantidadeAula() {
+        return quantidadeAula;
+    }
+
+    public void setQuantidadeAula(Integer quantidadeAula) {
+        this.quantidadeAula = quantidadeAula;
+    }
+
+    public Integer getDuracaoMes() {
+        return duracaoMes;
+    }
+
+    public void setDuracaoMes(Integer duracaoMes) {
+        this.duracaoMes = duracaoMes;
     }
 }

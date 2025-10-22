@@ -41,6 +41,11 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
+    @GetMapping("/listar")
+    public ResponseEntity listarUsuarios(){
+        return ResponseEntity.ok(usuarioService.listar());
+    }
+
     @Operation(summary = "Realizar login (necessário cadastro)",
             description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")

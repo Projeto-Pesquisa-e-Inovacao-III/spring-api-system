@@ -2,30 +2,24 @@ package com.spring.ApiSystem.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.ManyToOne;
+
+import java.util.Date;
 
 @Entity
-public class Personal{
-    @ManyToOne
-    private Usuario usuario;
-
-    @Column(unique = true, nullable = false)
+public class Personal extends Usuario{
+    @Column(unique = true)
     private String cref;
 
     public Personal() {
     }
 
-    public Personal(Usuario usuario, String cref) {
-        this.usuario = usuario;
+    public Personal(Long id, String nome,
+                    String sexo, Date dataNascimento,
+                    String email, String salt,
+                    String senha, boolean ativo,
+                    String cref) {
+        super(id, nome, sexo, dataNascimento, email, salt, senha, ativo);
         this.cref = cref;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
     }
 
     public String getCref() {

@@ -1,13 +1,15 @@
-INSERT INTO usuario (nome, sexo, data_nascimento, email, senha, ativo) VALUES
-('Ana Souza', 'F', '1990-05-12', 'ana.souza@email.com', 'senha123', true),
-('Carlos Lima', 'M', '1985-09-30', 'carlos.lima@email.com', 'segredo456', true),
-('Beatriz Mendes', 'F', '1992-03-18', 'beatriz.m@email.com', 'abc123', true),
-('João Pedro', 'M', '1988-11-22', 'joao.pedro@email.com', 'joaop@2023', true),
-('Fernanda Rocha', 'F', '1995-07-07', 'fernanda.rocha@email.com', 'f3rn@nda', true),
-('Lucas Martins', 'M', '1993-01-15', 'lucas.martins@email.com', 'lucasM!', true),
-('Mariana Silva', 'F', '1991-04-25', 'mariana.silva@email.com', 'm@r1ana', true),
-('Rafael Torres', 'M', '1987-08-19', 'rafael.torres@email.com', 'r@f@elT', true),
-('Juliana Costa', 'F', '1994-12-03', 'juliana.costa@email.com', 'julianaC#', true),
-('Eduardo Alves', 'M', '1989-06-10', 'eduardo.alves@email.com', 'edualves$', true);
+-- Alunos
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cpf) VALUES ('Lucas Andrade', 'lucas.andrade@email.com', 'lucas123', 'Aluno', true, '12345678901');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cpf) VALUES ('Mariana Teixeira', 'mariana.teixeira@email.com', 'mari456', 'Aluno', false, '23456789012');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cpf) VALUES ('Rafael Cunha', 'rafael.cunha@email.com', 'rafa789', 'Aluno', true, '34567890123');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cpf) VALUES ('Juliana Lopes', 'juliana.lopes@email.com', 'ju321', 'Aluno', true, '45678901234');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cpf) VALUES ('Thiago Nunes', 'thiago.nunes@email.com', 'thi654', 'Aluno', false, '56789012345');
+
+-- Personais
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cref) VALUES ('Patrícia Moraes', 'patricia.moraes@email.com', 'pat987', 'Personal', true, 'CREF123456');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cref) VALUES ('Rodrigo Pires', 'rodrigo.pires@email.com', 'rod159', 'Personal', true, 'CREF234567');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cref) VALUES ('Fernanda Dias', 'fernanda.dias@email.com', 'fer753', 'Personal', false, 'CREF345678');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cref) VALUES ('Marcelo Tavares', 'marcelo.tavares@email.com', 'mar852', 'Personal', true, 'CREF456789');
+INSERT INTO usuario (nome, email, senha, DTYPE, ativo, cref) VALUES ('Vanessa Ribeiro', 'vanessa.ribeiro@email.com', 'van951', 'Personal', false, 'CREF567890');
 
 ALTER TABLE usuario ALTER COLUMN id RESTART WITH 11;

@@ -1,9 +1,7 @@
 package com.spring.ApiSystem.dto.usuario.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.Column;
+import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
@@ -11,10 +9,9 @@ public class EditarUsuarioDTO {
     @NotBlank(message = "O nome não pode ficar vazio ou nulo")
     private String nome;
 
-    @NotBlank(message = "O sexo não pode ficar vazio ou nulo")
     private String sexo;
 
-    @NotBlank(message = "A data de nascimento não pode ficar vazio ou nulo")
+    @Past(message = "A data de nascimento deve estar no passado")
     private Date dataNascimento;
 
     @Email(message = "Email deve ter formato válido")

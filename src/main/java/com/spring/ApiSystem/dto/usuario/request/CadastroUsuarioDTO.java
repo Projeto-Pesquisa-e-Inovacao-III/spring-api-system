@@ -1,9 +1,6 @@
 package com.spring.ApiSystem.dto.usuario.request;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
@@ -12,10 +9,9 @@ public class CadastroUsuarioDTO {
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
-    @NotBlank(message = "O sexo é obrigatório")
     private String sexo;
 
-    @NotBlank(message = "A data de nascimento é obrigatório")
+    @Past(message = "A data de nascimento deve estar no passado")
     private Date dataNascimento;
 
     @NotBlank(message = "O email é obrigatório")

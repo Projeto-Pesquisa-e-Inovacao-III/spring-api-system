@@ -8,11 +8,14 @@ public class Telefone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String numero;
+    @Column(length = 2, nullable = false)
+    private String pais;
 
-    @Column(nullable = false)
-    private String tipo;
+    @Column(length = 3, nullable = false)
+    private String ddd;
+
+    @Column(length = 9, nullable = false)
+    private String numero;
 
     @JoinColumn(nullable = false)
     @ManyToOne
@@ -21,10 +24,13 @@ public class Telefone {
     public Telefone() {
     }
 
-    public Telefone(Long id, String numero, String tipo, Usuario usuario) {
+    public Telefone(Long id, String pais,
+                    String ddd, String numero,
+                    Usuario usuario) {
         this.id = id;
+        this.pais = pais;
+        this.ddd = ddd;
         this.numero = numero;
-        this.tipo = tipo;
         this.usuario = usuario;
     }
 
@@ -36,20 +42,28 @@ public class Telefone {
         this.id = id;
     }
 
+    public String getPais() {
+        return pais;
+    }
+
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    public String getDdd() {
+        return ddd;
+    }
+
+    public void setDdd(String ddd) {
+        this.ddd = ddd;
+    }
+
     public String getNumero() {
         return numero;
     }
 
     public void setNumero(String numero) {
         this.numero = numero;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
     }
 
     public Usuario getUsuario() {

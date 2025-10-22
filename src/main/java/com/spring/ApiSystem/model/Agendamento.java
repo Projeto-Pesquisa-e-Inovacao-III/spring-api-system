@@ -20,10 +20,6 @@ public class Agendamento {
 
     @JoinColumn(nullable = false)
     @ManyToOne
-    private CategoriaAgendamento categoriaAgendamento;
-
-    @JoinColumn(nullable = false)
-    @ManyToOne
     private Endereco endereco;
 
     @JoinColumn(nullable = false)
@@ -34,20 +30,26 @@ public class Agendamento {
     @ManyToOne
     private Personal personal;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne
+    private ProdutoContratado produtoContratado;
+
     public Agendamento() {
     }
 
-    public Agendamento(Long id, LocalDateTime data, String situacao,
-                       String descricao, CategoriaAgendamento categoriaAgendamento,
-                       Endereco endereco, Aluno aluno, Personal personal) {
+    public Agendamento(Long id, LocalDateTime data,
+                       String situacao, String descricao,
+                       Endereco endereco, Aluno aluno,
+                       Personal personal,
+                       ProdutoContratado produtoContratado) {
         this.id = id;
         this.data = data;
         this.situacao = situacao;
         this.descricao = descricao;
-        this.categoriaAgendamento = categoriaAgendamento;
         this.endereco = endereco;
         this.aluno = aluno;
         this.personal = personal;
+        this.produtoContratado = produtoContratado;
     }
 
     public Long getId() {
@@ -82,14 +84,6 @@ public class Agendamento {
         this.descricao = descricao;
     }
 
-    public CategoriaAgendamento getCategoriaAgendamento() {
-        return categoriaAgendamento;
-    }
-
-    public void setCategoriaAgendamento(CategoriaAgendamento categoriaAgendamento) {
-        this.categoriaAgendamento = categoriaAgendamento;
-    }
-
     public Endereco getEndereco() {
         return endereco;
     }
@@ -112,5 +106,13 @@ public class Agendamento {
 
     public void setPersonal(Personal personal) {
         this.personal = personal;
+    }
+
+    public ProdutoContratado getProdutoContratado() {
+        return produtoContratado;
+    }
+
+    public void setProdutoContratado(ProdutoContratado produtoContratado) {
+        this.produtoContratado = produtoContratado;
     }
 }

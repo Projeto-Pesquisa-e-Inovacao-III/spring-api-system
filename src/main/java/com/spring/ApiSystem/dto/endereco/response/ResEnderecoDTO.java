@@ -1,33 +1,36 @@
-package com.spring.ApiSystem.dto.endereco.request;
+package com.spring.ApiSystem.dto.endereco.response;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import com.spring.ApiSystem.model.CEP;
+import com.spring.ApiSystem.model.Usuario;
 
-public class EnderecoDTO {
-    @NotBlank(message = "Número é obrigatório")
+public class ResEnderecoDTO {
+    private Long id;
     private String numero;
-
     private String complemento;
-
-    @NotBlank(message = "Unidade é obrigatório")
     private String unidade;
-
-    @NotBlank(message = "Tipo é obrigatório")
     private String tipo;
+    private CEP cep;
 
-    private String cep;
-
-    public EnderecoDTO() {
+    public ResEnderecoDTO() {
     }
 
-    public EnderecoDTO(String numero, String complemento,
-                       String unidade, String tipo,
-                       String cep) {
+    public ResEnderecoDTO(Long id, String numero,
+                          String complemento, String unidade,
+                          String tipo, CEP cep) {
+        this.id = id;
         this.numero = numero;
         this.complemento = complemento;
         this.unidade = unidade;
         this.tipo = tipo;
         this.cep = cep;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getNumero() {
@@ -62,11 +65,11 @@ public class EnderecoDTO {
         this.tipo = tipo;
     }
 
-    public String getCep() {
+    public CEP getCep() {
         return cep;
     }
 
-    public void setCep(String cep) {
+    public void setCep(CEP cep) {
         this.cep = cep;
     }
 }
