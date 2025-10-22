@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.dto.usuario.request;
 
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 import java.util.Date;
@@ -21,13 +20,21 @@ public class EditarUsuarioDTO {
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     private String senha;
 
+    @NotBlank(message = "A senha nova deve ser válida")
+    @Size(min = 6, message = "A senha nova deve ter no mínimo 6 caracteres")
+    private String senhaNova;
+
     public EditarUsuarioDTO() {}
 
-    public EditarUsuarioDTO(String nome, String email,
-                            String senha) {
+    public EditarUsuarioDTO(String nome, String sexo,
+                            Date dataNascimento, String email,
+                            String senha, String senhaNova) {
         this.nome = nome;
+        this.sexo = sexo;
+        this.dataNascimento = dataNascimento;
         this.email = email;
         this.senha = senha;
+        this.senhaNova = senhaNova;
     }
 
     public String getNome() {
@@ -68,5 +75,13 @@ public class EditarUsuarioDTO {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public String getSenhaNova() {
+        return senhaNova;
+    }
+
+    public void setSenhaNova(String senhaNova) {
+        this.senhaNova = senhaNova;
     }
 }

@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.service;
 
 import com.spring.ApiSystem.exception.EmailExistenteException;
+import com.spring.ApiSystem.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.mapper.UsuarioMapper;
 import com.spring.ApiSystem.model.Usuario;
 import com.spring.ApiSystem.repository.UserRepository;
@@ -53,16 +54,20 @@ public class UsuarioService {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            if(!validarEmailExistente(dto.getEmail())){
+            if(!validarEmailExistente(dto.getEmail()) ||
+               dto.getEmail().equals(email)){
                 usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
-                usuarioEncontrado.get().setNome(dto.getNome());
-                usuarioEncontrado.get().setSexo(dto.getSexo());
-                usuarioEncontrado.get().setDataNascimento(dto.getDataNascimento());
-                usuarioEncontrado.get().setEmail(dto.getEmail());
-                List<String> senhaCriptografada = argonService.criptografarSenha(
-                        usuarioEncontrado.get().getSenha());
-                usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
-                usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
+                if(argonService.validarSenha(dto.getSenha(), usuarioEncontrado.get().getSalt(),
+                                            usuarioEncontrado.get().getSenha()) &&
+                                             dto.getSenhaNova() != null){
+                    List<String> senhaCriptografada = argonService.criptografarSenha(
+                            dto.getSenhaNova());
+                    usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
+                    usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
+                }
+                else{
+                    throw new SenhaNaoCorrespondeAtual();
+                }
 
                 return userRepository.save(usuarioEncontrado.get());
             }

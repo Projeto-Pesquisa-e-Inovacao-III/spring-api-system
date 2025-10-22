@@ -18,7 +18,6 @@ public class ArgonService {
 
     public List<String> criptografarSenha(String senha) {
         String senhaCriptografada = argon.encode(senha);
-        System.out.println(senhaCriptografada);
         String[] senhaDividida = senhaCriptografada.split("\\$");
         return List.of(senhaDividida[4], senhaDividida[5]);
     }
@@ -47,9 +46,5 @@ public class ArgonService {
                                "$"   + salt +
                                "$"   + senhaHash;
         return argon.matches(senhaDigitada, senhaCompleta);
-    }
-
-    public String descriptografarSenha(String senhaCriptografada){
-        argon.
     }
 }
