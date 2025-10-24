@@ -10,17 +10,18 @@ public record EditarUsuarioDTO(
 
     String sexo,
 
+    @NotBlank(message = "A data de nascimento não pode ficar vazia ou nula")
     @Past(message = "A data de nascimento deve estar no passado")
     Date dataNascimento,
 
+    @NotBlank(message = "O email não pode ficar vazio ou nulo")
     @Email(message = "Email deve ter formato válido")
     String email,
 
-    @NotBlank(message = "A senha deve ser válida")
+    @NotBlank(message = "A senha  não pode ficar vazia ou nula")
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha,
 
-    @NotBlank(message = "A senha nova deve ser válida")
     @Size(min = 6, message = "A senha nova deve ter no mínimo 6 caracteres")
     String senhaNova
 ) {}
