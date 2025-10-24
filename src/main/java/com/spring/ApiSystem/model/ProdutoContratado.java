@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 
-@Entity
+@Entity(name = "produto_contratado")
 public class ProdutoContratado {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,13 +12,17 @@ public class ProdutoContratado {
 
     private String situacao;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "data_compra",
+            nullable = false,
+            updatable = false)
     private Date dataCompra;
 
-    @Column(nullable = false)
+    @Column(name = "data_expiracao",
+            nullable = false)
     private Date dataExpiracao;
 
-    @Column(nullable = false)
+    @Column(name = "saldo_aula",
+            nullable = false)
     private Integer saldoAula;
 
     @JoinColumn(nullable = false)

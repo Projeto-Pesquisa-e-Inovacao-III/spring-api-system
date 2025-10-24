@@ -15,6 +15,7 @@ public class Usuario {
 
     private String sexo;
 
+    @Column(name = "data_nascimento")
     private Date dataNascimento;
 
     @Column(unique = true, nullable = false)
@@ -22,7 +23,8 @@ public class Usuario {
 
     private String salt;
 
-    @Column(nullable = false)
+    @Column(name = "senha_hash",
+            nullable = false)
     private String senha;
 
     private boolean ativo = true;

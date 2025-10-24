@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@Entity
+@Entity(name = "produto_exibicao")
 public class ProdutoExibicao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,18 +27,24 @@ public class ProdutoExibicao {
     @Column(nullable = false)
     private String status;
 
-    @Column(nullable = false, updatable = false)
+    @Column(name = "data_criacao",
+            nullable = false,
+            updatable = false)
     private LocalDateTime dataCriacao;
 
+    @Column(name = "data_atualizacao")
     private LocalDateTime dataAtualizacao;
 
-    @Column(nullable = false)
+    @Column(name = "tipo_aula",
+            nullable = false)
     private String tipoAula;
 
-    @Column(nullable = false)
+    @Column(name = "quantidade_aula",
+            nullable = false)
     private Integer quantidadeAula;
 
-    @Column(nullable = false)
+    @Column(name = "duracaoMes",
+            nullable = false)
     private Integer duracaoMes;
 
     public ProdutoExibicao() {

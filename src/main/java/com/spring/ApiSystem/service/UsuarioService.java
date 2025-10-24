@@ -29,7 +29,7 @@ public class UsuarioService {
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
-        if(!validarEmailExistente(usuarioDTO.getEmail())){
+        if(!validarEmailExistente(usuarioDTO.email())){
             Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
             List<String> senhaCriptografada = argonService.criptografarSenha(usuarioEntity.getSenha());
             usuarioEntity.setSalt(senhaCriptografada.getFirst());
@@ -39,9 +39,9 @@ public class UsuarioService {
         throw new EmailExistenteException();
     }
 
-    public List<Usuario> listar(){
-        return userRepository.findAll();
-    }
+//    public List<Usuario> listar(){
+//        return userRepository.findAll();
+//    }
 
     public Boolean loginUsuario (String email, String senha) {
         Optional<Usuario> userOpt = userRepository.findByEmail(email);
@@ -54,14 +54,14 @@ public class UsuarioService {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            if(!validarEmailExistente(dto.getEmail()) ||
-               dto.getEmail().equals(email)){
+            if(!validarEmailExistente(dto.email()) ||
+               dto.email().equals(email)){
                 usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
-                if(argonService.validarSenha(dto.getSenha(), usuarioEncontrado.get().getSalt(),
+                if(argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
                                             usuarioEncontrado.get().getSenha()) &&
-                                             dto.getSenhaNova() != null){
+                                             dto.senha() != null){
                     List<String> senhaCriptografada = argonService.criptografarSenha(
-                            dto.getSenhaNova());
+                            dto.senhaNova());
                     usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
                     usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
                 }

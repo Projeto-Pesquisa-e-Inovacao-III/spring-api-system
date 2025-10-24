@@ -5,7 +5,7 @@ import jakarta.persistence.Entity;
 
 import java.util.Date;
 
-@Entity
+@Entity(name = "aluno")
 public class Aluno extends Usuario{
     @Column(unique = true)
     private String cpf;

@@ -3,70 +3,18 @@ package com.spring.ApiSystem.dto.endereco.request;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
-public class EnderecoDTO {
+public record EnderecoDTO(
     @NotBlank(message = "Número é obrigatório")
-    private String numero;
+    String numero,
 
-    private String complemento;
+    String complemento,
 
     @NotBlank(message = "Unidade é obrigatório")
-    private String unidade;
+    String unidade,
 
     @NotBlank(message = "Tipo é obrigatório")
-    private String tipo;
+    String tipo,
 
-    private String cep;
-
-    public EnderecoDTO() {
-    }
-
-    public EnderecoDTO(String numero, String complemento,
-                       String unidade, String tipo,
-                       String cep) {
-        this.numero = numero;
-        this.complemento = complemento;
-        this.unidade = unidade;
-        this.tipo = tipo;
-        this.cep = cep;
-    }
-
-    public String getNumero() {
-        return numero;
-    }
-
-    public void setNumero(String numero) {
-        this.numero = numero;
-    }
-
-    public String getComplemento() {
-        return complemento;
-    }
-
-    public void setComplemento(String complemento) {
-        this.complemento = complemento;
-    }
-
-    public String getUnidade() {
-        return unidade;
-    }
-
-    public void setUnidade(String unidade) {
-        this.unidade = unidade;
-    }
-
-    public String getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(String tipo) {
-        this.tipo = tipo;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-}
+    @Size(min = 8, max = 8, message = "O CEP deve conter 8 caracteres")
+    String cep
+) {}

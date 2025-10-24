@@ -41,20 +41,20 @@ public class UsuarioController {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity listarUsuarios(){
-        return ResponseEntity.ok(usuarioService.listar());
-    }
+//    @GetMapping("/listar")
+//    public ResponseEntity listarUsuarios(){
+//        return ResponseEntity.ok(usuarioService.listar());
+//    }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
             description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
     public ResponseEntity<String> loginUsuario(@Valid @RequestBody LoginUsuarioDTO dto,
                                                HttpServletResponse response) {
-        Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.getEmail(), dto.getSenha());
+        Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
 
         if(isUsuarioEncontrado){
-            filterService.gerarCookie(response, dto.getEmail());
+            filterService.gerarCookie(response, dto.email());
             return ResponseEntity.ok().build();
         }
 

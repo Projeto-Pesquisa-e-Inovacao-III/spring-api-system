@@ -21,10 +21,13 @@ public class Endereco {
     @Column(nullable = false)
     private String tipo;
 
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime data_criacao;
+    @Column(name = "data_criacao",
+            nullable = false,
+            updatable = false)
+    private LocalDateTime dataCriacao;
 
-    private LocalDateTime data_atualizacao;
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
 
     @ManyToOne
     private Usuario usuario;
@@ -37,16 +40,16 @@ public class Endereco {
 
     public Endereco(Long id, String numero,
                     String complemento, String unidade,
-                    String tipo, LocalDateTime data_criacao,
-                    LocalDateTime data_atualizacao,
+                    String tipo, LocalDateTime dataCriacao,
+                    LocalDateTime dataAtualizacao,
                     Usuario usuario, CEP cep) {
         this.id = id;
         this.numero = numero;
         this.complemento = complemento;
         this.unidade = unidade;
         this.tipo = tipo;
-        this.data_criacao = data_criacao;
-        this.data_atualizacao = data_atualizacao;
+        this.dataCriacao = dataCriacao;
+        this.dataAtualizacao = dataAtualizacao;
         this.usuario = usuario;
         this.cep = cep;
     }
@@ -92,19 +95,19 @@ public class Endereco {
     }
 
     public LocalDateTime getData_criacao() {
-        return data_criacao;
+        return dataCriacao;
     }
 
     public void setData_criacao(LocalDateTime data_criacao) {
-        this.data_criacao = data_criacao;
+        this.dataCriacao = data_criacao;
     }
 
     public LocalDateTime getData_atualizacao() {
-        return data_atualizacao;
+        return dataAtualizacao;
     }
 
     public void setData_atualizacao(LocalDateTime data_atualizacao) {
-        this.data_atualizacao = data_atualizacao;
+        this.dataAtualizacao = data_atualizacao;
     }
 
     public Usuario getUsuario() {

@@ -2,7 +2,7 @@ package com.spring.ApiSystem.model;
 
 import jakarta.persistence.*;
 
-@Entity
+@Entity(name = "telefone")
 public class Telefone {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
