@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.controller;
 
-import com.spring.ApiSystem.dto.endereco.request.EdicaoEnderecoDTO;
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
+import com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.service.EnderecoService;
 import com.spring.ApiSystem.service.FilterService;
@@ -36,12 +36,12 @@ public class EnderecoController {
     @Operation(summary = "Criar endereço (necessário login)",
             description = "Endpoint para cadastro de endereços no sistema")
     @PostMapping
-    public ResponseEntity<Endereco> cadastrarEndereco(@Valid @RequestBody EdicaoEnderecoDTO endereco,
-                                                      HttpServletRequest request){
+    public ResponseEntity<ResEnderecoDTO> cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
+                                                            HttpServletRequest request){
 
         String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
 
-        Endereco enderecoCadastrado = enderecoService.cadastrarEndereco(endereco, emailUsuario);
+        ResEnderecoDTO enderecoCadastrado = enderecoService.cadastrarEndereco(endereco, emailUsuario);
 
         if(enderecoCadastrado == null){
             return ResponseEntity.badRequest().build();
@@ -53,7 +53,7 @@ public class EnderecoController {
     @Operation(summary = "Listar endereços (necessário login)",
             description = "Endpoint para listagem de endereços no sistema")
     @GetMapping
-    public ResponseEntity<List<Endereco>> listarEnderecos(HttpServletRequest request){
+    public ResponseEntity<List<ResEnderecoDTO>> listarEnderecos(HttpServletRequest request){
         String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
 
         return ResponseEntity.ok(enderecoService.listarEnderecos(emailUsuario));
@@ -62,11 +62,11 @@ public class EnderecoController {
     @Operation(summary = "Editar endereço (necessário login)",
             description = "Endpoint para edição de endereços no sistema")
     @PutMapping("/{id}")
-    public ResponseEntity<Endereco> atualizarEndereco(@PathVariable Long id,
-                                            @Valid @RequestBody EdicaoEnderecoDTO endereco,
+    public ResponseEntity<ResEnderecoDTO> atualizarEndereco(@PathVariable Long id,
+                                            @Valid @RequestBody EnderecoDTO endereco,
                                             HttpServletRequest request){
         String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
-        Endereco enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);
+        ResEnderecoDTO enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);
 
         if(enderecoEditado == null){
             return ResponseEntity.notFound().build();

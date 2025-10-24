@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.config;
 
 import com.spring.ApiSystem.service.FilterService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -37,13 +38,16 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST, "/usuarios/cadastro").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/usuarios/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,
+                                "/usuarios/cadastro",
+                                "/usuarios/login"
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET,
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/doc"
                         ).permitAll()
+                        .requestMatchers("/usuarios/listar").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
@@ -52,12 +56,27 @@ public class SecurityConfig {
                 .build();
     }
 
+    @Value("${argon.saltLength}")
+    Integer saltLength;
+
+    @Value("${argon.hashLength}")
+    Integer hashLength;
+
+    @Value("${argon.parallelism}")
+    Integer parallelism;
+
+    @Value("${argon.memory}")
+    Integer memory;
+
+    @Value("${argon.iterations}")
+    Integer iterations;
+
     @Bean
     public Argon2PasswordEncoder argon2PasswordEncoder() {
-        return new Argon2PasswordEncoder(16,
-                                        32,
-                                        1,
-                                        65536,
-                                        3);
+        return new Argon2PasswordEncoder(saltLength,
+                                        hashLength,
+                                        parallelism,
+                                        memory,
+                                        iterations);
     }
 }

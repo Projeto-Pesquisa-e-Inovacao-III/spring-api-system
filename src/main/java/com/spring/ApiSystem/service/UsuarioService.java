@@ -1,5 +1,7 @@
 package com.spring.ApiSystem.service;
 
+import com.spring.ApiSystem.exception.EmailExistenteException;
+import com.spring.ApiSystem.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.mapper.UsuarioMapper;
 import com.spring.ApiSystem.model.Usuario;
 import com.spring.ApiSystem.repository.UserRepository;
@@ -8,6 +10,7 @@ import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.response.ResUsuarioDTO;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,27 +29,47 @@ public class UsuarioService {
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
-        Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
-        usuarioEntity.setSenha(argonService.criptografarSenha(usuarioEntity.getSenha()));
-        return usuarioMapper.toDto(userRepository.save(usuarioEntity));
+        if(!validarEmailExistente(usuarioDTO.email())){
+            Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
+            List<String> senhaCriptografada = argonService.criptografarSenha(usuarioEntity.getSenha());
+            usuarioEntity.setSalt(senhaCriptografada.getFirst());
+            usuarioEntity.setSenha(senhaCriptografada.getLast());
+            return usuarioMapper.toDto(userRepository.save(usuarioEntity));
+        }
+        throw new EmailExistenteException();
     }
+
+//    public List<Usuario> listar(){
+//        return userRepository.findAll();
+//    }
 
     public Boolean loginUsuario (String email, String senha) {
         Optional<Usuario> userOpt = userRepository.findByEmail(email);
         return userOpt.isPresent() &&
                 userOpt.get().isAtivo() &&
-                argonService.validarSenha(senha, userOpt.get().getSenha());
+                argonService.validarSenha(senha,userOpt.get().getSalt(), userOpt.get().getSenha());
     }
 
     public Usuario atualizarUsuario(EditarUsuarioDTO dto, String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
+            if(validarEmailExistente(dto.email()) &&
+               !dto.email().equals(email)){
+                throw new EmailExistenteException();
+            }
+            if(!argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
+                    usuarioEncontrado.get().getSenha())){
+                throw new SenhaNaoCorrespondeAtual();
+            }
+
             usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
-            usuarioEncontrado.get().setNome(dto.getNome());
-            usuarioEncontrado.get().setEmail(dto.getEmail());
-            usuarioEncontrado.get().setSenha(argonService.criptografarSenha(usuarioEncontrado.get().getSenha()));
-            usuarioEncontrado.get().setCpf(dto.getCpf());
+
+            if(dto.senhaNova() != null){
+                List<String> senhaCriptografada = argonService.criptografarSenha(dto.senhaNova());
+                usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
+                usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
+            }
 
             return userRepository.save(usuarioEncontrado.get());
         }
@@ -65,4 +88,7 @@ public class UsuarioService {
         return false;
     }
 
+    public Boolean validarEmailExistente(String email){
+        return userRepository.findByEmail(email).isPresent();
+    }
 }

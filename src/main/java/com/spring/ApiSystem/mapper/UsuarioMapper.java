@@ -27,6 +27,7 @@ public interface UsuarioMapper {
     @Mapping(target = "id", ignore = true)
     Usuario toEntity(LoginUsuarioDTO usuarioDTO);
 
+    @Mapping(target = "senha", ignore = true)
     void atualizarUsuarioFromEditarUsuarioDto(EditarUsuarioDTO dto,
                                   @MappingTarget Usuario usuario);
 

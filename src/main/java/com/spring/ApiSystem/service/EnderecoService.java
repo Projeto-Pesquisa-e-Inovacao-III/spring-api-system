@@ -1,8 +1,9 @@
 package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.dto.endereco.request.EdicaoEnderecoDTO;
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
+import com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO;
 import com.spring.ApiSystem.mapper.EnderecoMapper;
+import com.spring.ApiSystem.model.CEP;
 import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.model.Usuario;
 import com.spring.ApiSystem.repository.EnderecoRepository;
@@ -30,44 +31,46 @@ public class EnderecoService {
         this.viaCepService = viaCepService;
     }
 
-    public Endereco cadastrarEndereco(EdicaoEnderecoDTO edicaoEnderecoDTO, String email){
+    public ResEnderecoDTO cadastrarEndereco(EnderecoDTO enderecoDTO, String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            EnderecoDTO enderecoDTO = viaCepService.verificarCep(edicaoEnderecoDTO.getCep());
-            if(enderecoDTO != null){
-                enderecoMapper.atualizarEnderecoDtoFromDto(edicaoEnderecoDTO, enderecoDTO);
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+            if(cep != null){
                 Endereco endereco = enderecoMapper.toEntity(enderecoDTO);
                 endereco.setUsuario(usuarioEncontrado.get());
                 endereco.setData_criacao(LocalDateTime.now());
-                return enderecoRepository.save(endereco);
+                endereco.setCep(cep);
+                enderecoRepository.save(endereco);
+                return enderecoMapper.toResEnderecoDTO(endereco);
             }
         }
 
         return null;
     }
 
-    public List<Endereco> listarEnderecos(String email){
+    public List<ResEnderecoDTO> listarEnderecos(String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            return enderecoRepository.findByUsuario(usuarioEncontrado.get());
+            return enderecoRepository.findByUsuario(usuarioEncontrado.get().getId());
         }
 
         return null;
     }
 
-    public Endereco atualizarEndereco(Long id , EdicaoEnderecoDTO edicaoEnderecoDTO, String email){
+    public ResEnderecoDTO atualizarEndereco(Long id , EnderecoDTO enderecoDTO, String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
         if(enderecoEncontrado.isPresent()){
-            EnderecoDTO enderecoDTO = viaCepService.verificarCep(edicaoEnderecoDTO.getCep());
-            if(enderecoDTO != null){
-                enderecoMapper.atualizarEnderecoDtoFromDto(edicaoEnderecoDTO, enderecoDTO);
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+            if(cep != null){
                 enderecoMapper.atualizarEnderecoFromDto(enderecoDTO, enderecoEncontrado.get());
                 enderecoEncontrado.get().setData_atualizacao(LocalDateTime.now());
-                return enderecoRepository.save(enderecoEncontrado.get());
+                enderecoEncontrado.get().setCep(cep);
+                enderecoRepository.save(enderecoEncontrado.get());
+                return enderecoMapper.toResEnderecoDTO(enderecoEncontrado.get());
             }
         }
 

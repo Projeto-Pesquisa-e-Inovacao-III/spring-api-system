@@ -10,63 +10,50 @@ public class Endereco {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 8, nullable = false)
-    private String cep;
-
-    @Column(length = 45, nullable = false)
-    private String logradouro;
-
     @Column(nullable = false)
     private String numero;
 
-    @Column(length = 45)
     private String complemento;
 
-    @Column(length = 45)
+    @Column(nullable = false)
     private String unidade;
 
-    @Column(length = 45, nullable = false)
-    private String bairro;
+    @Column(nullable = false)
+    private String tipo;
 
-    @Column(length = 45, nullable = false)
-    private String localidade;
+    @Column(name = "data_criacao",
+            nullable = false,
+            updatable = false)
+    private LocalDateTime dataCriacao;
 
-    @Column(length = 2, nullable = false)
-    private String uf;
-
-    @Column(length = 255)
-    private String descricao;
-
-    @Column(nullable = false, updatable = false)
-    private LocalDateTime data_criacao;
-
-    private LocalDateTime data_atualizacao;
-
+    @Column(name = "data_atualizacao")
+    private LocalDateTime dataAtualizacao;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public Endereco(Long id,String cep, String logradouro,
-                    String numero, String complemento, String unidade,
-                    String bairro, String localidade, String uf,
-                    String descricao, LocalDateTime data_criacao,
-                    LocalDateTime data_atualizacao, Usuario usuario) {
+    @ManyToOne
+    @JoinColumn(name = "CEP_id")
+    private CEP cep;
+
+    public Endereco() {
+    }
+
+    public Endereco(Long id, String numero,
+                    String complemento, String unidade,
+                    String tipo, LocalDateTime dataCriacao,
+                    LocalDateTime dataAtualizacao,
+                    Usuario usuario, CEP cep) {
         this.id = id;
-        this.cep = cep;
-        this.logradouro = logradouro;
         this.numero = numero;
         this.complemento = complemento;
         this.unidade = unidade;
-        this.bairro = bairro;
-        this.localidade = localidade;
-        this.uf = uf;
-        this.descricao = descricao;
-        this.data_criacao = data_criacao;
-        this.data_atualizacao = data_atualizacao;
+        this.tipo = tipo;
+        this.dataCriacao = dataCriacao;
+        this.dataAtualizacao = dataAtualizacao;
         this.usuario = usuario;
-    }
-
-    public Endereco() {
+        this.cep = cep;
     }
 
     public Long getId() {
@@ -75,22 +62,6 @@ public class Endereco {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getCep() {
-        return cep;
-    }
-
-    public void setCep(String cep) {
-        this.cep = cep;
-    }
-
-    public String getLogradouro() {
-        return logradouro;
-    }
-
-    public void setLogradouro(String logradouro) {
-        this.logradouro = logradouro;
     }
 
     public String getNumero() {
@@ -117,52 +88,28 @@ public class Endereco {
         this.unidade = unidade;
     }
 
-    public String getBairro() {
-        return bairro;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setBairro(String bairro) {
-        this.bairro = bairro;
-    }
-
-    public String getLocalidade() {
-        return localidade;
-    }
-
-    public void setLocalidade(String localidade) {
-        this.localidade = localidade;
-    }
-
-    public String getUf() {
-        return uf;
-    }
-
-    public void setUf(String uf) {
-        this.uf = uf;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public LocalDateTime getData_criacao() {
-        return data_criacao;
+        return dataCriacao;
     }
 
     public void setData_criacao(LocalDateTime data_criacao) {
-        this.data_criacao = data_criacao;
+        this.dataCriacao = data_criacao;
     }
 
     public LocalDateTime getData_atualizacao() {
-        return data_atualizacao;
+        return dataAtualizacao;
     }
 
     public void setData_atualizacao(LocalDateTime data_atualizacao) {
-        this.data_atualizacao = data_atualizacao;
+        this.dataAtualizacao = data_atualizacao;
     }
 
     public Usuario getUsuario() {
@@ -171,5 +118,13 @@ public class Endereco {
 
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
+    }
+
+    public CEP getCep() {
+        return cep;
+    }
+
+    public void setCep(CEP cep) {
+        this.cep = cep;
     }
 }
