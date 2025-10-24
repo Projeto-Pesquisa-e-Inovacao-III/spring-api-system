@@ -1,11 +1,8 @@
 package com.spring.ApiSystem.service;
 
-import com.spring.ApiSystem.model.Usuario;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
 import java.util.List;
 
 @Service

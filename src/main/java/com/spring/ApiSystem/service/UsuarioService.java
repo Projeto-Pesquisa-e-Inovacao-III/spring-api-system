@@ -57,9 +57,9 @@ public class UsuarioService {
             if(!validarEmailExistente(dto.email()) ||
                dto.email().equals(email)){
                 usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
-                if(argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
-                                            usuarioEncontrado.get().getSenha()) &&
-                                             dto.senha() != null){
+                if(dto.senha() != null &&
+                   argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
+                                            usuarioEncontrado.get().getSenha())){
                     List<String> senhaCriptografada = argonService.criptografarSenha(
                             dto.senhaNova());
                     usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
