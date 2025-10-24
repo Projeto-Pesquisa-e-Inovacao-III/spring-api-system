@@ -16,6 +16,12 @@ public class ArgonService {
     public List<String> criptografarSenha(String senha) {
         String senhaCriptografada = argon.encode(senha);
         String[] senhaDividida = senhaCriptografada.split("\\$");
+        if (senhaDividida.length < 6) {
+            throw new IllegalArgumentException(
+                    "Erro ao criptografar a senha, comprimento esperado = 6, recebido = " +
+                     senhaDividida.length
+            );
+        }
         return List.of(senhaDividida[4], senhaDividida[5]);
     }
 

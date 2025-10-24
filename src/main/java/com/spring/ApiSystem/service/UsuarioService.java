@@ -54,24 +54,24 @@ public class UsuarioService {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            if(!validarEmailExistente(dto.email()) ||
-               dto.email().equals(email)){
-                usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
-                if(dto.senha() != null &&
-                   argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
-                                            usuarioEncontrado.get().getSenha())){
-                    List<String> senhaCriptografada = argonService.criptografarSenha(
-                            dto.senhaNova());
-                    usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
-                    usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
-                }
-                else{
-                    throw new SenhaNaoCorrespondeAtual();
-                }
-
-                return userRepository.save(usuarioEncontrado.get());
+            if(validarEmailExistente(dto.email()) &&
+               !dto.email().equals(email)){
+                throw new EmailExistenteException();
             }
-            throw new EmailExistenteException();
+            if(!argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
+                    usuarioEncontrado.get().getSenha())){
+                throw new SenhaNaoCorrespondeAtual();
+            }
+
+            usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
+
+            if(dto.senhaNova() != null){
+                List<String> senhaCriptografada = argonService.criptografarSenha(dto.senhaNova());
+                usuarioEncontrado.get().setSalt(senhaCriptografada.getFirst());
+                usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
+            }
+
+            return userRepository.save(usuarioEncontrado.get());
         }
 
         return null;
