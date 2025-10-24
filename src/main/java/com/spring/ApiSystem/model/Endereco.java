@@ -30,9 +30,11 @@ public class Endereco {
     private LocalDateTime dataAtualizacao;
 
     @ManyToOne
+    @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
     @ManyToOne
+    @JoinColumn(name = "CEP_id")
     private CEP cep;
 
     public Endereco() {

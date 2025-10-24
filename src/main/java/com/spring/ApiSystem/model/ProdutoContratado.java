@@ -10,7 +10,7 @@ public class ProdutoContratado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String situacao;
+    private Boolean ativo;
 
     @Column(name = "data_compra",
             nullable = false,
@@ -25,12 +25,14 @@ public class ProdutoContratado {
             nullable = false)
     private Integer saldoAula;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "usuario_aluno_id",
+                nullable = false)
     private Aluno aluno;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "produto_exibicao_id",
+                nullable = false)
     private ProdutoExibicao produtoExibicao;
 
 

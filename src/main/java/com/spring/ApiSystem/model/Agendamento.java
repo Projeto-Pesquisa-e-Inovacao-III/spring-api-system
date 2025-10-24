@@ -18,20 +18,24 @@ public class Agendamento {
 
     private String descricao;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "endereco_id",
+                nullable = false)
     private Endereco endereco;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "usuario_aluno_id",
+                nullable = false)
     private Aluno aluno;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "usuario_personal_id",
+                nullable = false)
     private Personal personal;
 
-    @JoinColumn(nullable = false)
     @ManyToOne
+    @JoinColumn(name = "produto_contratado_id",
+            nullable = false)
     private ProdutoContratado produtoContratado;
 
     public Agendamento() {
