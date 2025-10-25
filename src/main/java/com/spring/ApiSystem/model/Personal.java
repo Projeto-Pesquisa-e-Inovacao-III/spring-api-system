@@ -1,11 +1,13 @@
 package com.spring.ApiSystem.model;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import java.util.Date;
 
 @Entity(name = "personal")
+@DiscriminatorValue("Personal")
 public class Personal extends Usuario{
     @Column(unique = true)
     private String cref;
@@ -28,5 +30,12 @@ public class Personal extends Usuario{
 
     public void setCref(String cref) {
         this.cref = cref;
+    }
+
+    @Override
+    public String toString() {
+        return "Personal{" +
+                "cref='" + cref + '\'' +
+                '}';
     }
 }
