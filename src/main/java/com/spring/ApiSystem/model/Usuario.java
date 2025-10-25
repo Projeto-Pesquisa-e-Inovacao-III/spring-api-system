@@ -1,15 +1,10 @@
 package com.spring.ApiSystem.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 
 import java.util.Date;
-@JsonIgnoreProperties(ignoreUnknown = true)
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DTYPE", discriminatorType = DiscriminatorType.STRING)
-@DiscriminatorValue("Usuario")
-@Entity(name = "usuario")
 
+@Entity(name = "usuario")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -113,19 +108,5 @@ public class Usuario {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", sexo='" + sexo + '\'' +
-                ", dataNascimento=" + dataNascimento +
-                ", email='" + email + '\'' +
-                ", salt='" + salt + '\'' +
-                ", senha='" + senha + '\'' +
-                ", ativo=" + ativo +
-                '}';
     }
 }

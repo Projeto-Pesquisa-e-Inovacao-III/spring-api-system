@@ -1,14 +1,11 @@
 package com.spring.ApiSystem.model;
 
-import com.spring.ApiSystem.model.enums.Situacao;
-import com.spring.ApiSystem.model.state.*;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
 @Entity(name = "agendamento")
 public class Agendamento {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -17,123 +14,109 @@ public class Agendamento {
     private LocalDateTime data;
 
     @Column(nullable = false)
-    private Situacao situacao;
+    private String situacao;
 
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "endereco_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "endereco_id",
+                nullable = false)
     private Endereco endereco;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aluno_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "usuario_aluno_id",
+                nullable = false)
     private Aluno aluno;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "personal_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "usuario_personal_id",
+                nullable = false)
     private Personal personal;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "produto_contratado_id", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "produto_contratado_id",
+            nullable = false)
     private ProdutoContratado produtoContratado;
 
-    @Transient
-    private AgendamentoState agendamentoState;
-
     public Agendamento() {
-        this.situacao = Situacao.PENDENTE_PERSONAL;
-        this.agendamentoState = new AgendamentoPendentePersonal();
     }
 
-    public Agendamento(Long id, LocalDateTime data, String descricao,
-                       Endereco endereco, Aluno aluno, Personal personal,
-                       ProdutoContratado produtoContratado, AgendamentoState state) {
+    public Agendamento(Long id, LocalDateTime data,
+                       String situacao, String descricao,
+                       Endereco endereco, Aluno aluno,
+                       Personal personal,
+                       ProdutoContratado produtoContratado) {
         this.id = id;
         this.data = data;
+        this.situacao = situacao;
         this.descricao = descricao;
         this.endereco = endereco;
         this.aluno = aluno;
         this.personal = personal;
         this.produtoContratado = produtoContratado;
-
-        definirEstadoInicial(state);
     }
 
-    @PostLoad
-    private void carregarDoBanco() {
-        definirEstadoInicial(null);
+    public Long getId() {
+        return id;
     }
 
-
-    private void definirEstadoInicial(AgendamentoState state) {
-        if (state != null) {
-            this.agendamentoState = state;
-        } else {
-            switch (this.situacao) {
-                case ACEITO -> this.agendamentoState = new AgendamentoAceito();
-                case PENDENTE_CLIENTE -> this.agendamentoState = new AgendamentoPendenteCliente();
-                case REAGENDADO -> this.agendamentoState = new AgendamentoReagendado();
-                case RECUSADO -> this.agendamentoState = new AgendamentoRecusado();
-                case CONCLUIDO -> this.agendamentoState = new AgendamentoConcluido();
-                default -> this.agendamentoState = new AgendamentoPendentePersonal();
-            }
-        }
-
-        this.situacao = this.agendamentoState.getSituacao();
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    private void atualizarEstado(AgendamentoState novoEstado) {
-        this.agendamentoState = novoEstado;
-        this.situacao = novoEstado.getSituacao();
+    public LocalDateTime getData() {
+        return data;
     }
 
-    public void aceitar() { atualizarEstado(agendamentoState.aceitar()); }
-    public void recusado() { atualizarEstado(agendamentoState.recusado()); }
-    public void concluido() { atualizarEstado(agendamentoState.concluido()); }
-    public void reagendar() { atualizarEstado(agendamentoState.reagendar()); }
-    public void pendentePersonal() { atualizarEstado(agendamentoState.pendentePersonal()); }
-    public void pendenteCliente() { atualizarEstado(agendamentoState.pendenteCliente()); }
+    public void setData(LocalDateTime data) {
+        this.data = data;
+    }
 
+    public String getSituacao() {
+        return situacao;
+    }
 
+    public void setSituacao(String situacao) {
+        this.situacao = situacao;
+    }
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    public String getDescricao() {
+        return descricao;
+    }
 
-    public LocalDateTime getData() {return data;}
-    public void setData(LocalDateTime data) {this.data = data;}
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
 
-    public Situacao getSituacao() {return situacao;}
-    public void setSituacao(Situacao situacao) {this.situacao = situacao;}
+    public Endereco getEndereco() {
+        return endereco;
+    }
 
-    public String getDescricao() {return descricao;}
-    public void setDescricao(String descricao) {this.descricao = descricao;}
+    public void setEndereco(Endereco endereco) {
+        this.endereco = endereco;
+    }
 
-    public Endereco getEndereco() {return endereco;}
-    public void setEndereco(Endereco endereco) {this.endereco = endereco;}
+    public Aluno getAluno() {
+        return aluno;
+    }
 
-    public Aluno getAluno() {return aluno;}
-    public void setAluno(Aluno aluno) {this.aluno = aluno;}
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
+    }
 
-    public Personal getPersonal() {return personal;}
-    public void setPersonal(Personal personal) {this.personal = personal;}
+    public Personal getPersonal() {
+        return personal;
+    }
 
-    public ProdutoContratado getProdutoContratado() {return produtoContratado;}
-    public void setProdutoContratado(ProdutoContratado produtoContratado) {this.produtoContratado = produtoContratado;}
+    public void setPersonal(Personal personal) {
+        this.personal = personal;
+    }
 
-    public AgendamentoState getAgendamentoState() {return agendamentoState;}
+    public ProdutoContratado getProdutoContratado() {
+        return produtoContratado;
+    }
 
-    @Override
-    public String toString() {
-        return "Agendamento{" +
-                "id=" + id +
-                ", data=" + data +
-                ", situacao=" + situacao +
-                ", descricao='" + descricao + '\'' +
-                ", endereco=" + endereco +
-                ", aluno=" + aluno +
-                ", personal=" + personal +
-                ", produtoContratado=" + produtoContratado +
-                ", agendamentoState=" + agendamentoState +
-                '}';
+    public void setProdutoContratado(ProdutoContratado produtoContratado) {
+        this.produtoContratado = produtoContratado;
     }
 }
