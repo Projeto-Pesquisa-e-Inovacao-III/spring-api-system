@@ -3,9 +3,7 @@ package com.spring.ApiSystem.mapper;
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
 import com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface EnderecoMapper {
@@ -18,4 +16,9 @@ public interface EnderecoMapper {
     Endereco toEntity(EnderecoDTO enderecoDTO);
 
     ResEnderecoDTO toResEnderecoDTO(Endereco endereco);
+
+    Endereco toEntity(ResEnderecoDTO resEnderecoDTO);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Endereco partialUpdate(ResEnderecoDTO resEnderecoDTO, @MappingTarget Endereco endereco);
 }
