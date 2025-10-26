@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "DTYPE", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
 @DiscriminatorValue("Usuario")
 @Entity(name = "usuario")
 
@@ -40,9 +40,8 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String tipo, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo) {
+    public Usuario(Long id, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo) {
         this.id = id;
-        this.tipo = tipo;
         this.nome = nome;
         this.sexo = sexo;
         this.dataNascimento = dataNascimento;
@@ -58,6 +57,14 @@ public class Usuario {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
     public String getNome() {
@@ -114,23 +121,5 @@ public class Usuario {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
-    }
-
-    public String getTipo() {return tipo;}
-
-    public void setTipo(String tipo) {this.tipo = tipo;}
-
-    @Override
-    public String toString() {
-        return "Usuario{" +
-                "id=" + id +
-                ", nome='" + nome + '\'' +
-                ", sexo='" + sexo + '\'' +
-                ", dataNascimento=" + dataNascimento +
-                ", email='" + email + '\'' +
-                ", salt='" + salt + '\'' +
-                ", senha='" + senha + '\'' +
-                ", ativo=" + ativo +
-                '}';
     }
 }

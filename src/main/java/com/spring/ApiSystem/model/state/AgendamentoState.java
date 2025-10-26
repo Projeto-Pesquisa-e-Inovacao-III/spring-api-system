@@ -8,7 +8,7 @@ public interface AgendamentoState {
 
     AgendamentoState recusado();
     AgendamentoState aceitar();
-    AgendamentoState concluido();;
+    AgendamentoState concluido();
     AgendamentoState pendenteCliente();
     AgendamentoState pendentePersonal();
 }

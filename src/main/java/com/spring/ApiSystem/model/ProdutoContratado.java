@@ -35,27 +35,72 @@ public class ProdutoContratado {
                 nullable = false)
     private ProdutoExibicao produtoExibicao;
 
+    public ProdutoContratado() {
+    }
 
-    public ProdutoContratado() {}
+    public ProdutoContratado(Long id, Boolean ativo, Date dataCompra, Date dataExpiracao, Integer saldoAula, Aluno aluno, ProdutoExibicao produtoExibicao) {
+        this.id = id;
+        this.ativo = ativo;
+        this.dataCompra = dataCompra;
+        this.dataExpiracao = dataExpiracao;
+        this.saldoAula = saldoAula;
+        this.aluno = aluno;
+        this.produtoExibicao = produtoExibicao;
+    }
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
+    public Long getId() {
+        return id;
+    }
 
-    public Boolean getAtivo() {return ativo;}
-    public void setAtivo(Boolean ativo) {this.ativo = ativo;}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public Date getDataCompra() {return dataCompra;}
-    public void setDataCompra(Date dataCompra) {this.dataCompra = dataCompra;}
+    public Boolean getAtivo() {
+        return ativo;
+    }
 
-    public Date getDataExpiracao() {return dataExpiracao;}
-    public void setDataExpiracao(Date dataExpiracao) {this.dataExpiracao = dataExpiracao;}
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 
-    public Integer getSaldoAula() {return saldoAula;}
-    public void setSaldoAula(Integer saldoAula) {this.saldoAula = saldoAula;}
+    public Date getDataCompra() {
+        return dataCompra;
+    }
 
-    public Aluno getAluno() {return aluno;}
-    public void setAluno(Aluno aluno) {this.aluno = aluno;}
+    public void setDataCompra(Date dataCompra) {
+        this.dataCompra = dataCompra;
+    }
 
-    public ProdutoExibicao getProdutoExibicao() {return produtoExibicao;}
-    public void setProdutoExibicao(ProdutoExibicao produtoExibicao) {this.produtoExibicao = produtoExibicao;}
+    public Date getDataExpiracao() {
+        return dataExpiracao;
+    }
+
+    public void setDataExpiracao(Date dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Integer getSaldoAula() {
+        return saldoAula;
+    }
+
+    public void setSaldoAula(Integer saldoAula) {
+        this.saldoAula = saldoAula;
+    }
+
+    public Aluno getAluno() {
+        return aluno;
+    }
+
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
+    }
+
+    public ProdutoExibicao getProdutoExibicao() {
+        return produtoExibicao;
+    }
+
+    public void setProdutoExibicao(ProdutoExibicao produtoExibicao) {
+        this.produtoExibicao = produtoExibicao;
+    }
 }

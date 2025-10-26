@@ -5,10 +5,11 @@ import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.model.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-
+@Repository
 public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
     @Query("SELECT new com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO(" +
             "e.id, e.numero, e.complemento, e.unidade, e.tipo, e.cep" +

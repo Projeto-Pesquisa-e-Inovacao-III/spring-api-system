@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.dto.usuario.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.*;
 
 import java.util.Date;
@@ -19,5 +20,8 @@ public record CadastroUsuarioDTO(
 
     @NotBlank(message = "A senha é obrigatória")
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
-    String senha
+    String senha,
+
+    @NotBlank
+    String cpf
 ) {}

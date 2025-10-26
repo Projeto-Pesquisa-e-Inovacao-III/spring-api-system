@@ -96,20 +96,20 @@ public class Endereco {
         this.tipo = tipo;
     }
 
-    public LocalDateTime getData_criacao() {
+    public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }
 
-    public void setData_criacao(LocalDateTime data_criacao) {
-        this.dataCriacao = data_criacao;
+    public void setDataCriacao(LocalDateTime dataCriacao) {
+        this.dataCriacao = dataCriacao;
     }
 
-    public LocalDateTime getData_atualizacao() {
+    public LocalDateTime getDataAtualizacao() {
         return dataAtualizacao;
     }
 
-    public void setData_atualizacao(LocalDateTime data_atualizacao) {
-        this.dataAtualizacao = data_atualizacao;
+    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
+        this.dataAtualizacao = dataAtualizacao;
     }
 
     public Usuario getUsuario() {

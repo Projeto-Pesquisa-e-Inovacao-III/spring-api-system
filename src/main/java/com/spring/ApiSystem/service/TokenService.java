@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 
 @Service
 public class TokenService {
@@ -43,6 +44,7 @@ public class TokenService {
 
             return jwtEncoder().encode(JwtEncoderParameters.from(token)).getTokenValue();
         }catch (Exception exception){
+            System.out.println( exception.getMessage() );
             throw new RuntimeException("Erro ao gerar o token: ", exception);
         }
     }

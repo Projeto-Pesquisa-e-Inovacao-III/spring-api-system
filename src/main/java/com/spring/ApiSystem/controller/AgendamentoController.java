@@ -3,12 +3,20 @@ package com.spring.ApiSystem.controller;
 import com.spring.ApiSystem.dto.agendamento.request.CriarAgendamentoDTO;
 import com.spring.ApiSystem.dto.reagendamento.request.ReagendarAgendamentoDTO;
 import com.spring.ApiSystem.mapper.AgendamentoMapper;
-import com.spring.ApiSystem.model.Agendamento;
 import com.spring.ApiSystem.service.AgendamentoService;
-import jakarta.validation.Valid;
+import com.spring.ApiSystem.service.UsuarioService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import jakarta.validation.Valid;
+import com.spring.ApiSystem.model.Agendamento;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController
@@ -17,9 +25,11 @@ public class AgendamentoController {
 
 
     private final AgendamentoService agendamentoService;
+    private final AgendamentoMapper agendamentoMapper;
 
     public AgendamentoController(AgendamentoService agendamentoService, AgendamentoMapper agendamentoMapper) {
         this.agendamentoService = agendamentoService;
+        this.agendamentoMapper = agendamentoMapper;
     }
 
     @PostMapping
@@ -30,6 +40,17 @@ public class AgendamentoController {
         } catch (Exception e) {
             return new ResponseEntity<>("Erro ao realizar agendamento: " + e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<?>> getAgendamentos(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Page<?> agendamentos = agendamentoService
+                .pegarTodosAgendamentosDesseUsuario(userDetails.getUsername(), page, size);
+        return ResponseEntity.ok(agendamentos);
     }
 
     @PatchMapping("/{id}/reagendar")
