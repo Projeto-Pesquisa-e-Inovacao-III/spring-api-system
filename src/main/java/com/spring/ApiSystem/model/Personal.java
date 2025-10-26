@@ -15,12 +15,9 @@ public class Personal extends Usuario{
     public Personal() {
     }
 
-    public Personal(Long id, String nome,
-                    String sexo, Date dataNascimento,
-                    String email, String salt,
-                    String senha, boolean ativo,
-                    String cref) {
-        super(id, nome, sexo, dataNascimento, email, salt, senha, ativo);
+
+    public Personal(Long id, String tipo, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo, String cref) {
+        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo);
         this.cref = cref;
     }
 

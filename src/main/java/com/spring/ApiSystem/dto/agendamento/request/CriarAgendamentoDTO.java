@@ -1,4 +1,41 @@
 package com.spring.ApiSystem.dto.agendamento.request;
 
-public class CriarAgendamentoDTO {
+import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
+import com.spring.ApiSystem.model.enums.Situacao;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Future;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
+import java.time.LocalDateTime;
+public record CriarAgendamentoDTO(
+        @NotNull(message = "A data é obrigatória")
+        LocalDateTime data,
+
+        String descricao,
+
+        Long enderecoExistenteId,
+
+        @Valid EnderecoDTO novoEndereco,
+
+        @NotNull(message = "O aluno é obrigatório")
+        Long alunoId,
+
+        @NotNull(message = "O personal é obrigatório")
+        Long personalId,
+
+        @NotNull(message = "O produto contratado é obrigatório")
+        Long produtoContratadoId
+) {
+        public CriarAgendamentoDTO {
+                boolean ambosNulos = enderecoExistenteId == null && novoEndereco == null;
+                boolean ambosPreenchidos = enderecoExistenteId != null && novoEndereco != null;
+
+                if (ambosNulos || ambosPreenchidos) {
+                        throw new IllegalArgumentException(
+                                "Informe APENAS enderecoExistenteId OU novoEndereco"
+                        );
+                }
+        }
 }

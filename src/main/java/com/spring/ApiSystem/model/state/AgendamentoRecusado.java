@@ -33,8 +33,4 @@ public class AgendamentoRecusado implements AgendamentoState {
         throw new AgendamentoStateException("Não é possível pendente em um agendamento RECUSADO.");
     }
 
-    @Override
-    public AgendamentoState reagendar() {
-        return new AgendamentoReagendado();
-    }
 }

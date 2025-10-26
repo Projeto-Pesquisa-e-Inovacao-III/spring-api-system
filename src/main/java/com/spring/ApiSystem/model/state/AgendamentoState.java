@@ -11,5 +11,4 @@ public interface AgendamentoState {
     AgendamentoState concluido();;
     AgendamentoState pendenteCliente();
     AgendamentoState pendentePersonal();
-    AgendamentoState reagendar();
 }

@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.mapper;
 
+import com.spring.ApiSystem.dto.agendamento.response.buscarporid.EnderecoResumoDTO;
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
 import com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
@@ -21,4 +22,7 @@ public interface EnderecoMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Endereco partialUpdate(ResEnderecoDTO resEnderecoDTO, @MappingTarget Endereco endereco);
+
+
+    EnderecoResumoDTO toEnderecoResumoDTO(Endereco endereco);
 }

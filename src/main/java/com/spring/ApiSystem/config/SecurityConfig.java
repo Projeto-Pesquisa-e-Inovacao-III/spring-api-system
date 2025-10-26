@@ -52,6 +52,7 @@ public class SecurityConfig {
                         .requestMatchers("/usuarios/listar").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/agendamentos/**").permitAll()
+                        .requestMatchers("/enderecos/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),

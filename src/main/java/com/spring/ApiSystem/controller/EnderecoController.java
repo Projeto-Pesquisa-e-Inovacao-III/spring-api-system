@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.controller;
 
 import com.spring.ApiSystem.dto.endereco.request.EnderecoDTO;
+import com.spring.ApiSystem.dto.endereco.response.BuscarEnderecoPorIdDTO;
 import com.spring.ApiSystem.dto.endereco.response.ResEnderecoDTO;
 import com.spring.ApiSystem.model.Endereco;
 import com.spring.ApiSystem.service.EnderecoService;
@@ -87,4 +88,17 @@ public class EnderecoController {
         }
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Buscar endereço por ID (necessário login)",
+            description = "Endpoint para buscar um endereço específico pelo ID no sistema")
+    @GetMapping("/{id}")
+    public ResponseEntity<BuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id){
+        BuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorId(id);
+        if(enderecoEncontrado == null){
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(enderecoEncontrado);
+    }
+
+
 }

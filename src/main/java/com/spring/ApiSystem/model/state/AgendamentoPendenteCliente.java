@@ -34,9 +34,4 @@ public class AgendamentoPendenteCliente implements AgendamentoState {
         throw new AgendamentoStateException("Não é possível concluir um agendamento PENDENTE diretamente.");
     }
 
-
-    @Override
-    public AgendamentoState reagendar() {
-        return new AgendamentoReagendado();
-    }
 }
