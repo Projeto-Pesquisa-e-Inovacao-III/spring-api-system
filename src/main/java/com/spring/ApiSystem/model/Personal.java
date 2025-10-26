@@ -3,6 +3,7 @@ package com.spring.ApiSystem.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 import java.util.Date;
 
@@ -30,12 +31,5 @@ public class Personal extends Usuario{
 
     public void setCref(String cref) {
         this.cref = cref;
-    }
-
-    @Override
-    public String toString() {
-        return "Personal{" +
-                "cref='" + cref + '\'' +
-                '}';
     }
 }

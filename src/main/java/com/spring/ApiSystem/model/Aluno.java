@@ -3,6 +3,7 @@ package com.spring.ApiSystem.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 
 import java.util.Date;
 
@@ -30,12 +31,5 @@ public class Aluno extends Usuario{
 
     public void setCpf(String cpf) {
         this.cpf = cpf;
-    }
-
-    @Override
-    public String toString() {
-        return "Aluno{" +
-                "cpf='" + cpf + '\'' +
-                '}';
     }
 }

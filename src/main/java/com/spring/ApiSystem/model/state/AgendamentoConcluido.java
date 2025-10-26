@@ -32,9 +32,4 @@ public class AgendamentoConcluido implements AgendamentoState {
     public AgendamentoState pendentePersonal() {
         throw new AgendamentoStateException("Não é possível ter um agendamento PENDENTE.");
     }
-
-    @Override
-    public AgendamentoState reagendar() {
-        throw new AgendamentoStateException("Não é possível reagendar um agendamento CONCLUÍDO.");
-    }
 }

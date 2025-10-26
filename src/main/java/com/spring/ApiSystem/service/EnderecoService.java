@@ -35,11 +35,11 @@ public class EnderecoService {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
             if(cep != null){
                 Endereco endereco = enderecoMapper.toEntity(enderecoDTO);
                 endereco.setUsuario(usuarioEncontrado.get());
-                endereco.setData_criacao(LocalDateTime.now());
+                endereco.setDataCriacao(LocalDateTime.now());
                 endereco.setCep(cep);
                 enderecoRepository.save(endereco);
                 return enderecoMapper.toResEnderecoDTO(endereco);
@@ -64,10 +64,10 @@ public class EnderecoService {
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
         if(enderecoEncontrado.isPresent()){
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
             if(cep != null){
                 enderecoMapper.atualizarEnderecoFromDto(enderecoDTO, enderecoEncontrado.get());
-                enderecoEncontrado.get().setData_atualizacao(LocalDateTime.now());
+                enderecoEncontrado.get().setDataAtualizacao(LocalDateTime.now());
                 enderecoEncontrado.get().setCep(cep);
                 enderecoRepository.save(enderecoEncontrado.get());
                 return enderecoMapper.toResEnderecoDTO(enderecoEncontrado.get());

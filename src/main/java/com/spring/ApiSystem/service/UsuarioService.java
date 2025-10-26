@@ -2,8 +2,11 @@ package com.spring.ApiSystem.service;
 
 import com.spring.ApiSystem.exception.EmailExistenteException;
 import com.spring.ApiSystem.exception.SenhaNaoCorrespondeAtual;
+import com.spring.ApiSystem.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.mapper.UsuarioMapper;
+import com.spring.ApiSystem.model.Aluno;
 import com.spring.ApiSystem.model.Usuario;
+import com.spring.ApiSystem.repository.AlunoRepository;
 import com.spring.ApiSystem.repository.UserRepository;
 import com.spring.ApiSystem.dto.usuario.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.dto.usuario.request.EditarUsuarioDTO;
@@ -17,24 +20,24 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UserRepository userRepository;
+    private final AlunoRepository alunoRepository;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
 
-    public UsuarioService(UserRepository userRepository,
-                          UsuarioMapper usuarioMapper,
-                          ArgonService argonService) {
+    public UsuarioService(UserRepository userRepository, AlunoRepository alunoRepository, UsuarioMapper usuarioMapper, ArgonService argonService) {
         this.userRepository = userRepository;
+        this.alunoRepository = alunoRepository;
         this.usuarioMapper = usuarioMapper;
         this.argonService = argonService;
     }
 
     public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
         if(!validarEmailExistente(usuarioDTO.email())){
-            Usuario usuarioEntity = usuarioMapper.toEntity(usuarioDTO);
+            Aluno usuarioEntity = usuarioMapper.toEntityAluno(usuarioDTO);
             List<String> senhaCriptografada = argonService.criptografarSenha(usuarioEntity.getSenha());
             usuarioEntity.setSalt(senhaCriptografada.getFirst());
             usuarioEntity.setSenha(senhaCriptografada.getLast());
-            return usuarioMapper.toDto(userRepository.save(usuarioEntity));
+            return usuarioMapper.toDto(alunoRepository.save(usuarioEntity));
         }
         throw new EmailExistenteException();
     }
@@ -86,6 +89,13 @@ public class UsuarioService {
             return true;
         }
         return false;
+    }
+
+    public Usuario pegarUsuarioPeloEmail(String email) {
+        if (validarEmailExistente(email)){
+            return userRepository.findByEmail(email).get();
+        }
+        throw new UsuarioNaoEncontradoException();
     }
 
     public Boolean validarEmailExistente(String email){

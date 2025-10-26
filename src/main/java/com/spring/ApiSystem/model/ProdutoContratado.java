@@ -35,9 +35,72 @@ public class ProdutoContratado {
                 nullable = false)
     private ProdutoExibicao produtoExibicao;
 
-
     public ProdutoContratado() {
     }
 
+    public ProdutoContratado(Long id, Boolean ativo, Date dataCompra, Date dataExpiracao, Integer saldoAula, Aluno aluno, ProdutoExibicao produtoExibicao) {
+        this.id = id;
+        this.ativo = ativo;
+        this.dataCompra = dataCompra;
+        this.dataExpiracao = dataExpiracao;
+        this.saldoAula = saldoAula;
+        this.aluno = aluno;
+        this.produtoExibicao = produtoExibicao;
+    }
 
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public Date getDataCompra() {
+        return dataCompra;
+    }
+
+    public void setDataCompra(Date dataCompra) {
+        this.dataCompra = dataCompra;
+    }
+
+    public Date getDataExpiracao() {
+        return dataExpiracao;
+    }
+
+    public void setDataExpiracao(Date dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Integer getSaldoAula() {
+        return saldoAula;
+    }
+
+    public void setSaldoAula(Integer saldoAula) {
+        this.saldoAula = saldoAula;
+    }
+
+    public Aluno getAluno() {
+        return aluno;
+    }
+
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
+    }
+
+    public ProdutoExibicao getProdutoExibicao() {
+        return produtoExibicao;
+    }
+
+    public void setProdutoExibicao(ProdutoExibicao produtoExibicao) {
+        this.produtoExibicao = produtoExibicao;
+    }
 }

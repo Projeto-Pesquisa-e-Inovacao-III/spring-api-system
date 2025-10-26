@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@Entity(name = "agendamento")
+@Entity
 public class Agendamento {
 
     @Id
@@ -72,7 +72,6 @@ public class Agendamento {
             switch (this.situacao) {
                 case ACEITO -> this.agendamentoState = new AgendamentoAceito();
                 case PENDENTE_CLIENTE -> this.agendamentoState = new AgendamentoPendenteCliente();
-                case REAGENDADO -> this.agendamentoState = new AgendamentoReagendado();
                 case RECUSADO -> this.agendamentoState = new AgendamentoRecusado();
                 case CONCLUIDO -> this.agendamentoState = new AgendamentoConcluido();
                 default -> this.agendamentoState = new AgendamentoPendentePersonal();
@@ -90,7 +89,6 @@ public class Agendamento {
     public void aceitar() { atualizarEstado(agendamentoState.aceitar()); }
     public void recusado() { atualizarEstado(agendamentoState.recusado()); }
     public void concluido() { atualizarEstado(agendamentoState.concluido()); }
-    public void reagendar() { atualizarEstado(agendamentoState.reagendar()); }
     public void pendentePersonal() { atualizarEstado(agendamentoState.pendentePersonal()); }
     public void pendenteCliente() { atualizarEstado(agendamentoState.pendenteCliente()); }
 

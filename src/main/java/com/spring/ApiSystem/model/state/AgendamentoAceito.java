@@ -31,9 +31,4 @@ public class AgendamentoAceito implements AgendamentoState {
     public AgendamentoState pendentePersonal() {
         return new AgendamentoPendentePersonal();
     }
-
-    @Override
-    public AgendamentoState reagendar() {
-        return new AgendamentoReagendado();
-    }
 }
