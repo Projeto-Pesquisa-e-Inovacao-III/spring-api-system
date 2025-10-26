@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.dto.Cep.response;
+package com.spring.ApiSystem.dto.cep.response;
 
 import java.io.Serializable;
 

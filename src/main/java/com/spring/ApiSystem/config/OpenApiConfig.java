@@ -34,4 +34,12 @@ public class OpenApiConfig {
                 .pathsToMatch("/enderecos/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi agendamentoApi() {
+        return GroupedOpenApi.builder()
+                .group("agendamentos")
+                .pathsToMatch("/agendamentos/**")
+                .build();
+    }
 }

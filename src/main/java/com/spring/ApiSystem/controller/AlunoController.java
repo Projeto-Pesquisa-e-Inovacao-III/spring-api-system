@@ -24,7 +24,7 @@ public class AlunoController {
     @Operation (summary = "Buscar personal por ID (necessário login)",
             description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarAlunoPorId( @PathVariable Integer id) {
+    public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
         BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
         if(aluno == null){
             return ResponseEntity.notFound().build();

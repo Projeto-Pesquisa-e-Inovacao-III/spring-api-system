@@ -69,7 +69,7 @@ public class EnderecoService {
         if(enderecoEncontrado.isPresent()){
             CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
             if(cep != null){
-                enderecoMapper.atualizarEnderecoFromDto(enderecoDTO, enderecoEncontrado.get());
+                enderecoMapper.partialUpdate(enderecoDTO, enderecoEncontrado.get());
                 enderecoEncontrado.get().setDataAtualizacao(LocalDateTime.now());
                 enderecoEncontrado.get().setCep(cep);
                 enderecoRepository.save(enderecoEncontrado.get());
@@ -109,7 +109,7 @@ public class EnderecoService {
                         endereco.getCep().getUf()
                 ),
                 endereco.getDataCriacao(),
-                endereco.getsetDataAtualizacao()
+                endereco.getDataAtualizacao()
         );
     }
 

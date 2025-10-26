@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.dto.endereco.response;
 
-import com.spring.ApiSystem.dto.Cep.response.CEPDto;
+import com.spring.ApiSystem.dto.cep.response.CEPDto;
 import com.spring.ApiSystem.model.Endereco;
 
 import java.io.Serializable;

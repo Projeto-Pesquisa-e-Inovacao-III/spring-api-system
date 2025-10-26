@@ -2,7 +2,7 @@ INSERT INTO cep (id, bairro, localidade, logradouro, uf) VALUES
                                                              ('01001-000', 'Sé', 'São Paulo', 'Praça da Sé', 'SP'),
                                                              ('20010-000', 'Centro', 'Rio de Janeiro', 'Rua Primeiro de Março', 'RJ');
 
-INSERT INTO usuario (ativo, data_nascimento, email, nome, salt, senha_hash, sexo, cpf, cref, dtype) VALUES
+INSERT INTO usuario (ativo, data_nascimento, email, nome, salt, senha_hash, sexo, cpf, cref, tipo) VALUES
                                                                                                         (true, PARSEDATETIME('1990-05-15', 'yyyy-MM-dd'), 'aluno1@email.com', 'João Silva', 'salt123', 'hash123', 'M', '123.456.789-00', NULL, 'Aluno'),
                                                                                                         (true, PARSEDATETIME('1985-03-20', 'yyyy-MM-dd'), 'personal1@email.com', 'Maria Souza', 'salt456', 'hash456', 'F', NULL, 'CREF12345', 'Personal');
 

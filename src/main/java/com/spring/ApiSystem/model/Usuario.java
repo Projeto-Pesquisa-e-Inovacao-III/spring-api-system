@@ -40,8 +40,9 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo) {
+    public Usuario(Long id, String tipo, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo) {
         this.id = id;
+        this.tipo = tipo;
         this.nome = nome;
         this.sexo = sexo;
         this.dataNascimento = dataNascimento;

@@ -15,7 +15,7 @@ public class AlunoService {
         this.alunoRepository = alunoRepository;
     }
 
-    public BuscarAlunoPorIdDTO buscarAlunoPorId(Integer id) {
+    public BuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
         Aluno aluno = findById(id);
 
         return new BuscarAlunoPorIdDTO(
@@ -29,7 +29,7 @@ public class AlunoService {
         );
     }
 
-    public Aluno findById(Integer id) {
+    public Aluno findById(Long id) {
         return alunoRepository
                 .findById(id)
                 .orElseThrow(AlunoNaoExisteExcpetion::new);

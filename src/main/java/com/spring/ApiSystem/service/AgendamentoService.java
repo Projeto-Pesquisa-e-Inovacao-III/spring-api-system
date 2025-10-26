@@ -75,7 +75,7 @@ public class AgendamentoService {
             throw new DataNoPassadoException();
         }
 
-        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(Math.toIntExact(dto.alunoId()));
+        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
         personalService.buscarPersonalPorId(Math.toIntExact(dto.personalId()));
         produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
 

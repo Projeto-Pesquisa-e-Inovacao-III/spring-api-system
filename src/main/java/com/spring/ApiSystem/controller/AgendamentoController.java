@@ -5,6 +5,7 @@ import com.spring.ApiSystem.dto.reagendamento.request.ReagendarAgendamentoDTO;
 import com.spring.ApiSystem.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.service.AgendamentoService;
 import com.spring.ApiSystem.service.UsuarioService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-
+@Tag(name = "Agendamentos", description = "Operações relacionadas a agendamentos")
 @RestController
 @RequestMapping("/agendamentos")
 public class AgendamentoController {

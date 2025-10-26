@@ -9,13 +9,11 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = {CepMapper.class})
 public interface EnderecoMapper {
-
-    void atualizarEnderecoFromDto(EnderecoDTO dto, @MappingTarget Endereco endereco);
-
     Endereco toEntity(EnderecoDTO enderecoDTO);
     Endereco toEntity(ResEnderecoDTO resEnderecoDTO);
     Endereco toEntity(EnderecoSemIdDto enderecoSemIdDto);
 
+    EnderecoDTO toDTO(Endereco endereco);
     ResEnderecoDTO toResEnderecoDTO(Endereco endereco);
     EnderecoResumoDTO toEnderecoResumoDTO(Endereco endereco);
     EnderecoSemIdDto toEnderecoSemIdDto(Endereco endereco);
@@ -25,4 +23,7 @@ public interface EnderecoMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Endereco partialUpdate(EnderecoSemIdDto enderecoSemIdDto, @MappingTarget Endereco endereco);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    Endereco partialUpdate(EnderecoDTO enderecoSemIdDto, @MappingTarget Endereco endereco);
 }
