@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.dto.endereco.request;
 
+import com.spring.ApiSystem.model.CEP;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
@@ -15,6 +16,5 @@ public record EnderecoDTO(
     @NotBlank(message = "Tipo é obrigatório")
     String tipo,
 
-    @Size(min = 8, max = 8, message = "O CEP deve conter 8 caracteres")
-    String cep
+    CEP cep
 ) {}

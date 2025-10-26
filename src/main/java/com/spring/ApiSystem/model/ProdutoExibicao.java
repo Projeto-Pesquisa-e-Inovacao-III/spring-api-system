@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.model;
 
+import com.spring.ApiSystem.enums.Status;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -24,8 +25,9 @@ public class ProdutoExibicao {
     @Column(nullable = false)
     private String periodo;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String status;
+    private Status status;
 
     @Column(name = "data_criacao",
             nullable = false,
@@ -53,7 +55,7 @@ public class ProdutoExibicao {
     public ProdutoExibicao(Long id, String titulo,
                            String subtitulo, String descricao,
                            Double preco, String periodo,
-                           String status, LocalDateTime dataCriacao,
+                           Status status, LocalDateTime dataCriacao,
                            LocalDateTime dataAtualizacao, String tipoAula,
                            Integer quantidadeAula, Integer duracaoMes) {
         this.id = id;
@@ -118,11 +120,11 @@ public class ProdutoExibicao {
         this.periodo = periodo;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(Status status) {
         this.status = status;
     }
 

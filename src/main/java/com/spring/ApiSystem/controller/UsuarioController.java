@@ -103,6 +103,6 @@ public class UsuarioController {
         }
 
         filterService.removerCookie(response);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 }

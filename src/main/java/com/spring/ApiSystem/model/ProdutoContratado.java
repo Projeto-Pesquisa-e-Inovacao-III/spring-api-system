@@ -2,7 +2,7 @@ package com.spring.ApiSystem.model;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity(name = "produto_contratado")
 public class ProdutoContratado {
@@ -15,11 +15,11 @@ public class ProdutoContratado {
     @Column(name = "data_compra",
             nullable = false,
             updatable = false)
-    private Date dataCompra;
+    private LocalDateTime dataCompra;
 
     @Column(name = "data_expiracao",
             nullable = false)
-    private Date dataExpiracao;
+    private LocalDateTime dataExpiracao;
 
     @Column(name = "saldo_aula",
             nullable = false)
@@ -39,5 +39,59 @@ public class ProdutoContratado {
     public ProdutoContratado() {
     }
 
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
+
+    public LocalDateTime getDataCompra() {
+        return dataCompra;
+    }
+
+    public void setDataCompra(LocalDateTime dataCompra) {
+        this.dataCompra = dataCompra;
+    }
+
+    public LocalDateTime getDataExpiracao() {
+        return dataExpiracao;
+    }
+
+    public void setDataExpiracao(LocalDateTime dataExpiracao) {
+        this.dataExpiracao = dataExpiracao;
+    }
+
+    public Integer getSaldoAula() {
+        return saldoAula;
+    }
+
+    public void setSaldoAula(Integer saldoAula) {
+        this.saldoAula = saldoAula;
+    }
+
+    public Aluno getAluno() {
+        return aluno;
+    }
+
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
+    }
+
+    public ProdutoExibicao getProdutoExibicao() {
+        return produtoExibicao;
+    }
+
+    public void setProdutoExibicao(ProdutoExibicao produtoExibicao) {
+        this.produtoExibicao = produtoExibicao;
+    }
 }
