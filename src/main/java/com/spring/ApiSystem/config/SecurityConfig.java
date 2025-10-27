@@ -53,6 +53,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/agendamentos/**").permitAll()
                         .requestMatchers("/enderecos/**").permitAll()
+                        .requestMatchers("/checkouts/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
