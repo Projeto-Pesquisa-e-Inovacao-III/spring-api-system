@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.response.BuscarProdutoContratadoPorId;
-import com.spring.ApiSystem.exception.ProdutoNaoExisteExcpetion;
+import com.spring.ApiSystem.produtocontratado.exception.ProdutoContratadoNaoExisteExcpetion;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -32,6 +32,6 @@ public class ProdutoContratadoService {
 
         return produtoContratadoRepository
                 .findById(id)
-                .orElseThrow(ProdutoNaoExisteExcpetion::new);
+                .orElseThrow(ProdutoContratadoNaoExisteExcpetion::new);
     }
 }

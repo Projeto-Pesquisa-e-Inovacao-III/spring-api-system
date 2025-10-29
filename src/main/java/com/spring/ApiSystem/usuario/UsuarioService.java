@@ -1,8 +1,8 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.exception.EmailExistenteException;
-import com.spring.ApiSystem.exception.SenhaNaoCorrespondeAtual;
-import com.spring.ApiSystem.exception.UsuarioNaoEncontradoException;
+import com.spring.ApiSystem.shared.exception.EmailExistenteException;
+import com.spring.ApiSystem.shared.exception.SenhaNaoCorrespondeAtual;
+import com.spring.ApiSystem.shared.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoRepository;

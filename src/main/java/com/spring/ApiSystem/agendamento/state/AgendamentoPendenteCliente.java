@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.agendamento.state;
 
-import com.spring.ApiSystem.exception.AgendamentoStateException;
+import com.spring.ApiSystem.agendamento.exception.AgendamentoStateException;
 import com.spring.ApiSystem.agendamento.enums.Situacao;
 
 public class AgendamentoPendenteCliente implements AgendamentoState {

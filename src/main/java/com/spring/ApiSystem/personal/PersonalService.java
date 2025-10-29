@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.personal;
 
 import com.spring.ApiSystem.personal.dto.response.BuscarPersonalPorIdDTO;
-import com.spring.ApiSystem.exception.PersonalNaoExisteExcpetion;
+import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcpetion;
 import org.springframework.stereotype.Service;
 
 @Service

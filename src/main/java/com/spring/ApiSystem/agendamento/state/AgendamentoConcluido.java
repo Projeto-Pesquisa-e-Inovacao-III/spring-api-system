@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.agendamento.state;
 
 import com.spring.ApiSystem.agendamento.enums.Situacao;
-import com.spring.ApiSystem.exception.AgendamentoStateException;
+import com.spring.ApiSystem.agendamento.exception.AgendamentoStateException;
 
 public class AgendamentoConcluido implements AgendamentoState {
 

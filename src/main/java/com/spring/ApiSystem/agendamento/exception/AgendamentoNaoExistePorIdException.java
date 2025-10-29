@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.exception;
+package com.spring.ApiSystem.agendamento.exception;
 
 public class AgendamentoNaoExistePorIdException extends RuntimeException {
     public AgendamentoNaoExistePorIdException() {

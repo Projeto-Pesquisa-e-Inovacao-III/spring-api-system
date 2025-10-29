@@ -5,7 +5,7 @@ import com.spring.ApiSystem.endereco.dto.request.EnderecoDTO;
 
 import com.spring.ApiSystem.endereco.dto.response.BuscarEnderecoPorIdDTO;
 import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
-import com.spring.ApiSystem.exception.EnderecoNaoExistePorId;
+import com.spring.ApiSystem.shared.exception.EnderecoNaoExistePorId;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.cep.CEP;
 import com.spring.ApiSystem.usuario.Usuario;

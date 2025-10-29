@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
-import com.spring.ApiSystem.exception.AlunoNaoExisteExcpetion;
+import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteExcpetion;
 import org.springframework.stereotype.Service;
 
 @Service

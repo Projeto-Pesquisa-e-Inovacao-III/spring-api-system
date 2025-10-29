@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.handler;
+package com.spring.ApiSystem.shared.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
