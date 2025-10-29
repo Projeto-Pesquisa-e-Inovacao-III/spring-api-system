@@ -6,7 +6,6 @@ import com.spring.ApiPag.repository.CheckoutRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -18,7 +17,7 @@ public class PagSeguroClient {
     private String url = "https://sandbox.api.pagseguro.com/checkouts";
     private Boolean debugMode = true;
 
-    @Value("${pagseguro.token}")
+    @Value("${pagseguro.token:dummy-token-123456}")
     private String pagseguroToken;
 
     public PagSeguroClient(CheckoutRepository checkoutRepository) {
