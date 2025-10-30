@@ -3,8 +3,7 @@ package com.spring.ApiSystem.endereco;
 import com.spring.ApiSystem.cep.dto.response.DadosCepDTO;
 import com.spring.ApiSystem.endereco.dto.request.EnderecoDTO;
 
-import com.spring.ApiSystem.endereco.dto.response.BuscarEnderecoPorIdDTO;
-import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
+import com.spring.ApiSystem.endereco.dto.response.*;
 import com.spring.ApiSystem.shared.exception.EnderecoNaoExistePorId;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.cep.CEP;
@@ -34,7 +33,7 @@ public class EnderecoService {
         this.viaCepService = viaCepService;
     }
 
-    public ResEnderecoDTO cadastrarEndereco(EnderecoDTO enderecoDTO, String email) {
+    public ResCadastrarEnderecoDTO cadastrarEndereco(EnderecoDTO enderecoDTO, String email) {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if (usuarioEncontrado.isPresent()) {
@@ -45,14 +44,13 @@ public class EnderecoService {
                 endereco.setDataCriacao(LocalDateTime.now());
                 endereco.setCep(cep);
                 enderecoRepository.save(endereco);
-                return enderecoMapper.toResEnderecoDTO(endereco);
+                return enderecoMapper.toResCadastrarEnderecoDTO(endereco);
             }
         }
-
         return null;
     }
 
-    public List<ResEnderecoDTO> listarEnderecos(String email) {
+    public List<ResListarEnderecoDTO> listarEnderecos(String email) {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if (usuarioEncontrado.isPresent()) {
@@ -62,7 +60,7 @@ public class EnderecoService {
         return null;
     }
 
-    public ResEnderecoDTO atualizarEndereco(Long id, EnderecoDTO enderecoDTO, String email) {
+    public ResAtualizarEnderecoDTO atualizarEndereco(Long id, EnderecoDTO enderecoDTO, String email) {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
         Optional<Endereco> enderecoEncontrado = enderecoRepository.findByIdAndUsuario(id, usuarioEncontrado.get());
 
@@ -73,7 +71,7 @@ public class EnderecoService {
                 enderecoEncontrado.get().setDataAtualizacao(LocalDateTime.now());
                 enderecoEncontrado.get().setCep(cep);
                 enderecoRepository.save(enderecoEncontrado.get());
-                return enderecoMapper.toResEnderecoDTO(enderecoEncontrado.get());
+                return enderecoMapper.toResAtualizarEnderecoDTO(enderecoEncontrado.get());
             }
         }
 
@@ -93,9 +91,9 @@ public class EnderecoService {
         return false;
     }
 
-    public BuscarEnderecoPorIdDTO buscarPorId(Long id) {
+    public ResBuscarEnderecoPorIdDTO buscarPorId(Long id) {
         Endereco endereco = findById(id);
-        return new BuscarEnderecoPorIdDTO(
+        return new ResBuscarEnderecoPorIdDTO(
                 endereco.getId(),
                 endereco.getNumero(),
                 endereco.getComplemento(),

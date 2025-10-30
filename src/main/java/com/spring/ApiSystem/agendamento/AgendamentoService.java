@@ -6,6 +6,7 @@ import com.spring.ApiSystem.agendamento.dto.response.BuscarAgendamentoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReagendarAgendamentoDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
+import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
 import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
 import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoExistePorIdException;
 import com.spring.ApiSystem.shared.exception.DataNoPassadoException;
@@ -86,7 +87,7 @@ public class AgendamentoService {
         if (dto.enderecoExistenteId() != null) {
             endereco = enderecoService.findById(dto.enderecoExistenteId());
         } else {
-            ResEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(dto.novoEndereco(), aluno.email());
+            ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(dto.novoEndereco(), aluno.email());
             endereco = enderecoService.findById(resEndereco.id());
         }
 
@@ -123,7 +124,7 @@ public class AgendamentoService {
             if (dto.enderecoExistenteId() != null) {
                 novoEndereco = enderecoService.findById(dto.enderecoExistenteId());
             } else {
-                ResEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(
+                ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(
                         dto.novoEndereco(),
                         agendamento.getAluno().getEmail()
                 );

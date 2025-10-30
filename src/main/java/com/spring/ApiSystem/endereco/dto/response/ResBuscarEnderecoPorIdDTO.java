@@ -4,7 +4,7 @@ import com.spring.ApiSystem.cep.dto.response.DadosCepDTO;
 
 import java.time.LocalDateTime;
 
-public record BuscarEnderecoPorIdDTO(
+public record ResBuscarEnderecoPorIdDTO(
         Long id,
         String numero,
         String complemento,
