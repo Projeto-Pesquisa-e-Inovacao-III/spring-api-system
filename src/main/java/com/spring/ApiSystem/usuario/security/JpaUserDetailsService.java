@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.security.user;
+package com.spring.ApiSystem.usuario.security;
 
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UserRepository;

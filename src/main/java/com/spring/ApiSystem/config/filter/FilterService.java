@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.config.filter;
 
 import com.spring.ApiSystem.shared.security.token.TokenService;
-import com.spring.ApiSystem.shared.security.user.JpaUserDetailsService;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
