@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,6 +30,9 @@ public class FilterService extends OncePerRequestFilter {
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
+    @Value("${spring.profiles.active}")
+    private String perfilAtivo;
+
     /*
     Função executada a cada requisição que pega o token informado
     e valida
@@ -42,9 +46,14 @@ public class FilterService extends OncePerRequestFilter {
         if(cookie != null){
             String email = tokenService.subjectToken(cookie);
             UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
-            Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
-                    null, usuario.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authentication);
+            if(usuario == null){
+                this.removerCookie(response);
+            }
+            else{
+                Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
+                            null, usuario.getAuthorities());
+                SecurityContextHolder.getContext().setAuthentication(authentication);
+            }
         }
         // Fazer o próximo filtro
         filterChain.doFilter(request, response);
@@ -59,7 +68,7 @@ public class FilterService extends OncePerRequestFilter {
         Cookie cookie = new Cookie("jwt", token);
 
         cookie.setHttpOnly(true); // protege contra acesso via JavaScript
-        cookie.setSecure(false);   // todo: fazer logica dev vs prod
+        cookie.setSecure(perfilAtivo.equals("prod")); // envia apenas em conexões HTTPS
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
 

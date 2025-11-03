@@ -2,14 +2,12 @@ package com.spring.ApiSystem.endereco;
 
 import com.spring.ApiSystem.endereco.dto.request.EnderecoDTO;
 import com.spring.ApiSystem.endereco.dto.response.*;
-import com.spring.ApiSystem.config.filter.FilterService;
-import com.spring.ApiSystem.shared.security.token.TokenService;
-import com.spring.ApiSystem.cep.ViaCepService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,25 +17,20 @@ import java.util.List;
 @RequestMapping("/enderecos")
 public class EnderecoController {
     private final EnderecoService enderecoService;
-    private final FilterService filterService;
-    private final TokenService tokenService;
 
-    public EnderecoController(EnderecoService enderecoService,
-                              FilterService filterService,
-                              TokenService tokenService,
-                              ViaCepService viaCepService) {
+    public EnderecoController(EnderecoService enderecoService) {
         this.enderecoService = enderecoService;
-        this.filterService = filterService;
-        this.tokenService = tokenService;
     }
 
 
-    @Operation(summary = "Criar endereço (necessário login)", description = "Endpoint para cadastro de endereços no sistema")
+    @Operation(summary = "Criar endereço (necessário login)",
+               description = "Endpoint para cadastro de endereços no sistema")
     @PostMapping
-    public ResponseEntity<ResCadastrarEnderecoDTO> cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
-                                                                     HttpServletRequest request){
+    public ResponseEntity<ResCadastrarEnderecoDTO>
+    cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
+                      @AuthenticationPrincipal UserDetails userDetails){
 
-        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
+        String emailUsuario = userDetails.getUsername();
         ResCadastrarEnderecoDTO enderecoCadastrado = enderecoService.cadastrarEndereco(endereco, emailUsuario);
 
         if(enderecoCadastrado == null){
@@ -47,12 +40,15 @@ public class EnderecoController {
     }
 
 
-    @Operation(summary = "Editar endereço (necessário login)", description = "Endpoint para edição de endereços no sistema")
+    @Operation(summary = "Editar endereço (necessário login)",
+               description = "Endpoint para edição de endereços no sistema")
     @PutMapping("/{id}")
-    public ResponseEntity<ResAtualizarEnderecoDTO> atualizarEndereco(@PathVariable Long id,
-                                                                     @Valid @RequestBody EnderecoDTO endereco,
-                                                                     HttpServletRequest request){
-        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
+    public ResponseEntity<ResAtualizarEnderecoDTO>
+    atualizarEndereco(@PathVariable Long id,
+                      @Valid @RequestBody EnderecoDTO endereco,
+                      @AuthenticationPrincipal UserDetails userDetails){
+
+        String emailUsuario = userDetails.getUsername();
         ResAtualizarEnderecoDTO enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);
 
         if(enderecoEditado == null){
@@ -62,11 +58,12 @@ public class EnderecoController {
     }
 
 
-    @Operation(summary = "Excluir endereço (necessário login)", description = "Endpoint para exclusão de endereços no sistema")
+    @Operation(summary = "Excluir endereço (necessário login)",
+               description = "Endpoint para exclusão de endereços no sistema")
     @DeleteMapping("/{id}")
     public ResponseEntity<?> removerEndereco(@PathVariable Long id,
-                                          HttpServletRequest request){
-        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
+                                             @AuthenticationPrincipal UserDetails userDetails){
+        String emailUsuario = userDetails.getUsername();
         Boolean isEnderecoDeletado = enderecoService.removerEndereco(id, emailUsuario);
 
         if(!isEnderecoDeletado){
@@ -75,7 +72,8 @@ public class EnderecoController {
         return ResponseEntity.ok().build();
     }
 
-    @Operation(summary = "Buscar endereço por ID (necessário login)", description = "Endpoint para buscar um endereço específico pelo ID no sistema")
+    @Operation(summary = "Buscar endereço por ID (necessário login)",
+               description = "Endpoint para buscar um endereço específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<ResBuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id){
         ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorId(id);
@@ -86,12 +84,12 @@ public class EnderecoController {
     }
 
 
-    @Operation(summary = "Listar endereços (necessário login)", description = "Endpoint para listagem de endereços no sistema")
+    @Operation(summary = "Listar endereços (necessário login)",
+               description = "Endpoint para listagem de endereços no sistema")
     @GetMapping
-    public ResponseEntity<List<ResListarEnderecoDTO>> listarEnderecos(HttpServletRequest request){
-        String emailUsuario = tokenService.subjectToken(filterService.recuperarCookie(request));
-
-        return ResponseEntity.ok(enderecoService.listarEnderecos(emailUsuario));
+    public ResponseEntity<List<ResListarEnderecoDTO>>
+    listarEnderecos(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok(enderecoService.listarEnderecos(userDetails.getUsername()));
     }
 
 }

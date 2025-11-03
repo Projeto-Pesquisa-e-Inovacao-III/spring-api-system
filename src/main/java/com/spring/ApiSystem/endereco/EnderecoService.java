@@ -54,7 +54,7 @@ public class EnderecoService {
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if (usuarioEncontrado.isPresent()) {
-            return enderecoRepository.findByUsuario(usuarioEncontrado.get().getId());
+            return enderecoRepository.findByUsuarioId(usuarioEncontrado.get().getId());
         }
 
         return null;

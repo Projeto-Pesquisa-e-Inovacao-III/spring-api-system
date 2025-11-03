@@ -41,10 +41,6 @@ public class UsuarioService {
         throw new EmailExistenteException();
     }
 
-//    public List<Usuario> listar(){
-//        return userRepository.findAll();
-//    }
-
     public Boolean loginUsuario (String email, String senha) {
         Optional<Usuario> userOpt = userRepository.findByEmail(email);
         return userOpt.isPresent() &&
@@ -52,7 +48,7 @@ public class UsuarioService {
                 argonService.validarSenha(senha,userOpt.get().getSalt(), userOpt.get().getSenha());
     }
 
-    public Usuario atualizarUsuario(EditarUsuarioDTO dto, String email){
+    public ResUsuarioDTO atualizarUsuario(EditarUsuarioDTO dto, String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
@@ -73,7 +69,8 @@ public class UsuarioService {
                 usuarioEncontrado.get().setSenha(senhaCriptografada.getLast());
             }
 
-            return userRepository.save(usuarioEncontrado.get());
+            userRepository.save(usuarioEncontrado.get());
+            return usuarioMapper.toDto(usuarioEncontrado.get());
         }
 
         return null;
@@ -100,6 +97,4 @@ public class UsuarioService {
     public Boolean validarEmailExistente(String email){
         return userRepository.findByEmail(email).isPresent();
     }
-
-
 }

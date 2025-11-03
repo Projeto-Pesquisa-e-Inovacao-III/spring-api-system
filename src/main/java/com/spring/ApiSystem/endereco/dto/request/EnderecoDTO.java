@@ -5,15 +5,15 @@ import jakarta.validation.constraints.NotBlank;
 
 public record EnderecoDTO(
         @NotBlank(message = "Número é obrigatório")
-    String numero,
+        String numero,
 
         String complemento,
 
         @NotBlank(message = "Unidade é obrigatório")
-    String unidade,
+        String unidade,
 
         @NotBlank(message = "Tipo é obrigatório")
-    String tipo,
+        String tipo,
 
         CEPDto cep
 ) {}

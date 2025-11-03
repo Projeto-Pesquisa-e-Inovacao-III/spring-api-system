@@ -15,7 +15,7 @@ public interface EnderecoMapper {
     Endereco toEntity(EnderecoDTO enderecoDTO);
     Endereco toEntity(ReqCadastrarEnderecoDTO enderecoDTO);
     Endereco toEntity(ResCadastrarEnderecoDTO resEnderecoDTO);
-    Endereco toEntty(ResListarEnderecoDTO resListarEnderecoDTO);
+    Endereco toEntity(ResListarEnderecoDTO resListarEnderecoDTO);
     Endereco toEntity(ResEnderecoSemIdDto enderecoSemIdDto);
     Endereco toEntity(ResAtualizarEnderecoDTO resAtuailizarEnderecoDTO);
 
@@ -34,5 +34,6 @@ public interface EnderecoMapper {
     Endereco partialUpdate(ResEnderecoSemIdDto enderecoSemIdDto, @MappingTarget Endereco endereco);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "cep", ignore = true)
     Endereco partialUpdate(EnderecoDTO enderecoSemIdDto, @MappingTarget Endereco endereco);
 }

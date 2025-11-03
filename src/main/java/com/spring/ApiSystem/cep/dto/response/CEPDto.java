@@ -7,6 +7,10 @@ import java.io.Serializable;
 /**
  * DTO for {@link CEP}
  */
-public record CEPDto(String id, String logradouro, String bairro, String localidade,
-                     String uf) implements Serializable {
-}
+public record CEPDto(
+        String id,
+        String logradouro,
+        String bairro,
+        String localidade,
+        String uf
+) implements Serializable {}

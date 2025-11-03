@@ -2,8 +2,8 @@ package com.spring.ApiSystem.usuario;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.time.LocalDate;
 
-import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
@@ -21,10 +21,11 @@ public class Usuario {
     @Column(nullable = false)
     private String nome;
 
+    @Column(nullable = false)
     private String sexo;
 
     @Column(name = "data_nascimento")
-    private Date dataNascimento;
+    private LocalDate dataNascimento;
 
     @Column(unique = true, nullable = false)
     private String email;
@@ -40,7 +41,9 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String tipo, String nome, String sexo, Date dataNascimento, String email, String salt, String senha, boolean ativo) {
+    public Usuario(Long id, String tipo, String nome, String sexo,
+                   LocalDate dataNascimento, String email, String salt,
+                   String senha, boolean ativo) {
         this.id = id;
         this.tipo = tipo;
         this.nome = nome;
@@ -84,11 +87,11 @@ public class Usuario {
         this.sexo = sexo;
     }
 
-    public Date getDataNascimento() {
+    public LocalDate getDataNascimento() {
         return dataNascimento;
     }
 
-    public void setDataNascimento(Date dataNascimento) {
+    public void setDataNascimento(LocalDate dataNascimento) {
         this.dataNascimento = dataNascimento;
     }
 

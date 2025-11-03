@@ -26,3 +26,4 @@
       init:
         mode: always
         encoding: UTF-8
+        data-locations: classpath:db/data.sql

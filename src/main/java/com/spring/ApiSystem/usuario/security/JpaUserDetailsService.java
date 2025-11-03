@@ -24,9 +24,13 @@ public class JpaUserDetailsService implements UserDetailsService {
         Usuario usuarioEncontrado = userRepository.findByEmail(email)
                 .orElse(null);
 
-        // Olhar no futuro quando for separado as roles dos usuários
-        return new User(usuarioEncontrado.getEmail(),
-                        usuarioEncontrado.getSenha(),
-                        List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        if(usuarioEncontrado != null){
+            // Olhar no futuro quando for separado as roles dos usuários
+            return new User(usuarioEncontrado.getEmail(),
+                            usuarioEncontrado.getSenha(),
+                            List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        }
+
+        return  null;
     }
 }

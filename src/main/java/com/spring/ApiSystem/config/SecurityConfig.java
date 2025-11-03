@@ -27,6 +27,9 @@ public class SecurityConfig {
         this.corsConfig = corsConfig;
     }
 
+    @Value("${spring.profiles.active}")
+    private String perfilAtivo;
+
     /*
     Configura como será o acesso aos endpoints aqui:
     - formulário padrão de login desabilitado
@@ -37,27 +40,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST,
-                                "/usuarios/cadastro",
-                                "/usuarios/login"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/doc"
-                        ).permitAll()
-                        .requestMatchers("/usuarios/listar").permitAll()
-                        .requestMatchers("/h2-console/**").permitAll()
-                        .requestMatchers("/agendamentos/**").permitAll()
-                        .requestMatchers("/enderecos/**").permitAll()
-                        .requestMatchers("/checkouts/**").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(HttpMethod.POST,
+                                    "/usuarios/cadastro",
+                                    "/usuarios/login"
+                            ).permitAll()
+                            .requestMatchers("/agendamentos/**").permitAll()
+                            .requestMatchers("/checkouts/**").permitAll();
+
+                    if (perfilAtivo.equals("dev")) {
+                        auth.requestMatchers(HttpMethod.GET,
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/doc"
+                                ).permitAll()
+                                .requestMatchers("/h2-console/**").permitAll();
+                    }
+
+                    auth.anyRequest().authenticated();
+                })
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
-                                 UsernamePasswordAuthenticationFilter.class)
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }

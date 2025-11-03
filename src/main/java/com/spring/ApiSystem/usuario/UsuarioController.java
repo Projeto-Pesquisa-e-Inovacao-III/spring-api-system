@@ -1,18 +1,17 @@
 package com.spring.ApiSystem.usuario;
 
-
 import com.spring.ApiSystem.usuario.dto.request.LoginUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.CadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.EditarUsuarioDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
-import com.spring.ApiSystem.shared.security.token.TokenService;
 import com.spring.ApiSystem.usuario.dto.response.ResUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Usuários", description = "Operações relacionadas a usuários")
@@ -22,14 +21,11 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final FilterService filterService;
-    private final TokenService tokenService;
 
     public UsuarioController(UsuarioService usuarioService,
-                             FilterService filterService,
-                             TokenService tokenService) {
+                             FilterService filterService) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
-        this.tokenService = tokenService;
     }
 
     @Operation(summary = "Criar usuário",
@@ -38,11 +34,6 @@ public class UsuarioController {
     public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@Valid @RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
-
-//    @GetMapping("/listar")
-//    public ResponseEntity listarUsuarios(){
-//        return ResponseEntity.ok(usuarioService.listar());
-//    }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
             description = "Endpoint para o login de usuários no sistema")
@@ -70,19 +61,19 @@ public class UsuarioController {
     @Operation(summary = "Editar usuário (necessário login)",
             description = "Endpoint para a edição de dados de usuários no sistema")
     @PutMapping
-    public ResponseEntity<Usuario> atualizarUsuario(@Valid @RequestBody EditarUsuarioDTO dto,
-                                                    HttpServletRequest request,
+    public ResponseEntity<ResUsuarioDTO> atualizarUsuario(@Valid @RequestBody EditarUsuarioDTO dto,
+                                                    @AuthenticationPrincipal UserDetails userDetails,
                                                     HttpServletResponse response) {
-        String valorCookie = filterService.recuperarCookie(request);
-        String email = tokenService.subjectToken(valorCookie);
-        Usuario usuarioEditado = usuarioService.atualizarUsuario(dto, email);
+
+        String email = userDetails.getUsername();
+        ResUsuarioDTO usuarioEditado = usuarioService.atualizarUsuario(dto, email);
 
         if(usuarioEditado == null){
             return ResponseEntity.notFound().build();
         }
 
         filterService.removerCookie(response);
-        filterService.gerarCookie(response, usuarioEditado.getEmail());
+        filterService.gerarCookie(response, usuarioEditado.email());
         return ResponseEntity.ok(usuarioEditado);
     }
 
@@ -90,10 +81,9 @@ public class UsuarioController {
             description = "Endpoint para a exclusão de usuários no sistema, " +
                     "onde o atributo 'ativo' define o seus status")
     @PatchMapping
-    public ResponseEntity<Usuario> deletarUsuario(HttpServletRequest request,
+    public ResponseEntity<?> deletarUsuario(@AuthenticationPrincipal UserDetails userDetails,
                                                   HttpServletResponse response) {
-        String valorCookie = filterService.recuperarCookie(request);
-        String email = tokenService.subjectToken(valorCookie);
+        String email = userDetails.getUsername();
         Boolean isUsuarioDeletado = usuarioService.removerUsuario(email);
 
         if(!isUsuarioDeletado){
