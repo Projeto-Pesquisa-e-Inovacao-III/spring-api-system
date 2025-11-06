@@ -3,7 +3,7 @@ package com.spring.ApiSystem.usuario.dto.request;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 
-public record EditarUsuarioDTO(
+public record ReqEditarUsuarioDTO(
     @NotBlank(message = "O nome não pode ficar vazio ou nulo")
     String nome,
 

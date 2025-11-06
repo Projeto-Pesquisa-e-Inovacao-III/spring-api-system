@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
-public record CadastroUsuarioDTO(
+public record ReqCadastroUsuarioDTO(
     @NotBlank(message = "O nome é obrigatório")
     String nome,
 

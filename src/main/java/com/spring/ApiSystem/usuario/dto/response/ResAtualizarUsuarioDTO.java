@@ -2,7 +2,7 @@ package com.spring.ApiSystem.usuario.dto.response;
 
 import java.time.LocalDate;
 
-public record ResUsuarioDTO(
+public record ResAtualizarUsuarioDTO(
     Long id,
     String nome,
     String sexo,

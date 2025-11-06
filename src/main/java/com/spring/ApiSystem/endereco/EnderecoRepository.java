@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 @Repository
 public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
-    List<ResListarEnderecoDTO> findByUsuarioId(Long usuarioId);
-
+    List<Endereco> findByUsuarioId(Long usuarioId);
     Optional<Endereco> findByIdAndUsuario(Long id, Usuario usuario);
 }

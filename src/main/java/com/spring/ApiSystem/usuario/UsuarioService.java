@@ -1,15 +1,16 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.shared.exception.EmailExistenteException;
-import com.spring.ApiSystem.shared.exception.SenhaNaoCorrespondeAtual;
-import com.spring.ApiSystem.shared.exception.UsuarioNaoEncontradoException;
+import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
+import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
+import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
+import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoRepository;
 import com.spring.ApiSystem.shared.security.ArgonService;
-import com.spring.ApiSystem.usuario.dto.request.CadastroUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.request.EditarUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -30,25 +31,29 @@ public class UsuarioService {
         this.argonService = argonService;
     }
 
-    public ResUsuarioDTO cadastrarUsuario(CadastroUsuarioDTO usuarioDTO) {
+    public ResCadastrarUsuarioDTO cadastrarUsuario(ReqCadastroUsuarioDTO usuarioDTO) {
+
         if(!validarEmailExistente(usuarioDTO.email())){
             Aluno usuarioEntity = usuarioMapper.toEntityAluno(usuarioDTO);
             List<String> senhaCriptografada = argonService.criptografarSenha(usuarioEntity.getSenha());
             usuarioEntity.setSalt(senhaCriptografada.getFirst());
             usuarioEntity.setSenha(senhaCriptografada.getLast());
-            return usuarioMapper.toDto(alunoRepository.save(usuarioEntity));
+            return usuarioMapper.toDtoCadastrarUsuario(alunoRepository.save(usuarioEntity));
         }
+
         throw new EmailExistenteException();
     }
 
     public Boolean loginUsuario (String email, String senha) {
+
         Optional<Usuario> userOpt = userRepository.findByEmail(email);
+
         return userOpt.isPresent() &&
                 userOpt.get().isAtivo() &&
                 argonService.validarSenha(senha,userOpt.get().getSalt(), userOpt.get().getSenha());
     }
 
-    public ResUsuarioDTO atualizarUsuario(EditarUsuarioDTO dto, String email){
+    public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email){
         Optional<Usuario> usuarioEncontrado = userRepository.findByEmail(email);
 
         if(usuarioEncontrado.isPresent()){
@@ -61,7 +66,7 @@ public class UsuarioService {
                 throw new SenhaNaoCorrespondeAtual();
             }
 
-            usuarioMapper.atualizarUsuarioFromEditarUsuarioDto(dto, usuarioEncontrado.get());
+            usuarioMapper.atualizarUsuarioParaEditarUsuarioDto(dto, usuarioEncontrado.get());
 
             if(dto.senhaNova() != null){
                 List<String> senhaCriptografada = argonService.criptografarSenha(dto.senhaNova());
@@ -70,10 +75,10 @@ public class UsuarioService {
             }
 
             userRepository.save(usuarioEncontrado.get());
-            return usuarioMapper.toDto(usuarioEncontrado.get());
+            return usuarioMapper.toDtoAtualizarUsuario(usuarioEncontrado.get());
         }
 
-        return null;
+        throw  new UsuarioNaoEncontradoException();
     }
 
     public Boolean removerUsuario(String email) {
@@ -81,20 +86,27 @@ public class UsuarioService {
 
         if(usuarioEncontrado.isPresent()){
             usuarioEncontrado.get().setAtivo(false);
-            userRepository.save(usuarioEncontrado.get());
+            userRepository
+                    .save(usuarioEncontrado.get());
             return true;
         }
-        return false;
+        throw  new UsuarioNaoEncontradoException();
     }
 
-    public Usuario pegarUsuarioPeloEmail(String email) {
+
+
+    public Usuario buscarUsuarioPorEmail(String email) {
         if (validarEmailExistente(email)){
-            return userRepository.findByEmail(email).get();
+            return userRepository
+                    .findByEmail(email)
+                    .get();
         }
         throw new UsuarioNaoEncontradoException();
     }
 
     public Boolean validarEmailExistente(String email){
-        return userRepository.findByEmail(email).isPresent();
+        return userRepository
+                .findByEmail(email)
+                .isPresent();
     }
 }

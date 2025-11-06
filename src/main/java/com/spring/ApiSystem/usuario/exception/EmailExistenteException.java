@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.exception;
+package com.spring.ApiSystem.usuario.exception;
 
 public class EmailExistenteException extends RuntimeException {
     public EmailExistenteException() {

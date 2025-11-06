@@ -1,10 +1,11 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.usuario.dto.request.LoginUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.request.CadastroUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.request.EditarUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqLoginUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
-import com.spring.ApiSystem.usuario.dto.response.ResUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,14 +32,14 @@ public class UsuarioController {
     @Operation(summary = "Criar usuário",
                description = "Endpoint para cadastro de usuários no sistema")
     @PostMapping("/cadastro")
-    public ResponseEntity<ResUsuarioDTO> cadastrarUsuario(@Valid @RequestBody CadastroUsuarioDTO cadastroUsuarioDTO) {
+    public ResponseEntity<ResCadastrarUsuarioDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroUsuarioDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
             description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
-    public ResponseEntity<String> loginUsuario(@Valid @RequestBody LoginUsuarioDTO dto,
+    public ResponseEntity<String> loginUsuario(@Valid @RequestBody ReqLoginUsuarioDTO dto,
                                                HttpServletResponse response) {
         Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
 
@@ -50,23 +51,15 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Realizar logout",
-            description = "Endpoint para o logout de usuários no sistema")
-    @GetMapping("/logout")
-    public ResponseEntity<?> logoutUsuario(HttpServletResponse response){
-        filterService.removerCookie(response);
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(summary = "Editar usuário (necessário login)",
             description = "Endpoint para a edição de dados de usuários no sistema")
     @PutMapping
-    public ResponseEntity<ResUsuarioDTO> atualizarUsuario(@Valid @RequestBody EditarUsuarioDTO dto,
-                                                    @AuthenticationPrincipal UserDetails userDetails,
-                                                    HttpServletResponse response) {
+    public ResponseEntity<ResAtualizarUsuarioDTO> atualizarUsuario(@Valid @RequestBody ReqEditarUsuarioDTO dto,
+                                                                   @AuthenticationPrincipal UserDetails userDetails,
+                                                                   HttpServletResponse response) {
 
         String email = userDetails.getUsername();
-        ResUsuarioDTO usuarioEditado = usuarioService.atualizarUsuario(dto, email);
+        ResAtualizarUsuarioDTO usuarioEditado = usuarioService.atualizarUsuario(dto, email);
 
         if(usuarioEditado == null){
             return ResponseEntity.notFound().build();
@@ -93,4 +86,13 @@ public class UsuarioController {
         filterService.removerCookie(response);
         return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Realizar logout",
+            description = "Endpoint para o logout de usuários no sistema")
+    @GetMapping("/logout")
+    public ResponseEntity<?> logoutUsuario(HttpServletResponse response){
+        filterService.removerCookie(response);
+        return ResponseEntity.ok().build();
+    }
+
 }

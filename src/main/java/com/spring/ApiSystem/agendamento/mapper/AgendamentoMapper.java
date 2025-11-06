@@ -49,7 +49,7 @@ public abstract class  AgendamentoMapper {
 
     @Named("idToProdutoContratado")
     protected ProdutoContratado idToProdutoContratado (Integer id){
-        return produtoContratadoService.findById(id);
+        return produtoContratadoService.buscarPorId(id);
     }
 
     @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")

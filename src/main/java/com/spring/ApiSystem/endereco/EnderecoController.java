@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.endereco;
 
-import com.spring.ApiSystem.endereco.dto.request.EnderecoDTO;
+import com.spring.ApiSystem.endereco.dto.request.ReqAtualizarEnderecoDTO;
+import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
 import com.spring.ApiSystem.endereco.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +28,7 @@ public class EnderecoController {
                description = "Endpoint para cadastro de endereços no sistema")
     @PostMapping
     public ResponseEntity<ResCadastrarEnderecoDTO>
-    cadastrarEndereco(@Valid @RequestBody EnderecoDTO endereco,
+        cadastrarEndereco(@Valid @RequestBody ReqCadastrarEnderecoDTO endereco,
                       @AuthenticationPrincipal UserDetails userDetails){
 
         String emailUsuario = userDetails.getUsername();
@@ -45,7 +46,7 @@ public class EnderecoController {
     @PutMapping("/{id}")
     public ResponseEntity<ResAtualizarEnderecoDTO>
     atualizarEndereco(@PathVariable Long id,
-                      @Valid @RequestBody EnderecoDTO endereco,
+                      @Valid @RequestBody ReqAtualizarEnderecoDTO endereco,
                       @AuthenticationPrincipal UserDetails userDetails){
 
         String emailUsuario = userDetails.getUsername();
@@ -76,7 +77,7 @@ public class EnderecoController {
                description = "Endpoint para buscar um endereço específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<ResBuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id){
-        ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorId(id);
+        ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorIdDto(id);
         if(enderecoEncontrado == null){
             return ResponseEntity.notFound().build();
         }
@@ -87,8 +88,7 @@ public class EnderecoController {
     @Operation(summary = "Listar endereços (necessário login)",
                description = "Endpoint para listagem de endereços no sistema")
     @GetMapping
-    public ResponseEntity<List<ResListarEnderecoDTO>>
-    listarEnderecos(@AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<List<ResListarEnderecoDTO>> listarEnderecos(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok(enderecoService.listarEnderecos(userDetails.getUsername()));
     }
 

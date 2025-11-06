@@ -3,7 +3,7 @@ package com.spring.ApiSystem.endereco.dto.request;
 import com.spring.ApiSystem.cep.dto.response.CEPDto;
 import jakarta.validation.constraints.NotBlank;
 
-public record EnderecoDTO(
+public record ReqAtualizarEnderecoDTO(
         @NotBlank(message = "Número é obrigatório")
         String numero,
 

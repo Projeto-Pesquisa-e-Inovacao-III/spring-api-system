@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.agendamento.dto.request;
 
-import com.spring.ApiSystem.endereco.dto.request.EnderecoDTO;
+import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
@@ -16,7 +16,7 @@ public record ReagendarAgendamentoDTO(
 
         Long enderecoExistenteId,
 
-        @Valid EnderecoDTO novoEndereco,
+        @Valid ReqCadastrarEnderecoDTO novoEndereco,
 
         @NotNull(message = "O tipo de usuário é obrigatório")
         String tipoUsuario

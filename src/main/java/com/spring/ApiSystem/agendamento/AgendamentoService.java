@@ -9,6 +9,7 @@ import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
 import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
 import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoExistePorIdException;
+import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.shared.exception.DataNoPassadoException;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.Endereco;
@@ -41,7 +42,6 @@ public class AgendamentoService {
     private final UsuarioService usuarioService;
 
 
-
     public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, UsuarioService usuarioService) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
@@ -53,7 +53,7 @@ public class AgendamentoService {
     }
 
     public Page<?> pegarTodosAgendamentosDesseUsuario(String email, int page, int size){
-        Usuario usuario = usuarioService.pegarUsuarioPeloEmail(email);
+        Usuario usuario = usuarioService.buscarUsuarioPorEmail(email);
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -62,10 +62,12 @@ public class AgendamentoService {
         if(usuario.getTipo().equals("Aluno")){
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByAlunoOrderByDataAsc((Aluno) usuario, pageable);
+
             return agendamentos.map(agendamentoMapper::toListarAgendamentoAlunoDto);
         } else if (usuario.getTipo().equals("Personal")) {
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByPersonalOrderByDataAsc((Personal) usuario, pageable);
+
             return agendamentos.map(agendamentoMapper::toListarAgendamentoPersonalDto);
         }
 
@@ -85,10 +87,11 @@ public class AgendamentoService {
 
         Endereco endereco;
         if (dto.enderecoExistenteId() != null) {
-            endereco = enderecoService.findById(dto.enderecoExistenteId());
+            endereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
+
         } else {
             ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(dto.novoEndereco(), aluno.email());
-            endereco = enderecoService.findById(resEndereco.id());
+            endereco = enderecoService.buscarPorId(resEndereco.id());
         }
 
         Agendamento agendamento = agendamentoMapper.toEntity(dto);
@@ -99,7 +102,7 @@ public class AgendamentoService {
         return agendamentoRepository.save(agendamento);
     }
 
-    public Agendamento findById(Long id) {
+    public Agendamento buscarPorId(Long id) {
         return agendamentoRepository
                 .findById(id)
                 .orElseThrow(AgendamentoNaoExistePorIdException::new);
@@ -107,7 +110,7 @@ public class AgendamentoService {
 
     @Transactional
     public Agendamento reagendar(Long agendamentoId, ReagendarAgendamentoDTO dto) {
-        Agendamento agendamento = findById(agendamentoId);
+        Agendamento agendamento = buscarPorId(agendamentoId);
 
         if (dto.novaData().isBefore(LocalDateTime.now())) {
             throw new DataNoPassadoException();
@@ -122,13 +125,13 @@ public class AgendamentoService {
         if (dto.enderecoExistenteId() != null || dto.novoEndereco() != null) {
             Endereco novoEndereco;
             if (dto.enderecoExistenteId() != null) {
-                novoEndereco = enderecoService.findById(dto.enderecoExistenteId());
+                novoEndereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
             } else {
                 ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(
                         dto.novoEndereco(),
                         agendamento.getAluno().getEmail()
                 );
-                novoEndereco = enderecoService.findById(resEndereco.id());
+                novoEndereco = enderecoService.buscarPorId(resEndereco.id());
             }
             agendamento.setEndereco(novoEndereco);
         }
@@ -146,21 +149,21 @@ public class AgendamentoService {
 
     @Transactional
     public Agendamento aceitaAgendamento(Long id) {
-        Agendamento agendamento = findById(id);
+        Agendamento agendamento = buscarPorId(id);
         agendamento.aceitar();
         return agendamentoRepository.save(agendamento);
     }
 
     @Transactional
     public Agendamento recusaAgendamento(Long id) {
-        Agendamento agendamento = findById(id);
+        Agendamento agendamento = buscarPorId(id);
         agendamento.recusado();
         return agendamentoRepository.save(agendamento);
     }
 
     @Transactional(readOnly = true)
     public BuscarAgendamentoPorIdDTO buscarAgendamentoPorId(Long id) {
-        Agendamento agendamento = findById(id);
+        Agendamento agendamento = buscarPorId(id);
         return agendamentoMapper.toDTO(agendamento);
     }
 
