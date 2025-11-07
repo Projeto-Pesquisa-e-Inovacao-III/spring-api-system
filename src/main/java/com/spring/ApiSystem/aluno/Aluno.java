@@ -1,14 +1,13 @@
 package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.usuario.Usuario;
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 
 import java.time.LocalDate;
 
-@Entity(name = "aluno")
-@DiscriminatorValue("Aluno")
+@Entity
+@Table(name = "aluno")
+@PrimaryKeyJoinColumn(name = "id")
 public class Aluno extends Usuario {
     @Column(unique = true)
     private String cpf;

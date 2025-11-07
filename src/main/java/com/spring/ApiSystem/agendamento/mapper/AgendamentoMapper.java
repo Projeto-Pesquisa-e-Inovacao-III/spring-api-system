@@ -44,7 +44,7 @@ public abstract class  AgendamentoMapper {
 
     @Named("idToAluno")
     protected Aluno idToAluno (Long id){
-        return alunoService.findById(id);
+        return alunoService.buscarPorId(id);
     }
 
     @Named("idToProdutoContratado")

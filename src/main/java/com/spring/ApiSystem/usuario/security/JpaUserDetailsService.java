@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.usuario.security;
 
 import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.UserRepository;
+import com.spring.ApiSystem.usuario.UsuarioRepository;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,15 +13,15 @@ import java.util.List;
 
 @Service
 public class JpaUserDetailsService implements UserDetailsService {
-    public final UserRepository userRepository;
+    public final UsuarioRepository usuarioRepository;
 
-    public JpaUserDetailsService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public JpaUserDetailsService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Usuario usuarioEncontrado = userRepository.findByEmail(email)
+        Usuario usuarioEncontrado = usuarioRepository.findByEmail(email)
                 .orElse(null);
 
         if(usuarioEncontrado != null){

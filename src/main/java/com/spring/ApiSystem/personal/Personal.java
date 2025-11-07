@@ -4,10 +4,12 @@ import com.spring.ApiSystem.usuario.Usuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
+
 import java.time.LocalDate;
 
-@Entity(name = "personal")
-@DiscriminatorValue("Personal")
+@Entity
+@PrimaryKeyJoinColumn(name = "id")
 public class Personal extends Usuario {
     @Column(unique = true)
     private String cref;
