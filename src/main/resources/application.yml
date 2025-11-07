@@ -1,0 +1,38 @@
+  spring:
+    application:
+      name: spring-api-system
+
+    profiles:
+      active: dev
+
+    config:
+      import: "optional:classpath:application-${spring.profiles.active}.yml"
+
+  jwt:
+    public:
+      key: classpath:keys/public.pem
+    private:
+      key: classpath:keys/private.pem
+
+  springdoc:
+    swagger-ui:
+      path: /doc
+
+  argon:
+    algoritmo: argon2id
+    versao: 19
+    saltLength: 32
+    hashLength: 32
+    parallelism: 1
+    memory: 65536
+    iterations: 3
+
+  pagbank:
+    token: dummy-token-1234567890
+    endpoint: https://api.pagbank.com.br
+    client:
+      id: dummy-client-id
+      secret: dummy-client-secret
+
+  server:
+    port: 8080
