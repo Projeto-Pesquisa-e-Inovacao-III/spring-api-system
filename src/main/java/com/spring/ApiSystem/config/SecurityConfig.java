@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.config;
 
-import com.spring.ApiSystem.service.FilterService;
+import com.spring.ApiSystem.config.filter.FilterService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -26,6 +27,9 @@ public class SecurityConfig {
         this.corsConfig = corsConfig;
     }
 
+    @Value("${spring.profiles.active}")
+    private String perfilAtivo;
+
     /*
     Configura como será o acesso aos endpoints aqui:
     - formulário padrão de login desabilitado
@@ -36,22 +40,31 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(HttpMethod.POST,
-                                "/usuarios/cadastro",
-                                "/usuarios/login"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/doc"
-                        ).permitAll()
-                        .requestMatchers("/usuarios/listar").permitAll()
-                        .anyRequest().authenticated()
-                )
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers
+                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .authorizeHttpRequests(auth -> {
+                    auth.requestMatchers(HttpMethod.POST,
+                                    "/usuarios/cadastro",
+                                    "/usuarios/login"
+                            ).permitAll()
+                            .requestMatchers("/agendamentos/**").permitAll()
+                            .requestMatchers("/checkouts/**").permitAll();
+
+                    if (perfilAtivo.equals("dev")) {
+                        auth.requestMatchers(HttpMethod.GET,
+                                        "/v3/api-docs/**",
+                                        "/swagger-ui/**",
+                                        "/doc"
+                                ).permitAll()
+                                .requestMatchers("/h2-console/**").permitAll();
+                    }
+
+                    auth.anyRequest().authenticated();
+                })
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
-                                 UsernamePasswordAuthenticationFilter.class)
+                        UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
