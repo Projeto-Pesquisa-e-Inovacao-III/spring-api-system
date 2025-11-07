@@ -41,6 +41,9 @@ public class Agendamento {
     @JoinColumn(name = "produto_contratado_id", nullable = false)
     private ProdutoContratado produtoContratado;
 
+    @Transient
+    private AgendamentoState agendamentoState;
+
     public Agendamento() {
     }
 
