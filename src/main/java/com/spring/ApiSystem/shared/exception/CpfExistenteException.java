@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.cep;
+package com.spring.ApiSystem.shared.exception;
 
 public class CpfExistenteException extends RuntimeException {
     public CpfExistenteException() {

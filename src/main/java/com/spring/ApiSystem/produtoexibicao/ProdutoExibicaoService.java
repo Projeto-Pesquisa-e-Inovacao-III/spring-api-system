@@ -1,11 +1,9 @@
-package com.spring.ApiSystem.service;
+package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.dto.produtoExibicao.request.CadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.dto.produtoExibicao.response.ResProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import com.spring.ApiSystem.enums.Status;
-import com.spring.ApiSystem.mapper.ProdutoExibicaoMapper;
-import com.spring.ApiSystem.model.ProdutoExibicao;
-import com.spring.ApiSystem.repository.ProdutoExibicaoRepository;
+import com.spring.ApiSystem.produtoexibicao.mapper.ProdutoExibicaoMapper;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;

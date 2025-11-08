@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.dto.produtoExibicao.request;
+package com.spring.ApiSystem.produtoexibicao.dto.request;
 
 import jakarta.validation.constraints.*;
 

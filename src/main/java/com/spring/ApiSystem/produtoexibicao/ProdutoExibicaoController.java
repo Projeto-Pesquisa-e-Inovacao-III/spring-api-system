@@ -1,8 +1,7 @@
-package com.spring.ApiSystem.controller;
+package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.dto.produtoExibicao.request.CadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.dto.produtoExibicao.response.ResProdutoExibicaoDTO;
-import com.spring.ApiSystem.service.ProdutoExibicaoService;
+import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

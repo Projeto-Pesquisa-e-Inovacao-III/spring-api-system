@@ -2,11 +2,8 @@ package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteExcpetion;
-import com.spring.ApiSystem.cep.CpfExistenteException;
-import org.apache.coyote.Response;
+import com.spring.ApiSystem.shared.exception.CpfExistenteException;
 import org.springframework.stereotype.Service;
-
-import java.util.Optional;
 
 @Service
 public class AlunoService {

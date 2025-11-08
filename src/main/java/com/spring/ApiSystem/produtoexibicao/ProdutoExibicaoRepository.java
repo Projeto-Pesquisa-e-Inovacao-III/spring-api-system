@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.repository;
+package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.dto.produtoExibicao.response.ResProdutoExibicaoDTO;
+
 import com.spring.ApiSystem.enums.Status;
-import com.spring.ApiSystem.model.ProdutoExibicao;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

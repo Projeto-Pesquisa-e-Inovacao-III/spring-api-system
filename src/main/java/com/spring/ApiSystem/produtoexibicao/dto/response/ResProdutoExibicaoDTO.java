@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.dto.produtoExibicao.response;
+package com.spring.ApiSystem.produtoexibicao.dto.response;
 
 import com.spring.ApiSystem.enums.Status;
 
