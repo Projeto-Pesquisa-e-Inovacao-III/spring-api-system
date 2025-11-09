@@ -21,6 +21,11 @@ public class AlunoService {
        return alunoRepository.save(aluno);
     }
 
+    public Aluno procurarAlunoPorId(Long id){
+        return alunoRepository.findById(id)
+                .orElseThrow(() -> new AlunoNaoExisteExcpetion());
+    }
+
 
 
     public BuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {

@@ -5,6 +5,7 @@ import com.spring.ApiSystem.agendamento.dto.request.CriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.BuscarAgendamentoPorIdDTO;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
+import com.spring.ApiSystem.produtocontratado.dto.response.BuscarProdutoContratadoPorIdDto;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.personal.Personal;
@@ -48,8 +49,8 @@ public abstract class  AgendamentoMapper {
     }
 
     @Named("idToProdutoContratado")
-    protected ProdutoContratado idToProdutoContratado (Integer id){
-        return produtoContratadoService.buscarPorId(id);
+    protected BuscarProdutoContratadoPorIdDto idToProdutoContratado (Long id){
+        return produtoContratadoService.listarPorId(id);
     }
 
     @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")

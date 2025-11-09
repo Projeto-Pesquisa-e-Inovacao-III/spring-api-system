@@ -4,7 +4,7 @@ import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Entity(name = "produto_contratado")
 public class ProdutoContratado {
@@ -12,16 +12,16 @@ public class ProdutoContratado {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Boolean ativo;
+    private Boolean situacao;
 
     @Column(name = "data_compra",
             nullable = false,
             updatable = false)
-    private Date dataCompra;
+    private LocalDate dataCompra;
 
     @Column(name = "data_expiracao",
             nullable = false)
-    private Date dataExpiracao;
+    private LocalDate dataExpiracao;
 
     @Column(name = "saldo_aula",
             nullable = false)
@@ -40,9 +40,12 @@ public class ProdutoContratado {
     public ProdutoContratado() {
     }
 
-    public ProdutoContratado(Long id, Boolean ativo, Date dataCompra, Date dataExpiracao, Integer saldoAula, Aluno aluno, ProdutoExibicao produtoExibicao) {
+    public ProdutoContratado(Long id, Boolean situacao,
+                             LocalDate dataCompra, LocalDate dataExpiracao,
+                             Integer saldoAula, Aluno aluno,
+                             ProdutoExibicao produtoExibicao) {
         this.id = id;
-        this.ativo = ativo;
+        this.situacao = situacao;
         this.dataCompra = dataCompra;
         this.dataExpiracao = dataExpiracao;
         this.saldoAula = saldoAula;
@@ -58,27 +61,27 @@ public class ProdutoContratado {
         this.id = id;
     }
 
-    public Boolean getAtivo() {
-        return ativo;
+    public Boolean getSituacao() {
+        return situacao;
     }
 
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
+    public void setSituacao(Boolean situacao) {
+        this.situacao = situacao;
     }
 
-    public Date getDataCompra() {
+    public LocalDate getDataCompra() {
         return dataCompra;
     }
 
-    public void setDataCompra(Date dataCompra) {
+    public void setDataCompra(LocalDate dataCompra) {
         this.dataCompra = dataCompra;
     }
 
-    public Date getDataExpiracao() {
+    public LocalDate getDataExpiracao() {
         return dataExpiracao;
     }
 
-    public void setDataExpiracao(Date dataExpiracao) {
+    public void setDataExpiracao(LocalDate dataExpiracao) {
         this.dataExpiracao = dataExpiracao;
     }
 

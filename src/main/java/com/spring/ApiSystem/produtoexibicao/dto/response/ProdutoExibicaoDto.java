@@ -10,5 +10,5 @@ import java.time.LocalDateTime;
  */
 public record ProdutoExibicaoDto(String titulo, String subtitulo, String descricao, Double preco, String periodo,
                                  String status, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao,
-                                 String tipoAula, Integer quantidadeAula, Integer duracaoMes) implements Serializable {
+                                 String tipoAula, String quantidadeAula, Integer duracaoMes) implements Serializable {
 }

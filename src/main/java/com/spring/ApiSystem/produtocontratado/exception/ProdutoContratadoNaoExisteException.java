@@ -2,6 +2,6 @@ package com.spring.ApiSystem.produtocontratado.exception;
 
 public class ProdutoContratadoNaoExisteException extends RuntimeException {
     public ProdutoContratadoNaoExisteException() {
-        super("Produto contrarado com esse ID não existe " );
+        super("Não existe nenhum produto contratado cadastrado no sistema.");
     }
 }

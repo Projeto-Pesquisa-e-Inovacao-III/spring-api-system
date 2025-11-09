@@ -26,8 +26,7 @@ public record CadastroProdutoExibicaoDTO(
     String tipoAula,
 
     @NotNull(message = "Quantidade de aulas é obrigatória")
-    @Positive(message = "Quantidade de aulas deve ser positiva")
-    Integer quantidadeAula,
+    String quantidadeAula,
 
     @NotNull(message = "Duração em meses é obrigatória")
     @Positive(message = "Duração deve ser positiva")
