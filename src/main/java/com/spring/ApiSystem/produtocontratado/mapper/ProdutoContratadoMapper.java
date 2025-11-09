@@ -2,7 +2,7 @@ package com.spring.ApiSystem.produtocontratado.mapper;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.BuscarProdutoContratadoPorIdDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.OperacaoSaldoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoSoComProdutoDto;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
@@ -18,7 +18,7 @@ public interface ProdutoContratadoMapper {
     @Mapping(target = "alunoId", source = "aluno.id")
     @Mapping(target = "produtoExibicaoId", source = "produtoExibicao.id")
     BuscarProdutoContratadoPorIdDto toBuscarProdutoContratadoPorIdDto(ProdutoContratado produtoContratado);
-    OperacaoSaldoDto toOperacaoSaldoDto(ProdutoContratado produtoContratado);
+    ResOperacaoSaldoDto toOperacaoSaldoDto(ProdutoContratado produtoContratado);
 
     ProdutoContratado toEntity(ProdutoContratadoDto ProdutoContratadoDto);
     ProdutoContratado toEntity(ProdutoContratadoSoComProdutoDto produtoContratadoSoComProdutoDto);
@@ -26,5 +26,8 @@ public interface ProdutoContratadoMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     ProdutoContratado partialUpdate(ProdutoContratadoSoComProdutoDto produtoContratadoSoComProdutoDto, @MappingTarget ProdutoContratado produtoContratado);
+
+    @Mapping(target = "aluno", ignore = true)
+    @Mapping(target = "produtoExibicao", ignore = true)
     void partialUpdate(EditarProdutoContratadoDto editarProdutoContratadoDto, @MappingTarget ProdutoContratado produtoContratado);
 }

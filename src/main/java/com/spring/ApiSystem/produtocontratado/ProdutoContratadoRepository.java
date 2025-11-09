@@ -17,4 +17,6 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM produto_contratado p WHERE p.id = :id")
     ProdutoContratado findByIdWithLock(Long id);
+
+    List<ProdutoContratado> findByAlunoIdAndProdutoExibicaoTipoAula(Long idAluno, String tipoAula);
 }

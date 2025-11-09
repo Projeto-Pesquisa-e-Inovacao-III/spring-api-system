@@ -3,8 +3,9 @@ package com.spring.ApiSystem.produtocontratado;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.BuscarProdutoContratadoPorIdDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.OperacaoSaldoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
@@ -43,7 +44,7 @@ public class ProdutoContratadoService {
         ProdutoContratado produtoContratado = new ProdutoContratado(
           null, true, LocalDate.now(),
            LocalDate.now().plusMonths(produtoExibicao.getDuracaoMes()),
-           produtoExibicao.getDuracaoMes() * 30, aluno, produtoExibicao
+           Integer.parseInt(produtoExibicao.getQuantidadeAula()), aluno, produtoExibicao
         );
 
         produtoContratadoRepository.save(produtoContratado);
@@ -96,6 +97,14 @@ public class ProdutoContratadoService {
         ProdutoContratado produtoContratado = listarPorId(editarProdutoContratadoDto.id());
 
         if(produtoContratado != null) {
+            if(!produtoContratado.getAluno().getId().equals(editarProdutoContratadoDto.alunoId())){
+                produtoContratado.setAluno(alunoService.buscarPorId(editarProdutoContratadoDto.alunoId()));
+            }
+
+            if(!produtoContratado.getProdutoExibicao().getId().equals(editarProdutoContratadoDto.produtoExibicaoId())){
+                produtoContratado.setProdutoExibicao(produtoExibicaoService.buscarPorId(editarProdutoContratadoDto.produtoExibicaoId()));
+            }
+
             produtoContratadoMapper.partialUpdate(editarProdutoContratadoDto, produtoContratado);
             produtoContratadoRepository.save(produtoContratado);
         }
@@ -111,36 +120,41 @@ public class ProdutoContratadoService {
     }
 
     @Transactional
-    public OperacaoSaldoDto incrementar(Long id){
-        ProdutoContratado produtoContratado = listarPorId(id);
+    public void incrementar(ReqOperacaoSaldoDto reqOperacaoSaldoDto){
+        List<ProdutoContratado> produtosContratados = produtoContratadoRepository
+                .findByAlunoIdAndProdutoExibicaoTipoAula(
+                    reqOperacaoSaldoDto.alunoId(),
+                    reqOperacaoSaldoDto.tipoAula()
+                );
 
-        if(temSaldo(id)){
-            produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() + 1);
-            produtoContratadoRepository.save(produtoContratado);
-        }
-        else{
-            throw new PlanoInativoException();
+        for (ProdutoContratado produtoContratado : produtosContratados) {
+            if(temSaldo(produtoContratado.getId())){
+                produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() + 1);
+                produtoContratadoRepository.save(produtoContratado);
+                return;
+            }
         }
 
-        return produtoContratadoMapper.toOperacaoSaldoDto(produtoContratado);
+        throw new PlanoInativoException();
     }
 
     @Transactional
-    public OperacaoSaldoDto decrementar(Long id) {
-        ProdutoContratado produtoContratado = listarPorId(id);
+    public void decrementar(ReqOperacaoSaldoDto reqOperacaoSaldoDto) {
+        List<ProdutoContratado> produtosContratados = produtoContratadoRepository
+                .findByAlunoIdAndProdutoExibicaoTipoAula(
+                        reqOperacaoSaldoDto.alunoId(),
+                        reqOperacaoSaldoDto.tipoAula()
+                );
 
-        if(temSaldo(id)){
-            produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
-            if(produtoContratado.getSaldoAula().equals(0)){
-                produtoContratado.setSituacao(false);
+        for (ProdutoContratado produtoContratado : produtosContratados) {
+            if(temSaldo(produtoContratado.getId())){
+                produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
+                produtoContratadoRepository.save(produtoContratado);
+                return;
             }
-            produtoContratadoRepository.save(produtoContratado);
-        }
-        else{
-            throw new PlanoInativoException();
         }
 
-        return produtoContratadoMapper.toOperacaoSaldoDto(produtoContratado);
+        throw new PlanoInativoException();
     }
 
     public Boolean temSaldo(Long id){

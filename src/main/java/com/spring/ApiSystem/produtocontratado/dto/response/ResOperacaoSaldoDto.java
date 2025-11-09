@@ -1,8 +1,6 @@
 package com.spring.ApiSystem.produtocontratado.dto.response;
 
-import jakarta.validation.constraints.NotNull;
-
-public record OperacaoSaldoDto(
+public record ResOperacaoSaldoDto(
         Long id,
         Boolean situacao,
         Integer saldo
