@@ -6,10 +6,8 @@ import java.time.LocalDate;
 
 public record BuscarProdutoContratadoPorIdDto(
         Long id,
-        Boolean ativo,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+        Boolean situacao,
         LocalDate dataCompra,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate dataExpiracao,
         Integer saldoAula,
         Long alunoId,

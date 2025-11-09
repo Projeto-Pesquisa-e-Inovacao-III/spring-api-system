@@ -1,6 +1,9 @@
 package com.spring.ApiSystem.produtocontratado.dto.request;
 
+import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotNull;
+
+import java.time.LocalDate;
 
 public record EditarProdutoContratadoDto(
         @NotNull
@@ -8,5 +11,12 @@ public record EditarProdutoContratadoDto(
         @NotNull
         Boolean situacao,
         @NotNull
-        Integer saldo
+        @FutureOrPresent
+        LocalDate dataExpiracao,
+        @NotNull
+        Integer saldoAula,
+        @NotNull
+        Long alunoId,
+        @NotNull
+        Long produtoExibicaoId
 ) {}

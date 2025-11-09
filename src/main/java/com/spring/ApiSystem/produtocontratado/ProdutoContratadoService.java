@@ -4,6 +4,7 @@ import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.BuscarProdutoContratadoPorIdDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.OperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
@@ -36,7 +37,7 @@ public class ProdutoContratadoService {
     }
 
     public ProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, Long idAluno){
-        Aluno aluno = alunoService.procurarAlunoPorId(idAluno);
+        Aluno aluno = alunoService.buscarPorId(idAluno);
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -66,12 +67,19 @@ public class ProdutoContratadoService {
         return produtoContratadoMapper.toListDto(produtosContratados);
     }
 
-    public BuscarProdutoContratadoPorIdDto listarPorId(Long id){
+    @Transactional
+    public BuscarProdutoContratadoPorIdDto listarPorIdDto(Long id){
+        ProdutoContratado produtoContratado = listarPorId(id);
+        return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
+    }
+
+    @Transactional
+    public ProdutoContratado listarPorId(Long id){
         ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdWithLock(id);
         if (produtoContratado == null) {
             throw new ProdutoContratadoPorIdNaoExisteException(id);
         }
-        return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
+        return produtoContratado;
     }
 
     public List<ProdutoContratadoDto> listarPorAluno(Long idAluno){
@@ -83,27 +91,28 @@ public class ProdutoContratadoService {
     }
 
 
+    @Transactional
     public ProdutoContratadoDto atualizarProdutoContratado(EditarProdutoContratadoDto editarProdutoContratadoDto){
-        ProdutoContratado produtoContratado = produtoContratadoMapper.toEntity(
-                listarPorId(editarProdutoContratadoDto.id()));
+        ProdutoContratado produtoContratado = listarPorId(editarProdutoContratadoDto.id());
 
-        produtoContratado.setSituacao(editarProdutoContratadoDto.situacao());
-        produtoContratado.setSaldoAula(editarProdutoContratadoDto.saldo());
-
-        produtoContratadoRepository.save(produtoContratado);
+        if(produtoContratado != null) {
+            produtoContratadoMapper.partialUpdate(editarProdutoContratadoDto, produtoContratado);
+            produtoContratadoRepository.save(produtoContratado);
+        }
 
         return produtoContratadoMapper.toDto(produtoContratado);
     }
 
+    @Transactional
     public void desativarProdutoContratado(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoMapper.toEntity(listarPorId(id));
+        ProdutoContratado produtoContratado = listarPorId(id);
         produtoContratado.setSituacao(false);
         produtoContratadoRepository.save(produtoContratado);
     }
 
     @Transactional
-    public ProdutoContratadoDto incrementar(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoMapper.toEntity(listarPorId(id));
+    public OperacaoSaldoDto incrementar(Long id){
+        ProdutoContratado produtoContratado = listarPorId(id);
 
         if(temSaldo(id)){
             produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() + 1);
@@ -113,12 +122,12 @@ public class ProdutoContratadoService {
             throw new PlanoInativoException();
         }
 
-        return produtoContratadoMapper.toDto(produtoContratado);
+        return produtoContratadoMapper.toOperacaoSaldoDto(produtoContratado);
     }
 
     @Transactional
-    public ProdutoContratadoDto decrementar(Long id) {
-        ProdutoContratado produtoContratado = produtoContratadoMapper.toEntity(listarPorId(id));
+    public OperacaoSaldoDto decrementar(Long id) {
+        ProdutoContratado produtoContratado = listarPorId(id);
 
         if(temSaldo(id)){
             produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
@@ -131,11 +140,11 @@ public class ProdutoContratadoService {
             throw new PlanoInativoException();
         }
 
-        return produtoContratadoMapper.toDto(produtoContratado);
+        return produtoContratadoMapper.toOperacaoSaldoDto(produtoContratado);
     }
 
     public Boolean temSaldo(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoMapper.toEntity(listarPorId(id));
+        ProdutoContratado produtoContratado = listarPorId(id);
         return produtoContratado.getSituacao().equals(true) && produtoContratado.getSaldoAula() > 0;
     }
 

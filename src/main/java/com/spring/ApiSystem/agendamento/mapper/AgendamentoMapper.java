@@ -50,7 +50,7 @@ public abstract class  AgendamentoMapper {
 
     @Named("idToProdutoContratado")
     protected BuscarProdutoContratadoPorIdDto idToProdutoContratado (Long id){
-        return produtoContratadoService.listarPorId(id);
+        return produtoContratadoService.listarPorIdDto(id);
     }
 
     @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")

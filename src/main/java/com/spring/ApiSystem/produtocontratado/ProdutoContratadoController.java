@@ -57,7 +57,7 @@ public class ProdutoContratadoController {
     @GetMapping("/id/{id}")
     public ResponseEntity<BuscarProdutoContratadoPorIdDto>
     listarProdutosContratadosPorId(@PathVariable Long id){
-        BuscarProdutoContratadoPorIdDto produtoContratado = produtoContratadoService.listarPorId(id);
+        BuscarProdutoContratadoPorIdDto produtoContratado = produtoContratadoService.listarPorIdDto(id);
         if(produtoContratado == null){
             return ResponseEntity.notFound().build();
         }
@@ -67,9 +67,9 @@ public class ProdutoContratadoController {
     @Operation(summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que" +
                     "tiverem o idAluno correspondente")
-    @GetMapping("/idUsuario/{id}")
+    @GetMapping("/idAluno/{id}")
     public ResponseEntity<List<ProdutoContratadoDto>>
-    listarProdutosContratadosPorIdUsuario(@PathVariable Long id){
+    listarProdutosContratadosPorIdAluno(@PathVariable Long id){
         List<ProdutoContratadoDto> produtosContratados = produtoContratadoService.listarPorAluno(id);
         return ResponseEntity.ok(produtosContratados);
     }
@@ -89,7 +89,7 @@ public class ProdutoContratadoController {
     @Operation(summary = "Desativa um produto contratado (necessário login)",
                description = "Endpoint para desativar um produto contratado")
     @PatchMapping("/desativar/{id}")
-    public ResponseEntity<ProdutoContratadoDto> desativarProdutoContratado(Long id){
+    public ResponseEntity<ProdutoContratadoDto> desativarProdutoContratado(@PathVariable Long id){
         produtoContratadoService.desativarProdutoContratado(id);
 
         return ResponseEntity.noContent().build();
