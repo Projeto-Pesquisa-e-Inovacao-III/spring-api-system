@@ -21,7 +21,7 @@ public class PersonalController {
     @Operation (summary = "Buscar personal por ID (necessário login)",
             description = "Endpoint para buscar um personal específico pelo ID no sistema")
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPersonalPorId( @PathVariable  Integer id) {
+    public ResponseEntity<?> buscarPersonalPorId( @PathVariable  Long id) {
         BuscarPersonalPorIdDTO personal = personalService.buscarPersonalPorId(id);
         if(personal == null){
             return ResponseEntity.notFound().build();

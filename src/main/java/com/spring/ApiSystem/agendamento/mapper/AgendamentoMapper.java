@@ -38,7 +38,7 @@ public abstract class  AgendamentoMapper {
 
 
     @Named("idToPersonal")
-    protected Personal dToPersonal (Integer id){
+    protected Personal dToPersonal (Long id){
         return personalService.findById(id);
     }
 

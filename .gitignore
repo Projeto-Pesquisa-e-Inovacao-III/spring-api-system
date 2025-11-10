@@ -33,5 +33,5 @@ build/
 .vscode/
 
 ### Chaves ###
-private.pem
-public.pem
+src/main/resources/keys/private.pem
+src/main/resources/keys/public.pem

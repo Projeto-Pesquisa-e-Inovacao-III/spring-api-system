@@ -13,7 +13,7 @@ public class PersonalService {
         this.personalRepository = personalRepository;
     }
 
-    public BuscarPersonalPorIdDTO buscarPersonalPorId(Integer id) {
+    public BuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {
     Personal  personal = findById(id);
 
         return new BuscarPersonalPorIdDTO(
@@ -27,7 +27,7 @@ public class PersonalService {
         );
     }
 
-    public Personal findById(Integer id) {
+    public Personal findById(Long id) {
 
         return personalRepository
                 .findById(id)
