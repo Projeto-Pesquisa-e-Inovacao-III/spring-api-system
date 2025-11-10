@@ -57,6 +57,10 @@ public class AgendamentoService {
         validarAntecedenciaDeHorarioMarcado(criarAgendamentoDTO.data());
         LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(criarAgendamentoDTO.data(), criarAgendamentoDTO.tipoAulaProdutoContratado());
 
+        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
+        personalService.buscarPersonalPorId((long) Math.toIntExact(dto.personalId()));
+
+        produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
         Usuario usuario = obterUsuarioAutenticado();
         validarSeUsuarioDoTipoAluno(usuario);
 

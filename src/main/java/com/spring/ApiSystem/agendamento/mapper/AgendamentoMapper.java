@@ -53,6 +53,10 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "endereco", source = "endereco")
     public abstract ReqCadastrarHistoricoAgendamentoDTO toReqCriarHistoricoAgendamentoDTO(Agendamento agendamento);
 
+    @Named("idToPersonal")
+    protected Personal dToPersonal (Long id){
+        return personalService.findById(id);
+
     protected Usuario obterUsuarioAtual() {
         return userDetailsService.getCurrentUser();
     }
