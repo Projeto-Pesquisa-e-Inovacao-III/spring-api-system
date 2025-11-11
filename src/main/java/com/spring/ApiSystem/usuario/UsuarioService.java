@@ -11,7 +11,6 @@ import com.spring.ApiSystem.shared.security.ArgonService;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
