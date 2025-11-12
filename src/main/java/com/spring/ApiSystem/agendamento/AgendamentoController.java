@@ -26,15 +26,16 @@ public class AgendamentoController {
         this.agendamentoMapper = agendamentoMapper;
     }
 
-    @PostMapping
-    public ResponseEntity<?> criarAgendamento(@Valid @RequestBody CriarAgendamentoDTO criarAgendamentoDTO){
-        try {
-            Agendamento agendamentoCriado = agendamentoService.criar(criarAgendamentoDTO);
-            return new ResponseEntity<>("Agendamento realizado com sucesso.", HttpStatus.CREATED);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Erro ao realizar agendamento: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PostMapping
+//    public ResponseEntity<?> criarAgendamento(@Valid @RequestBody CriarAgendamentoDTO criarAgendamentoDTO){
+//        try {
+//            Agendamento agendamentoCriado = agendamentoServicelll
+//                    .criar(criarAgendamentoDTO);
+//            return new ResponseEntity<>("Agendamento realizado com sucesso.", HttpStatus.CREATED);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("Erro ao realizar agendamento: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @GetMapping
     public ResponseEntity<Page<?>> getAgendamentos(
@@ -47,15 +48,15 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentos);
     }
 
-    @PatchMapping("/{id}/reagendar")
-    public ResponseEntity<?> reagendarAgendamento(@PathVariable Long id  , @Valid @RequestBody ReagendarAgendamentoDTO reagendarAgendamentoDTO){
-        try {
-            Agendamento agendamentoReagendado = agendamentoService.reagendar( id , reagendarAgendamentoDTO);
-            return new ResponseEntity<>("Agendamento reagendado com sucesso.", HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>("Erro ao reagendar agendamento: " + e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-    }
+//    @PatchMapping("/{id}/reagendar")
+//    public ResponseEntity<?> reagendarAgendamento(@PathVariable Long id  , @Valid @RequestBody ReagendarAgendamentoDTO reagendarAgendamentoDTO){
+//        try {
+//            Agendamento agendamentoReagendado = agendamentoService.reagendar( id , reagendarAgendamentoDTO);
+//            return new ResponseEntity<>("Agendamento reagendado com sucesso.", HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>("Erro ao reagendar agendamento: " + e.getMessage(), HttpStatus.BAD_REQUEST);
+//        }
+//    }
 
     @PatchMapping("/{id}/aceitar")
     public ResponseEntity<?> aceitarAgendamento(@PathVariable Long id){

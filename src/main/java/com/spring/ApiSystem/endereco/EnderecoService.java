@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.endereco;
 
-import com.spring.ApiSystem.agendamento.dto.response.buscarporid.EnderecoResumoDTO;
 import com.spring.ApiSystem.cep.dto.response.DadosCepDTO;
 
 import com.spring.ApiSystem.cep.exception.CepNaoEncontradoException;
