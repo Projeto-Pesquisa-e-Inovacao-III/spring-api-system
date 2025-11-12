@@ -11,7 +11,6 @@ import com.spring.ApiSystem.shared.security.ArgonService;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,14 +31,6 @@ public class UsuarioService {
         this.argonService = argonService;
     }
 
-    public Boolean loginUsuario(String email, String senha) {
-        Optional<Usuario> userOpt = usuarioRepository.findByEmail(email);
-
-        return userOpt.isPresent() &&
-                userOpt.get().isAtivo() &&
-                argonService.validarSenha(senha, userOpt.get().getSalt(), userOpt.get().getSenha());
-    }
-
 
     public ResCadastrarUsuarioDTO cadastrarUsuario(ReqCadastroUsuarioDTO usuarioDTO) {
         validarEmailExistente(usuarioDTO.email());
@@ -51,41 +42,35 @@ public class UsuarioService {
     }
 
     public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email) {
-        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByEmail(email);
+        Usuario usuario = buscarUsuarioPorEmail(email);
 
-        if (usuarioEncontrado.isPresent()) {
+        validarEmailNaoEmUso(dto.email(), email);
+        validarSenhaAtual(dto.senha(), usuario);
 
-            if (emailExiste(dto.email()) && !dto.email().equals(email)) {
-                throw new EmailExistenteException();
-            }
+        usuarioMapper.atualizarUsuarioParaEditarUsuarioDto(dto, usuario);
 
-            if (!argonService.validarSenha(dto.senha(), usuarioEncontrado.get().getSalt(),
-                    usuarioEncontrado.get().getSenha())) {
-                throw new SenhaNaoCorrespondeAtual();
-            }
-
-            usuarioMapper.atualizarUsuarioParaEditarUsuarioDto(dto, usuarioEncontrado.get());
-
-            if (dto.senhaNova() != null) {
-                aplicarSenhaCriptografada(usuarioEncontrado.get(), dto.senhaNova());
-            }
-
-            usuarioRepository.save(usuarioEncontrado.get());
-            return usuarioMapper.toDtoAtualizarUsuario(usuarioEncontrado.get());
+        if (dto.senhaNova() != null) {
+            aplicarSenhaCriptografada(usuario, dto.senhaNova());
         }
 
-        throw new UsuarioNaoEncontradoException();
+        usuarioRepository.save(usuario);
+        return usuarioMapper.toDtoAtualizarUsuario(usuario);
     }
 
-    public Boolean removerUsuario(String email) {
-        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByEmail(email);
 
-        if (usuarioEncontrado.isPresent()) {
-            usuarioEncontrado.get().setAtivo(false);
-            usuarioRepository.save(usuarioEncontrado.get());
-            return true;
-        }
-        throw new UsuarioNaoEncontradoException();
+    public Boolean removerUsuario(String email) {
+        Usuario usuario = buscarUsuarioPorEmail(email);
+        usuario.setAtivo(false);
+        usuarioRepository.save(usuario);
+        return true;
+    }
+
+    public Boolean loginUsuario(String email, String senha) {
+        Optional<Usuario> userOpt = buscarPorEmail(email);
+
+        return userOpt.isPresent() &&
+                userOpt.get().isAtivo() &&
+                argonService.validarSenha(senha, userOpt.get().getSalt(), userOpt.get().getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -99,12 +84,24 @@ public class UsuarioService {
     }
 
     public boolean emailExiste(String email) {
-        return buscarPorEmail(email).isPresent();
+        return usuarioRepository.existsByEmail(email);
     }
 
-    public void validarEmailExistente(String email) {
-        if (usuarioRepository.existsByEmail(email)) {
+    private void validarEmailExistente(String email) {
+        if (emailExiste(email)) {
             throw new EmailExistenteException();
+        }
+    }
+
+    private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
+        if (emailExiste(novoEmail) && !novoEmail.equals(emailAtual)) {
+            throw new EmailExistenteException();
+        }
+    }
+
+    private void validarSenhaAtual(String senhaInformada, Usuario usuario) {
+        if (!argonService.validarSenha(senhaInformada, usuario.getSalt(), usuario.getSenha())) {
+            throw new SenhaNaoCorrespondeAtual();
         }
     }
 

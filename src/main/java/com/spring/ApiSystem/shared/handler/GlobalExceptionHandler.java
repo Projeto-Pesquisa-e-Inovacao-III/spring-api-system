@@ -1,11 +1,14 @@
 package com.spring.ApiSystem.shared.handler;
 
+import com.spring.ApiSystem.shared.exception.CustomApiException;
+import com.spring.ApiSystem.shared.handler.reponse.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +29,16 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("Exception", ex.getMessage());
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CustomApiException.class)
+    public ResponseEntity<ErrorResponse> handleCustomApiException(CustomApiException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                e.getStatus().value(),
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(e.getStatus()).body(errorResponse);
     }
 
 }

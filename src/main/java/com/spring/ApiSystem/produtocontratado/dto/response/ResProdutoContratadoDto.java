@@ -10,6 +10,6 @@ import java.time.LocalDate;
 /**
  * DTO for {@link ProdutoContratado}
  */
-public record ProdutoContratadoDto(Boolean situacao, LocalDate dataCompra, LocalDate dataExpiracao, Integer saldoAula,
-                                   @NotNull ProdutoExibicaoDto produtoExibicao) implements Serializable {
+public record ResProdutoContratadoDto(Boolean situacao, LocalDate dataCompra, LocalDate dataExpiracao, Integer saldoAula,
+                                      @NotNull ProdutoExibicaoDto produtoExibicao) implements Serializable {
 }
