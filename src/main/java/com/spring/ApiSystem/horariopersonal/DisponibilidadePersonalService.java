@@ -142,7 +142,6 @@ public class DisponibilidadePersonalService {
             throw new PersonalNaoExisteExcpetion();
         }
 
-
         List<DiaSemana> diasParaCalcular = new ArrayList<>();
         if (diaSemana != null) {
             diasParaCalcular.add(diaSemana);
@@ -150,11 +149,15 @@ public class DisponibilidadePersonalService {
             diasParaCalcular.addAll(List.of(DiaSemana.values()));
         }
 
+        List<DisponibilidadePersonal> todosHorarios = disponibilidadeRepository.
+                findByPersonalIdAndDiaSemanaInOrderByDiaSemanaHoraInicio(personalId, diasParaCalcular);
+
+        var diasAgrupados = todosHorarios.stream()
+                .collect(Collectors.groupingBy(DisponibilidadePersonal::getDiaSemana));
+
         for (DiaSemana dia : diasParaCalcular) {
-            List<DisponibilidadePersonal> horariosDoDia = disponibilidadeRepository.findByPersonalIdAndDiaSemana(personalId, dia);
-
+            List<DisponibilidadePersonal> horariosDoDia = diasAgrupados.getOrDefault(dia, new ArrayList<>());
             List<ResSlotDisponivelDTO> slotsLivres = calcularSlotsDisponiveis(horariosDoDia);
-
             if (!slotsLivres.isEmpty()) {
                 disponibilidadeTotal.add(new ResDiaDisponibilidadeDTO(dia, slotsLivres));
             }
@@ -166,7 +169,6 @@ public class DisponibilidadePersonalService {
 
 
     //Metodos auxiliares
-
     private void validarConflito(Long personalId, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim, Long horarioId, TipoHorario tipo) {
 
         List<DisponibilidadePersonal> sobrepostos = disponibilidadeRepository.encontrarConflitos(
