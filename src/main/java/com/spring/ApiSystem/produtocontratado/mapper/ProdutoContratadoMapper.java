@@ -1,23 +1,28 @@
 package com.spring.ApiSystem.produtocontratado.mapper;
 
-import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ProdutoContratadoSoComProdutoDto;
+import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProdutoContratadoMapper {
-    ProdutoContratadoDto toDto(ProdutoContratado produtoContratado);
+    ResProdutoContratadoDto toDto(ProdutoContratado produtoContratado);
+    List<ResProdutoContratadoDto> toListDto(List<ProdutoContratado> produtoContratado);
+    @Mapping(target = "alunoId", source = "aluno.id")
+    @Mapping(target = "produtoExibicaoId", source = "produtoExibicao.id")
+    ResBuscarProdutoContratadoPorIdDto toBuscarProdutoContratadoPorIdDto(ProdutoContratado produtoContratado);
+    ResOperacaoSaldoDto toOperacaoSaldoDto(ProdutoContratado produtoContratado);
 
-    ProdutoContratadoSoComProdutoDto toSoComProdutoDto(ProdutoContratado produtoContratado);
+    ProdutoContratado toEntity(ResProdutoContratadoDto ResProdutoContratadoDto);
+    ProdutoContratado toEntity(ResBuscarProdutoContratadoPorIdDto buscarProdutoContratadoPorIdDto);
 
-    ProdutoContratado toEntity(ProdutoContratadoDto ProdutoContratadoDto);
 
-    ProdutoContratado toEntity(ProdutoContratadoSoComProdutoDto produtoContratadoSoComProdutoDto);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    ProdutoContratado partialUpdate(ProdutoContratadoSoComProdutoDto produtoContratadoSoComProdutoDto, @MappingTarget ProdutoContratado produtoContratado);
+    @Mapping(target = "aluno", ignore = true)
+    @Mapping(target = "produtoExibicao", ignore = true)
+    void partialUpdate(EditarProdutoContratadoDto editarProdutoContratadoDto, @MappingTarget ProdutoContratado produtoContratado);
 }

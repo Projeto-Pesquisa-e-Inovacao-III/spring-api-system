@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long> {
-    @Query("SELECT a FROM Agendamento a " +
+    @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao " +
             "LEFT JOIN FETCH a.endereco e " +
@@ -21,7 +21,7 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "ORDER BY a.situacao ASC, a.data ASC")
     Page<Agendamento> findByAlunoOrderByDataAsc(@Param("aluno") Aluno aluno, Pageable pageable);
 
-    @Query("SELECT a FROM Agendamento a " +
+    @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao " +
             "LEFT JOIN FETCH a.endereco e " +

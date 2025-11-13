@@ -83,7 +83,7 @@ public class AgendamentoService {
 
         BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
         personalService.buscarPersonalPorId(Math.toIntExact(dto.personalId()));
-        produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
+        produtoContratadoService.listarPorId(dto.produtoContratadoId());
 
         Endereco endereco;
         if (dto.enderecoExistenteId() != null) {

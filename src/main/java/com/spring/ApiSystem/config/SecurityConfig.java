@@ -51,7 +51,9 @@ public class SecurityConfig {
                             ).permitAll()
                             .requestMatchers("/agendamentos/**").permitAll()
                             .requestMatchers("/checkouts/**").permitAll()
-                            .requestMatchers("/api/v1/**").permitAll();
+                            .requestMatchers("/api/v1/**").permitAll()
+                            .requestMatchers("/checkouts/**").permitAll()
+                            .requestMatchers("/produtos-contratados/**").permitAll();
 
                     if (perfilAtivo.equals("dev")) {
                         auth.requestMatchers(HttpMethod.GET,

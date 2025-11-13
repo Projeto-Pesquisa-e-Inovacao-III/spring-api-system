@@ -5,11 +5,11 @@ import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDate;
 
 /**
  * DTO for {@link ProdutoContratado}
  */
-public record ProdutoContratadoDto(Boolean ativo, Date dataCompra, Date dataExpiracao, Integer saldoAula,
-                                   @NotNull ProdutoExibicaoDto produtoExibicao) implements Serializable {
+public record ResProdutoContratadoDto(Boolean situacao, LocalDate dataCompra, LocalDate dataExpiracao, Integer saldoAula,
+                                      @NotNull ProdutoExibicaoDto produtoExibicao) implements Serializable {
 }

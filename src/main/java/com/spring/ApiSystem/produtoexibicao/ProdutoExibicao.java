@@ -43,7 +43,7 @@ public class ProdutoExibicao {
 
     @Column(name = "quantidade_aula",
             nullable = false)
-    private Integer quantidadeAula;
+    private String quantidadeAula;
 
     @Column(name = "duracaoMes",
             nullable = false)
@@ -57,7 +57,7 @@ public class ProdutoExibicao {
                            Double preco, String periodo,
                            Status status, LocalDateTime dataCriacao,
                            LocalDateTime dataAtualizacao, String tipoAula,
-                           Integer quantidadeAula, Integer duracaoMes) {
+                           String quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -152,11 +152,11 @@ public class ProdutoExibicao {
         this.tipoAula = tipoAula;
     }
 
-    public Integer getQuantidadeAula() {
+    public String getQuantidadeAula() {
         return quantidadeAula;
     }
 
-    public void setQuantidadeAula(Integer quantidadeAula) {
+    public void setQuantidadeAula(String quantidadeAula) {
         this.quantidadeAula = quantidadeAula;
     }
 

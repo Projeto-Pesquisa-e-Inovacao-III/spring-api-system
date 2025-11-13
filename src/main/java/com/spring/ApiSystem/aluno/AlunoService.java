@@ -21,8 +21,6 @@ public class AlunoService {
        return alunoRepository.save(aluno);
     }
 
-
-
     public BuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
         Aluno aluno = buscarPorId(id);
 

@@ -12,7 +12,7 @@ public record ResProdutoExibicaoDTO(
     String periodo,
     Status status,
     String tipoAula,
-    Integer quantidadeAula,
+    String quantidadeAula,
     Integer duracaoMes,
     LocalDateTime dataCriacao,
     LocalDateTime dataAtualizacao
