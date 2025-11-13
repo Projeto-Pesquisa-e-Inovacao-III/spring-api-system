@@ -9,7 +9,6 @@ public record ReqAtualizarEnderecoDTO(
 
         String complemento,
 
-        @NotBlank(message = "Unidade é obrigatório")
         String unidade,
 
         @NotBlank(message = "Tipo é obrigatório")
