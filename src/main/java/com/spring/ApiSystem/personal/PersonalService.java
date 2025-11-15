@@ -27,7 +27,7 @@ public class PersonalService {
         this.personalMapper = personalMapper;
     }
 
-    public ResCadastrarPersonalDTO cadastrarPersonal(ReqCadastroPersonalDTO usuarioDTO) {
+    public ResCadastrarPersonalDTO cadastrarUsuario(ReqCadastroPersonalDTO usuarioDTO) {
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);

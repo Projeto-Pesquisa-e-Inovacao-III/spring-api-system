@@ -23,7 +23,7 @@ public class AlunoService {
         this.alunoMapper = alunoMapper;
     }
 
-    public ResCadastrarAlunoDTO cadastrarAluno(ReqCadastroAlunoDTO usuarioDTO) {
+    public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
