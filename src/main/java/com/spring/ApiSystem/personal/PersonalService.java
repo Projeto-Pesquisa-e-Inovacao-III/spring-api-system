@@ -35,8 +35,7 @@ public class PersonalService {
     }
 
 
-
-    public BuscarPersonalPorIdDTO buscarPersonalPorId(Integer id) {
+    public BuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {
     Personal  personal = findById(id);
 
         return new BuscarPersonalPorIdDTO(
@@ -46,11 +45,12 @@ public class PersonalService {
                 personal.getDataNascimento(),
                 personal.getEmail(),
                 personal.getCref(),
-                personal.isAtivo()
+                personal.isAtivo(),
+                personal.getCaminhoFoto()
         );
     }
 
-    public Personal findById(Integer id) {
+    public Personal findById(Long id) {
 
         return personalRepository
                 .findById(id)

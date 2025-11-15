@@ -36,10 +36,13 @@ public class Usuario {
 
     private boolean ativo = true;
 
+    @Column(name= "caminho_foto")
+    private String caminhoFoto;
+
     public Usuario() {
     }
 
-    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo) {
+    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto) {
         this.id = id;
         this.tipo = tipo;
         this.nome = nome;
@@ -49,6 +52,15 @@ public class Usuario {
         this.salt = salt;
         this.senha = senha;
         this.ativo = ativo;
+        this.caminhoFoto = caminhoFoto;
+    }
+
+    public String getCaminhoFoto() {
+        return caminhoFoto;
+    }
+
+    public void setCaminhoFoto(String caminhoFoto) {
+        this.caminhoFoto = caminhoFoto;
     }
 
     public Long getId() {

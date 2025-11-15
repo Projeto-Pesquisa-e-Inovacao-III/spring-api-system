@@ -12,6 +12,7 @@ public record BuscarAlunoPorIdDTO(
         LocalDate dataNascimento,
         String email,
         String cpf,
-        boolean ativo
+        boolean ativo,
+        String caminhoFoto
 ) {}
 

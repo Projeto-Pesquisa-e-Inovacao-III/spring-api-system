@@ -18,8 +18,8 @@ public class Personal extends Usuario {
     public Personal() {
     }
 
-    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String cref) {
-        super(id, TipoUsuario.PERSONAL, nome, sexo, dataNascimento, email, salt, senha, ativo);
+    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, String cref) {
+        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto);
         this.cref = cref;
     }
 

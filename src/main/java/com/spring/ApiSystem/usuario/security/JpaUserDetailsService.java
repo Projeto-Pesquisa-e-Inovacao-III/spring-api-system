@@ -33,7 +33,8 @@ public class JpaUserDetailsService implements UserDetailsService {
             // Olhar no futuro quando for separado as roles dos usuários
             return new User(usuarioEncontrado.getEmail(),
                             usuarioEncontrado.getSenha(),
-                            List.of(new SimpleGrantedAuthority("ROLE_USER")));
+                            List.of(new SimpleGrantedAuthority("ROLE_USER" + usuarioEncontrado.getTipo()))
+            );
         }
 
         return  null;
