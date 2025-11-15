@@ -1,5 +1,9 @@
 package com.spring.ApiSystem.usuario;
 
+import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.personal.PersonalService;
+import com.spring.ApiSystem.personal.dto.response.BuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqLoginUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
@@ -7,6 +11,8 @@ import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResBuscarUsuarioPorEmailDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,12 +31,16 @@ public class UsuarioController {
     private final UsuarioService usuarioService;
     private final FilterService filterService;
     private final JpaUserDetailsService userDetails;
+    private final AlunoService alunoService;
+    private final PersonalService personalService;
 
     public UsuarioController(UsuarioService usuarioService,
-                             FilterService filterService, JpaUserDetailsService userDetails) {
+                             FilterService filterService, JpaUserDetailsService userDetails, AlunoService alunoService, PersonalService personalService) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
         this.userDetails = userDetails;
+        this.alunoService = alunoService;
+        this.personalService = personalService;
     }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
@@ -94,10 +104,18 @@ public class UsuarioController {
 
     @Operation(summary = "Buscar informações de usuario", description = "Endpoint para a busca as informações do usuario")
     @GetMapping("/me")
-    public ResponseEntity<ResBuscarUsuarioPorEmailDTO> buscarUsuarioPorEmail(HttpServletResponse response){
+    public ResponseEntity<?> buscarEu(HttpServletResponse response){
         Usuario usuario = userDetails.getCurrentUser();
 
-        ResBuscarUsuarioPorEmailDTO usuarioDTO = usuarioService.buscarUsuarioPorEmail(email);
+        if(usuario.getTipo() == TipoUsuario.ALUNO){
+            BuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
+            return ResponseEntity.ok().body(resUsuario);
 
+        }else if(usuario.getTipo() == TipoUsuario.PERSONAL){
+            BuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
+            return ResponseEntity.ok().body(resUsuario);
+        }
+
+        throw new UsuarioNaoEncontradoException();
     }
 }

@@ -27,7 +27,8 @@ public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
-    @Value("${storage.local-dir}")   // <-- injeta o diretório
+
+    @Value("${storage.local-dir:}")
     private String localDir;
 
     public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ArgonService argonService) {
@@ -171,7 +172,7 @@ public class UsuarioService {
         if (imagem.getSize() > 5 * 1024 * 1024) {
             throw new IllegalArgumentException("Imagem muito grande (máx 5MB)");
         }
-    }
 
+    }
 
 }

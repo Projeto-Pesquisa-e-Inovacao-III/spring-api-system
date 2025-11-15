@@ -53,7 +53,8 @@ public class AlunoService {
                 aluno.getDataNascimento(),
                 aluno.getEmail(),
                 aluno.getCpf(),
-                aluno.isAtivo()
+                aluno.isAtivo(),
+                aluno.getCaminhoFoto()
         );
     }
 

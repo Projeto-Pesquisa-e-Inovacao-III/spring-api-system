@@ -17,6 +17,7 @@ import com.spring.ApiSystem.agendamento.enums.Situacao;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -59,12 +60,12 @@ public class AgendamentoService {
 
         List<?> returnDTO = new ArrayList<>();
 
-        if(usuario.getTipo().equals("Aluno")){
+        if(usuario.getTipo().equals(TipoUsuario.ALUNO)){
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByAlunoOrderByDataAsc((Aluno) usuario, pageable);
 
             return agendamentos.map(agendamentoMapper::toListarAgendamentoAlunoDto);
-        } else if (usuario.getTipo().equals("Personal")) {
+        } else if (usuario.getTipo().equals(TipoUsuario.PERSONAL)) {
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByPersonalOrderByDataAsc((Personal) usuario, pageable);
 
