@@ -26,3 +26,6 @@
       init:
         mode: always
         encoding: UTF-8
+
+    storage:
+      local-dir: images

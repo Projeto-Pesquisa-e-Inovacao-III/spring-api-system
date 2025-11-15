@@ -5,7 +5,9 @@ import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResBuscarUsuarioPorEmailDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,11 +24,13 @@ public class UsuarioController {
 
     private final UsuarioService usuarioService;
     private final FilterService filterService;
+    private final JpaUserDetailsService userDetails;
 
     public UsuarioController(UsuarioService usuarioService,
-                             FilterService filterService) {
+                             FilterService filterService, JpaUserDetailsService userDetails) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
+        this.userDetails = userDetails;
     }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
@@ -88,4 +92,12 @@ public class UsuarioController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Buscar informações de usuario", description = "Endpoint para a busca as informações do usuario")
+    @GetMapping("/me")
+    public ResponseEntity<ResBuscarUsuarioPorEmailDTO> buscarUsuarioPorEmail(HttpServletResponse response){
+        Usuario usuario = userDetails.getCurrentUser();
+
+        ResBuscarUsuarioPorEmailDTO usuarioDTO = usuarioService.buscarUsuarioPorEmail(email);
+
+    }
 }
