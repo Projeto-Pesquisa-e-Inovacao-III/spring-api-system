@@ -16,10 +16,10 @@ import java.io.IOException;
 
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
-    private static final long MAX_IMAGE_SIZE = 5L * 1024 * 1024;
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
@@ -52,6 +52,7 @@ public class UsuarioService {
         return usuarioMapper.toDtoAtualizarUsuario(usuario);
     }
 
+
     public Boolean removerUsuario(String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
         usuario.setAtivo(false);
@@ -60,7 +61,7 @@ public class UsuarioService {
     }
 
     public Boolean loginUsuario(String email, String senha) {
-        Usuario userOpt = buscarUsuarioPorEmail(email);
+    Usuario userOpt = buscarUsuarioPorEmail(email);
 
         return
                 userOpt.isAtivo() &&
@@ -89,7 +90,6 @@ public class UsuarioService {
         usuario.setSenha(cript.get(1));
     }
 
-
     private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
         if (emailExiste(novoEmail) && !novoEmail.equals(emailAtual)) {
             throw new EmailExistenteException();
@@ -114,4 +114,5 @@ public class UsuarioService {
         if (path == null || path.isBlank()) return;
         imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
     }
+
 }

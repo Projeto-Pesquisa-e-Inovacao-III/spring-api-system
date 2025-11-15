@@ -146,5 +146,3 @@ public class Usuario {
 
     public void setTelefones(List<Telefone> telefones) {this.telefones = telefones;}
 }
-
-

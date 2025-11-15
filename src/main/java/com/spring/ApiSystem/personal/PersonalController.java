@@ -3,6 +3,8 @@ package com.spring.ApiSystem.personal;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;

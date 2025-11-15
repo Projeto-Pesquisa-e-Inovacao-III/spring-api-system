@@ -4,7 +4,6 @@ import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.time.LocalDate;
 public class Personal extends Usuario {
     @Column(unique = true)
     private String cref;
+
 
 
     public Personal() {}

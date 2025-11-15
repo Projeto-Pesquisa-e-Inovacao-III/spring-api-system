@@ -8,6 +8,9 @@ import com.spring.ApiSystem.personal.mapper.PersonalMapper;
 import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
+import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import org.springframework.stereotype.Service;
 
 @Service
