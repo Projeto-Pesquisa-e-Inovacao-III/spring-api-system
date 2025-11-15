@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.personal.dto.request;
 
+import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -25,6 +26,7 @@ public record ReqCadastroPersonalDTO(
     String senha,
 
     @NotBlank
-     String cref
+     String cref,
+    ReqCadastrarTelefoneDTO telefone
 
 ) {}

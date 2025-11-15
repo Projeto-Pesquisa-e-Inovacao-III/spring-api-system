@@ -5,6 +5,8 @@ import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteExcpetion;
 import com.spring.ApiSystem.aluno.mapper.AlunoMapper;
+import com.spring.ApiSystem.telefone.Telefone;
+import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.usuario.UsuarioService;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +23,21 @@ public class AlunoService {
         this.alunoMapper = alunoMapper;
     }
 
-    public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
+    public ResCadastrarAlunoDTO cadastrarAluno(ReqCadastroAlunoDTO usuarioDTO) {
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
         usuarioService.aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
+
+        ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
+
+        Telefone telefone = new Telefone();
+        telefone.setPais(telefoneDTO.pais());
+        telefone.setDdd(telefoneDTO.ddd());
+        telefone.setNumero(telefoneDTO.numero());
+        telefone.setUsuario(usuarioEntity);
+
+        usuarioEntity.getTelefones().add(telefone);
 
         return alunoMapper.toDtoCadastrarAluno(alunoRepository.save(usuarioEntity));
     }

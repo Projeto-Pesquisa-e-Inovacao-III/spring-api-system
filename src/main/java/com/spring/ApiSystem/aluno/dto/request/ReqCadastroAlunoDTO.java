@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.aluno.dto.request;
 
+import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -26,6 +27,8 @@ public record ReqCadastroAlunoDTO(
     String senha,
 
     @NotBlank
-    String cpf
+    String cpf,
+
+    ReqCadastrarTelefoneDTO telefone
 
 ) {}

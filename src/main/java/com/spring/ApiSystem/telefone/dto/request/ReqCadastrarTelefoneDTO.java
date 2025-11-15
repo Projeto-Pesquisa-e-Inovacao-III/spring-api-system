@@ -13,7 +13,5 @@ public record ReqCadastrarTelefoneDTO(
         @Pattern(regexp = "\\d{8,9}", message = "Número deve conter 8 ou 9 dígitos")
         String numero,
 
-        @NotBlank(message = "Tipo não pode estar vazio")
-        @Pattern(regexp = "CELULAR|RESIDENCIAL|COMERCIAL", message = "Tipo deve ser CELULAR, RESIDENCIAL ou COMERCIAL")
-        String tipo
-) {}
+        @NotBlank(message = "País não pode estar vazio")
+        String pais) {}

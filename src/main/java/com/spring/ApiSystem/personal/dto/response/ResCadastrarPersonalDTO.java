@@ -9,4 +9,5 @@ public record ResCadastrarPersonalDTO(
     LocalDate dataNascimento,
     String email,
     boolean ativo
+
 ) {}
