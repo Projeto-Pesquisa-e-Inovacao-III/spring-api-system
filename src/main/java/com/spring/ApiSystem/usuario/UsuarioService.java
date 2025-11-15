@@ -1,14 +1,11 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
-import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.shared.security.ArgonService;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,27 +26,15 @@ import java.util.Optional;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final AlunoService alunoService;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
     @Value("${storage.local-dir}")   // <-- injeta o diretório
     private String localDir;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, AlunoService alunoService, UsuarioMapper usuarioMapper, ArgonService argonService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ArgonService argonService) {
         this.usuarioRepository = usuarioRepository;
-        this.alunoService = alunoService;
         this.usuarioMapper = usuarioMapper;
         this.argonService = argonService;
-    }
-
-
-    public ResCadastrarUsuarioDTO cadastrarUsuario(ReqCadastroUsuarioDTO usuarioDTO) {
-        validarEmailExistente(usuarioDTO.email());
-
-        Aluno usuarioEntity = usuarioMapper.toEntityAluno(usuarioDTO);
-        aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
-
-        return usuarioMapper.toDtoCadastrarUsuario(alunoService.cadastrarAluno(usuarioEntity));
     }
 
     public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email) {
@@ -77,11 +62,11 @@ public class UsuarioService {
     }
 
     public Boolean loginUsuario(String email, String senha) {
-        Optional<Usuario> userOpt = buscarPorEmail(email);
+    Usuario userOpt = buscarUsuarioPorEmail(email);
 
-        return userOpt.isPresent() &&
-                userOpt.get().isAtivo() &&
-                argonService.validarSenha(senha, userOpt.get().getSalt(), userOpt.get().getSenha());
+        return
+                userOpt.isAtivo() &&
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -90,18 +75,20 @@ public class UsuarioService {
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
-    public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
     public boolean emailExiste(String email) {
         return usuarioRepository.existsByEmail(email);
     }
 
-    private void validarEmailExistente(String email) {
+    public void validarEmailExistente(String email) {
         if (emailExiste(email)) {
             throw new EmailExistenteException();
         }
+    }
+
+    public void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
+        List<String> cript = argonService.criptografarSenha(senhaPlain);
+        usuario.setSalt(cript.get(0));
+        usuario.setSenha(cript.get(1));
     }
 
     private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
@@ -115,13 +102,6 @@ public class UsuarioService {
             throw new SenhaNaoCorrespondeAtual();
         }
     }
-
-    private void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
-        List<String> cript = argonService.criptografarSenha(senhaPlain);
-        usuario.setSalt(cript.get(0));
-        usuario.setSenha(cript.get(1));
-    }
-
 
 
     private String trocarImagem(MultipartFile imagem, Path path) throws IOException {

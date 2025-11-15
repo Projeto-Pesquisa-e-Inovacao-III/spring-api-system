@@ -46,7 +46,8 @@ public class SecurityConfig {
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> {
                     auth.requestMatchers(HttpMethod.POST,
-                                    "/usuarios/cadastro",
+                                    "/alunos/cadastro",
+                                    "/personais/cadastro",
                                     "/usuarios/login"
                             ).permitAll()
                             .requestMatchers("/agendamentos/**").permitAll()

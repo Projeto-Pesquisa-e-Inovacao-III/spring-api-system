@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.personal;
 
 import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -17,11 +18,8 @@ public class Personal extends Usuario {
     public Personal() {
     }
 
-
-    public Personal(Long id, String tipo, String nome, String sexo,
-                    LocalDate dataNascimento, String email, String salt,
-                    String senha, boolean ativo, String cref) {
-        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo);
+    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String cref) {
+        super(id, TipoUsuario.PERSONAL, nome, sexo, dataNascimento, email, salt, senha, ativo);
         this.cref = cref;
     }
 

@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.usuario;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -12,8 +13,8 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tipo", insertable = false, updatable = false)
-    private String tipo;
+    @Column(name = "tipo", updatable = false)
+    private TipoUsuario tipo;
 
     @Column(nullable = false)
     private String nome;
@@ -38,9 +39,7 @@ public class Usuario {
     public Usuario() {
     }
 
-    public Usuario(Long id, String tipo, String nome, String sexo,
-                   LocalDate dataNascimento, String email, String salt,
-                   String senha, boolean ativo) {
+    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo) {
         this.id = id;
         this.tipo = tipo;
         this.nome = nome;
@@ -60,11 +59,11 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getTipo() {
+    public TipoUsuario getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoUsuario tipo) {
         this.tipo = tipo;
     }
 

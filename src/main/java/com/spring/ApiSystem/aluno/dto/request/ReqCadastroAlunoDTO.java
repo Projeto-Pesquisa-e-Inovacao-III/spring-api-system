@@ -1,11 +1,14 @@
-package com.spring.ApiSystem.usuario.dto.request;
+package com.spring.ApiSystem.aluno.dto.request;
 
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 
 import java.util.Date;
 
-public record ReqCadastroUsuarioDTO(
+public record ReqCadastroAlunoDTO(
     @NotBlank(message = "O nome é obrigatório")
     String nome,
 
@@ -23,8 +26,6 @@ public record ReqCadastroUsuarioDTO(
     String senha,
 
     @NotBlank
-    String cpf,
+    String cpf
 
-    @NotBlank(message = "O tipo de usuário é obrigatório")
-    TipoUsuario tipo
 ) {}
