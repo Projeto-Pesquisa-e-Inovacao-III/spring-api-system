@@ -4,13 +4,17 @@ import com.spring.ApiSystem.enums.DiaSemana;
 import com.spring.ApiSystem.horariopersonal.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
 import com.spring.ApiSystem.horariopersonal.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.horariopersonal.dto.response.ResSlotDisponivelDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(name = "Disponibilidade Personal",
@@ -44,12 +48,14 @@ public class DisponibilidadePersonalController {
     }
 
     @Operation(summary = "Consultar slots de horários disponíveis",
-            description = "Retorna os slots de tempo livres de um personal, subtraindo intervalos e restrições. Pode ser filtrado por um dia da semana.")
-    @GetMapping("/{personalId}/horarios/disponiveis")
-    public ResponseEntity<List<ResDiaDisponibilidadeDTO>> obterHorariosDisponiveis(@PathVariable Long personalId, @RequestParam(required = false) DiaSemana diaSemana) {
+            description = "Retorna os slots de tempo livres de um personal, subtraindo intervalos e restrições.")
+    @GetMapping("/{personalId}/horarios-disponiveis")
+    public ResponseEntity<List<ResSlotDisponivelDTO>> obterHorariosDisponiveis(@PathVariable Long personalId,
+                                                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data){
 
-        List<ResDiaDisponibilidadeDTO> disponibilidade = disponibilidadeService.obterHorariosDisponiveis(personalId, diaSemana);
-        return ResponseEntity.ok(disponibilidade);
+        List<ResSlotDisponivelDTO> slots = disponibilidadeService.obterHorariosDisponiveis(personalId, data);
+        return ResponseEntity.ok(slots);
+
     }
 
     @Operation(summary = "Atualizar um horário existente",

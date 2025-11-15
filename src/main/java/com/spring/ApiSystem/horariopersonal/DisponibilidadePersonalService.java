@@ -16,11 +16,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,36 +32,6 @@ public class DisponibilidadePersonalService {
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.personalRepository = personalRepository;
     }
-
-
-    //Consulta das disponibilidades de horario do fabião
-    @Transactional(readOnly = true)
-    public List<ResDiaDisponibilidadeDTO> buscarHorariosDisponiveis (Long personalId, Optional<DayOfWeek> diaSemanaFiltro) {
-        List<DiaSemana> diasParaProcessar;
-        if (diaSemanaFiltro.isPresent()) {
-            diasParaProcessar = List.of(DiaSemana.fromDayOfWeek(diaSemanaFiltro.get()));
-
-        }else {
-            diasParaProcessar = List.of(DiaSemana.values());
-        }
-
-        List<ResDiaDisponibilidadeDTO> disponibilidadeTotal = new ArrayList<>();
-
-        for (DiaSemana diaSemana : diasParaProcessar) {
-            List<DisponibilidadePersonal> horariosDoDia = disponibilidadeRepository.findByPersonalIdAndDiaSemana(personalId, diaSemana);
-
-            List<ResSlotDisponivelDTO> slotsLivres = calcularSlotsDisponiveis(horariosDoDia);
-
-            if (!slotsLivres.isEmpty()) {
-                disponibilidadeTotal.add(new ResDiaDisponibilidadeDTO(diaSemana, slotsLivres));
-
-            }
-        }
-
-        disponibilidadeTotal.sort(Comparator.comparing(dia -> dia.dia().getDayOfWeek().getValue()));
-        return disponibilidadeTotal;
-    }
-
 
     // Crud principal para criar os horarios e a validação de sobreposição
     @Transactional
@@ -118,7 +86,7 @@ public class DisponibilidadePersonalService {
     }
 
 
-    //Listagem dos horarios disponiveis para um personal
+    //Listagem dos horarios por personal
     @Transactional(readOnly = true)
     public List<ResHorarioDTO> listarHorariosPorPersonal(Long personalId) {
 
@@ -132,43 +100,66 @@ public class DisponibilidadePersonalService {
     }
 
 
-    // Consulta as disponibilidades dos horarios que estão disponiveis, passando um filtro por dia
+    // Consulta as disponibilidades dos horarios de um personal.
     @Transactional(readOnly = true)
-    public List<ResDiaDisponibilidadeDTO> obterHorariosDisponiveis(Long personalId, DiaSemana diaSemana) {
-        List<ResDiaDisponibilidadeDTO> disponibilidadeTotal = new ArrayList<>();
+    public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada) {
+
 
         // Garante que o Personal existe antes de processar
         if (!personalRepository.existsById(personalId)) {
             throw new PersonalNaoExisteExcpetion();
         }
 
-        List<DiaSemana> diasParaCalcular = new ArrayList<>();
-        if (diaSemana != null) {
-            diasParaCalcular.add(diaSemana);
-        } else {
-            diasParaCalcular.addAll(List.of(DiaSemana.values()));
+        DayOfWeek diaSemana = dataDesejada.getDayOfWeek();
+        List<DisponibilidadePersonal> disponibilidade = disponibilidadeRepository
+                .findByPersonalIdAndDiaSemana(personalId, DiaSemana.fromDayOfWeek(diaSemana));
+
+        if (disponibilidade.isEmpty()){
+            return Collections.emptyList();
         }
 
-        List<DisponibilidadePersonal> todosHorarios = disponibilidadeRepository.
-                findByPersonalIdAndDiaSemanaInOrderByDiaSemanaHoraInicio(personalId, diasParaCalcular);
+        Set<LocalTime> horariosBloqueados = new HashSet<>();
+        List<DisponibilidadePersonal> blocosDisponibilidade = new ArrayList<>();
 
-        var diasAgrupados = todosHorarios.stream()
-                .collect(Collectors.groupingBy(DisponibilidadePersonal::getDiaSemana));
+        for(DisponibilidadePersonal disp : disponibilidade){
+            if(disp.getTipo() == TipoHorario.DISPONIVEL){
+                blocosDisponibilidade.add(disp);
+            }else {
+                LocalTime inicio = disp.getHoraInicio();
+                LocalTime fim = disp.getHoraFim();
 
-        for (DiaSemana dia : diasParaCalcular) {
-            List<DisponibilidadePersonal> horariosDoDia = diasAgrupados.getOrDefault(dia, new ArrayList<>());
-            List<ResSlotDisponivelDTO> slotsLivres = calcularSlotsDisponiveis(horariosDoDia);
-            if (!slotsLivres.isEmpty()) {
-                disponibilidadeTotal.add(new ResDiaDisponibilidadeDTO(dia, slotsLivres));
+                LocalTime current = inicio;
+
+                while (current.isBefore(fim)) {
+                    horariosBloqueados.add(current);
+                    current = current.plusMinutes(15);
+                }
             }
         }
 
-        disponibilidadeTotal.sort(Comparator.comparing(dia -> dia.dia().getDayOfWeek().getValue()));
-        return disponibilidadeTotal;
+        List<LocalTime> slotsFinais = new ArrayList<>();
+
+        for(DisponibilidadePersonal bloco : blocosDisponibilidade){
+            LocalTime inicio = bloco.getHoraInicio();
+            LocalTime fim = bloco.getHoraFim();
+            LocalTime current = inicio;
+
+            while(current.isBefore(fim)) {
+
+                if(!horariosBloqueados.contains(current)){
+                    slotsFinais.add(current);
+                }
+                current = current.plusMinutes(15);
+            }
+        }
+
+        return slotsFinais.stream()
+                .sorted(LocalTime::compareTo)
+                .map(slotsInicio -> new ResSlotDisponivelDTO(slotsInicio, slotsInicio.plusMinutes(15)))
+                .collect(Collectors.toList());
     }
 
 
-    //Metodos auxiliares
     private void validarConflito(Long personalId, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim, Long horarioId, TipoHorario tipo) {
 
         List<DisponibilidadePersonal> sobrepostos = disponibilidadeRepository.encontrarConflitos(
@@ -186,6 +177,10 @@ public class DisponibilidadePersonalService {
                     TipoHorario existenteTipo = existente.getTipo();
 
                     if (novoTipo == TipoHorario.DISPONIVEL) {
+                        return true;
+                    }
+
+                    if (tipo == TipoHorario.RESTRITO && existenteTipo == TipoHorario.RESTRITO) {
                         return true;
                     }
 
@@ -212,119 +207,6 @@ public class DisponibilidadePersonalService {
         }
     }
 
-    private List<ResSlotDisponivelDTO> calcularSlotsDisponiveis(List<DisponibilidadePersonal> horariosDoDia) {
-
-        List<DisponibilidadePersonal> disponibilidade = horariosDoDia.stream()
-                .filter(h -> h.getTipo() == TipoHorario.DISPONIVEL)
-                .collect(Collectors.toList());
-
-
-        List<ResSlotDisponivelDTO> slotsDisponiveis = consolidarSlots(disponibilidade);
-
-
-        List<DisponibilidadePersonal> restricoes = horariosDoDia.stream()
-                .filter(h -> h.getTipo() == TipoHorario.INTERVALO || h.getTipo() == TipoHorario.RESTRITO)
-                .sorted(Comparator.comparing(DisponibilidadePersonal::getHoraInicio))
-                .toList();
-
-
-        List<ResSlotDisponivelDTO> slotsFinais = new ArrayList<>();
-
-        for (ResSlotDisponivelDTO slot : slotsDisponiveis) {
-            List<ResSlotDisponivelDTO> slotsProcessados = List.of(slot);
-
-            for (DisponibilidadePersonal restricao : restricoes) {
-                List<ResSlotDisponivelDTO> slotsTemporarios = new ArrayList<>();
-                for (ResSlotDisponivelDTO s : slotsProcessados) {
-                    slotsTemporarios.addAll(subtrairRestricao(s, restricao));
-                }
-                slotsProcessados = slotsTemporarios;
-            }
-            slotsFinais.addAll(slotsProcessados);
-        }
-
-        return slotsFinais;
-    }
-
-
-
-    // O metodo pega uma lista dos horarios que estão Dispo e
-    // junta os que estão em ordem(08-10h e 10-12h passam a ser 08h-12h)
-
-    private List<ResSlotDisponivelDTO> consolidarSlots(List<DisponibilidadePersonal> horarios) {
-        if (horarios.isEmpty()) return new ArrayList<>();
-
-        horarios.sort(Comparator.comparing(DisponibilidadePersonal::getHoraInicio));
-
-        List<ResSlotDisponivelDTO> slotsConsolidados = new ArrayList<>();
-
-        DisponibilidadePersonal anterior = horarios.get(0);
-        LocalTime inicioAtual = anterior.getHoraInicio();
-        LocalTime fimAtual = anterior.getHoraFim();
-
-        for (int i = 1; i < horarios.size(); i++) {
-            DisponibilidadePersonal atual = horarios.get(i);
-
-            if (atual.getHoraInicio().equals(fimAtual)) {
-
-                fimAtual = atual.getHoraFim();
-            } else {
-
-                slotsConsolidados.add(new ResSlotDisponivelDTO(inicioAtual, fimAtual));
-                inicioAtual = atual.getHoraInicio();
-                fimAtual = atual.getHoraFim();
-            }
-        }
-
-        slotsConsolidados.add(new ResSlotDisponivelDTO(inicioAtual, fimAtual));
-
-        return slotsConsolidados;
-    }
-
-
-    private List<ResSlotDisponivelDTO> subtrairRestricao(ResSlotDisponivelDTO slotDisponivel, DisponibilidadePersonal restricao) {
-        List<ResSlotDisponivelDTO> resultado = new ArrayList<>();
-
-
-        LocalTime slotInicio = LocalTime.parse(slotDisponivel.inicio());
-        LocalTime slotFim = LocalTime.parse(slotDisponivel.fim());
-        LocalTime restInicio = restricao.getHoraInicio();
-        LocalTime restFim = restricao.getHoraFim();
-
-        // Caso 1: Restrição não toca o slot (antes ou depois)
-        if (restFim.isBefore(slotInicio) || restFim.equals(slotInicio) || restInicio.isAfter(slotFim) || restInicio.equals(slotFim)) {
-            resultado.add(slotDisponivel);
-            return resultado;
-        }
-
-        // Caso 2: Restrição cobre parte do início do slot
-        if (restInicio.isAfter(slotInicio) && restFim.isBefore(slotFim)) {
-            resultado.add(new ResSlotDisponivelDTO(slotInicio, restInicio));
-            resultado.add(new ResSlotDisponivelDTO(restFim, slotFim));
-            return resultado;
-        }
-
-        // Caso 3: Restrição cobre o início do slot
-        if (restInicio.isBefore(slotInicio) || restInicio.equals(slotInicio) && restFim.isBefore(slotFim)) {
-            resultado.add(new ResSlotDisponivelDTO(restFim, slotFim));
-            return resultado;
-        }
-
-        // Caso 4: Restrição cobre o fim do slot
-        if (restInicio.isAfter(slotInicio) && (restFim.isAfter(slotFim) || restFim.equals(slotFim))) {
-            resultado.add(new ResSlotDisponivelDTO(slotInicio, restInicio));
-            return resultado;
-        }
-
-        // Caso 5: Restrição cobre o slot inteiro
-        if ((restInicio.isBefore(slotInicio) || restInicio.equals(slotInicio)) && (restFim.isAfter(slotFim) || restFim.equals(slotFim))) {
-            return resultado;
-        }
-
-        // Se nada bateu, retorna o slot original
-        resultado.add(slotDisponivel);
-        return resultado;
-    }
 
 
 

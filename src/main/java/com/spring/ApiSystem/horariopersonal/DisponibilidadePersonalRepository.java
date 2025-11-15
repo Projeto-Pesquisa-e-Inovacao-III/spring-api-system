@@ -30,12 +30,12 @@ public interface DisponibilidadePersonalRepository extends JpaRepository<Disponi
             @Param("horarioId") Long horarioId
     );
 
-    @Query("SELECT d FROM DisponibilidadePersonal d " +
-            "WHERE d.personal.id = :personalId AND d.diaSemana IN :dias " +
-            "ORDER BY d.diaSemana, d.horaInicio")
-    List<DisponibilidadePersonal> findByPersonalIdAndDiaSemanaInOrderByDiaSemanaHoraInicio(
-            @Param("personalId") Long personalId,
-            @Param("dias") List<DiaSemana> dias
-    );
+//    @Query("SELECT d FROM DisponibilidadePersonal d " +
+//            "WHERE d.personal.id = :personalId AND d.diaSemana IN :dias " +
+//            "ORDER BY d.diaSemana, d.horaInicio")
+//    List<DisponibilidadePersonal> findByPersonalIdAndDiaSemanaInOrderByDiaSemanaHoraInicio(
+//            @Param("personalId") Long personalId,
+//            @Param("dias") List<DiaSemana> dias
+//    );
 
 }
