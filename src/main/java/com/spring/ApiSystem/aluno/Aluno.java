@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -15,9 +16,8 @@ public class Aluno extends Usuario {
     public Aluno() {
     }
 
-    public Aluno(Long id, String tipo, String nome, String sexo, LocalDate dataNascimento,
-                 String email, String salt, String senha, boolean ativo, String cpf) {
-        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo);
+    public Aluno(Long id, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String cpf) {
+        super(id, TipoUsuario.ALUNO, nome, sexo, dataNascimento, email, salt, senha, ativo);
         this.cpf = cpf;
     }
 

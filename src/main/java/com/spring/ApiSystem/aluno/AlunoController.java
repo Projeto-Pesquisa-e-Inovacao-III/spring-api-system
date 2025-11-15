@@ -1,27 +1,35 @@
 package com.spring.ApiSystem.aluno;
 
+import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
+import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
 
     private final AlunoService alunoService;
+    private final UsuarioService usuarioService;
 
-    public AlunoController(AlunoService alunoService) {
+    public AlunoController(AlunoService alunoService, UsuarioService usuarioService) {
         this.alunoService = alunoService;
+        this.usuarioService = usuarioService;
     }
 
+    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
+    @PostMapping("/cadastro")
+    public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO) {
+        return ResponseEntity.ok(alunoService.cadastrarUsuario(cadastroUsuarioDTO));
+    }
 
-
-    @Operation (summary = "Buscar personal por ID (necessário login)",
-            description = "Endpoint para buscar um aluno específico pelo ID no sistema")
+    @Operation (summary = "Buscar aluno por ID (necessário login)", description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
         BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
