@@ -1,8 +1,10 @@
 package com.spring.ApiSystem.personal.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record ResBuscarPersonalPorIdDTO(
         Long id,
@@ -13,6 +15,7 @@ public record ResBuscarPersonalPorIdDTO(
         String email,
         String cref,
         boolean ativo,
-        String caminhoFoto
+        String caminhoFoto,
+        List<ResListarTelefonesPorIdDoUsuario> telefones
 ) {}
 
