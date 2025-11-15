@@ -11,8 +11,17 @@ import com.spring.ApiSystem.shared.security.ArgonService;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,6 +32,8 @@ public class UsuarioService {
     private final AlunoService alunoService;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
+    @Value("${storage.local-dir}")   // <-- injeta o diretório
+    private String localDir;
 
     public UsuarioService(UsuarioRepository usuarioRepository, AlunoService alunoService, UsuarioMapper usuarioMapper, ArgonService argonService) {
         this.usuarioRepository = usuarioRepository;
@@ -110,5 +121,71 @@ public class UsuarioService {
         usuario.setSalt(cript.get(0));
         usuario.setSenha(cript.get(1));
     }
+
+
+
+    private String trocarImagem(MultipartFile imagem, Path path) throws IOException {
+
+        deletarImagem(path);
+        String newPath = salvarBlob(imagem);
+
+        return newPath;
+    }
+
+    private String salvarBlob(MultipartFile imagem) throws IOException {
+        validarImagem(imagem);
+        Path path = salvarImagemLocal(imagem);
+
+        return  path.toString();
+    }
+
+    private Path salvarImagemLocal(MultipartFile imagem) throws IOException{
+
+        Files.createDirectories(Paths.get(localDir));
+
+        String nomeArquivo = System.currentTimeMillis() + "_" + imagem.getOriginalFilename();
+
+        Path caminho = Paths.get(localDir, nomeArquivo);
+
+        Files.write(caminho, imagem.getBytes());
+        return caminho;
+    }
+
+    private void deletarImagem(Path path) throws IOException {
+        Files.deleteIfExists(path);
+    }
+
+    private Resource buscarImagem(String nomeArquivo) throws IOException {
+        Path caminho = Paths.get(localDir, nomeArquivo);
+
+        if (!Files.exists(caminho)) {
+            throw new FileNotFoundException("Imagem não encontrada: " + nomeArquivo);
+        }
+
+        UrlResource resource = new UrlResource(caminho.toUri());
+
+        if (resource.exists() && resource.isReadable()) {
+            return resource;
+        } else {
+            throw new IOException("Não foi possível ler a imagem");
+        }
+    }
+
+
+    private void validarImagem(MultipartFile imagem) {
+        if (imagem == null || imagem.isEmpty()) {
+            throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
+        }
+
+        String contentType = imagem.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Arquivo não é uma imagem");
+        }
+
+        if (imagem.getSize() > 5 * 1024 * 1024) {
+            throw new IllegalArgumentException("Imagem muito grande (máx 5MB)");
+        }
+    }
+
 
 }

@@ -34,4 +34,6 @@ public interface UsuarioMapper {
     void atualizarUsuarioParaEditarUsuarioDto(ReqEditarUsuarioDTO dto,
                                               @MappingTarget Usuario usuario);
 
+
+
 }
