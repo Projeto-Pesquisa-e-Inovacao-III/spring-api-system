@@ -106,6 +106,7 @@ public class UsuarioController {
 
         if(usuario.getTipo() == TipoUsuario.ALUNO){
             ResBuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
+
             return ResponseEntity.ok().body(resUsuario);
 
         }else if(usuario.getTipo() == TipoUsuario.PERSONAL){
