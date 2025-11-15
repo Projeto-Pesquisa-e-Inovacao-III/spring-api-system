@@ -1,12 +1,16 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.CriarProdutoContratadoDto;
-import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,17 +28,19 @@ public class ProdutoContratadoController {
               description = "Endpoint para criar um produto contratado com base no ID do produto" +
                       "de exibição e no ID do aluno")
     @PostMapping
-    public ResponseEntity<ResProdutoContratadoDto> criarProdutoContratado(@Valid @RequestBody CriarProdutoContratadoDto
-                                                                       criarProdutoContratadoDto){
+    public ResponseEntity<ResProdutoContratadoDto>
+    criarProdutoContratado(@Valid @RequestBody CriarProdutoContratadoDto
+                           criarProdutoContratadoDto,
+                           @AuthenticationPrincipal UserDetails userDetails){
         ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarProdutoContratado(
                 criarProdutoContratadoDto.idProdutoExibicao(),
-                criarProdutoContratadoDto.idAluno()
+                userDetails.getUsername()
         );
 
         return ResponseEntity.ok(resProdutoContratadoDto);
     }
 
-    @Operation(summary = "Lista todos os produtos contratados (necessário login)",
+    @Operation(summary = "Lista todos os produtos contratados",
               description = "Endpoint para listar todos os produtos contratados em sistema")
     @GetMapping
     public ResponseEntity<List<ResProdutoContratadoDto>> listarProdutosContratados(){
@@ -42,7 +48,7 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtosContratados);
     }
 
-    @Operation(summary = "Lista dos produtos contratados com base na situacao(necessário login)",
+    @Operation(summary = "Lista dos produtos contratados com base na situacao",
             description = "Endpoint para listar todos os produtos contratados em sistema com base" +
                     "na situacao informada")
     @GetMapping("/situacao/{situacao}")
@@ -55,9 +61,11 @@ public class ProdutoContratadoController {
     @Operation(summary = "Lista o produto contratado com base no ID (necessário login)",
             description = "Endpoint para listar o produto contratado com base no ID informado")
     @GetMapping("/id/{id}")
-    public ResponseEntity<ResBuscarProdutoContratadoPorIdDto>
-    listarProdutosContratadosPorId(@PathVariable Long id){
-        ResBuscarProdutoContratadoPorIdDto produtoContratado = produtoContratadoService.listarPorIdDto(id);
+    public ResponseEntity<ResProdutoContratadoDto>
+    buscarProdutoContratadoPorId(@PathVariable Long id,
+                                   @AuthenticationPrincipal UserDetails userDetails){
+        ResProdutoContratadoDto produtoContratado = produtoContratadoService
+                .buscarPorIdAlunoEmail(id, userDetails.getUsername());
         if(produtoContratado == null){
             return ResponseEntity.notFound().build();
         }
@@ -67,26 +75,17 @@ public class ProdutoContratadoController {
     @Operation(summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que" +
                     "tiverem o idAluno correspondente")
-    @GetMapping("/idAluno/{id}")
+    @GetMapping("/aluno")
     public ResponseEntity<List<ResProdutoContratadoDto>>
-    listarProdutosContratadosPorIdAluno(@PathVariable Long id){
-        List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService.listarPorAluno(id);
+    listarProdutosContratadosPorIdAluno(@PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
+                                        Pageable pageable,
+                                        @AuthenticationPrincipal UserDetails userDetails){
+        List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
+                .listarPorAluno(userDetails.getUsername(), pageable);
         return ResponseEntity.ok(produtosContratados);
     }
 
-    @Operation(summary = "Edita um produto contratado (necessário login)",
-               description = "Endpoint para editar um produto contratado")
-    @PutMapping
-    public ResponseEntity<ResProdutoContratadoDto> atualizarProdutoContratado(@Valid @RequestBody
-                                                                           EditarProdutoContratadoDto
-                                                                           editarProdutoContratadoDto){
-        ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.atualizarProdutoContratado(
-                editarProdutoContratadoDto);
-
-        return ResponseEntity.ok(resProdutoContratadoDto);
-    }
-
-    @Operation(summary = "Desativa um produto contratado (necessário login)",
+    @Operation(summary = "Desativa um produto contratado",
                description = "Endpoint para desativar um produto contratado")
     @PatchMapping("/desativar/{id}")
     public ResponseEntity<ResProdutoContratadoDto> desativarProdutoContratado(@PathVariable Long id){

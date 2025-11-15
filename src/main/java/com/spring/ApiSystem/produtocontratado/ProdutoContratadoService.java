@@ -2,7 +2,6 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
@@ -11,6 +10,8 @@ import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
+import com.spring.ApiSystem.usuario.UsuarioService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,8 +36,8 @@ public class ProdutoContratadoService {
         this.produtoContratadoMapper = produtoContratadoMapper;
     }
 
-    public ResProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, Long idAluno){
-        Aluno aluno = alunoService.buscarPorId(idAluno);
+    public ResProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, String email){
+        Aluno aluno = alunoService.buscarPorEmail(email);
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -50,19 +51,6 @@ public class ProdutoContratadoService {
         );
 
         produtoContratadoRepository.save(produtoContratado);
-        return produtoContratadoMapper.toDto(produtoContratado);
-    }
-
-    @Transactional
-    public ResProdutoContratadoDto atualizarProdutoContratado(EditarProdutoContratadoDto editarProdutoContratadoDto){
-        ProdutoContratado produtoContratado = listarPorId(editarProdutoContratadoDto.id());
-
-        atualizarAluno(produtoContratado, editarProdutoContratadoDto.alunoId());
-        atualizarProdutoExibicao(produtoContratado, editarProdutoContratadoDto.produtoExibicaoId());
-
-        produtoContratadoMapper.partialUpdate(editarProdutoContratadoDto, produtoContratado);
-        produtoContratadoRepository.save(produtoContratado);
-
         return produtoContratadoMapper.toDto(produtoContratado);
     }
 
@@ -121,7 +109,8 @@ public class ProdutoContratadoService {
     }
 
     public List<ResProdutoContratadoDto> listarPorSituacao(Boolean situacao){
-        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findBySituacao(situacao);
+        List<ProdutoContratado> produtosContratados = produtoContratadoRepository
+                .findBySituacao(situacao);
         if (produtosContratados.isEmpty()) {
             throw new ProdutoContratadoPorSituacaoNaoExisteException(situacao);
         }
@@ -134,6 +123,12 @@ public class ProdutoContratadoService {
         return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
     }
 
+    public ResProdutoContratadoDto buscarPorIdAlunoEmail(Long id, String email){
+        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdAndAlunoEmail(id, email)
+                .orElseThrow(() -> new ProdutoContratadoAlunoNaoTemEsseProdutoException(id));
+        return produtoContratadoMapper.toDto(produtoContratado);
+    }
+
     @Transactional
     public ProdutoContratado listarPorId(Long id){
         ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdWithLock(id);
@@ -143,10 +138,10 @@ public class ProdutoContratadoService {
         return produtoContratado;
     }
 
-    public List<ResProdutoContratadoDto> listarPorAluno(Long idAluno){
-        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoId(idAluno);
+    public List<ResProdutoContratadoDto> listarPorAluno(String email, Pageable pageable){
+        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoEmail(email, pageable);
         if (produtosContratados.isEmpty()) {
-            throw new ProdutoContratadoPorAlunoNaoExisteException(idAluno);
+            throw new ProdutoContratadoPorAlunoNaoExisteException();
         }
         return produtoContratadoMapper.toListDto(produtosContratados);
     }

@@ -25,6 +25,7 @@ public class ProdutoContratadoScheduler {
             if(produtoContratado.getDataExpiracao().isBefore(LocalDate.now()) &&
                     produtoContratado.getSituacao().equals(true)){
                 produtoContratado.setSituacao(false);
+                produtoContratado.setSaldoAula(0);
                 produtoContratadoRepository.save(produtoContratado);
                 contador++;
             }
