@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.produtocontratado.mapper;
 
-import com.spring.ApiSystem.produtocontratado.dto.request.EditarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
@@ -20,9 +19,4 @@ public interface ProdutoContratadoMapper {
 
     ProdutoContratado toEntity(ResProdutoContratadoDto ResProdutoContratadoDto);
     ProdutoContratado toEntity(ResBuscarProdutoContratadoPorIdDto buscarProdutoContratadoPorIdDto);
-
-
-    @Mapping(target = "aluno", ignore = true)
-    @Mapping(target = "produtoExibicao", ignore = true)
-    void partialUpdate(EditarProdutoContratadoDto editarProdutoContratadoDto, @MappingTarget ProdutoContratado produtoContratado);
 }

@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.enums.Status;
+import com.spring.ApiSystem.produtoexibicao.enums.Status;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -34,9 +34,6 @@ public class ProdutoExibicao {
             updatable = false)
     private LocalDateTime dataCriacao;
 
-    @Column(name = "data_atualizacao")
-    private LocalDateTime dataAtualizacao;
-
     @Column(name = "tipo_aula",
             nullable = false)
     private String tipoAula;
@@ -55,8 +52,7 @@ public class ProdutoExibicao {
     public ProdutoExibicao(Long id, String titulo,
                            String subtitulo, String descricao,
                            Double preco, String periodo,
-                           Status status, LocalDateTime dataCriacao,
-                           LocalDateTime dataAtualizacao, String tipoAula,
+                           Status status, LocalDateTime dataCriacao,String tipoAula,
                            String quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
@@ -66,7 +62,6 @@ public class ProdutoExibicao {
         this.periodo = periodo;
         this.status = status;
         this.dataCriacao = dataCriacao;
-        this.dataAtualizacao = dataAtualizacao;
         this.tipoAula = tipoAula;
         this.quantidadeAula = quantidadeAula;
         this.duracaoMes = duracaoMes;
@@ -134,14 +129,6 @@ public class ProdutoExibicao {
 
     public void setDataCriacao(LocalDateTime dataCriacao) {
         this.dataCriacao = dataCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
     }
 
     public String getTipoAula() {

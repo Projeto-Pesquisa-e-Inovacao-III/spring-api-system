@@ -63,4 +63,9 @@ public class AlunoService {
                 .orElseThrow(AlunoNaoExisteExcpetion::new);
     }
 
+    public Aluno buscarPorEmail(String email){
+        return alunoRepository.findByEmail(email)
+                .orElseThrow(AlunoNaoExisteExcpetion::new);
+    }
+
 }
