@@ -9,35 +9,32 @@ import com.spring.ApiSystem.shared.security.ArgonService;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
+    private static final long MAX_IMAGE_SIZE = 5L * 1024 * 1024;
 
     private final UsuarioRepository usuarioRepository;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
+    private final LocalImageStorageService imageStorageService;
 
     @Value("${storage.local-dir:}")
     private String localDir;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ArgonService argonService) {
-        this.usuarioRepository = usuarioRepository;
-        this.usuarioMapper = usuarioMapper;
+    public UsuarioService(LocalImageStorageService imageStorageService, ArgonService argonService, UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository) {
+        this.imageStorageService = imageStorageService;
         this.argonService = argonService;
+        this.usuarioMapper = usuarioMapper;
+        this.usuarioRepository = usuarioRepository;
     }
-
-
 
     public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
@@ -55,7 +52,6 @@ public class UsuarioService {
         return usuarioMapper.toDtoAtualizarUsuario(usuario);
     }
 
-
     public Boolean removerUsuario(String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
         usuario.setAtivo(false);
@@ -64,11 +60,11 @@ public class UsuarioService {
     }
 
     public Boolean loginUsuario(String email, String senha) {
-        Optional<Usuario> userOpt = buscarPorEmail(email);
+        Usuario userOpt = buscarUsuarioPorEmail(email);
 
-        return userOpt.isPresent() &&
-                userOpt.get().isAtivo() &&
-                argonService.validarSenha(senha, userOpt.get().getSalt(), userOpt.get().getSenha());
+        return
+                userOpt.isAtivo() &&
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -77,19 +73,22 @@ public class UsuarioService {
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
-    public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
-    }
-
     public boolean emailExiste(String email) {
         return usuarioRepository.existsByEmail(email);
     }
 
-    private void validarEmailExistente(String email) {
+    public void validarEmailExistente(String email) {
         if (emailExiste(email)) {
             throw new EmailExistenteException();
         }
     }
+
+    public void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
+        List<String> cript = argonService.criptografarSenha(senhaPlain);
+        usuario.setSalt(cript.get(0));
+        usuario.setSenha(cript.get(1));
+    }
+
 
     private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
         if (emailExiste(novoEmail) && !novoEmail.equals(emailAtual)) {
@@ -103,76 +102,16 @@ public class UsuarioService {
         }
     }
 
-    private void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
-        List<String> cript = argonService.criptografarSenha(senhaPlain);
-        usuario.setSalt(cript.get(0));
-        usuario.setSenha(cript.get(1));
+    public String trocarFotoUsuario(MultipartFile imagem, String fotoAtualPath) throws IOException {
+        return imageStorageService.trocarImagem(imagem, Paths.get(fotoAtualPath));
     }
 
-
-
-    private String trocarImagem(MultipartFile imagem, Path path) throws IOException {
-
-        deletarImagem(path);
-        String newPath = salvarBlob(imagem);
-
-        return newPath;
+    public Resource buscarFoto(String nomeArquivo) throws IOException {
+        return imageStorageService.buscarImagem(nomeArquivo);
     }
 
-    private String salvarBlob(MultipartFile imagem) throws IOException {
-        validarImagem(imagem);
-        Path path = salvarImagemLocal(imagem);
-
-        return  path.toString();
+    public void deletarFoto(String path) throws IOException {
+        if (path == null || path.isBlank()) return;
+        imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
     }
-
-    private Path salvarImagemLocal(MultipartFile imagem) throws IOException{
-
-        Files.createDirectories(Paths.get(localDir));
-
-        String nomeArquivo = System.currentTimeMillis() + "_" + imagem.getOriginalFilename();
-
-        Path caminho = Paths.get(localDir, nomeArquivo);
-
-        Files.write(caminho, imagem.getBytes());
-        return caminho;
-    }
-
-    private void deletarImagem(Path path) throws IOException {
-        Files.deleteIfExists(path);
-    }
-
-    private Resource buscarImagem(String nomeArquivo) throws IOException {
-        Path caminho = Paths.get(localDir, nomeArquivo);
-
-        if (!Files.exists(caminho)) {
-            throw new FileNotFoundException("Imagem não encontrada: " + nomeArquivo);
-        }
-
-        UrlResource resource = new UrlResource(caminho.toUri());
-
-        if (resource.exists() && resource.isReadable()) {
-            return resource;
-        } else {
-            throw new IOException("Não foi possível ler a imagem");
-        }
-    }
-
-
-    private void validarImagem(MultipartFile imagem) {
-        if (imagem == null || imagem.isEmpty()) {
-            throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
-        }
-
-        String contentType = imagem.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Arquivo não é uma imagem");
-        }
-
-        if (imagem.getSize() > 5 * 1024 * 1024) {
-            throw new IllegalArgumentException("Imagem muito grande (máx 5MB)");
-        }
-
-    }
-
 }

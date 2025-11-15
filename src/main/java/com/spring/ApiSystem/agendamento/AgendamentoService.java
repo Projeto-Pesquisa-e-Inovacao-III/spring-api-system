@@ -1,19 +1,10 @@
 package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.agendamento.dto.request.CriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.BuscarAgendamentoPorIdDTO;
-import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReagendarAgendamentoDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
-import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
 import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoExistePorIdException;
-import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
-import com.spring.ApiSystem.shared.exception.DataNoPassadoException;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.agendamento.enums.Situacao;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.usuario.UsuarioService;
@@ -27,7 +18,6 @@ import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.personal.Personal;
 import com.spring.ApiSystem.usuario.Usuario;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

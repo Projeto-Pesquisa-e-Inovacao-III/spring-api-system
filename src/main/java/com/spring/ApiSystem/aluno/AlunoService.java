@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteExcpetion;
 import com.spring.ApiSystem.aluno.mapper.AlunoMapper;
@@ -43,19 +43,9 @@ public class AlunoService {
     }
 
 
-    public BuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
+    public ResBuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
         Aluno aluno = buscarPorId(id);
-
-        return new BuscarAlunoPorIdDTO(
-                aluno.getId(),
-                aluno.getNome(),
-                aluno.getSexo(),
-                aluno.getDataNascimento(),
-                aluno.getEmail(),
-                aluno.getCpf(),
-                aluno.isAtivo(),
-                aluno.getCaminhoFoto()
-        );
+        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
     }
 
     public Aluno buscarPorId(Long id) {

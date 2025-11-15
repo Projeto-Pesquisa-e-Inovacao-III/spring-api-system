@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.usuario;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
@@ -42,15 +41,14 @@ public class Usuario {
     @Column(name= "caminho_foto")
     private String caminhoFoto;
 
-    public Usuario() {
-    }
-@OneToMany (mappedBy = "usuario",
+    @OneToMany (mappedBy = "usuario",
             cascade = CascadeType.ALL,
             orphanRemoval = true)
     private List<Telefone> telefones = new ArrayList<>();
+
     public Usuario() {}
 
-    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo) {
+    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
         this.tipo = tipo;
         this.nome = nome;
@@ -61,6 +59,7 @@ public class Usuario {
         this.senha = senha;
         this.ativo = ativo;
         this.caminhoFoto = caminhoFoto;
+        this.telefones = telefones;
     }
 
     public String getCaminhoFoto() {

@@ -1,16 +1,13 @@
 package com.spring.ApiSystem.usuario;
 
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.personal.PersonalService;
-import com.spring.ApiSystem.personal.dto.response.BuscarPersonalPorIdDTO;
+import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqLoginUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResBuscarUsuarioPorEmailDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
@@ -108,11 +105,11 @@ public class UsuarioController {
         Usuario usuario = userDetails.getCurrentUser();
 
         if(usuario.getTipo() == TipoUsuario.ALUNO){
-            BuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
+            ResBuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
             return ResponseEntity.ok().body(resUsuario);
 
         }else if(usuario.getTipo() == TipoUsuario.PERSONAL){
-            BuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
+            ResBuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
             return ResponseEntity.ok().body(resUsuario);
         }
 

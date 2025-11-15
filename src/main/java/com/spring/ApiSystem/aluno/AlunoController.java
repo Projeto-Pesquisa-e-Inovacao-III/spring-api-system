@@ -1,11 +1,9 @@
 package com.spring.ApiSystem.aluno;
 
 import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.usuario.UsuarioService;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -32,7 +30,7 @@ public class AlunoController {
     @Operation (summary = "Buscar aluno por ID (necessário login)", description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
-        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
+        ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
         if(aluno == null){
             return ResponseEntity.notFound().build();
         }

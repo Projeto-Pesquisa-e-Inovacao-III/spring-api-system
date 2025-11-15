@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.time.LocalDate;
 
-public record BuscarAlunoPorIdDTO(
+public record ResBuscarAlunoPorIdDTO(
         Long id,
         String nome,
         String sexo,

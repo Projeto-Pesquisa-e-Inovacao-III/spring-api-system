@@ -17,10 +17,13 @@ public class Personal extends Usuario {
     @Column(unique = true)
     private String cref;
 
-    public Personal() {
+
+    public Personal() {}
+
+    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, String cref) {
+        super(id, TipoUsuario.PERSONAL, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
+        this.cref = cref;
     }
-
-
 
     public String getCref() {
         return cref;

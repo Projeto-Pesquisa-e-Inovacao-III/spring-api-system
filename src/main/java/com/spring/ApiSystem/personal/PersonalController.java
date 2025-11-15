@@ -1,10 +1,8 @@
 package com.spring.ApiSystem.personal;
 
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.BuscarPersonalPorIdDTO;
+import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +29,7 @@ public class PersonalController {
             description = "Endpoint para buscar um personal específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarPersonalPorId( @PathVariable  Long id) {
-        BuscarPersonalPorIdDTO personal = personalService.buscarPersonalPorId(id);
+        ResBuscarPersonalPorIdDTO personal = personalService.buscarPersonalPorId(id);
         if(personal == null){
             return ResponseEntity.notFound().build();
         }
