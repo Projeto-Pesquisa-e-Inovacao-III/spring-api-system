@@ -2,7 +2,9 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.CriarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -72,6 +74,11 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtoContratado);
     }
 
+    @GetMapping("/total-tipo/{tipoAula}")
+    public ResponseEntity<ResSaldoDto> buscarTotalSaldoAulaPorTipo(@PathVariable String tipoAula){
+        return ResponseEntity.ok(produtoContratadoService.buscarTotalSaldoAulaPorTipo(tipoAula));
+    }
+
     @Operation(summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que" +
                     "tiverem o idAluno correspondente")
@@ -83,6 +90,12 @@ public class ProdutoContratadoController {
         List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
                 .listarPorAluno(userDetails.getUsername(), pageable);
         return ResponseEntity.ok(produtosContratados);
+    }
+
+    @GetMapping("/ativo")
+    public ResponseEntity<ResProdutoContratadoAtivoDto>
+    buscarProdutoContratadoAtivo(@AuthenticationPrincipal UserDetails userDetails){
+        return ResponseEntity.ok(produtoContratadoService.buscarProdutoContratadoAtivo(userDetails.getUsername()));
     }
 
     @Operation(summary = "Desativa um produto contratado",

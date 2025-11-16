@@ -34,4 +34,21 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     ProdutoContratado findByAgendamentoId(@Param("agendamentoId") Long agendamentoId);
 
     Optional<ProdutoContratado> findByIdAndAlunoEmail(Long id, String email);
+
+    @Query("""
+       SELECT pc
+         FROM produto_contratado pc
+        WHERE pc.situacao = true
+          AND pc.aluno.email = :email
+          AND UPPER(pc.produtoExibicao.tipoAula) <> 'ADICIONAL'
+       """)
+    Optional<ProdutoContratado> buscarProdutoContratadoAtivo(@Param("email") String email);
+
+    @Query("""
+       SELECT COALESCE(SUM(pc.saldoAula), 0)
+         FROM produto_contratado pc
+        WHERE pc.situacao = true
+          AND pc.produtoExibicao.tipoAula = :tipoAula
+       """)
+    Integer totalSaldoAtivoPorTipo(@Param("tipoAula") String tipoAula);
 }

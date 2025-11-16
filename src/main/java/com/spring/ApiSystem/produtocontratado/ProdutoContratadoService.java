@@ -3,9 +3,7 @@ package com.spring.ApiSystem.produtocontratado;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResIncrementarSaldoDTO;
+import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
@@ -144,6 +142,18 @@ public class ProdutoContratadoService {
             throw new ProdutoContratadoPorAlunoNaoExisteException();
         }
         return produtoContratadoMapper.toListDto(produtosContratados);
+    }
+
+    public ResProdutoContratadoAtivoDto buscarProdutoContratadoAtivo(String email){
+        return produtoContratadoMapper.toResProdutoContratadoAtivoDto(
+                produtoContratadoRepository.buscarProdutoContratadoAtivo(email)
+                        .orElseThrow(SemPlanoAtivoException::new));
+    }
+
+    public ResSaldoDto buscarTotalSaldoAulaPorTipo(String tipoAula){
+        ResSaldoDto resSaldoDto = new ResSaldoDto(
+                tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula));
+        return resSaldoDto;
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
