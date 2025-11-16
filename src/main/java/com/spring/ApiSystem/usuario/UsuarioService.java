@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
@@ -9,16 +8,13 @@ import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.shared.security.ArgonService;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -27,9 +23,6 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
     private final LocalImageStorageService imageStorageService;
-
-    @Value("${storage.local-dir:}")
-    private String localDir;
 
     public UsuarioService(LocalImageStorageService imageStorageService, ArgonService argonService, UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository) {
         this.imageStorageService = imageStorageService;
@@ -76,6 +69,12 @@ public class UsuarioService {
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
+    public Usuario buscarUsuarioPorId(Integer id) {
+        return usuarioRepository
+                .findById(id)
+                .orElseThrow(UsuarioNaoEncontradoException::new);
+    }
+
     public boolean emailExiste(String email) {
         return usuarioRepository.existsByEmail(email);
     }
@@ -108,6 +107,10 @@ public class UsuarioService {
         return imageStorageService.trocarImagem(imagem, Paths.get(fotoAtualPath));
     }
 
+    public String salvarFotoUsuario(MultipartFile imagem) throws IOException {
+        return imageStorageService.salvarBlob(imagem);
+    }
+
     public Resource buscarFoto(String nomeArquivo) throws IOException {
         return imageStorageService.buscarImagem(nomeArquivo);
     }
@@ -117,6 +120,9 @@ public class UsuarioService {
         imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
     }
 
+    public void salvarUsuario(Usuario usuario) {
+        usuarioRepository.save(usuario);
+    }
 
     public void atualizarTelefones(Usuario usuario, List<ReqAtualizarTelefoneDTO> telefonesDTO) {
         for (ReqAtualizarTelefoneDTO telefoneDTO : telefonesDTO) {

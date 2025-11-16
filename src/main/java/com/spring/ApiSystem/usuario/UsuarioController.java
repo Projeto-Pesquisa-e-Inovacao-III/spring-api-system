@@ -15,10 +15,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.nio.file.Paths;
 
 @Tag(name = "Usuários", description = "Operações relacionadas a usuários")
 @RequestMapping("/usuarios")
@@ -115,5 +120,86 @@ public class UsuarioController {
         }
 
         throw new UsuarioNaoEncontradoException();
+    }
+
+
+    @Operation(summary = "Adiciona imagem ao perfil do usuário", description = "Endpoint para adicionar uma imagem ao perfil do usuário")
+    @PostMapping("/me/imagem")
+    public ResponseEntity<?> adicionarImagemPerfil(@RequestParam("imagem") MultipartFile imagem) {
+        try {
+            Usuario usuario = userDetails.getCurrentUser();
+
+            String novoPath;
+            if (usuario.getCaminhoFoto() != null && !usuario.getCaminhoFoto().isBlank()) {
+                novoPath = usuarioService.trocarFotoUsuario(imagem, usuario.getCaminhoFoto());
+            } else {
+                novoPath = usuarioService.salvarFotoUsuario(imagem);
+            }
+
+            usuario.setCaminhoFoto(novoPath);
+            usuarioService.salvarUsuario(usuario);
+
+            return ResponseEntity.ok().body("Imagem atualizada com sucesso");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Erro ao salvar imagem");
+        }
+    }
+
+    @Operation(summary = "Buscar imagem do perfil do usuário", description = "Endpoint para buscar a imagem do perfil do usuário")
+    @GetMapping("/me/imagem")
+    public ResponseEntity<Resource> buscarImagemPerfil() {
+        try {
+            Usuario usuario = userDetails.getCurrentUser();
+
+            if (usuario.getCaminhoFoto() == null || usuario.getCaminhoFoto().isBlank()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            String nomeArquivo = Paths.get(usuario.getCaminhoFoto()).getFileName().toString();
+            Resource resource = usuarioService.buscarFoto(nomeArquivo);
+
+            return ResponseEntity.ok()
+                    .header("Content-Type", "image/*")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Deletar imagem do perfil do usuário", description = "Endpoint para deletar a imagem do perfil do usuário")
+    @DeleteMapping("/me/imagem")
+    public ResponseEntity<?> deletarImagemPerfil() {
+        try {
+            Usuario usuario = userDetails.getCurrentUser();
+
+            if (usuario.getCaminhoFoto() == null || usuario.getCaminhoFoto().isBlank()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            usuarioService.deletarFoto(usuario.getCaminhoFoto());
+            usuario.setCaminhoFoto(null);
+            usuarioService.salvarUsuario(usuario);
+
+            return ResponseEntity.noContent().build();
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body("Erro ao deletar imagem");
+        }
+    }
+
+    @Operation(summary = "Buscar foto por nome", description = "Endpoint para buscar a foto do usuário por nome")
+    @GetMapping("/foto/{nomeArquivo}")
+    public ResponseEntity<Resource> buscarFotoPorNome(@PathVariable String nomeArquivo) {
+        try {
+            Usuario usuario = userDetails.getCurrentUser();
+
+            Resource resource = usuarioService.buscarFoto(nomeArquivo);
+            return ResponseEntity.ok()
+                    .header("Content-Type", "image/*")
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 }

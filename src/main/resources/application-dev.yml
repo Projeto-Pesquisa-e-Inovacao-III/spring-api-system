@@ -27,5 +27,5 @@
         mode: always
         encoding: UTF-8
 
-    storage:
-      local-dir: images
+  storage:
+    local-dir: imagens
