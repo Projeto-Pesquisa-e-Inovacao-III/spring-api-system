@@ -29,7 +29,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RestController
-@RequestMapping("/api/v1/password-reset")
+@RequestMapping("/api/password-reset")
 public class WhatsappController {
 
     private static final Logger logger = LoggerFactory.getLogger(WhatsappController.class);
