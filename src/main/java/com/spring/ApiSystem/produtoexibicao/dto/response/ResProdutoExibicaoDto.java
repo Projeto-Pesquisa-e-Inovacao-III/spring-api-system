@@ -4,7 +4,7 @@ import com.spring.ApiSystem.produtoexibicao.enums.Status;
 
 import java.time.LocalDateTime;
 
-public record ResProdutoExibicaoDTO(
+public record ResProdutoExibicaoDto(
     String titulo,
     String subtitulo,
     String descricao,
