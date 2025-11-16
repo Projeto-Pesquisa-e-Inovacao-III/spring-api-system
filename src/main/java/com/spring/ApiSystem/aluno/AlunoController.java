@@ -1,10 +1,17 @@
 package com.spring.ApiSystem.aluno;
 
+import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
+import com.spring.ApiSystem.config.filter.FilterService;
+import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +22,14 @@ public class AlunoController {
 
     private final AlunoService alunoService;
     private final UsuarioService usuarioService;
+    private final FilterService filterService;
+    private final JpaUserDetailsService userDetails;
 
-    public AlunoController(AlunoService alunoService, UsuarioService usuarioService) {
+    public AlunoController(AlunoService alunoService, UsuarioService usuarioService, FilterService filterService, JpaUserDetailsService userDetails) {
         this.alunoService = alunoService;
         this.usuarioService = usuarioService;
+        this.filterService = filterService;
+        this.userDetails = userDetails;
     }
 
     @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
@@ -35,5 +46,24 @@ public class AlunoController {
             return ResponseEntity.notFound().build();
         }
             return ResponseEntity.ok(aluno);
+    }
+
+
+    @Operation(summary = "Editar aluno (necessário login)",
+            description = "Endpoint para a edição de dados de aluno no sistema")
+    @PutMapping("/me")
+    public ResponseEntity<ResAtualizarAlunoDTO> atualizarAluno(@Valid @RequestBody ReqAtualizarAlunoDTO dto,
+                                                               HttpServletResponse response) {
+
+        Usuario usuario = userDetails.getCurrentUser();
+        ResAtualizarAlunoDTO usuarioEditado = alunoService.atualizarUsuario(dto, usuario);
+
+        if(usuarioEditado == null){
+            return ResponseEntity.notFound().build();
+        }
+
+        filterService.removerCookie(response);
+        filterService.gerarCookie(response, usuarioEditado.email());
+        return ResponseEntity.ok(usuarioEditado);
     }
 }

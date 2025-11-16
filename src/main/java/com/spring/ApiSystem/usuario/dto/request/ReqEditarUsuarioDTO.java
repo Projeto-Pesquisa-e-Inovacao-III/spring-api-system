@@ -7,6 +7,7 @@ public record ReqEditarUsuarioDTO(
     @NotBlank(message = "O nome não pode ficar vazio ou nulo")
     String nome,
 
+    @NotBlank(message = "O sexo não pode ficar vazio ou nulo")
     String sexo,
 
     @Past(message = "A data de nascimento deve estar no passado")
@@ -22,4 +23,5 @@ public record ReqEditarUsuarioDTO(
 
     @Size(min = 6, message = "A senha nova deve ter no mínimo 6 caracteres")
     String senhaNova
+
 ) {}

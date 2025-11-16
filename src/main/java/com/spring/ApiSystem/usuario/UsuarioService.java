@@ -1,5 +1,7 @@
 package com.spring.ApiSystem.usuario;
 
+import com.spring.ApiSystem.aluno.Aluno;
+import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
@@ -90,13 +92,13 @@ public class UsuarioService {
         usuario.setSenha(cript.get(1));
     }
 
-    private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
+    public void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
         if (emailExiste(novoEmail) && !novoEmail.equals(emailAtual)) {
             throw new EmailExistenteException();
         }
     }
 
-    private void validarSenhaAtual(String senhaInformada, Usuario usuario) {
+    public void validarSenhaAtual(String senhaInformada, Usuario usuario) {
         if (!argonService.validarSenha(senhaInformada, usuario.getSalt(), usuario.getSenha())) {
             throw new SenhaNaoCorrespondeAtual();
         }
@@ -113,6 +115,19 @@ public class UsuarioService {
     public void deletarFoto(String path) throws IOException {
         if (path == null || path.isBlank()) return;
         imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
+    }
+
+
+    public void atualizarTelefones(Usuario usuario, List<ReqAtualizarTelefoneDTO> telefonesDTO) {
+        for (ReqAtualizarTelefoneDTO telefoneDTO : telefonesDTO) {
+            usuario.getTelefones().stream()
+                    .filter(t -> t.getId().equals(telefoneDTO.id()))
+                    .findFirst()
+                    .ifPresent(telefone -> {
+                        telefone.setDdd(telefoneDTO.ddd());
+                        telefone.setNumero(telefoneDTO.numero());
+                    });
+        }
     }
 
 }

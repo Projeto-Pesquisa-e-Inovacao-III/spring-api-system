@@ -14,6 +14,7 @@ import java.util.List;
 public interface TelefoneMapper {
     Telefone toEntity(ReqCadastrarTelefoneDTO telefoneDTO);
     Telefone toEntity(ReqAtualizarTelefoneDTO telefoneDTO);
+    List<Telefone> toEntityList(List<ReqCadastrarTelefoneDTO> telefonesDTO);
 
     ResCadastrarTelefoneDTO toDtoCasdastrarTelefone(Telefone telefone);
     ResAtualizarTelefoneDTO toDtoAtualizarTelefone(Telefone telefone);

@@ -1,12 +1,12 @@
 package com.spring.ApiSystem.telefone.dto.response;
 
 public record ResAtualizarTelefoneDTO(
+        Long id,
         String ddd,
         String numero,
-        String tipo,
         String numeroCompleto
 ) {
-    public ResAtualizarTelefoneDTO(String ddd, String numero, String tipo) {
-        this( ddd, numero, tipo, String.format("(%s) %s", ddd, numero));
+    public ResAtualizarTelefoneDTO(Long id, String ddd, String numero) {
+        this(id, ddd, numero, String.format("(%s) %s", ddd, numero));
     }
 }
