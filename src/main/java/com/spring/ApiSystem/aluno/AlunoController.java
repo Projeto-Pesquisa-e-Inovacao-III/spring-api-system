@@ -14,6 +14,8 @@ import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -45,8 +47,9 @@ public class AlunoController {
     @Operation(summary = "Listar alunos (necessário login)",
                description = "Endpoint para listar alunos no sistema")
     @GetMapping
-    public ResponseEntity<List<ResListarAlunosDto>> listarAlunos() {
-        return ResponseEntity.ok(alunoService.listarAlunos());
+    public ResponseEntity<List<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
+                                                                 Pageable pageable) {
+        return ResponseEntity.ok(alunoService.listarAlunos(pageable));
     }
 
     @Operation (summary = "Buscar aluno por ID (necessário login)",

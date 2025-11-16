@@ -12,6 +12,7 @@ import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -49,8 +50,8 @@ public class AlunoService {
         return alunoMapper.toDtoCadastrarAluno(alunoRepository.save(usuarioEntity));
     }
 
-    public List<ResListarAlunosDto> listarAlunos() {
-        List<Aluno> alunos = alunoRepository.findAll();
+    public List<ResListarAlunosDto> listarAlunos(Pageable pageable) {
+        List<Aluno> alunos = alunoRepository.findAllBy(pageable);
         return alunoMapper.toResListarAlunosDto(alunos);
     }
 
