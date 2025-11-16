@@ -3,7 +3,6 @@ package com.spring.ApiSystem.personal;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteExcpetion;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
@@ -69,7 +68,7 @@ public class PersonalService {
     public Personal buscarPorId(Long id) {
         return personalRepository
                 .findById(id)
-                .orElseThrow(AlunoNaoExisteExcpetion::new);
+                .orElseThrow(PersonalNaoExisteExcpetion::new);
     }
 
     public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Usuario usuario) {
