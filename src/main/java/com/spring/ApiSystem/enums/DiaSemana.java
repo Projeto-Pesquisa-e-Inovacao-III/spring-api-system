@@ -36,7 +36,7 @@ public enum DiaSemana {
                 return d;
             }
         }
-        throw new DiaSemanaNaoExisteExcption(dayOfWeek.toString());
+        throw new DiaSemanaNaoExisteExcption();
     }
 
 }

@@ -74,97 +74,97 @@ public class AgendamentoService {
         return Page.empty();
     }
 
-    @Transactional
-    public Agendamento criar(CriarAgendamentoDTO dto) {
+//    @Transactional
+//    public Agendamento criar(CriarAgendamentoDTO dto) {
+//
+//        if (dto.data().isBefore(LocalDateTime.now())) {
+//            throw new DataNoPassadoException();
+//        }
+//
+//        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
+//        personalService.buscarPersonalPorId((dto.personalId()));
+//        produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
+//
+//        Endereco endereco;
+//        if (dto.enderecoExistenteId() != null) {
+//            endereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
+//
+//        } else {
+//            ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(dto.novoEndereco(), aluno.email());
+//            endereco = enderecoService.buscarPorId(resEndereco.id());
+//        }
+//
+//        Agendamento agendamento = agendamentoMapper.toEntity(dto);
+//
+//        agendamento.setEndereco(endereco);
+//        agendamento.setSituacao(Situacao.PENDENTE_PERSONAL);
+//
+//        return agendamentoRepository.save(agendamento);
+//    }
+//
+//    public Agendamento buscarPorId(Long id) {
+//        return agendamentoRepository
+//                .findById(id)
+//                .orElseThrow(AgendamentoNaoExistePorIdException::new);
+//    }
 
-        if (dto.data().isBefore(LocalDateTime.now())) {
-            throw new DataNoPassadoException();
-        }
+//    @Transactional
+//    public Agendamento reagendar(Long agendamentoId, ReagendarAgendamentoDTO dto) {
+//        Agendamento agendamento = buscarPorId(agendamentoId);
+//
+//        if (dto.novaData().isBefore(LocalDateTime.now())) {
+//            throw new DataNoPassadoException();
+//        }
+//
+//        agendamento.setData(dto.novaData());
+//
+//        if (dto.novaDescricao() != null && !dto.novaDescricao().isBlank()) {
+//            agendamento.setDescricao(dto.novaDescricao());
+//        }
+//
+//        if (dto.enderecoExistenteId() != null || dto.novoEndereco() != null) {
+//            Endereco novoEndereco;
+//            if (dto.enderecoExistenteId() != null) {
+//                novoEndereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
+//            } else {
+//                ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(
+//                        dto.novoEndereco(),
+//                        agendamento.getAluno().getEmail()
+//                );
+//                novoEndereco = enderecoService.buscarPorId(resEndereco.id());
+//            }
+//            agendamento.setEndereco(novoEndereco);
+//        }
+//
+//        if (dto.tipoUsuario().equalsIgnoreCase("PERSONAL")) {
+//            agendamento.pendenteCliente();
+//        } else if (dto.tipoUsuario().equalsIgnoreCase("ALUNO")) {
+//            agendamento.pendentePersonal();
+//        } else {
+//            throw new IllegalArgumentException("Tipo de usuário inválido: " + dto.tipoUsuario());
+//        }
+//
+//        return agendamentoRepository.save(agendamento);
+//    }
 
-        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
-        personalService.buscarPersonalPorId((long) Math.toIntExact(dto.personalId()));
-        produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
+//    @Transactional
+//    public Agendamento aceitaAgendamento(Long id) {
+//        Agendamento agendamento = buscarPorId(id);
+//        agendamento.aceitar();
+//        return agendamentoRepository.save(agendamento);
+//    }
 
-        Endereco endereco;
-        if (dto.enderecoExistenteId() != null) {
-            endereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
-
-        } else {
-            ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(dto.novoEndereco(), aluno.email());
-            endereco = enderecoService.buscarPorId(resEndereco.id());
-        }
-
-        Agendamento agendamento = agendamentoMapper.toEntity(dto);
-
-        agendamento.setEndereco(endereco);
-        agendamento.setSituacao(Situacao.PENDENTE_PERSONAL);
-
-        return agendamentoRepository.save(agendamento);
-    }
-
-    public Agendamento buscarPorId(Long id) {
-        return agendamentoRepository
-                .findById(id)
-                .orElseThrow(AgendamentoNaoExistePorIdException::new);
-    }
-
-    @Transactional
-    public Agendamento reagendar(Long agendamentoId, ReagendarAgendamentoDTO dto) {
-        Agendamento agendamento = buscarPorId(agendamentoId);
-
-        if (dto.novaData().isBefore(LocalDateTime.now())) {
-            throw new DataNoPassadoException();
-        }
-
-        agendamento.setData(dto.novaData());
-
-        if (dto.novaDescricao() != null && !dto.novaDescricao().isBlank()) {
-            agendamento.setDescricao(dto.novaDescricao());
-        }
-
-        if (dto.enderecoExistenteId() != null || dto.novoEndereco() != null) {
-            Endereco novoEndereco;
-            if (dto.enderecoExistenteId() != null) {
-                novoEndereco = enderecoService.buscarPorId(dto.enderecoExistenteId());
-            } else {
-                ResCadastrarEnderecoDTO resEndereco = enderecoService.cadastrarEndereco(
-                        dto.novoEndereco(),
-                        agendamento.getAluno().getEmail()
-                );
-                novoEndereco = enderecoService.buscarPorId(resEndereco.id());
-            }
-            agendamento.setEndereco(novoEndereco);
-        }
-
-        if (dto.tipoUsuario().equalsIgnoreCase("PERSONAL")) {
-            agendamento.pendenteCliente();
-        } else if (dto.tipoUsuario().equalsIgnoreCase("ALUNO")) {
-            agendamento.pendentePersonal();
-        } else {
-            throw new IllegalArgumentException("Tipo de usuário inválido: " + dto.tipoUsuario());
-        }
-
-        return agendamentoRepository.save(agendamento);
-    }
-
-    @Transactional
-    public Agendamento aceitaAgendamento(Long id) {
-        Agendamento agendamento = buscarPorId(id);
-        agendamento.aceitar();
-        return agendamentoRepository.save(agendamento);
-    }
-
-    @Transactional
-    public Agendamento recusaAgendamento(Long id) {
-        Agendamento agendamento = buscarPorId(id);
-        agendamento.recusado();
-        return agendamentoRepository.save(agendamento);
-    }
-
-    @Transactional(readOnly = true)
-    public BuscarAgendamentoPorIdDTO buscarAgendamentoPorId(Long id) {
-        Agendamento agendamento = buscarPorId(id);
-        return agendamentoMapper.toDTO(agendamento);
-    }
+//    @Transactional
+//    public Agendamento recusaAgendamento(Long id) {
+//        Agendamento agendamento = buscarPorId(id);
+//        agendamento.recusado();
+//        return agendamentoRepository.save(agendamento);
+//    }
+//
+//    @Transactional(readOnly = true)
+//    public BuscarAgendamentoPorIdDTO buscarAgendamentoPorId(Long id) {
+//        Agendamento agendamento = buscarPorId(id);
+//        return agendamentoMapper.toDTO(agendamento);
+//    }
 
 }

@@ -196,14 +196,7 @@ public class DisponibilidadePersonalService {
 
 
         if (!conflitosFinais.isEmpty()) {
-            DisponibilidadePersonal conflito = conflitosFinais.get(0);
-
-            throw new SobreposicaoHorarioException(
-                    String.format("O horário informado (%s %s %s-%s) se sobrepõe a um horário já cadastrado (%s %s-%s).",
-                            diaSemana, tipo, horaInicio, horaFim,
-                            conflito.getTipo(), conflito.getHoraInicio(), conflito.getHoraFim()
-                    )
-            );
+            throw new SobreposicaoHorarioException();
         }
     }
 
