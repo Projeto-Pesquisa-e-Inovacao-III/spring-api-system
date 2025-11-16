@@ -2,6 +2,7 @@ package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResListaProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,7 +49,7 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Listar Produtos de Exibição",
                description = "Endpoint para listagem de produtos de exibição no sistema")
     @GetMapping
-    public ResponseEntity<List<ResProdutoExibicaoDTO>> listarProdutos(){
+    public ResponseEntity<List<ResListaProdutoExibicaoDTO>> listarProdutos(){
         return ResponseEntity.ok(produtoExibicaoService.listarProdutos());
     }
 

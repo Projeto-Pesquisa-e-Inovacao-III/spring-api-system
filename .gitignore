@@ -35,3 +35,6 @@ build/
 ### Chaves ###
 src/main/resources/keys/private.pem
 src/main/resources/keys/public.pem
+
+### Logs ###
+logs/*.log

@@ -2,6 +2,7 @@ package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResListaProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.enums.Status;
 import com.spring.ApiSystem.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
@@ -39,8 +40,8 @@ public class ProdutoExibicaoService {
         return produtoExibicaoRepository.findByStatus(Status.valueOf(status.toUpperCase()));
     }
 
-    public List<ResProdutoExibicaoDTO> listarProdutos(){
-        return produtoExibicaoRepository.findAllBy();
+    public List<ResListaProdutoExibicaoDTO> listarProdutos(){
+        return produtoExibicaoMapper.toResListaProdutoExibicaoDTO(produtoExibicaoRepository.findAll());
     }
 
     public ProdutoExibicao buscarPorId(Long id){
