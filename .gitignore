@@ -38,3 +38,6 @@ src/main/resources/keys/public.pem
 
 ### Logs ###
 logs/*.log
+
+### Imagens ###
+imagens/*

@@ -6,9 +6,9 @@ import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteException;
+import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
 import com.spring.ApiSystem.aluno.mapper.AlunoMapper;
 import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UsuarioService;
@@ -49,6 +49,10 @@ public class AlunoService {
         return alunoMapper.toDtoCadastrarAluno(alunoRepository.save(usuarioEntity));
     }
 
+    public List<ResListarAlunosDto> listarAlunos() {
+        List<Aluno> alunos = alunoRepository.findAll();
+        return alunoMapper.toResListarAlunosDto(alunos);
+    }
 
     public ResBuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
         Aluno aluno = buscarPorId(id);
@@ -76,7 +80,6 @@ public class AlunoService {
 
         alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
 
-
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
             usuarioService.atualizarTelefones(aluno, dto.telefones());
         }
@@ -89,7 +92,4 @@ public class AlunoService {
 
         return alunoMapper.toDtoAtualizarAluno(aluno);
     }
-
-
-
 }

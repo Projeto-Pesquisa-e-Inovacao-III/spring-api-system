@@ -7,6 +7,7 @@ import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
 import com.spring.ApiSystem.usuario.UsuarioService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
@@ -16,29 +17,40 @@ import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/alunos")
 public class AlunoController {
 
     private final AlunoService alunoService;
-    private final UsuarioService usuarioService;
     private final FilterService filterService;
     private final JpaUserDetailsService userDetails;
 
-    public AlunoController(AlunoService alunoService, UsuarioService usuarioService, FilterService filterService, JpaUserDetailsService userDetails) {
+    public AlunoController(AlunoService alunoService,
+                           FilterService filterService,
+                           JpaUserDetailsService userDetails) {
         this.alunoService = alunoService;
-        this.usuarioService = usuarioService;
         this.filterService = filterService;
         this.userDetails = userDetails;
     }
 
-    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
+    @Operation(summary = "Criar aluno",
+               description = "Endpoint para cadastro de alunos no sistema")
     @PostMapping("/cadastro")
     public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(alunoService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
-    @Operation (summary = "Buscar aluno por ID (necessário login)", description = "Endpoint para buscar um aluno específico pelo ID no sistema")
+    @Operation(summary = "Listar alunos (necessário login)",
+               description = "Endpoint para listar alunos no sistema")
+    @GetMapping
+    public ResponseEntity<List<ResListarAlunosDto>> listarAlunos() {
+        return ResponseEntity.ok(alunoService.listarAlunos());
+    }
+
+    @Operation (summary = "Buscar aluno por ID (necessário login)",
+                description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
         ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);

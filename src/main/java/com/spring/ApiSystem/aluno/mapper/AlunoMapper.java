@@ -10,9 +10,12 @@ import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
 import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AlunoMapper {
@@ -43,4 +46,5 @@ public interface AlunoMapper {
     void atualizarAlunoParaAtualizarAlunoDto(ReqAtualizarAlunoDTO dto,
                                               @MappingTarget Aluno aluno);
 
+    List<ResListarAlunosDto> toResListarAlunosDto(List<Aluno> alunos);
 }

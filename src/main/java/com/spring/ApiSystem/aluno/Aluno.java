@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.time.Period;
 
 @Entity
 @Table(name = "aluno")
@@ -21,6 +22,9 @@ public class Aluno extends Usuario {
     public Aluno(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, String cpf) {
         super(id, TipoUsuario.ALUNO, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
         this.cpf = cpf;
+    }
+    public Integer getIdade() {
+        return Period.between(getDataNascimento(), LocalDate.now()).getYears();
     }
 
     public String getCpf() {

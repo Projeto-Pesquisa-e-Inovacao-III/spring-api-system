@@ -30,10 +30,10 @@ public class LocalImageStorageService {
         Files.createDirectories(Paths.get(localDir));
 
         String nomeArquivo = System.currentTimeMillis() + "_" + imagem.getOriginalFilename();
-        Path caminho = Paths.get(localDir, nomeArquivo);
+        Path caminho = Paths.get(localDir,nomeArquivo);
 
         Files.write(caminho, imagem.getBytes());
-        return caminho;
+        return Paths.get(nomeArquivo);
     }
 
     public String trocarImagem(MultipartFile imagem, Path path) throws IOException {
