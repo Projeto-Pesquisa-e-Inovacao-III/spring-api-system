@@ -151,9 +151,8 @@ public class ProdutoContratadoService {
     }
 
     public ResSaldoDto buscarTotalSaldoAulaPorTipo(String tipoAula){
-        ResSaldoDto resSaldoDto = new ResSaldoDto(
+        return new ResSaldoDto(
                 tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula));
-        return resSaldoDto;
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
