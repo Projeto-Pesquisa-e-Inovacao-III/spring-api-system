@@ -1,22 +1,14 @@
 package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.agendamento.dto.request.CriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.BuscarAgendamentoPorIdDTO;
-import com.spring.ApiSystem.aluno.dto.response.BuscarAlunoPorIdDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReagendarAgendamentoDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
-import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.ResEnderecoDTO;
 import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoExistePorIdException;
-import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
-import com.spring.ApiSystem.shared.exception.DataNoPassadoException;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.agendamento.enums.Situacao;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.domain.Page;
@@ -26,7 +18,6 @@ import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.personal.Personal;
 import com.spring.ApiSystem.usuario.Usuario;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,12 +50,12 @@ public class AgendamentoService {
 
         List<?> returnDTO = new ArrayList<>();
 
-        if(usuario.getTipo().equals("Aluno")){
+        if(usuario.getTipo().equals(TipoUsuario.ALUNO)){
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByAlunoOrderByDataAsc((Aluno) usuario, pageable);
 
             return agendamentos.map(agendamentoMapper::toListarAgendamentoAlunoDto);
-        } else if (usuario.getTipo().equals("Personal")) {
+        } else if (usuario.getTipo().equals(TipoUsuario.PERSONAL)) {
             Page<Agendamento> agendamentos = agendamentoRepository
                     .findByPersonalOrderByDataAsc((Personal) usuario, pageable);
 

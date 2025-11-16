@@ -1,10 +1,12 @@
 package com.spring.ApiSystem.aluno;
 
+import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "aluno")
@@ -16,7 +18,10 @@ public class Aluno extends Usuario {
     public Aluno() {
     }
 
-
+    public Aluno(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, String cpf) {
+        super(id, TipoUsuario.ALUNO, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
+        this.cpf = cpf;
+    }
 
     public String getCpf() {
         return cpf;
