@@ -31,23 +31,6 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
-    public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email) {
-        Usuario usuario = buscarUsuarioPorEmail(email);
-
-        validarEmailNaoEmUso(dto.email(), email);
-        validarSenhaAtual(dto.senha(), usuario);
-
-        usuarioMapper.atualizarUsuarioParaEditarUsuarioDto(dto, usuario);
-
-        if (dto.senhaNova() != null) {
-            aplicarSenhaCriptografada(usuario, dto.senhaNova());
-        }
-
-        usuarioRepository.save(usuario);
-        return usuarioMapper.toDtoAtualizarUsuario(usuario);
-    }
-
-
     public Boolean removerUsuario(String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
         usuario.setAtivo(false);

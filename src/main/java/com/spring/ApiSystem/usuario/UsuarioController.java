@@ -60,25 +60,6 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Editar usuário (necessário login)",
-            description = "Endpoint para a edição de dados de usuários no sistema")
-    @PutMapping
-    public ResponseEntity<ResAtualizarUsuarioDTO> atualizarUsuario(@Valid @RequestBody ReqEditarUsuarioDTO dto,
-                                                                   @AuthenticationPrincipal UserDetails userDetails,
-                                                                   HttpServletResponse response) {
-
-        String email = userDetails.getUsername();
-        ResAtualizarUsuarioDTO usuarioEditado = usuarioService.atualizarUsuario(dto, email);
-
-        if(usuarioEditado == null){
-            return ResponseEntity.notFound().build();
-        }
-
-        filterService.removerCookie(response);
-        filterService.gerarCookie(response, usuarioEditado.email());
-        return ResponseEntity.ok(usuarioEditado);
-    }
-
     @Operation(summary = "Excluir usuário (necessário login)",
             description = "Endpoint para a exclusão de usuários no sistema, " +
                     "onde o atributo 'ativo' define o seus status")
