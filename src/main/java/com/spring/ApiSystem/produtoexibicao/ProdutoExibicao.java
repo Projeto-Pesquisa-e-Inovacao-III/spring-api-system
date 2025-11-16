@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.enums.Status;
+import com.spring.ApiSystem.produtoexibicao.enums.Status;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -34,16 +34,13 @@ public class ProdutoExibicao {
             updatable = false)
     private LocalDateTime dataCriacao;
 
-    @Column(name = "data_atualizacao")
-    private LocalDateTime dataAtualizacao;
-
     @Column(name = "tipo_aula",
             nullable = false)
     private String tipoAula;
 
     @Column(name = "quantidade_aula",
             nullable = false)
-    private Integer quantidadeAula;
+    private String quantidadeAula;
 
     @Column(name = "duracaoMes",
             nullable = false)
@@ -55,9 +52,8 @@ public class ProdutoExibicao {
     public ProdutoExibicao(Long id, String titulo,
                            String subtitulo, String descricao,
                            Double preco, String periodo,
-                           Status status, LocalDateTime dataCriacao,
-                           LocalDateTime dataAtualizacao, String tipoAula,
-                           Integer quantidadeAula, Integer duracaoMes) {
+                           Status status, LocalDateTime dataCriacao,String tipoAula,
+                           String quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -66,7 +62,6 @@ public class ProdutoExibicao {
         this.periodo = periodo;
         this.status = status;
         this.dataCriacao = dataCriacao;
-        this.dataAtualizacao = dataAtualizacao;
         this.tipoAula = tipoAula;
         this.quantidadeAula = quantidadeAula;
         this.duracaoMes = duracaoMes;
@@ -136,14 +131,6 @@ public class ProdutoExibicao {
         this.dataCriacao = dataCriacao;
     }
 
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
     public String getTipoAula() {
         return tipoAula;
     }
@@ -152,11 +139,11 @@ public class ProdutoExibicao {
         this.tipoAula = tipoAula;
     }
 
-    public Integer getQuantidadeAula() {
+    public String getQuantidadeAula() {
         return quantidadeAula;
     }
 
-    public void setQuantidadeAula(Integer quantidadeAula) {
+    public void setQuantidadeAula(String quantidadeAula) {
         this.quantidadeAula = quantidadeAula;
     }
 

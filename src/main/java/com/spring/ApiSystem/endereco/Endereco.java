@@ -17,7 +17,7 @@ public class Endereco {
 
     private String complemento;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private String unidade;
 
     @Column(nullable = false)

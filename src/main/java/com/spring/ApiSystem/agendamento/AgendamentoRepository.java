@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long> {
-    @Query("SELECT a FROM Agendamento a " +
+    @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao " +
             "LEFT JOIN FETCH a.endereco e " +
@@ -21,7 +21,7 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "ORDER BY a.situacao ASC, a.data ASC")
     Page<Agendamento> findByAlunoOrderByDataAsc(@Param("aluno") Aluno aluno, Pageable pageable);
 
-    @Query("SELECT a FROM Agendamento a " +
+    @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao " +
             "LEFT JOIN FETCH a.endereco e " +
@@ -31,5 +31,13 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "ORDER BY a.situacao ASC, a.data ASC")
     Page<Agendamento> findByPersonalOrderByDataAsc(@Param("personal") Personal personal, Pageable pageable);
 
+    //SELECTS QUE EU PRECISO
+    //BUSCAR AGENDAMENTOS POR ALUNO
+    //BUSCAR HORARIO DE DISPONIBILIDADE DO PERSONAL PELO DIA DO AGENDAMENTO
+    //BUSCAR AGENDAMENTOS POR PERSONAL
+    //BUCAR SE O ENDEREÇO JA EXISTE NO BANCO DE DADOS SE NÃO CRIA UM NOVO
+    //SALVAR UM PRODUTO CONTRATADO AO CRIAR UM AGENDAMENTO
+    //APAGAR UM AGENDAMENTO E RETORNA SALDO DE PRODUTOS CONTRATADOS
+    //ATUALIZAR UM AGENDAMENTO, MAS SEM MUDAR PRODUTO CONTRATADO
 
 }

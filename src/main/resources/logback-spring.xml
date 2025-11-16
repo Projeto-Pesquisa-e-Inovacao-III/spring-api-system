@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <!-- Timestamp apenas com a data -->
+    <timestamp key="byDate" datePattern="dd-MM-yyyy"/>
+
+    <!-- Cria um log para cada execução -->
+    <appender name="MEU_LOG" class="ch.qos.logback.core.FileAppender">
+        <file>logs/produtos_contratados_desativados_${byDate}.log</file>
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss} %-5level - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logs do SpringBoot não irão para o arquivo -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+    <!-- Só so logs em ProdutoContratadoService irão para o arquivo -->
+    <logger name="com.spring.ApiSystem.produtocontratado.ProdutoContratadoService" level="INFO">
+        <appender-ref ref="MEU_LOG"/>
+    </logger>
+</configuration>

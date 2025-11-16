@@ -29,13 +29,6 @@ public class UsuarioController {
         this.filterService = filterService;
     }
 
-    @Operation(summary = "Criar usuário",
-               description = "Endpoint para cadastro de usuários no sistema")
-    @PostMapping("/cadastro")
-    public ResponseEntity<ResCadastrarUsuarioDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroUsuarioDTO cadastroUsuarioDTO) {
-        return ResponseEntity.ok(usuarioService.cadastrarUsuario(cadastroUsuarioDTO));
-    }
-
     @Operation(summary = "Realizar login (necessário cadastro)",
             description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
