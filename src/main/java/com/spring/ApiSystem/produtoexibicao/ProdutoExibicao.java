@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.enums.Status;
+import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -26,8 +27,8 @@ public class ProdutoExibicao {
     private String periodo;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Status status;
+    @Column(nullable = false,name = "status")
+    private ProdutoExibicaoStatus status;
 
     @Column(name = "data_criacao",
             nullable = false,
@@ -36,11 +37,11 @@ public class ProdutoExibicao {
 
     @Column(name = "tipo_aula",
             nullable = false)
-    private String tipoAula;
+    private TipoAula tipoAula;
 
     @Column(name = "quantidade_aula",
             nullable = false)
-    private String quantidadeAula;
+    private Integer quantidadeAula;
 
     @Column(name = "duracaoMes",
             nullable = false)
@@ -49,11 +50,7 @@ public class ProdutoExibicao {
     public ProdutoExibicao() {
     }
 
-    public ProdutoExibicao(Long id, String titulo,
-                           String subtitulo, String descricao,
-                           Double preco, String periodo,
-                           Status status, LocalDateTime dataCriacao,String tipoAula,
-                           String quantidadeAula, Integer duracaoMes) {
+    public ProdutoExibicao(Long id, String titulo, String subtitulo, String descricao, Double preco, String periodo, ProdutoExibicaoStatus status, LocalDateTime dataCriacao, TipoAula tipoAula, Integer quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -115,11 +112,11 @@ public class ProdutoExibicao {
         this.periodo = periodo;
     }
 
-    public Status getStatus() {
+    public ProdutoExibicaoStatus getStatus() {
         return status;
     }
 
-    public void setStatus(Status status) {
+    public void setStatus(ProdutoExibicaoStatus status) {
         this.status = status;
     }
 
@@ -131,21 +128,13 @@ public class ProdutoExibicao {
         this.dataCriacao = dataCriacao;
     }
 
-    public String getTipoAula() {
-        return tipoAula;
-    }
+    public TipoAula getTipoAula() {return tipoAula;}
 
-    public void setTipoAula(String tipoAula) {
-        this.tipoAula = tipoAula;
-    }
+    public void setTipoAula(TipoAula tipoAula) {this.tipoAula = tipoAula;}
 
-    public String getQuantidadeAula() {
-        return quantidadeAula;
-    }
+    public Integer getQuantidadeAula() {return quantidadeAula;}
 
-    public void setQuantidadeAula(String quantidadeAula) {
-        this.quantidadeAula = quantidadeAula;
-    }
+    public void setQuantidadeAula(Integer quantidadeAula) {this.quantidadeAula = quantidadeAula;}
 
     public Integer getDuracaoMes() {
         return duracaoMes;

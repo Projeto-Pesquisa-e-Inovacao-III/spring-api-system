@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.endereco.mapper;
 
-import com.spring.ApiSystem.agendamento.dto.response.buscarporid.EnderecoResumoDTO;
 import com.spring.ApiSystem.cep.mapper.CepMapper;
 
 import com.spring.ApiSystem.endereco.Endereco;
@@ -26,8 +25,11 @@ public interface EnderecoMapper {
     List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
     ResEnderecoSemIdDto toEnderecoSemIdDto(Endereco endereco);
     ResAtualizarEnderecoDTO toResAtualizarEnderecoDTO(Endereco endereco);
-    EnderecoResumoDTO toEnderecoResumoDTO(Endereco endereco);
 
+    @Mapping(target = "cidade", source = "cep.localidade")
+    @Mapping(target = "uf", source = "cep.uf")
+    @Mapping(target = "bairro", source = "cep.bairro")
+    ResEnderecoAgendamentoDTO toResEnderecoAgendamentoDTO(Endereco endereco);
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

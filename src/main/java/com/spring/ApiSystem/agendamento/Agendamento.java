@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.agendamento;
 
-import com.spring.ApiSystem.agendamento.enums.Situacao;
+import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.state.*;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.endereco.Endereco;
@@ -21,11 +21,16 @@ public class Agendamento {
     private LocalDateTime data;
 
     @Column(nullable = false)
-    private Situacao situacao;
+    private LocalDateTime dataFim;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false,name = "status")
+    private AgendamentoStatus status;
+
+    @Column(length = 200)
     private String descricao;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY,cascade = CascadeType.PERSIST)
     @JoinColumn(name = "endereco_id", nullable = false)
     private Endereco endereco;
 
@@ -45,11 +50,12 @@ public class Agendamento {
     private AgendamentoState agendamentoState;
 
     public Agendamento() {
+        this.agendamentoState = new AgendamentoAprovado();
+        this.status = this.agendamentoState.getSituacao();
     }
-
     public Agendamento(Long id, LocalDateTime data, String descricao,
                        Endereco endereco, Aluno aluno, Personal personal,
-                       ProdutoContratado produtoContratado, AgendamentoState state) {
+                       ProdutoContratado produtoContratado) {
         this.id = id;
         this.data = data;
         this.descricao = descricao;
@@ -57,42 +63,40 @@ public class Agendamento {
         this.aluno = aluno;
         this.personal = personal;
         this.produtoContratado = produtoContratado;
-
-        definirEstadoInicial(state);
+        this.agendamentoState = new AgendamentoAprovado();
+        this.status = this.agendamentoState.getSituacao();
     }
 
     @PostLoad
     private void carregarDoBanco() {
-        definirEstadoInicial(null);
-    }
-
-
-    private void definirEstadoInicial(AgendamentoState state) {
-        if (state != null) {
-            this.agendamentoState = state;
-        } else {
-            switch (this.situacao) {
-                case ACEITO -> this.agendamentoState = new AgendamentoAceito();
-                case PENDENTE_CLIENTE -> this.agendamentoState = new AgendamentoPendenteCliente();
-                case RECUSADO -> this.agendamentoState = new AgendamentoRecusado();
-                case CONCLUIDO -> this.agendamentoState = new AgendamentoConcluido();
-                default -> this.agendamentoState = new AgendamentoPendentePersonal();
-            }
+        switch (this.status) {
+            case APROVADO -> this.agendamentoState = new AgendamentoAprovado();
+            case PENDENTE_CLIENTE_APROVACAO -> this.agendamentoState = new AgendamentoPendenteClienteAprovacao();
+            case CONCLUIDO -> this.agendamentoState = new AgendamentoConcluido();
+            case PENDENTE_PERSONAL_CONCLUIR -> this.agendamentoState = new AgendamentoPendentePersonalConcluir();
+            case CANCELADO_CLIENTE -> this.agendamentoState = new AgendamentoCanceladoCliente();
+            case CANCELADO_PERSONAL -> this.agendamentoState = new AgendamentoCanceladoPersonal();
+            case AUSENCIA_CLIENTE -> this.agendamentoState = new AgendamentoAusenciaCliente();
+            case AUSENCIA_PERSONAL -> this.agendamentoState = new AgendamentoAusenciaPersonal();
+            default -> this.agendamentoState = new AgendamentoPendentePersonalAprovacao();
         }
-
-        this.situacao = this.agendamentoState.getSituacao();
     }
+
 
     private void atualizarEstado(AgendamentoState novoEstado) {
         this.agendamentoState = novoEstado;
-        this.situacao = novoEstado.getSituacao();
+        this.status = novoEstado.getSituacao();
     }
 
-    public void aceitar() { atualizarEstado(agendamentoState.aceitar()); }
-    public void recusado() { atualizarEstado(agendamentoState.recusado()); }
+    public void aprovado() { atualizarEstado(agendamentoState.aprovado()); }
+    public void pendentePersonalAprovacao() { atualizarEstado(agendamentoState.pendentePersonalAprovacao()); }
+    public void pendenteClienteAprovacao() { atualizarEstado(agendamentoState.pendenteClienteAprovacao()); }
     public void concluido() { atualizarEstado(agendamentoState.concluido()); }
-    public void pendentePersonal() { atualizarEstado(agendamentoState.pendentePersonal()); }
-    public void pendenteCliente() { atualizarEstado(agendamentoState.pendenteCliente()); }
+    public void pendentePersonalConcluir() { atualizarEstado(agendamentoState.pendentePersonalConcluir()); }
+    public void canceladoCliente() { atualizarEstado(agendamentoState.canceladoCliente()); }
+    public void canceladoPersonal() { atualizarEstado(agendamentoState.canceladoPersonal()); }
+    public void ausenciaCliente() { atualizarEstado(agendamentoState.ausenciaCliente()); }
+    public void ausenciaPersonal() { atualizarEstado(agendamentoState.ausenciaPersonal()); }
 
 
 
@@ -102,8 +106,12 @@ public class Agendamento {
     public LocalDateTime getData() {return data;}
     public void setData(LocalDateTime data) {this.data = data;}
 
-    public Situacao getSituacao() {return situacao;}
-    public void setSituacao(Situacao situacao) {this.situacao = situacao;}
+    public LocalDateTime getDataFim() {return dataFim;}
+
+    public void setDataFim(LocalDateTime dataFim) {this.dataFim = dataFim;}
+
+    public AgendamentoStatus getStatus() {return status;}
+    public void setStatus(AgendamentoStatus agendamentoStatus) {this.status = agendamentoStatus;}
 
     public String getDescricao() {return descricao;}
     public void setDescricao(String descricao) {this.descricao = descricao;}
@@ -127,7 +135,7 @@ public class Agendamento {
         return "Agendamento{" +
                 "id=" + id +
                 ", data=" + data +
-                ", situacao=" + situacao +
+                ", situacao=" + status +
                 ", descricao='" + descricao + '\'' +
                 ", endereco=" + endereco +
                 ", aluno=" + aluno +

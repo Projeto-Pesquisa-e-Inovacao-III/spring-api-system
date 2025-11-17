@@ -42,4 +42,20 @@ public class OpenApiConfig {
                 .pathsToMatch("/agendamentos/**")
                 .build();
     }
+
+    @Bean
+    public GroupedOpenApi produtoContratadoApi() {
+        return GroupedOpenApi.builder()
+                .group("produtos contratados")
+                .pathsToMatch("/produtos-contratados/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi produtoExibicaoApi() {
+        return GroupedOpenApi.builder()
+                .group("produtos de exibição")
+                .pathsToMatch("//produtos-exibicoes/**")
+                .build();
+    }
 }

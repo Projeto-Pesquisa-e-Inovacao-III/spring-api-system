@@ -2,6 +2,7 @@ package com.spring.ApiSystem.endereco.dto.response;
 import com.spring.ApiSystem.cep.CEP;
 
 public record ResCadastrarEnderecoDTO(
+        Long id,
         String numero,
         String complemento,
         String unidade,

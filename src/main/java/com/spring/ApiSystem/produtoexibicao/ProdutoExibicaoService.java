@@ -1,9 +1,9 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.enums.Status;
+import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
 import com.spring.ApiSystem.produtoexibicao.mapper.ProdutoExibicaoMapper;
 import org.springframework.stereotype.Service;
@@ -21,26 +21,25 @@ public class ProdutoExibicaoService {
         this.produtoExibicaoMapper = produtoExibicaoMapper;
     }
 
-    public ResProdutoExibicaoDTO criarProduto(CadastroProdutoExibicaoDTO produto){
-        validarStatus(produto.status());
+    public ResProdutoExibicaoDTO criarProduto(ReqCadastroProdutoExibicaoDTO produto){
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
         produtoEntity.setDataCriacao(LocalDateTime.now());
         produtoExibicaoRepository.save(produtoEntity);
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(produtoEntity);
     }
 
-    public ResProdutoExibicaoDTO editarProduto(Long id, EdicaoProdutoExibicaoDTO produto){
+    public ResProdutoExibicaoDTO editarProduto(Long id, ReqEdicaoProdutoExibicaoDTO produto){
         desativarProduto(id);
         return criarProduto(produtoExibicaoMapper.toCadastroProdutoExibicaoDTO(produto));
     }
 
     public List<ResProdutoExibicaoDTO> listarProdutosPorStatus(String status){
-        validarStatus(status);
-        return produtoExibicaoRepository.findByStatus(Status.valueOf(status.toUpperCase()));
+        return produtoExibicaoRepository.findByStatus(ProdutoExibicaoStatus.valueOf(status.toUpperCase()));
     }
 
     public List<ResProdutoExibicaoDTO> listarProdutos(){
-        return produtoExibicaoRepository.findAllBy();
+        List<ResProdutoExibicaoDTO> resProdutoExibicaoDTO = produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
+        return  resProdutoExibicaoDTO;
     }
 
     public ProdutoExibicao buscarPorId(Long id){
@@ -50,16 +49,8 @@ public class ProdutoExibicaoService {
 
     public void desativarProduto(Long id) {
         ProdutoExibicao produto = buscarPorId(id);
-        produto.setStatus(Status.INATIVO);
+        produto.setStatus(ProdutoExibicaoStatus.INATIVO);
         produtoExibicaoRepository.save(produto);
     }
 
-    public void validarStatus(String status) {
-        for (Status s : Status.values()) {
-            if (s.name().equalsIgnoreCase(status)) {
-                return;
-            }
-        }
-        throw new IllegalArgumentException("Status inválido: " + status);
-    }
 }

@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -24,7 +24,7 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Criar Produto de Exibição",
                description = "Endpoint para cadastro de produtos de exibição no sistema")
     @PostMapping
-    public ResponseEntity<ResProdutoExibicaoDTO> criarProduto(@Valid @RequestBody CadastroProdutoExibicaoDTO produto){
+    public ResponseEntity<ResProdutoExibicaoDTO> criarProduto(@Valid @RequestBody ReqCadastroProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.criarProduto(produto));
     }
 
@@ -34,7 +34,7 @@ public class ProdutoExibicaoController {
     @PostMapping("/editar/{id}")
     public ResponseEntity<ResProdutoExibicaoDTO>
     editarProduto(@PathVariable Long id,
-                  @Valid @RequestBody EdicaoProdutoExibicaoDTO produto){
+                  @Valid @RequestBody ReqEdicaoProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.editarProduto(id, produto));
     }
 

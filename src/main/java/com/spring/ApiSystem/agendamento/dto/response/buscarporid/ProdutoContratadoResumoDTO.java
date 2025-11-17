@@ -1,9 +1,10 @@
 package com.spring.ApiSystem.agendamento.dto.response.buscarporid;
 
-import com.spring.ApiSystem.agendamento.dto.response.AulaDto;
+
+import com.spring.ApiSystem.agendamento.dto.response.ResProdutoContratadoTipoDeAulaComId;
 
 public record ProdutoContratadoResumoDTO(
-    Long id,
-    AulaDto aulaDto
+        Long id,
+        ResProdutoContratadoTipoDeAulaComId aulaDto
 ) {}
 

@@ -1,58 +1,58 @@
-
+// java
 package com.spring.ApiSystem.agendamento.state;
 
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.AgendamentoStateException;
 
-public class AgendamentoConcluido implements AgendamentoState {
+public class AgendamentoPendentePersonalConcluir implements AgendamentoState {
 
     @Override
     public AgendamentoStatus getSituacao() {
-        return AgendamentoStatus.CONCLUIDO;
+        return AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR;
     }
 
     @Override
     public AgendamentoState aprovado() {
-        throw new AgendamentoStateException("Agendamento já concluído.");
+        throw new AgendamentoStateException("Agendamento já aprovado por ambos.");
     }
 
     @Override
     public AgendamentoState pendenteClienteAprovacao() {
-        throw new AgendamentoStateException("Não é possível ter um agendamento pendete.");
+        throw new AgendamentoStateException("Agendamento já aprovado pelo cliente.");
     }
 
     @Override
     public AgendamentoState pendentePersonalAprovacao() {
-        throw new AgendamentoStateException("Não é possível ter um agendamento pendente.");
+        throw new AgendamentoStateException("Agendamento já aprovado pelo personal.");
     }
 
     @Override
     public AgendamentoState concluido() {
-        return this;
+        return new AgendamentoConcluido();
     }
 
     @Override
     public AgendamentoState pendentePersonalConcluir() {
-        throw new AgendamentoStateException("Agendamento já concluído.");
+        return this;
     }
 
     @Override
     public AgendamentoState canceladoPersonal() {
-        throw new AgendamentoStateException("Não é possível cancelar um agendamento concluído.");
+        throw new AgendamentoStateException("Agendamento não pode ser cancelado neste estado.");
     }
 
     @Override
     public AgendamentoState canceladoCliente() {
-        throw new AgendamentoStateException("Não é possível cancelar um agendamento concluído.");
+        throw new AgendamentoStateException("Agendamento não pode ser cancelado neste estado.");
     }
 
     @Override
     public AgendamentoState ausenciaPersonal() {
-        throw new AgendamentoStateException("Não aplicável em concluído.");
+        return  new AgendamentoAusenciaPersonal();
     }
 
     @Override
     public AgendamentoState ausenciaCliente() {
-        throw new AgendamentoStateException("Não aplicável em concluído.");
+        return  new AgendamentoAusenciaCliente();
     }
 }

@@ -1,6 +1,8 @@
 package com.spring.ApiSystem.produtocontratado.dto.response;
 
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+
 public record ResSaldoDto(
-        String tipoAula,
+        TipoAula tipoAula,
         Integer saldoAula
 ){}
