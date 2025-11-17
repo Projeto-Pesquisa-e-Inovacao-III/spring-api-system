@@ -10,6 +10,7 @@ import com.spring.ApiSystem.endereco.dto.response.*;
 import org.mapstruct.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Mapper(componentModel = "spring", uses = {CepMapper.class})
 public interface EnderecoMapper {

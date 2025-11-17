@@ -1,8 +1,11 @@
 package com.spring.ApiSystem.usuario;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.spring.ApiSystem.telefone.Telefone;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "usuario")
@@ -12,8 +15,8 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "tipo", insertable = false, updatable = false)
-    private String tipo;
+    @Column(name = "tipo", updatable = false)
+    private TipoUsuario tipo;
 
     @Column(nullable = false)
     private String nome;
@@ -35,12 +38,17 @@ public class Usuario {
 
     private boolean ativo = true;
 
-    public Usuario() {
-    }
+    @Column(name= "caminho_foto")
+    private String caminhoFoto;
 
-    public Usuario(Long id, String tipo, String nome, String sexo,
-                   LocalDate dataNascimento, String email, String salt,
-                   String senha, boolean ativo) {
+    @OneToMany (mappedBy = "usuario",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    private List<Telefone> telefones = new ArrayList<>();
+
+    public Usuario() {}
+
+    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
         this.tipo = tipo;
         this.nome = nome;
@@ -50,6 +58,16 @@ public class Usuario {
         this.salt = salt;
         this.senha = senha;
         this.ativo = ativo;
+        this.caminhoFoto = caminhoFoto;
+        this.telefones = telefones;
+    }
+
+    public String getCaminhoFoto() {
+        return caminhoFoto;
+    }
+
+    public void setCaminhoFoto(String caminhoFoto) {
+        this.caminhoFoto = caminhoFoto;
     }
 
     public Long getId() {
@@ -60,11 +78,11 @@ public class Usuario {
         this.id = id;
     }
 
-    public String getTipo() {
+    public TipoUsuario getTipo() {
         return tipo;
     }
 
-    public void setTipo(String tipo) {
+    public void setTipo(TipoUsuario tipo) {
         this.tipo = tipo;
     }
 
@@ -123,4 +141,8 @@ public class Usuario {
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
     }
+
+    public List<Telefone> getTelefones() {return telefones;}
+
+    public void setTelefones(List<Telefone> telefones) {this.telefones = telefones;}
 }

@@ -23,8 +23,7 @@ public class Telefone {
                 nullable = false)
     private Usuario usuario;
 
-    public Telefone() {
-    }
+    public Telefone() {}
 
     public Telefone(Long id, String pais,
                     String ddd, String numero,
@@ -75,4 +74,6 @@ public class Telefone {
     public void setUsuario(Usuario usuario) {
         this.usuario = usuario;
     }
+
+
 }

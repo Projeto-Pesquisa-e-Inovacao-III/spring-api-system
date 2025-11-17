@@ -9,6 +9,6 @@ import java.time.LocalDateTime;
  * DTO for {@link ProdutoExibicao}
  */
 public record ProdutoExibicaoDto(String titulo, String subtitulo, String descricao, Double preco, String periodo,
-                                 String status, LocalDateTime dataCriacao, LocalDateTime dataAtualizacao,
+                                 String status, LocalDateTime dataCriacao,
                                  String tipoAula, String quantidadeAula, Integer duracaoMes) implements Serializable {
 }

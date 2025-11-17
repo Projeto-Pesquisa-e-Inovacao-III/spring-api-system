@@ -1,62 +1,35 @@
 package com.spring.ApiSystem.usuario;
 
-import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
-import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.shared.security.ArgonService;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final AlunoService alunoService;
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
+    private final LocalImageStorageService imageStorageService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, AlunoService alunoService, UsuarioMapper usuarioMapper, ArgonService argonService) {
-        this.usuarioRepository = usuarioRepository;
-        this.alunoService = alunoService;
-        this.usuarioMapper = usuarioMapper;
+    public UsuarioService(LocalImageStorageService imageStorageService, ArgonService argonService, UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository) {
+        this.imageStorageService = imageStorageService;
         this.argonService = argonService;
+        this.usuarioMapper = usuarioMapper;
+        this.usuarioRepository = usuarioRepository;
     }
-
-
-    public ResCadastrarUsuarioDTO cadastrarUsuario(ReqCadastroUsuarioDTO usuarioDTO) {
-        validarEmailExistente(usuarioDTO.email());
-
-        Aluno usuarioEntity = usuarioMapper.toEntityAluno(usuarioDTO);
-        aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
-
-        return usuarioMapper.toDtoCadastrarUsuario(alunoService.cadastrarAluno(usuarioEntity));
-    }
-
-    public ResAtualizarUsuarioDTO atualizarUsuario(ReqEditarUsuarioDTO dto, String email) {
-        Usuario usuario = buscarUsuarioPorEmail(email);
-
-        validarEmailNaoEmUso(dto.email(), email);
-        validarSenhaAtual(dto.senha(), usuario);
-
-        usuarioMapper.atualizarUsuarioParaEditarUsuarioDto(dto, usuario);
-
-        if (dto.senhaNova() != null) {
-            aplicarSenhaCriptografada(usuario, dto.senhaNova());
-        }
-
-        usuarioRepository.save(usuario);
-        return usuarioMapper.toDtoAtualizarUsuario(usuario);
-    }
-
 
     public Boolean removerUsuario(String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
@@ -66,11 +39,11 @@ public class UsuarioService {
     }
 
     public Boolean loginUsuario(String email, String senha) {
-        Optional<Usuario> userOpt = buscarPorEmail(email);
+    Usuario userOpt = buscarUsuarioPorEmail(email);
 
-        return userOpt.isPresent() &&
-                userOpt.get().isAtivo() &&
-                argonService.validarSenha(senha, userOpt.get().getSalt(), userOpt.get().getSenha());
+        return
+                userOpt.isAtivo() &&
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -79,36 +52,71 @@ public class UsuarioService {
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
-    public Optional<Usuario> buscarPorEmail(String email) {
-        return usuarioRepository.findByEmail(email);
+    public Usuario buscarUsuarioPorId(Integer id) {
+        return usuarioRepository
+                .findById(id)
+                .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
     public boolean emailExiste(String email) {
         return usuarioRepository.existsByEmail(email);
     }
 
-    private void validarEmailExistente(String email) {
+    public void validarEmailExistente(String email) {
         if (emailExiste(email)) {
             throw new EmailExistenteException();
         }
     }
 
-    private void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
+    public void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
+        List<String> cript = argonService.criptografarSenha(senhaPlain);
+        usuario.setSalt(cript.get(0));
+        usuario.setSenha(cript.get(1));
+    }
+
+    public void validarEmailNaoEmUso(String novoEmail, String emailAtual) {
         if (emailExiste(novoEmail) && !novoEmail.equals(emailAtual)) {
             throw new EmailExistenteException();
         }
     }
 
-    private void validarSenhaAtual(String senhaInformada, Usuario usuario) {
+    public void validarSenhaAtual(String senhaInformada, Usuario usuario) {
         if (!argonService.validarSenha(senhaInformada, usuario.getSalt(), usuario.getSenha())) {
             throw new SenhaNaoCorrespondeAtual();
         }
     }
 
-    private void aplicarSenhaCriptografada(Usuario usuario, String senhaPlain) {
-        List<String> cript = argonService.criptografarSenha(senhaPlain);
-        usuario.setSalt(cript.get(0));
-        usuario.setSenha(cript.get(1));
+    public String trocarFotoUsuario(MultipartFile imagem, String fotoAtualPath) throws IOException {
+        return imageStorageService.trocarImagem(imagem, Paths.get(fotoAtualPath));
+    }
+
+    public String salvarFotoUsuario(MultipartFile imagem) throws IOException {
+        return imageStorageService.salvarBlob(imagem);
+    }
+
+    public Resource buscarFoto(String nomeArquivo) throws IOException {
+        return imageStorageService.buscarImagem(nomeArquivo);
+    }
+
+    public void deletarFoto(String path) throws IOException {
+        if (path == null || path.isBlank()) return;
+        imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
+    }
+
+    public void salvarUsuario(Usuario usuario) {
+        usuarioRepository.save(usuario);
+    }
+
+    public void atualizarTelefones(Usuario usuario, List<ReqAtualizarTelefoneDTO> telefonesDTO) {
+        for (ReqAtualizarTelefoneDTO telefoneDTO : telefonesDTO) {
+            usuario.getTelefones().stream()
+                    .filter(t -> t.getId().equals(telefoneDTO.id()))
+                    .findFirst()
+                    .ifPresent(telefone -> {
+                        telefone.setDdd(telefoneDTO.ddd());
+                        telefone.setNumero(telefoneDTO.numero());
+                    });
+        }
     }
 
 }

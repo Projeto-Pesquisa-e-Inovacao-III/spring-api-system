@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.aluno.exception;
 
-public class AlunoNaoExisteExcpetion extends RuntimeException {
-    public AlunoNaoExisteExcpetion() {
+public class AlunoNaoExisteException extends RuntimeException {
+    public AlunoNaoExisteException() {
         super("Aluno com esse ID não existe " );
     }
 }

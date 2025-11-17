@@ -20,7 +20,6 @@ import com.spring.ApiSystem.agendamento.dto.response.ListarAgendamentoAlunoDto;
 @Mapper(componentModel = "spring", uses = {EnderecoMapper.class, UsuarioMapper.class, ProdutoContratadoMapper.class})
 public abstract class  AgendamentoMapper {
 
-
     @Autowired
     protected PersonalService personalService;
 
@@ -38,7 +37,7 @@ public abstract class  AgendamentoMapper {
 
 
     @Named("idToPersonal")
-    protected Personal dToPersonal (Integer id){
+    protected Personal dToPersonal (Long id){
         return personalService.findById(id);
     }
 

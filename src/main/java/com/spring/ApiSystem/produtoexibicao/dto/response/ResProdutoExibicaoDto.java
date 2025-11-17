@@ -1,10 +1,10 @@
 package com.spring.ApiSystem.produtoexibicao.dto.response;
 
-import com.spring.ApiSystem.enums.Status;
+import com.spring.ApiSystem.produtoexibicao.enums.Status;
 
 import java.time.LocalDateTime;
 
-public record ResProdutoExibicaoDTO(
+public record ResProdutoExibicaoDto(
     String titulo,
     String subtitulo,
     String descricao,
@@ -14,6 +14,5 @@ public record ResProdutoExibicaoDTO(
     String tipoAula,
     String quantidadeAula,
     Integer duracaoMes,
-    LocalDateTime dataCriacao,
-    LocalDateTime dataAtualizacao
+    LocalDateTime dataCriacao
 ) {}
