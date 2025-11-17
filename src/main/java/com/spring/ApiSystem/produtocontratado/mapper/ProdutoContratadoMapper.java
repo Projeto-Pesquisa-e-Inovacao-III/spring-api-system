@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.produtocontratado.mapper;
 
+import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
@@ -11,8 +12,6 @@ import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ProdutoContratadoMapper {
-    ResProdutoContratadoDto toDto(ProdutoContratado produtoContratado);
-    List<ResProdutoContratadoDto> toListDto(List<ProdutoContratado> produtoContratado);
 
     @Mapping(target = "alunoId", source = "aluno.id")
     @Mapping(target = "produtoExibicaoId", source = "produtoExibicao.id")
@@ -22,6 +21,10 @@ public interface ProdutoContratadoMapper {
     @Mapping(target = "nome", source = "produtoExibicao.titulo")
     ResProdutoContratadoAtivoDto toResProdutoContratadoAtivoDto(ProdutoContratado produtoContratado);
 
+    ResProdutoContratadoDto toDto(ProdutoContratado produtoContratado);
+    List<ResProdutoContratadoDto> toListDto(List<ProdutoContratado> produtoContratado);
+
     ProdutoContratado toEntity(ResProdutoContratadoDto ResProdutoContratadoDto);
     ProdutoContratado toEntity(ResBuscarProdutoContratadoPorIdDto buscarProdutoContratadoPorIdDto);
+
 }

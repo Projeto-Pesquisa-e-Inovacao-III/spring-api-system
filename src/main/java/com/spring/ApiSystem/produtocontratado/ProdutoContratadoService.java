@@ -2,13 +2,12 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
-import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,6 +33,7 @@ public class ProdutoContratadoService {
         this.produtoContratadoMapper = produtoContratadoMapper;
     }
 
+    @Transactional
     public ResProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, String email){
         Aluno aluno = alunoService.buscarPorEmail(email);
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
@@ -43,7 +43,7 @@ public class ProdutoContratadoService {
                 true,
                 LocalDate.now(),
                 LocalDate.now().plusMonths(produtoExibicao.getDuracaoMes()),
-                Integer.parseInt(produtoExibicao.getQuantidadeAula()),
+                produtoExibicao.getQuantidadeAula(),
                 aluno,
                 produtoExibicao
         );
@@ -54,7 +54,7 @@ public class ProdutoContratadoService {
 
     @Transactional
     public void desativarProdutoContratado(Long id){
-        ProdutoContratado produtoContratado = listarPorId(id);
+        ProdutoContratado produtoContratado = buscarPorId(id);
         produtoContratado.setSituacao(false);
         produtoContratadoRepository.save(produtoContratado);
     }
@@ -86,16 +86,24 @@ public class ProdutoContratadoService {
 
 
     @Transactional
-    public Long decrementar(ReqOperacaoSaldoDto reqOperacaoSaldoDto) {
+    public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
                 .findFirstByAlunoIdAndTipoAulaWithSaldoGreaterThanOne(
-                        reqOperacaoSaldoDto.alunoId(),
-                        reqOperacaoSaldoDto.tipoAula()
-                ).orElseThrow(ProdutoContratadoNaoExisteException::new);
+                       alunoId, tipoAula
+                ).orElseThrow(UsuarioSemTipoAulaException::new);
 
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
         return produtoContratado.getId();
+    }
+
+    @Transactional
+    public ProdutoContratado buscarPorId(Long id){
+        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdWithLock(id);
+        if (produtoContratado == null) {
+            throw new ProdutoContratadoPorIdNaoExisteException(id);
+        }
+        return produtoContratado;
     }
 
     public List<ResProdutoContratadoDto> listarProdutosContratados(){
@@ -117,7 +125,7 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResBuscarProdutoContratadoPorIdDto listarPorIdDto(Long id){
-        ProdutoContratado produtoContratado = listarPorId(id);
+        ProdutoContratado produtoContratado = buscarPorId(id);
         return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
     }
 
@@ -127,14 +135,6 @@ public class ProdutoContratadoService {
         return produtoContratadoMapper.toDto(produtoContratado);
     }
 
-    @Transactional
-    public ProdutoContratado listarPorId(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdWithLock(id);
-        if (produtoContratado == null) {
-            throw new ProdutoContratadoPorIdNaoExisteException(id);
-        }
-        return produtoContratado;
-    }
 
     public List<ResProdutoContratadoDto> listarPorAluno(String email, Pageable pageable){
         List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoEmail(email, pageable);
@@ -150,7 +150,7 @@ public class ProdutoContratadoService {
                         .orElseThrow(SemPlanoAtivoException::new));
     }
 
-    public ResSaldoDto buscarTotalSaldoAulaPorTipo(String tipoAula){
+    public ResSaldoDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
         return new ResSaldoDto(
                 tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula));
     }
@@ -160,22 +160,4 @@ public class ProdutoContratadoService {
                 produtoContratado.getDataExpiracao().isAfter(LocalDate.now());
     }
 
-    private void validarProdutoAtivo(ProdutoContratado produtoContratado) {
-        if (!produtoContratado.getSituacao() ||
-                produtoContratado.getDataExpiracao().isBefore(LocalDate.now())) {
-            throw new PlanoInativoException();
-        }
-    }
-
-    private void atualizarAluno(ProdutoContratado produto, Long novoAlunoId) {
-        if (!produto.getAluno().getId().equals(novoAlunoId)) {
-            produto.setAluno(alunoService.buscarPorId(novoAlunoId));
-        }
-    }
-
-    private void atualizarProdutoExibicao(ProdutoContratado produto, Long novoProdutoExibicaoId) {
-        if (!produto.getProdutoExibicao().getId().equals(novoProdutoExibicaoId)) {
-            produto.setProdutoExibicao(produtoExibicaoService.buscarPorId(novoProdutoExibicaoId));
-        }
-    }
 }

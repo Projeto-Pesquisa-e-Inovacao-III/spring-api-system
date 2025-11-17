@@ -1,10 +1,10 @@
 package com.spring.ApiSystem.produtocontratado;
 
-import com.spring.ApiSystem.produtocontratado.dto.request.CriarProdutoContratadoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
+import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -31,11 +31,11 @@ public class ProdutoContratadoController {
                       "de exibição e no ID do aluno")
     @PostMapping
     public ResponseEntity<ResProdutoContratadoDto>
-    criarProdutoContratado(@Valid @RequestBody CriarProdutoContratadoDto
-                           criarProdutoContratadoDto,
+    criarProdutoContratado(@Valid @RequestBody ReqCriarProdutoContratadoDto
+                                   reqCriarProdutoContratadoDto,
                            @AuthenticationPrincipal UserDetails userDetails){
         ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarProdutoContratado(
-                criarProdutoContratadoDto.idProdutoExibicao(),
+                reqCriarProdutoContratadoDto.idProdutoExibicao(),
                 userDetails.getUsername()
         );
 
@@ -75,7 +75,7 @@ public class ProdutoContratadoController {
     }
 
     @GetMapping("/total-tipo/{tipoAula}")
-    public ResponseEntity<ResSaldoDto> buscarTotalSaldoAulaPorTipo(@PathVariable String tipoAula){
+    public ResponseEntity<ResSaldoDto> buscarTotalSaldoAulaPorTipo(@PathVariable TipoAula tipoAula){
         return ResponseEntity.ok(produtoContratadoService.buscarTotalSaldoAulaPorTipo(tipoAula));
     }
 

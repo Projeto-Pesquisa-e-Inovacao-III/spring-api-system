@@ -1,11 +1,13 @@
 package com.spring.ApiSystem.produtoexibicao.dto.request;
 
+import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-public record EdicaoProdutoExibicaoDTO(
+public record ReqEdicaoProdutoExibicaoDTO(
     @NotBlank(message = "Título é obrigatório")
     String titulo,
 
@@ -23,10 +25,10 @@ public record EdicaoProdutoExibicaoDTO(
     String periodo,
 
     @NotBlank(message = "Status é obrigatório")
-    String status,
+    ProdutoExibicaoStatus status,
 
     @NotBlank(message = "Tipo de aula é obrigatório")
-    String tipoAula,
+    TipoAula tipoAula,
 
     @NotNull(message = "Quantidade de aulas é obrigatória")
     String quantidadeAula,

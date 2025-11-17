@@ -1,14 +1,18 @@
 package com.spring.ApiSystem.agendamento.state;
 
-import com.spring.ApiSystem.agendamento.enums.Situacao;
+import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 
 public interface AgendamentoState {
 
-    Situacao getSituacao();
+    AgendamentoStatus getSituacao();
 
-    AgendamentoState recusado();
-    AgendamentoState aceitar();
+    AgendamentoState aprovado();
+    AgendamentoState pendenteClienteAprovacao();
+    AgendamentoState pendentePersonalAprovacao();
     AgendamentoState concluido();
-    AgendamentoState pendenteCliente();
-    AgendamentoState pendentePersonal();
+    AgendamentoState pendentePersonalConcluir();
+    AgendamentoState canceladoPersonal();
+    AgendamentoState canceladoCliente();
+    AgendamentoState ausenciaPersonal();
+    AgendamentoState ausenciaCliente();
 }
