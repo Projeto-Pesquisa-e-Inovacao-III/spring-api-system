@@ -1,38 +1,61 @@
-  spring:
-    application:
-      name: spring-api-system
+spring:
+  application:
+    name: spring-api-system
 
-    profiles:
-      active: dev
+  profiles:
+    active: dev
 
-    config:
-      import: "optional:classpath:application-${spring.profiles.active}.yml"
+  config:
+    import: "optional:classpath:application-${spring.profiles.active}.yml"
 
-  jwt:
-    public:
-      key: classpath:keys/public.pem
-    private:
-      key: classpath:keys/private.pem
+jwt:
+  public:
+    key: classpath:keys/public.pem
+  private:
+    key: classpath:keys/private.pem
 
-  springdoc:
-    swagger-ui:
-      path: /doc
+springdoc:
+  swagger-ui:
+    path: /doc
 
-  argon:
-    algoritmo: argon2id
-    versao: 19
-    saltLength: 32
-    hashLength: 32
-    parallelism: 1
-    memory: 65536
-    iterations: 3
+argon:
+  algoritmo: argon2id
+  versao: 19
+  saltLength: 32
+  hashLength: 32
+  parallelism: 1
+  memory: 65536
+  iterations: 3
 
-  pagbank:
-    token: dummy-token-1234567890
-    endpoint: https://api.pagbank.com.br
-    client:
-      id: dummy-client-id
-      secret: dummy-client-secret
+pagbank:
+  token: dummy-token-1234567890
+  endpoint: https://api.pagbank.com.br
+  client:
+    id: dummy-client-id
+    secret: dummy-client-secret
 
-  server:
-    port: 8080
+
+# CONFIGURAÇÕES INFOBIP
+infobip:
+  base:
+    url: https://xk4qx3.api.infobip.com
+  api:
+    key: 0bcb56b553932d710b5b07c35833dbba-5844faef-ca2e-42d1-982e-d79e5272e4f3
+  whatsapp:
+    sender: 447860088970
+    template:
+      name: authentication
+
+# Logs
+logging:
+  level:
+    org.example: INFO
+
+# Url Webhook - Disc
+discord:
+  webhook:
+    url: https://ptb.discord.com/api/webhooks/1431904865545617472/6hkid2IeJ2YIp4E3D_4Zjbdp1toVo-IuZkQ9jUDg7--WOSkMQhRzAbDb1Y6HojlZO4mb
+
+
+server:
+  port: 8080
