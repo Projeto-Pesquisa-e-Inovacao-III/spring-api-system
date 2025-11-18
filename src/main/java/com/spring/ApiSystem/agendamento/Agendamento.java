@@ -50,7 +50,7 @@ public class Agendamento {
     private AgendamentoState agendamentoState;
 
     public Agendamento() {
-        this.agendamentoState = new AgendamentoAprovado();
+        this.agendamentoState = new AgendamentoPendentePersonalAprovacao();
         this.status = this.agendamentoState.getSituacao();
     }
     public Agendamento(Long id, LocalDateTime data, String descricao,
@@ -63,7 +63,7 @@ public class Agendamento {
         this.aluno = aluno;
         this.personal = personal;
         this.produtoContratado = produtoContratado;
-        this.agendamentoState = new AgendamentoAprovado();
+        this.agendamentoState = new AgendamentoPendentePersonalAprovacao();
         this.status = this.agendamentoState.getSituacao();
     }
 

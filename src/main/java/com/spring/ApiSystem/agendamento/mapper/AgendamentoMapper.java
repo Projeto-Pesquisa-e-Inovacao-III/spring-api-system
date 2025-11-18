@@ -2,6 +2,7 @@ package com.spring.ApiSystem.agendamento.mapper;
 
 import com.spring.ApiSystem.agendamento.Agendamento;
 import com.spring.ApiSystem.agendamento.dto.request.ReqCriarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.ResAgendamentoAlunoOverviewDTO;
 import com.spring.ApiSystem.agendamento.dto.response.ResAgendamentoPersonalOverviewDTO;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
@@ -24,7 +25,7 @@ public interface   AgendamentoMapper {
     @Mapping(target = "status", ignore = true)
     @Mapping(target = "agendamentoState", ignore = true)
     Agendamento toEntity(ReqCriarAgendamentoDTO reqCriarAgendamentoDTO);
-
+    Agendamento toEntity(ReqReagendarAgendamentoDTO reqReagendarAgendamentoDTO);
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "produtoContratadoNome", source = "produtoContratado.produtoExibicao.titulo")
