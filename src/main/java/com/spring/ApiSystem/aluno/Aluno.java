@@ -34,4 +34,6 @@ public class Aluno extends Usuario {
     public void setCpf(String cpf) {
         this.cpf = cpf;
     }
+
+
 }

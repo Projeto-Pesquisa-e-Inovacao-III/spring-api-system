@@ -31,14 +31,14 @@ public class AgendamentoController {
                                               @AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(
-                agendamentoService.criarAgendamento(reqCriarAgendamentoDTO, email)
+                agendamentoService.criarAgendamento(reqCriarAgendamentoDTO)
         );
     }
 
     @GetMapping("/me")
     public ResponseEntity<?> buscarAgendamentosPorUsuario(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(
-                agendamentoService.buscarAgendamentosPorUsuario(userDetails.getUsername())
+                agendamentoService.buscarAgendamentosPorUsuario()
         );
     }
 
