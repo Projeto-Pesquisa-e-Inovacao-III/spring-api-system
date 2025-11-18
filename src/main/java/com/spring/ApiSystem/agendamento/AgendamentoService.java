@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.agendamento;
 
-import com.spring.ApiSystem.agendamento.dto.request.ReqCriarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
@@ -9,10 +9,9 @@ import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
+import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
-import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.UsuarioService;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
@@ -39,11 +38,10 @@ public class AgendamentoService {
     private final EnderecoService enderecoService;
     private final AgendamentoMapper agendamentoMapper;
     private final UsuarioService usuarioService;
-    private final EnderecoMapper enderecoMapper;
-    private final ProdutoContratadoMapper produtoContratadoMapper;
+    private final HistoricoAgendamentoService historicoAgendamentoService;
 
 
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ProdutoContratadoMapper produtoContratadoMapper) {
+    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, UsuarioService usuarioService, HistoricoAgendamentoService historicoAgendamentoService) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
         this.produtoContratadoService = produtoContratadoService;
@@ -51,12 +49,11 @@ public class AgendamentoService {
         this.enderecoService = enderecoService;
         this.agendamentoMapper = agendamentoMapper;
         this.usuarioService = usuarioService;
-        this.enderecoMapper = enderecoMapper;
-        this.produtoContratadoMapper = produtoContratadoMapper;
+        this.historicoAgendamentoService = historicoAgendamentoService;
     }
 
     @Transactional
-    public ResCriarAgendamentoDTO criarAgendamento(ReqCriarAgendamentoDTO criarAgendamentoDTO) {
+    public ResCriarAgendamentoDTO criarAgendamento(ReqCadastrarAgendamentoDTO criarAgendamentoDTO) {
         validarAntecedenciaDeHorarioMarcado(criarAgendamentoDTO.data());
         LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(criarAgendamentoDTO.data(), criarAgendamentoDTO.tipoAulaProdutoContratado());
 
@@ -204,7 +201,7 @@ public class AgendamentoService {
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
             throw new UsuarioNaoEncontradoException();
         }
-
+        ;
         produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
         agendamento.ausenciaPersonal();
 

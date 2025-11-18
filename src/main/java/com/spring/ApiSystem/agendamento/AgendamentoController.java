@@ -1,11 +1,7 @@
 package com.spring.ApiSystem.agendamento;
 
-import com.spring.ApiSystem.agendamento.dto.request.ReqCriarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.usuario.UsuarioService;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
-import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -27,11 +23,11 @@ public class AgendamentoController {
     }
 
     @PostMapping
-    public ResponseEntity<?> criarAgendamento(@RequestBody ReqCriarAgendamentoDTO reqCriarAgendamentoDTO,
+    public ResponseEntity<?> criarAgendamento(@RequestBody ReqCadastrarAgendamentoDTO reqCadastrarAgendamentoDTO,
                                               @AuthenticationPrincipal UserDetails userDetails) {
         String email = userDetails.getUsername();
         return ResponseEntity.ok(
-                agendamentoService.criarAgendamento(reqCriarAgendamentoDTO)
+                agendamentoService.criarAgendamento(reqCadastrarAgendamentoDTO)
         );
     }
 
