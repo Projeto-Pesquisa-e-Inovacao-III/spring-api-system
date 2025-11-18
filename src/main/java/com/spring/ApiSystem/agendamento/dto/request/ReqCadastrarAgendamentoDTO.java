@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
-public record ReqCriarAgendamentoDTO(
+public record ReqCadastrarAgendamentoDTO(
 
         @NotNull(message = "A data é obrigatória")
         LocalDateTime data,
