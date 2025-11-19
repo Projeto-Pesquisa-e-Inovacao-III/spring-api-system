@@ -4,6 +4,7 @@ import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoAluno;
 import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoPersonal;
+import com.spring.ApiSystem.agendamento.dto.response.ResBuscarSolicitacaoPorPersonal;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
@@ -20,6 +21,8 @@ import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.AlunoNaoTemAcessoException;
 import com.spring.ApiSystem.usuario.exception.PersonalNaoTemAcessoException;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,6 +31,7 @@ import com.spring.ApiSystem.usuario.Usuario;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AgendamentoService {
@@ -225,6 +229,18 @@ public class AgendamentoService {
         }
         throw new UsuarioNaoEncontradoException();
     }
+
+    public Page<ResBuscarSolicitacaoPorPersonal> buscarSolicitacaoPorPersonal(Pageable pageable) {
+        Usuario usuario = obterUsuarioAutenticado();
+
+        if (usuario.getTipo() != TipoUsuario.PERSONAL) {
+            throw new PersonalNaoTemAcessoException();
+        }
+
+        Page<Agendamento> agendamentos = agendamentoRepository.findByPersonalIdOrderByDataAsc(usuario.getId(), pageable);
+        return agendamentos.map(agendamentoMapper::toResBuscarSolicitacaoPorPersonal);
+    }
+
 
     private Usuario obterUsuarioAutenticado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
