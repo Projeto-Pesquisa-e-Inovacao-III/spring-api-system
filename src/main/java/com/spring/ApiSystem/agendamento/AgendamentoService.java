@@ -2,6 +2,8 @@ package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoAluno;
+import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoPersonal;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
@@ -136,9 +138,9 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public void cancelarAgendamento(Long agendamentoId, String email) {
-        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, email);
+    public void cancelarAgendamento(Long agendamentoId) {
         Usuario usuario = obterUsuarioAutenticado();
+        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, usuario.getEmail());
 
         validarAntecedenciaDeHorarioMarcado(agendamento.getData());
 
@@ -172,9 +174,9 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public void registrarAusenciaAlunoPorPersonal(Long agendamentoId, String email  ) {
-        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, email);
+    public void registrarAusenciaAlunoPorPersonal(ReqRegistrarAusenciaAgendamentoAluno reqAgendamento) {
         Usuario usuario = obterUsuarioAutenticado();
+        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(reqAgendamento.idAgendamento(), usuario.getEmail());
 
         if (agendamento.getData().isAfter(LocalDateTime.now())) {
             throw new AgendamentoNaoPodeRegistrarAusenciaException();
@@ -184,15 +186,16 @@ public class AgendamentoService {
             throw new AlunoNaoTemAcessoException();
         }
 
-            agendamento.ausenciaCliente();
+        agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+        agendamento.ausenciaCliente();
 
         agendamentoRepository.save(agendamento);
     }
 
     @Transactional
-    public void registrarAusenciaPersonalPorPersonal(Long agendamentoId) {
+    public void registrarAusenciaPersonalPorPersonal(ReqRegistrarAusenciaAgendamentoPersonal reqAgendamento) {
         Usuario usuario = obterUsuarioAutenticado();
-        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, usuario.getEmail());
+        Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(reqAgendamento.idAgendamento(), usuario.getEmail());
 
         if (agendamento.getData().isAfter(LocalDateTime.now())) {
             throw new AgendamentoNaoPodeRegistrarAusenciaException();
@@ -201,7 +204,8 @@ public class AgendamentoService {
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
             throw new UsuarioNaoEncontradoException();
         }
-        ;
+
+        agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
         produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
         agendamento.ausenciaPersonal();
 
