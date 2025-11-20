@@ -86,6 +86,7 @@ public class AgendamentoService {
         agendamento.setProdutoContratado(produtoContratadoService.buscarPorId(produtoContratadoId));
         agendamento.setDataFim(dataFim);
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
 
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
@@ -127,7 +128,9 @@ public class AgendamentoService {
         );
 
         agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
     }
 
     @Transactional
@@ -138,7 +141,9 @@ public class AgendamentoService {
         validarStatusParaAprovacao(agendamento, usuario);
 
         agendamento.aprovado();
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
     }
 
     @Transactional
@@ -158,7 +163,9 @@ public class AgendamentoService {
                 agendamento.getProdutoContratado().getId()
         );
 
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
     }
 
     @Transactional
@@ -170,12 +177,14 @@ public class AgendamentoService {
             throw new AgendamentoNaoPodeSerConcluidoException();
         }
 
-        if (usuario.getTipo() == TipoUsuario.PERSONAL  && agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
+        if (usuario.getTipo() == TipoUsuario.PERSONAL
+                && agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
             agendamento.concluido();
+            Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+            historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
         }
-
-        agendamentoRepository.save(agendamento);
     }
+
 
     @Transactional
     public void registrarAusenciaAlunoPorPersonal(ReqRegistrarAusenciaAgendamentoAluno reqAgendamento) {
@@ -193,7 +202,8 @@ public class AgendamentoService {
         agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
         agendamento.ausenciaCliente();
 
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
     }
 
     @Transactional
@@ -213,7 +223,8 @@ public class AgendamentoService {
         produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
         agendamento.ausenciaPersonal();
 
-        agendamentoRepository.save(agendamento);
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+        historicoAgendamentoService.cadastrar(agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo));
     }
 
     @Transactional(readOnly = true)
@@ -236,9 +247,9 @@ public class AgendamentoService {
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
             throw new PersonalNaoTemAcessoException();
         }
+        Page<Agendamento> agendamentosPage = agendamentoRepository.findByPersonalIdOrderByDataAsc(usuario.getId(),pageable);
 
-        Page<Agendamento> agendamentos = agendamentoRepository.findByPersonalIdOrderByDataAsc(usuario.getId(), pageable);
-        return agendamentos.map(agendamentoMapper::toResBuscarSolicitacaoPorPersonal);
+        return agendamentosPage.map(agendamentoMapper::toResBuscarSolicitacaoPorPersonal);
     }
 
 

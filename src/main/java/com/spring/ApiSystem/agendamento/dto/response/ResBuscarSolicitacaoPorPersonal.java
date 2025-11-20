@@ -1,27 +1,23 @@
 package com.spring.ApiSystem.agendamento.dto.response;
 
 import com.spring.ApiSystem.endereco.Endereco;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.telefone.Telefone;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+
+import java.time.LocalDateTime;
 
 public record ResBuscarSolicitacaoPorPersonal(
-        Long id,
-        String status,
-        String nomeCliente,
-        LocalDate data,
-        LocalTime horaInicio,
-        LocalTime horaFim,
-        String tipo,
-        Integer idade,
-        String celular,
-        String local,
-        String enderecoLogradouro,
-        String enderecoNumero,
-        String enderecoBairro,
-        String enderecoCidade,
-        String enderecoUf,
-        String descricao,
-        String avatarUrl
+        Long agendamentoId,
+        TipoAula tipoAula,
+        String nome,
+        Telefone telefone,
+        String idade,
+        String foto,
+        LocalDateTime dataInicio,
+        LocalDateTime dataFim,
+        Endereco endereco,
+        String status
 ) {}
+
 
