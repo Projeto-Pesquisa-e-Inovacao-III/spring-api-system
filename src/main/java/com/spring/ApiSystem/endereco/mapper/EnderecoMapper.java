@@ -22,14 +22,14 @@ public interface EnderecoMapper {
     Endereco toEntity(ResAtualizarEnderecoDTO resAtuailizarEnderecoDTO);
 
     ResCadastrarEnderecoDTO toResCadastrarEnderecoDTO(Endereco endereco);
-    List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
-    ResEnderecoSemIdDto toEnderecoSemIdDto(Endereco endereco);
     ResAtualizarEnderecoDTO toResAtualizarEnderecoDTO(Endereco endereco);
-
+    @Mapping(target = "cep", source = "cep")
+    ResBuscarSolicitacoesPorPersonalEnderecoDTO toResBuscarSolicitacoesPorPersonalEnderecoDTO(Endereco endereco);
     @Mapping(target = "cidade", source = "cep.localidade")
     @Mapping(target = "uf", source = "cep.uf")
     @Mapping(target = "bairro", source = "cep.bairro")
     ResEnderecoAgendamentoDTO toResEnderecoAgendamentoDTO(Endereco endereco);
+    List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
 
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

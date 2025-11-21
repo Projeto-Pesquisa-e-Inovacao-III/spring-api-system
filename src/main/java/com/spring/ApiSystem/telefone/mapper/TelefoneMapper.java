@@ -3,9 +3,7 @@ package com.spring.ApiSystem.telefone.mapper;
 import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResAtualizarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResCadastrarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+import com.spring.ApiSystem.telefone.dto.response.*;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -15,6 +13,9 @@ public interface TelefoneMapper {
     Telefone toEntity(ReqCadastrarTelefoneDTO telefoneDTO);
     Telefone toEntity(ReqAtualizarTelefoneDTO telefoneDTO);
     List<Telefone> toEntityList(List<ReqCadastrarTelefoneDTO> telefonesDTO);
+
+    ResBuscarSolicitacoesPorPersonalTelefoneDTO buscarSolicitacoesPorPersonalTelefone(Telefone endereco);
+    ResBuscarSolicitacoesPorAlunoTelefoneDTO buscarSolicitacoesPorAlunoTelefone(Telefone endereco);
 
     ResCadastrarTelefoneDTO toDtoCasdastrarTelefone(Telefone telefone);
     ResAtualizarTelefoneDTO toDtoAtualizarTelefone(Telefone telefone);
