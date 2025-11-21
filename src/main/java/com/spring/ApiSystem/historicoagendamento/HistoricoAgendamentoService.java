@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.historicoagendamento;
 
+import com.spring.ApiSystem.agendamento.Agendamento;
 import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
 import com.spring.ApiSystem.historicoagendamento.mapper.HistoricoMapper;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,9 @@ public class HistoricoAgendamentoService {
             this.historicoAgendamentoRepository = historicoAgendamentoRepository;
         }
 
-        public void cadastrar(ReqCadastrarHistoricoAgendamentoDTO agendamento) {
-            var historicoAgendamento = historicoMapper.toEntity(agendamento);
-            historicoAgendamentoRepository.save(historicoAgendamento);
-        }
+    public void cadastrar(ReqCadastrarHistoricoAgendamentoDTO dto, Agendamento agendamento) {
+        var historicoAgendamento = historicoMapper.toEntity(dto, agendamento);
+        historicoAgendamentoRepository.save(historicoAgendamento);
+    }
+
 }

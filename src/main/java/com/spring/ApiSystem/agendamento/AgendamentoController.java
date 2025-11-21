@@ -2,12 +2,12 @@ package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoAluno;
-import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamentoPersonal;
+import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
 import com.spring.ApiSystem.agendamento.dto.response.ResBuscarSolicitacaoPorPersonal;
 import com.spring.ApiSystem.usuario.UsuarioService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -35,13 +35,6 @@ public class AgendamentoController {
         );
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> buscarAgendamentosPorUsuario(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(
-                agendamentoService.buscarAgendamentosPorUsuario()
-        );
-    }
-
     @PutMapping("/reagendar")
     public ResponseEntity<?> reagendar(@RequestBody ReqReagendarAgendamentoDTO reqReagendarAgendamentoDTO) {
         agendamentoService.reagendamento(reqReagendarAgendamentoDTO);
@@ -66,21 +59,38 @@ public class AgendamentoController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/ausencia/aluno")
-    public ResponseEntity<?> registrarAusenciaAlunoPorPersonal(@RequestBody ReqRegistrarAusenciaAgendamentoAluno req) {
-        agendamentoService.registrarAusenciaAlunoPorPersonal(req);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/ausencia/personal")
-    public ResponseEntity<?> registrarAusenciaPersonalPorPersonal(@RequestBody ReqRegistrarAusenciaAgendamentoPersonal req) {
-        agendamentoService.registrarAusenciaPersonalPorPersonal(req);
+    @PutMapping("/ausencia")
+    public ResponseEntity<?> registrarAusencia(@RequestBody ReqRegistrarAusenciaAgendamento req) {
+        agendamentoService.registrarAusencia(req);
         return ResponseEntity.ok().build();
     }
 
     @GetMapping("/solicitacoes")
-    public ResponseEntity<Page<ResBuscarSolicitacaoPorPersonal>> buscarSolicitacaoPorPersonal(Pageable pageable) {
-        Page<ResBuscarSolicitacaoPorPersonal> page = agendamentoService.buscarSolicitacaoPorPersonal(pageable);
+    public ResponseEntity<Page<?>> buscarSolicitacaoPorPersonal(Pageable pageable) {
+
+        Pageable pageableComTamanhoFixado = PageRequest.of(
+                pageable.getPageNumber(),
+                8,
+                pageable.getSort()
+        );
+
+        Page<?> page =
+                agendamentoService.buscarSolicitacaoPorPersonal(pageableComTamanhoFixado);
+
         return ResponseEntity.ok(page);
+    }
+
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> buscarDadosDoAgendamentoPorId(@PathVariable("id") Long agendamentoId) {
+        Object dados = agendamentoService.buscarDadosDoAgendamentoPorId(agendamentoId);
+        return ResponseEntity.ok(dados);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<?> buscarAgendamentosPorUsuario(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(
+                agendamentoService.buscarAgendamentosPorUsuario()
+        );
     }
 }

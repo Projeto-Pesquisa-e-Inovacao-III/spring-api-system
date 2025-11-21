@@ -18,6 +18,9 @@ public class HistoricoAgendamento {
     @Column(name = "data_hora", nullable = false)
     private LocalDateTime dataHora;
 
+    @Column(name = "data_fim", nullable = false)
+    private LocalDateTime dataFim;
+
     @Enumerated(EnumType.STRING)
     private TipoAula tipoAula;
 
@@ -27,7 +30,7 @@ public class HistoricoAgendamento {
     @Enumerated(EnumType.STRING)
     private AgendamentoStatus status;
 
-    @Column(name = "data_criacao", nullable = false)
+    @Column(name = "data_criacao", nullable = true)
     private LocalDateTime dataCriacao;
 
     @ManyToOne
@@ -63,6 +66,10 @@ public class HistoricoAgendamento {
     public LocalDateTime getDataHora() {return dataHora;}
 
     public void setDataHora(LocalDateTime dataHora) {this.dataHora = dataHora;}
+
+    public LocalDateTime getDataFim() {return dataFim;}
+
+    public void setDataFim(LocalDateTime dataFim) {this.dataFim = dataFim;}
 
     public TipoAula getTipoAula() {return tipoAula;}
 

@@ -20,7 +20,7 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
 
 
     Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
-
+    Page<Agendamento>findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
@@ -102,14 +102,4 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
     );
 
 }
-
-    //SELECTS QUE EU PRECISO
-    //BUSCAR AGENDAMENTOS POR PERSONAL ORGANIZAR POR CATEGORIA E DEPOIS POR DATA solicitações
-
-
-    //BUSCAR se a agendamento naquele dia e horario
-    //SALVAR UM PRODUTO CONTRATADO AO CRIAR UM AGENDAMENTO(LOGICA)
-    //CANCELAR UM AGENDAMENTO E RETORNA SALDO DE PRODUTOS CONTRATADOS
-    //ATUALIZAR UM AGENDAMENTO, MAS SEM MUDAR PRODUTO CONTRATADO
-    //BAGULHO DE QUANDO VIRAR O DIA VER OS AGENDAMENTOS QUE PASSRAM, SE VIROU O DIA JA VIRE STATUS PARA PENDENTE CONCLUIR
 
