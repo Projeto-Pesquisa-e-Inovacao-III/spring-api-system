@@ -36,13 +36,13 @@ public class DisponibilidadePersonal {
     @Column(name = "hora_fim", nullable = false)
     private LocalTime horaFim;
 
-    public DisponibilidadePersonal(DiaSemana diaSemana, LocalTime horaFim, LocalTime horaInicio, Long id, Personal personal, TipoHorario tipo) {
-        this.diaSemana = diaSemana;
-        this.horaFim = horaFim;
-        this.horaInicio = horaInicio;
-        this.id = id;
+
+    public DisponibilidadePersonal(Personal personal, DiaSemana dia, TipoHorario tipoHorario, LocalTime horaInicio, LocalTime horaFim) {
         this.personal = personal;
-        this.tipo = tipo;
+        this.diaSemana = dia;
+        this.tipo = tipoHorario;
+        this.horaInicio = horaInicio;
+        this.horaFim = horaFim;
     }
 
     public DisponibilidadePersonal() {
