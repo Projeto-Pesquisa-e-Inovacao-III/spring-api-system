@@ -43,7 +43,7 @@ public class TelefoneService {
 
     public void removerTelefone(Long idTelefone) {
         Telefone telefone = buscarTelefonePorId(idTelefone);
-        validarUnicoTelefoneDoUsuario(telefone.getUsuario().getId());
+//        validarUnicoTelefoneDoUsuario(telefone.getUsuario().getId());
 
         telefoneRepository.deleteById(idTelefone);
     }

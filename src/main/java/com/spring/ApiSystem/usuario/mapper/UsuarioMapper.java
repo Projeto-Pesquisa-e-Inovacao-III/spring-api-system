@@ -1,4 +1,5 @@
 package com.spring.ApiSystem.usuario.mapper;
+import com.spring.ApiSystem.usuario.dto.request.ReqAuthUserDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqLoginUsuarioDTO;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
@@ -21,8 +22,12 @@ public interface UsuarioMapper {
     @Mapping(target = "id", ignore = true)
     Usuario toEntity(ReqLoginUsuarioDTO usuarioDTO);
 
+    ReqAuthUserDTO toDtoAuthUser(Usuario usuario);
+
     @Mapping(target = "senha", ignore = true)
     void atualizarUsuarioParaEditarUsuarioDto(ReqEditarUsuarioDTO dto,
                                               @MappingTarget Usuario usuario);
+
+
 
 }

@@ -1,8 +1,7 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResListaProdutoExibicaoDto;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +24,7 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Criar Produto de Exibição",
                description = "Endpoint para cadastro de produtos de exibição no sistema")
     @PostMapping
-    public ResponseEntity<ResProdutoExibicaoDto> criarProduto(@Valid @RequestBody CadastroProdutoExibicaoDTO produto){
+    public ResponseEntity<ResProdutoExibicaoDto> criarProduto(@Valid @RequestBody ReqCadastroProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.criarProduto(produto));
     }
 
@@ -35,7 +34,7 @@ public class ProdutoExibicaoController {
     @PostMapping("/editar/{id}")
     public ResponseEntity<ResProdutoExibicaoDto>
     editarProduto(@PathVariable Long id,
-                  @Valid @RequestBody EdicaoProdutoExibicaoDTO produto){
+                  @Valid @RequestBody ReqEdicaoProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.editarProduto(id, produto));
     }
 
@@ -49,7 +48,7 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Listar Produtos de Exibição",
                description = "Endpoint para listagem de produtos de exibição no sistema")
     @GetMapping
-    public ResponseEntity<List<ResListaProdutoExibicaoDto>> listarProdutos(){
+    public ResponseEntity<List<ResProdutoExibicaoDto>> listarProdutos(){
         return ResponseEntity.ok(produtoExibicaoService.listarProdutos());
     }
 

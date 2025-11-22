@@ -1,9 +1,7 @@
 package com.spring.ApiSystem.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.info.License;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi usuariosApi() {
         return GroupedOpenApi.builder()
-                .group("usuário")
+                .group("usuários")
                 .pathsToMatch("/usuarios/**")
                 .build();
     }
@@ -30,7 +28,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi enderecosApi() {
         return GroupedOpenApi.builder()
-                .group("endereço")
+                .group("endereços")
                 .pathsToMatch("/enderecos/**")
                 .build();
     }

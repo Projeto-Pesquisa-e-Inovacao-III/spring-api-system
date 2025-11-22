@@ -1,13 +1,12 @@
 package com.spring.ApiSystem.produtoexibicao.mapper;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.EdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResListaProdutoExibicaoDto;
-import com.spring.ApiSystem.produtoexibicao.enums.Status;
-import com.spring.ApiSystem.produtoexibicao.dto.request.CadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
@@ -15,14 +14,16 @@ import java.util.List;
 public interface ProdutoExibicaoMapper {
     ProdutoExibicaoDto toDto(ProdutoExibicao produtoExibicao);
     ProdutoExibicao toEntity(ProdutoExibicaoDto dto);
-    ProdutoExibicao toEntity(CadastroProdutoExibicaoDTO cadastroProdutoExibicaoDTO);
-    ProdutoExibicao toEntity(EdicaoProdutoExibicaoDTO dto);
-    ResProdutoExibicaoDto toResProdutoExibicaoDTO(ProdutoExibicao produtoExibicao);
-    List<ResProdutoExibicaoDto> toResProdutoExibicaoDTO(List<ProdutoExibicao> produtoExibicao);
-    List<ResListaProdutoExibicaoDto> toResListaProdutoExibicaoDTO(List<ProdutoExibicao> produtoExibicao);
-    CadastroProdutoExibicaoDTO toCadastroProdutoExibicaoDTO(EdicaoProdutoExibicaoDTO produtoExibicao);
 
-    default Status mapStatus(String status) {
-        return Status.valueOf(status.toUpperCase());
-    }
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "dataCriacao", ignore = true)
+    ProdutoExibicao toEntity(ReqCadastroProdutoExibicaoDTO reqCadastroProdutoExibicaoDTO);
+
+    ProdutoExibicao toEntity(ReqEdicaoProdutoExibicaoDTO dto);
+    ResProdutoExibicaoDto toResProdutoExibicaoDTO(ProdutoExibicao produtoExibicao);
+
+    ReqCadastroProdutoExibicaoDTO toCadastroProdutoExibicaoDTO(ReqEdicaoProdutoExibicaoDTO produtoExibicao);
+  List  <ResProdutoExibicaoDto> toResProdutoExibicaoDTOList(List<ProdutoExibicao> produtoExibicaos);
+
+
 }

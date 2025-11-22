@@ -15,6 +15,7 @@ public class Usuario {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo", updatable = false)
     private TipoUsuario tipo;
 
@@ -41,9 +42,7 @@ public class Usuario {
     @Column(name= "caminho_foto")
     private String caminhoFoto;
 
-    @OneToMany (mappedBy = "usuario",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Telefone> telefones = new ArrayList<>();
 
     public Usuario() {}

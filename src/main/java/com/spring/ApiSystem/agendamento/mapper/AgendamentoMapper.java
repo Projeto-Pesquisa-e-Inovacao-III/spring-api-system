@@ -1,72 +1,179 @@
 package com.spring.ApiSystem.agendamento.mapper;
 
-import com.spring.ApiSystem.aluno.Aluno;
-import com.spring.ApiSystem.agendamento.dto.request.CriarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.response.BuscarAgendamentoPorIdDTO;
-import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.agendamento.Agendamento;
+import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.response.*;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
+import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
+import com.spring.ApiSystem.telefone.Telefone;
+import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
+import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
-import com.spring.ApiSystem.personal.Personal;
-import com.spring.ApiSystem.personal.PersonalService;
-import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
+
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.spring.ApiSystem.agendamento.dto.response.ListarAgendamentoPersonalDto;
-import com.spring.ApiSystem.agendamento.Agendamento;
-import com.spring.ApiSystem.agendamento.dto.response.ListarAgendamentoAlunoDto;
 
-@Mapper(componentModel = "spring", uses = {EnderecoMapper.class, UsuarioMapper.class, ProdutoContratadoMapper.class})
-public abstract class  AgendamentoMapper {
+import java.time.LocalDate;
+import java.util.List;
 
-    @Autowired
-    protected PersonalService personalService;
-
-    @Autowired
-    protected AlunoService alunoService;
+@Mapper(
+        componentModel = "spring",
+        uses = {EnderecoMapper.class, UsuarioMapper.class, ProdutoContratadoMapper.class, TelefoneMapper.class}
+)
+public abstract class AgendamentoMapper {
 
     @Autowired
-    protected ProdutoContratadoService produtoContratadoService;
+    protected JpaUserDetailsService userDetailsService;
+    @Autowired
+    public TelefoneMapper telefoneMapper;
 
-    @Mapping(target = "endereco",ignore = true)
-    @Mapping(target = "personal",source = "personalId", qualifiedByName = "idToPersonal")
-    @Mapping(target = "aluno",source = "alunoId", qualifiedByName = "idToAluno")
-    @Mapping(target = "produtoContratado",source = "produtoContratadoId", qualifiedByName = "idToProdutoContratado")
-    public abstract  Agendamento toEntity(CriarAgendamentoDTO dto);
+    @Mapping(target = "personal.id", source = "personalId")
+    @Mapping(target = "endereco", source = "novoEndereco")
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "agendamentoState", ignore = true)
+    public abstract Agendamento toEntity(ReqCadastrarAgendamentoDTO reqCadastrarAgendamentoDTO);
+    public abstract Agendamento toEntity(ReqReagendarAgendamentoDTO reqReagendarAgendamentoDTO);
+
+    @Mapping(target = "alunoNome", source = "aluno.nome")
+    @Mapping(target = "personalNome", source = "personal.nome")
+    @Mapping(target = "produtoContratadoNome", source = "produtoContratado.produtoExibicao.titulo")
+    public abstract ResCriarAgendamentoDTO toResCriarAgendamentoDTO(Agendamento agendamento);
 
 
-    @Named("idToPersonal")
-    protected Personal dToPersonal (Long id){
-        return personalService.findById(id);
+    @Mapping(target = "data", source = "data")
+    @Mapping(target = "dataFim", source = "dataFim")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "descricao", source = "descricao")
+    @Mapping(target = "usuario", expression = "java(obterUsuarioAtual())")
+    @Mapping(target = "endereco", source = "endereco")
+    public abstract ReqCadastrarHistoricoAgendamentoDTO toReqCriarHistoricoAgendamentoDTO(Agendamento agendamento);
+
+    protected Usuario obterUsuarioAtual() {
+        return userDetailsService.getCurrentUser();
     }
 
-    @Named("idToAluno")
-    protected Aluno idToAluno (Long id){
-        return alunoService.buscarPorId(id);
+    @Mapping(target = "agendamentoId", source = "id")
+    @Mapping(target = "agendamentoStatus", source = "status")
+    @Mapping(target = "datafim", source = "dataFim")
+    @Mapping(target = "alunoNome", source = "aluno.nome")
+    @Mapping(target = "personalNome", source = "personal.nome")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    public abstract ResAgendamentoAlunoOverviewDTO toResAgendamentoAlunoOverviewDTO(Agendamento agendamento);
+
+    public abstract List<ResAgendamentoAlunoOverviewDTO> toResAgendamentoAlunoOverviewDTOList(List<Agendamento> agendamentos);
+
+
+    @Mapping(target = "agendamentoId", source = "id")
+    @Mapping(target = "agendamentoStatus", source = "status")
+    @Mapping(target = "datafim", source = "dataFim")
+    @Mapping(target = "alunoNome", source = "aluno.nome")
+    @Mapping(target = "personalNome", source = "personal.nome")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    public abstract ResAgendamentoPersonalOverviewDTO toResAgendamentoPersonalOverviewDTO(Agendamento agendamento);
+
+    public abstract List<ResAgendamentoPersonalOverviewDTO> toResAgendamentoPersonalOverviewDTOList(List<Agendamento> agendamentos);
+
+
+    @Mapping(target = "agendamentoId", source = "id")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "nome", source = "aluno.nome")
+    @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorPersonalTelefone(telefone))")
+    @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
+    @Mapping(target = "foto", source = "aluno.caminhoFoto")
+    @Mapping(target = "dataInicio", source = "data")
+    @Mapping(target = "dataFim", source = "dataFim")
+    @Mapping(target = "endereco", source = "endereco")
+    @Mapping(target = "status", source = "status")
+    public abstract ResBuscarSolicitacaoPorPersonal toResBuscarSolicitacaoPorPersonal(Agendamento agendamento,@Context  Telefone telefone);
+
+
+    @Mapping(target = "agendamentoId", source = "id")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "nome", source = "aluno.nome")
+    @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorAlunoTelefone(telefone))")
+    @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
+    @Mapping(target = "foto", source = "aluno.caminhoFoto")
+    @Mapping(target = "dataInicio", source = "data")
+    @Mapping(target = "dataFim", source = "dataFim")
+    @Mapping(target = "endereco", source = "endereco")
+    @Mapping(target = "status", source = "status")
+    public abstract ResBuscarSolicitacaoPorAluno toResBuscarSolicitacaoPorAluno(Agendamento agendamento,@Context  Telefone telefone);
+
+    // -------------------------------------------------------------
+    // DETALHES ALUNO
+    // -------------------------------------------------------------
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "dataInicio", source = "data")
+    @Mapping(target = "dataFim", source = "dataFim")
+    @Mapping(
+            target = "duracaoMinutos",
+            expression = "java((int) java.time.Duration.between(agendamento.getData(), agendamento.getDataFim()).toMinutes())"
+    )
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "endereco", source = "endereco")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "descricao", source = "descricao")
+    @Mapping(
+            target = "personal",
+            expression =
+                    "java(new ResDetalhesAgendamentoAlunoDTO.ResDetalhesAgendamentoPersonal(" +
+                            "agendamento.getPersonal().getId(), " +
+                            "agendamento.getPersonal().getNome(), " +
+                            "calcularIdade(agendamento.getPersonal().getDataNascimento()), " +
+                            "agendamento.getPersonal().getCaminhoFoto()" +
+                            "))"
+    )
+    public abstract ResDetalhesAgendamentoAlunoDTO toResDetalhesAgendamentoAlunoDTO(Agendamento agendamento);
+
+    // -------------------------------------------------------------
+    // DETALHES PERSONAL
+    // -------------------------------------------------------------
+    @Mapping(target = "id", source = "id")
+    @Mapping(target = "dataInicio", source = "data")
+    @Mapping(target = "dataFim", source = "dataFim")
+    @Mapping(
+            target = "duracaoMinutos",
+            expression = "java((int) java.time.Duration.between(agendamento.getData(), agendamento.getDataFim()).toMinutes())"
+    )
+    @Mapping(target = "status", source = "status")
+    @Mapping(target = "endereco", source = "endereco")
+    @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "local", source = "endereco.complemento")
+    @Mapping(target = "descricao", source = "descricao")
+    @Mapping(
+            target = "aluno",
+            expression =
+                    "java(new ResDetalhesAgendamentoPersonalDTO.ResDetalhesAgendamentoAluno(" +
+                            "agendamento.getAluno().getId(), " +
+                            "agendamento.getAluno().getNome(), " +
+                            "calcularIdade(agendamento.getAluno().getDataNascimento()), " +
+                            "agendamento.getAluno().getCaminhoFoto()" +
+                            "))"
+    )
+    public abstract ResDetalhesAgendamentoPersonalDTO toResDetalhesAgendamentoPersonalDTO(Agendamento agendamento);
+
+    @Mapping(source = "id", target = "agendamentoId")
+    public abstract ResBuscarAgendamentosParaCalendarioPorAluno resBuscarAgendamentosParaCalendarioPorAluno(Agendamento agendamento);
+    public abstract List<ResBuscarAgendamentosParaCalendarioPorAluno> resBuscarAgendamentosParaCalendarioPorAlunoList(List<Agendamento> agendamentos);
+
+    @Mapping(source = "id", target = "agendamentoId")
+    public abstract ResBuscarAgendamentosParaCalendarioPorPersonal resBuscarAgendamentosParaCalendarioPorPersonal(Agendamento agendamento);
+    public  abstract List<ResBuscarAgendamentosParaCalendarioPorPersonal> resBuscarAgendamentosParaCalendarioPorPersonalList(List<Agendamento> agendamentos);
+
+
+
+    // -------------------------------------------------------------
+    // MÉTODOS AUXILIARES
+    // -------------------------------------------------------------
+    protected String calcularIdade(LocalDate dataNascimento) {
+        if (dataNascimento == null) return null;
+        return String.valueOf(java.time.Period.between(dataNascimento, LocalDate.now()).getYears());
     }
 
-    @Named("idToProdutoContratado")
-    protected ResBuscarProdutoContratadoPorIdDto idToProdutoContratado (Long id){
-        return produtoContratadoService.listarPorIdDto(id);
-    }
 
-    @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")
-    @Mapping(source = "produtoContratado.produtoExibicao.tipoAula", target = "aula.tipoAula")
-    public abstract BuscarAgendamentoPorIdDTO toDTO(Agendamento agendamento);
-
-    @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")
-    @Mapping(source = "produtoContratado.produtoExibicao.tipoAula", target = "aula.tipoAula")
-    public abstract ListarAgendamentoAlunoDto toListarAgendamentoAlunoDto(Agendamento agendamento);
-
-    public abstract Agendamento toEntity(ListarAgendamentoAlunoDto listarAgendamentoAlunoDto);
-
-    public abstract Agendamento toEntity(ListarAgendamentoPersonalDto listarAgendamentoPersonalDto);
-
-    @Mapping(source = "produtoContratado.produtoExibicao.titulo", target = "aula.titulo")
-    @Mapping(source = "produtoContratado.produtoExibicao.tipoAula", target = "aula.tipoAula")
-    public abstract ListarAgendamentoPersonalDto toListarAgendamentoPersonalDto(Agendamento agendamento);
-
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
-    public abstract Agendamento partialUpdate(ListarAgendamentoPersonalDto listarAgendamentoPersonalDto, @MappingTarget Agendamento agendamento);
 }

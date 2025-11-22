@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.endereco.mapper;
 
-import com.spring.ApiSystem.agendamento.dto.response.buscarporid.EnderecoResumoDTO;
 import com.spring.ApiSystem.cep.mapper.CepMapper;
 
 import com.spring.ApiSystem.endereco.Endereco;
@@ -23,12 +22,18 @@ public interface EnderecoMapper {
     Endereco toEntity(ResAtualizarEnderecoDTO resAtuailizarEnderecoDTO);
 
     ResCadastrarEnderecoDTO toResCadastrarEnderecoDTO(Endereco endereco);
-    List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
-    ResEnderecoSemIdDto toEnderecoSemIdDto(Endereco endereco);
     ResAtualizarEnderecoDTO toResAtualizarEnderecoDTO(Endereco endereco);
-    EnderecoResumoDTO toEnderecoResumoDTO(Endereco endereco);
+    @Mapping(target = "cep", source = "cep")
+    ResBuscarSolicitacoesPorPersonalEnderecoDTO toResBuscarSolicitacoesPorPersonalEnderecoDTO(Endereco endereco);
+    @Mapping(target = "cidade", source = "cep.localidade")
+    @Mapping(target = "uf", source = "cep.uf")
+    @Mapping(target = "bairro", source = "cep.bairro")
+    ResEnderecoAgendamentoDTO toResEnderecoAgendamentoDTO(Endereco endereco);
+    List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
 
 
+    ResAgendementoDadosEnderecoAlunoDTO toResEnderecoBuscaAgendamentosAlunosPorId(Endereco endereco);
+    ResAgendementoDadosEnderecoPersonalDTO toResEnderecoBuscaAgendamentosPersonalPorId(Endereco endereco);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Endereco partialUpdate(ResEnderecoDTO resEnderecoDTO, @MappingTarget Endereco endereco);
