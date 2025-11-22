@@ -50,6 +50,7 @@ public class SecurityConfig {
                                     "/personais/cadastro",
                                     "/usuarios/login"
                             ).permitAll()
+                            .requestMatchers(HttpMethod.GET, "/usuarios/auth").permitAll()
                             .requestMatchers("/agendamentos/**").permitAll()
                             .requestMatchers("/checkouts/**").permitAll()
                             .requestMatchers("/produtos-contratados/**").permitAll()

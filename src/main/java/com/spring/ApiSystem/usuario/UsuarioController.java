@@ -4,18 +4,21 @@ import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqAuthDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqLoginUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
+import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -24,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Optional;
 
 @Tag(name = "Usuários", description = "Operações relacionadas a usuários")
 @RequestMapping("/usuarios")
@@ -35,14 +39,16 @@ public class UsuarioController {
     private final JpaUserDetailsService userDetails;
     private final AlunoService alunoService;
     private final PersonalService personalService;
+    private final UsuarioMapper usuarioMapper;
 
     public UsuarioController(UsuarioService usuarioService,
-                             FilterService filterService, JpaUserDetailsService userDetails, AlunoService alunoService, PersonalService personalService) {
+                             FilterService filterService, JpaUserDetailsService userDetails, AlunoService alunoService, PersonalService personalService, UsuarioMapper usuarioMapper) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
         this.userDetails = userDetails;
         this.alunoService = alunoService;
         this.personalService = personalService;
+        this.usuarioMapper = usuarioMapper;
     }
 
     @Operation(summary = "Realizar login (necessário cadastro)",
@@ -114,7 +120,7 @@ public class UsuarioController {
 
             return ResponseEntity.ok().body(resUsuario);
 
-        }else if(usuario.getTipo() == TipoUsuario.PERSONAL){
+        } else if(usuario.getTipo() == TipoUsuario.PERSONAL){
             ResBuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
             return ResponseEntity.ok().body(resUsuario);
         }
@@ -201,5 +207,19 @@ public class UsuarioController {
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    @GetMapping("/auth")
+    public ResponseEntity<ReqAuthDTO> auth() {
+        Optional<Usuario> usuario = userDetails.isLogged();
+
+        return usuario.map(usuarioAuth ->
+                ResponseEntity.ok(
+                        new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuarioAuth)))
+        ).orElseGet(() ->
+                ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ReqAuthDTO(false, null))
+        );
+
     }
 }
