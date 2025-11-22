@@ -57,4 +57,16 @@ public class JpaUserDetailsService implements UserDetailsService {
 
         return optUser.get();
     }
+
+    public Optional<Usuario> isLogged(){
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated() && !authentication.getPrincipal().equals("anonymousUser")) {
+            return usuarioRepository.findByEmail(authentication.getName());
+        } else {
+            return Optional.empty();
+        }
+    }
 }
