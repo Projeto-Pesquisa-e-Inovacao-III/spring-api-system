@@ -78,9 +78,6 @@ public class EnderecoController {
     @GetMapping("/{id}")
     public ResponseEntity<ResBuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id){
         ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorIdDto(id);
-        if(enderecoEncontrado == null){
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(enderecoEncontrado);
     }
 

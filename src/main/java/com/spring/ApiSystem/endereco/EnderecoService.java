@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.endereco;
 
+import com.spring.ApiSystem.cep.CepRepository;
 import com.spring.ApiSystem.cep.dto.response.DadosCepDTO;
 
 import com.spring.ApiSystem.cep.exception.CepNaoEncontradoException;
@@ -25,12 +26,15 @@ public class EnderecoService {
     private final UsuarioService usuarioService;
     private final EnderecoMapper enderecoMapper;
     private final ViaCepService viaCepService;
+    private final CepRepository cepRepository;
 
-    public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ViaCepService viaCepService) {
+    public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ViaCepService viaCepService,
+                           CepRepository cepRepository) {
         this.enderecoRepository = enderecoRepository;
         this.usuarioService = usuarioService;
         this.enderecoMapper = enderecoMapper;
         this.viaCepService = viaCepService;
+        this.cepRepository = cepRepository;
     }
 
     @Transactional
@@ -70,7 +74,7 @@ public class EnderecoService {
 
             enderecoMapper.partialUpdate(enderecoDTO, enderecoEncontrado);
             enderecoEncontrado.setDataAtualizacao(LocalDateTime.now());
-            enderecoEncontrado.setCep(cep);
+            enderecoEncontrado.setCep(cepRepository.getReferenceById(cep.getId()));
 
             enderecoRepository.save(enderecoEncontrado);
             return enderecoMapper.toResAtualizarEnderecoDTO(enderecoEncontrado);
