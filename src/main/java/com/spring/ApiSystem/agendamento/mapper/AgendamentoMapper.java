@@ -57,7 +57,6 @@ public abstract class AgendamentoMapper {
         return userDetailsService.getCurrentUser();
     }
 
-
     @Mapping(target = "agendamentoId", source = "id")
     @Mapping(target = "agendamentoStatus", source = "status")
     @Mapping(target = "datafim", source = "dataFim")
@@ -116,14 +115,13 @@ public abstract class AgendamentoMapper {
             expression = "java((int) java.time.Duration.between(agendamento.getData(), agendamento.getDataFim()).toMinutes())"
     )
     @Mapping(target = "status", source = "status")
-    @Mapping(target = "endereco", source = "endereco.complemento")
+    @Mapping(target = "endereco", source = "endereco")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
-    @Mapping(target = "local", source = "endereco.complemento")
     @Mapping(target = "descricao", source = "descricao")
     @Mapping(
             target = "personal",
             expression =
-                    "java(new ResDetalhesAgendamentoAlunoDTO.PersonalDadosBasico(" +
+                    "java(new ResDetalhesAgendamentoAlunoDTO.ResDetalhesAgendamentoPersonal(" +
                             "agendamento.getPersonal().getId(), " +
                             "agendamento.getPersonal().getNome(), " +
                             "calcularIdade(agendamento.getPersonal().getDataNascimento()), " +
@@ -143,14 +141,14 @@ public abstract class AgendamentoMapper {
             expression = "java((int) java.time.Duration.between(agendamento.getData(), agendamento.getDataFim()).toMinutes())"
     )
     @Mapping(target = "status", source = "status")
-    @Mapping(target = "endereco", source = "endereco.complemento")
+    @Mapping(target = "endereco", source = "endereco")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
     @Mapping(target = "local", source = "endereco.complemento")
     @Mapping(target = "descricao", source = "descricao")
     @Mapping(
             target = "aluno",
             expression =
-                    "java(new ResDetalhesAgendamentoPersonalDTO.AlunoDadosBasico(" +
+                    "java(new ResDetalhesAgendamentoPersonalDTO.ResDetalhesAgendamentoAluno(" +
                             "agendamento.getAluno().getId(), " +
                             "agendamento.getAluno().getNome(), " +
                             "calcularIdade(agendamento.getAluno().getDataNascimento()), " +
@@ -158,6 +156,16 @@ public abstract class AgendamentoMapper {
                             "))"
     )
     public abstract ResDetalhesAgendamentoPersonalDTO toResDetalhesAgendamentoPersonalDTO(Agendamento agendamento);
+
+    @Mapping(source = "id", target = "agendamentoId")
+    public abstract ResBuscarAgendamentosParaCalendarioPorAluno resBuscarAgendamentosParaCalendarioPorAluno(Agendamento agendamento);
+    public abstract List<ResBuscarAgendamentosParaCalendarioPorAluno> resBuscarAgendamentosParaCalendarioPorAlunoList(List<Agendamento> agendamentos);
+
+    @Mapping(source = "id", target = "agendamentoId")
+    public abstract ResBuscarAgendamentosParaCalendarioPorPersonal resBuscarAgendamentosParaCalendarioPorPersonal(Agendamento agendamento);
+    public  abstract List<ResBuscarAgendamentosParaCalendarioPorPersonal> resBuscarAgendamentosParaCalendarioPorPersonalList(List<Agendamento> agendamentos);
+
+
 
     // -------------------------------------------------------------
     // MÉTODOS AUXILIARES
@@ -167,8 +175,5 @@ public abstract class AgendamentoMapper {
         return String.valueOf(java.time.Period.between(dataNascimento, LocalDate.now()).getYears());
     }
 
-//    protected Telefone getPrimeiroTelefone(List<Telefone> telefones) {
-//        if (telefones == null || telefones.isEmpty()) return null;
-//        return telefoneMapper.buscarSolicitacoesPorPersonalTelefone(telefones.getFirst());
-//    }
+
 }

@@ -3,7 +3,7 @@ package com.spring.ApiSystem.agendamento;
 import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
-import com.spring.ApiSystem.agendamento.dto.response.ResBuscarSolicitacaoPorPersonal;
+import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
@@ -15,7 +15,6 @@ import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.usuario.UsuarioService;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.PersonalNaoTemAcessoException;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
@@ -243,7 +242,8 @@ public class AgendamentoService {
         throw new UsuarioNaoEncontradoException();
     }
 
-    public Page<?> buscarSolicitacaoPorPersonal(Pageable pageable) {
+    @Transactional
+    public Page<?> buscarSolicitacaoPorTipoUsuarios(Pageable pageable) {
         Usuario usuario = obterUsuarioAutenticado();
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             Page<Agendamento> agendamentosPage = agendamentoRepository.findByAlunoIdOrderByDataAsc(usuario.getId(), pageable);
@@ -252,6 +252,47 @@ public class AgendamentoService {
             Page<Agendamento> agendamentosPage = agendamentoRepository.findByPersonalIdOrderByDataAsc(usuario.getId(), pageable);
             return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento,agendamento.getAluno().getTelefones().getFirst()));
 
+        }
+        throw new UsuarioNaoEncontradoException();
+    }
+
+    @Transactional
+    public List<?> buscarAgendamentosParaCalendario() {
+        Usuario usuario = obterUsuarioAutenticado();
+
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            List<Agendamento> agendamentos = agendamentoRepository.findAgendamentoByAluno_Id(usuario.getId());
+            return agendamentoMapper.resBuscarAgendamentosParaCalendarioPorAlunoList(agendamentos);
+        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+            List<Agendamento> agendamentos = agendamentoRepository.findAgendamentoByPersonal_Id(usuario.getId());
+            return agendamentoMapper.resBuscarAgendamentosParaCalendarioPorPersonalList(agendamentos);
+        }
+        throw new UsuarioNaoEncontradoException();
+    }
+
+    @Transactional
+    public Page<?> buscarAgendamentosFiltrandoPorDatasStatus(
+            ReqBuscarAgendamentosFiltrados reqBuscarAgendamentosFiltrados,
+            Pageable pageable) {
+        Usuario usuario = obterUsuarioAutenticado();
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            Page<Agendamento> agendamentosPage = agendamentoRepository
+                    .buscarPorAlunoComFiltros(
+                            usuario.getId(),
+                            reqBuscarAgendamentosFiltrados.dataInicio(),
+                            reqBuscarAgendamentosFiltrados.dataFim(),
+                            reqBuscarAgendamentosFiltrados.status(),
+                            pageable);
+            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(agendamento,agendamento.getPersonal().getTelefones().getFirst()));
+        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+            Page<Agendamento> agendamentosPage = agendamentoRepository
+                    .buscarPorPersonalComFiltros(
+                            usuario.getId(),
+                            reqBuscarAgendamentosFiltrados.dataInicio(),
+                            reqBuscarAgendamentosFiltrados.dataFim(),
+                            reqBuscarAgendamentosFiltrados.status(),
+                            pageable);
+            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento,agendamento.getAluno().getTelefones().getFirst()));
         }
         throw new UsuarioNaoEncontradoException();
     }
@@ -269,6 +310,7 @@ public class AgendamentoService {
 
         throw new UsuarioNaoEncontradoException();
     }
+
 
     private Usuario obterUsuarioAutenticado() {
         return jpaUserDetailsService.getCurrentUser();

@@ -18,9 +18,38 @@ import java.util.Optional;
 @Repository
 public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long> {
 
+    List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
+    List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
+
 
     Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
     Page<Agendamento>findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
+
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.aluno.id = :alunoId " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND a.data >= COALESCE(:dataInicio, a.data) " +
+            "  AND a.data <= COALESCE(:dataFim, a.data) " +
+            "ORDER BY a.data ASC")
+    Page<Agendamento> buscarPorAlunoComFiltros(
+            @Param("alunoId") Long alunoId,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
+            @Param("status") AgendamentoStatus status,
+            Pageable pageable);
+
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.personal.id = :personalId " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND a.data >= COALESCE(:dataInicio, a.data) " +
+            "  AND a.data <= COALESCE(:dataFim, a.data) " +
+            "ORDER BY a.data ASC")
+    Page<Agendamento> buscarPorPersonalComFiltros(
+            @Param("personalId") Long personalId,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
+            @Param("status") AgendamentoStatus status,
+            Pageable pageable);
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
