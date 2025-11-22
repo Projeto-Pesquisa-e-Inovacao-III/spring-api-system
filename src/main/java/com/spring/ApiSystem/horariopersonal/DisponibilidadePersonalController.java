@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Disponibilidade Personal",
@@ -29,14 +30,14 @@ public class DisponibilidadePersonalController {
     }
 
 
-    @Operation(summary = "Criar um novo horário",
-            description = "Cadastra um novo bloco de horário (disponibilidade, intervalo ou restrito) para um personal.")
-    @PostMapping("/{personalId}/horarios")
-    public ResponseEntity<ResHorarioDTO> criarHorario(@PathVariable Long personalId, @Valid @RequestBody ReqHorarioDTO request) {
-
-        ResHorarioDTO horarioCriado = disponibilidadeService.criarHorario(personalId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(horarioCriado);
-    }
+//    @Operation(summary = "Criar um novo horário",
+//            description = "Cadastra um novo bloco de horário (disponibilidade, intervalo ou restrito) para um personal.")
+//    @PostMapping("/{personalId}/horarios")
+//    public ResponseEntity<ResHorarioDTO> criarHorario(@PathVariable Long personalId, @Valid @RequestBody ReqHorarioDTO request) {
+//
+//        ResHorarioDTO horarioCriado = disponibilidadeService.criarHorario(personalId, request);
+//        return ResponseEntity.status(HttpStatus.CREATED).body(horarioCriado);
+//    }
 
     @Operation(summary = "Listar todos horários cadastrados",
             description = "Retorna uma lista de todos os blocos de horário de um personal.")
@@ -53,6 +54,10 @@ public class DisponibilidadePersonalController {
     public ResponseEntity<List<ResSlotDisponivelDTO>> obterHorariosDisponiveis(@PathVariable Long personalId,
                                                                                @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data){
 
+        if (data.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Não é permitido consultar horários disponíveis para datas passadas.");
+        }
+
         List<ResSlotDisponivelDTO> slots = disponibilidadeService.obterHorariosDisponiveis(personalId, data);
         return ResponseEntity.ok(slots);
 
@@ -61,19 +66,19 @@ public class DisponibilidadePersonalController {
     @Operation(summary = "Atualizar um horário existente",
             description = "Altera um bloco de horário existente (dia, tipo ou horas) pelo id.")
     @PutMapping("/horarios/{horarioId}")
-    public ResponseEntity<ResHorarioDTO> atualizarHorario(@PathVariable Long horarioId, @Valid @RequestBody ReqHorarioDTO request) {
+    public ResponseEntity<ResHorarioDTO> atualizarHorarios(@PathVariable Long horarioId, @Valid @RequestBody ReqHorarioDTO request) {
 
-        ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorario(horarioId, request);
+        ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorarios(horarioId, request);
         return ResponseEntity.ok(horarioAtualizado);
     }
 
-    @Operation(summary = "Deletar um horário",
-            description = "Remove um bloco de horário pelo id.")
-    @DeleteMapping("/horarios/{horarioId}")
-    public ResponseEntity<Void> deletarHorario(
-            @PathVariable Long horarioId) {
-
-        disponibilidadeService.deletarHorario(horarioId);
-        return ResponseEntity.noContent().build();
-    }
+//    @Operation(summary = "Deletar um horário",
+//            description = "Remove um bloco de horário pelo id.")
+//    @DeleteMapping("/horarios/{horarioId}")
+//    public ResponseEntity<Void> deletarHorario(
+//            @PathVariable Long horarioId) {
+//
+//        disponibilidadeService.deletarHorario(horarioId);
+//        return ResponseEntity.noContent().build();
+//    }
 }

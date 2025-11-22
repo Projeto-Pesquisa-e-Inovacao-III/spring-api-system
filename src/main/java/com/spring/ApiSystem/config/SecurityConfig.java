@@ -48,7 +48,8 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.POST,
                                     "/alunos/cadastro",
                                     "/personais/cadastro",
-                                    "/usuarios/login"
+                                    "/usuarios/login",
+                                    "/personais/{id}/buffer"
                             ).permitAll()
                             .requestMatchers("/agendamentos/**").permitAll()
                             .requestMatchers("/checkouts/**").permitAll()

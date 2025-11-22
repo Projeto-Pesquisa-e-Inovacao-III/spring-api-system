@@ -4,7 +4,6 @@ import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;
 
@@ -17,11 +16,16 @@ public class Personal extends Usuario {
     @Column(unique = true)
     private String cref;
 
+    @Column(name = "buffer_minutos")
+    private Integer bufferMinutos;
+
     public Personal() {
     }
 
-    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, List<Telefone> telefones, String cref) {
+
+    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, List<Telefone> telefones, Integer bufferMinutos, String cref) {
         super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, telefones);
+        this.bufferMinutos = bufferMinutos;
         this.cref = cref;
     }
 
@@ -31,5 +35,13 @@ public class Personal extends Usuario {
 
     public void setCref(String cref) {
         this.cref = cref;
+    }
+
+    public Integer getBufferMinutos() {
+        return bufferMinutos;
+    }
+
+    public void setBufferMinutos(Integer bufferMinutos) {
+        this.bufferMinutos = bufferMinutos;
     }
 }

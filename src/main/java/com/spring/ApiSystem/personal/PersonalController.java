@@ -24,6 +24,13 @@ public class PersonalController {
     @PostMapping("/cadastro")
     public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
+
+    }
+
+    @PostMapping("/{id}/buffer")
+    public ResponseEntity<Void> atualizarBufferMinutos(@PathVariable Long personalId, @RequestParam Integer bufferMinutos) {
+        personalService.atualizarBufferMinutos(personalId, bufferMinutos);
+        return ResponseEntity.ok().build();
     }
 
 
