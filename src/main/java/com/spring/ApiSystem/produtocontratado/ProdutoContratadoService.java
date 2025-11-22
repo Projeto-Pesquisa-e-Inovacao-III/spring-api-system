@@ -9,7 +9,6 @@ import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
-import com.spring.ApiSystem.usuario.UsuarioService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
