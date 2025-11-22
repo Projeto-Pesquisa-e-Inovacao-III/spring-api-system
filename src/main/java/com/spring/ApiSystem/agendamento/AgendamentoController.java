@@ -39,7 +39,7 @@ public class AgendamentoController {
     }
 
     @Operation(summary = "Buscar agendamentos filtrados", description = "Busca agendamentos filtrando por datas e status com paginação.")
-    @GetMapping("/filtrar")
+    @PostMapping("/filtrar")
     public ResponseEntity<Page<?>> buscarFiltrando(
             @Valid @RequestBody ReqBuscarAgendamentosFiltrados filtros,
             Pageable pageable) {
@@ -110,11 +110,12 @@ public class AgendamentoController {
     }
 
     @Operation(summary = "Buscar agendamento por ID", description = "Retorna os dados de um agendamento pelo seu ID.")
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<?> buscarDadosDoAgendamentoPorId(@PathVariable("id") Long agendamentoId) {
         Object dados = agendamentoService.buscarDadosDoAgendamentoPorId(agendamentoId);
         return ResponseEntity.ok(dados);
     }
+
 
     @Operation(summary = "Buscar agendamentos do usuário", description = "Retorna os agendamentos do usuário autenticado.")
     @GetMapping("/me")
