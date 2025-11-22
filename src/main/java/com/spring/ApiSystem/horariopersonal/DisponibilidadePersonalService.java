@@ -152,12 +152,12 @@ public class DisponibilidadePersonalService {
         Set<LocalTime> horariosBloqueados = new HashSet<>();
         List<DisponibilidadePersonal> blocosDisponibilidade = new ArrayList<>();
 
-        // Processamento de Restrições/Intervalos (com 15 min de antecedência)
+        // Processamento de Restrições (com 15 min de antecedência)
         for (DisponibilidadePersonal disp : disponibilidade) {
             if (disp.getTipo() == TipoHorario.DISPONIVEL) {
                 blocosDisponibilidade.add(disp);
             } else {
-                // Aplica o buffer de 15 minutos antes do início da restrição/intervalo
+                // Aplica o buffer de 15 minutos antes do início da restrição
                 LocalTime inicio = disp.getHoraInicio().minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
                 LocalTime fim = disp.getHoraFim();
                 LocalTime current = inicio;
@@ -259,7 +259,7 @@ public class DisponibilidadePersonalService {
                     .anyMatch(existente -> {
                         TipoHorario existenteTipo = existente.getTipo();
 
-                        // Bloco não-disponível (RESTRITO/INTERVALO) sobrepondo qualquer bloco não-disponível.
+                        // Bloco não-disponível (RESTRITO) sobrepondo qualquer bloco não-disponível.
                         if ((tipo == TipoHorario.RESTRITO) && (existenteTipo == TipoHorario.RESTRITO)) {
                             return true;
                         }
@@ -290,7 +290,7 @@ public class DisponibilidadePersonalService {
     }
 
     /**
-     * Valida se o 'novo período' (Restrição/Intervalo) sobrepõe qualquer agendamento ATIVO + BUFFER PÓS-ATENDIMENTO.
+     * Valida se o 'novo período' (Restrição) sobrepõe qualquer agendamento ATIVO + INTERVALO PÓS-ATENDIMENTO.
      */
     private void validarContraAgendamentosAtivos(Long personalId, DiaSemana diaSemana, LocalDateTime novoPeriodoStart, LocalDateTime novoPeriodoEnd) {
         Personal personal = personalRepository.findById(personalId).orElseThrow(PersonalNaoExisteExcpetion::new);
