@@ -20,7 +20,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi usuariosApi() {
         return GroupedOpenApi.builder()
-                .group("usuário")
+                .group("usuários")
                 .pathsToMatch("/usuarios/**")
                 .build();
     }
@@ -28,7 +28,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi enderecosApi() {
         return GroupedOpenApi.builder()
-                .group("endereço")
+                .group("endereços")
                 .pathsToMatch("/enderecos/**")
                 .build();
     }

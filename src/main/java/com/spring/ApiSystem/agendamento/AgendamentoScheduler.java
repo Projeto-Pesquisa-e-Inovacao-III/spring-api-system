@@ -2,6 +2,8 @@
 package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
+import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -17,14 +19,20 @@ public class AgendamentoScheduler {
 
     private static final Logger log = LoggerFactory.getLogger(AgendamentoScheduler.class);
     private final AgendamentoRepository agendamentoRepository;
+    private final HistoricoAgendamentoService historicoAgendamentoService;
+    private final AgendamentoMapper agendamentoMapper;
     private final AtomicBoolean running = new AtomicBoolean(false);
-
 
     private static final  int TAMANHO_BATCH = 500;
     private static final long INTERVALO_DA_BATCH = 20L;
     private static final long TEMPO_DE_ESPERA_AGENDAMENTO = 60000L;
-    public AgendamentoScheduler(AgendamentoRepository agendamentoRepository) {
+
+    public AgendamentoScheduler(AgendamentoRepository agendamentoRepository,
+                                HistoricoAgendamentoService historicoAgendamentoService,
+                                AgendamentoMapper agendamentoMapper) {
         this.agendamentoRepository = agendamentoRepository;
+        this.historicoAgendamentoService = historicoAgendamentoService;
+        this.agendamentoMapper = agendamentoMapper;
     }
 
     @Scheduled(fixedDelayString = "${agendamento.scheduler.delay.millis:" + TEMPO_DE_ESPERA_AGENDAMENTO + "}")
@@ -50,6 +58,18 @@ public class AgendamentoScheduler {
                             AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR, ids
                     );
                     log.info("Atualizados {} agendamento(s) para PENDENTE_PERSONAL_CONCLUIR", atualizados);
+
+                    Iterable<Agendamento> agendamentos = agendamentoRepository.findAllById(ids);
+                    for (Agendamento ag : agendamentos) {
+                        try {
+                            historicoAgendamentoService.cadastrar(
+                                    agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(ag),
+                                    ag
+                            );
+                        } catch (Exception he) {
+                            log.error("Falha ao cadastrar histórico para agendamento id={}", ag.getId(), he);
+                        }
+                    }
                 } catch (Exception e) {
                     log.error("Erro ao atualizar lote de agendamentos", e);
                 }
