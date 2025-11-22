@@ -32,6 +32,9 @@ public interface EnderecoMapper {
     List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
 
 
+    ResAgendementoDadosEnderecoAlunoDTO toResEnderecoBuscaAgendamentosAlunosPorId(Endereco endereco);
+    ResAgendementoDadosEnderecoPersonalDTO toResEnderecoBuscaAgendamentosPersonalPorId(Endereco endereco);
+
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Endereco partialUpdate(ResEnderecoDTO resEnderecoDTO, @MappingTarget Endereco endereco);
 

@@ -31,9 +31,7 @@ public class ProdutoContratadoController {
                       "de exibição e no ID do aluno")
     @PostMapping
     public ResponseEntity<ResProdutoContratadoDto>
-    criarProdutoContratado(@Valid @RequestBody ReqCriarProdutoContratadoDto
-                                   reqCriarProdutoContratadoDto,
-                           @AuthenticationPrincipal UserDetails userDetails){
+    criarProdutoContratado(@Valid @RequestBody ReqCriarProdutoContratadoDto reqCriarProdutoContratadoDto, @AuthenticationPrincipal UserDetails userDetails){
         ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarProdutoContratado(
                 reqCriarProdutoContratadoDto.idProdutoExibicao(),
                 userDetails.getUsername()

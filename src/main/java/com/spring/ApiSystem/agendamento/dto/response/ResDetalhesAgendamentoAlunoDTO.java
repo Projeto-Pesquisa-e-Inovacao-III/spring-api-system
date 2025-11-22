@@ -2,6 +2,10 @@
 package com.spring.ApiSystem.agendamento.dto.response;
 
 import java.time.LocalDateTime;
+
+import com.spring.ApiSystem.cep.dto.response.ResBuscarAgendamentosAlunosPorIdCEPDto;
+import com.spring.ApiSystem.cep.dto.response.ResBuscarAgendamentosPersonalPorIdCEPDto;
+import com.spring.ApiSystem.endereco.dto.response.ResAgendementoDadosEnderecoAlunoDTO;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 
@@ -11,13 +15,12 @@ public record ResDetalhesAgendamentoAlunoDTO(
         LocalDateTime dataFim,
         int duracaoMinutos,
         AgendamentoStatus status,
-        PersonalDadosBasico personal,
-        String endereco,
+        ResDetalhesAgendamentoPersonal personal,
+        ResAgendementoDadosEnderecoAlunoDTO endereco,
         TipoAula tipoAula,
-        String local,
         String descricao
 ) {
-    public record PersonalDadosBasico(
+    public record ResDetalhesAgendamentoPersonal(
             Long id,
             String nome,
             String idade,
