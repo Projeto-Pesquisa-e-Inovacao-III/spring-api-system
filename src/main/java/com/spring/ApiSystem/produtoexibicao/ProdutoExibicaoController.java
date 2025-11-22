@@ -2,7 +2,7 @@ package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,7 +24,7 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Criar Produto de Exibição",
                description = "Endpoint para cadastro de produtos de exibição no sistema")
     @PostMapping
-    public ResponseEntity<ResProdutoExibicaoDTO> criarProduto(@Valid @RequestBody ReqCadastroProdutoExibicaoDTO produto){
+    public ResponseEntity<ResProdutoExibicaoDto> criarProduto(@Valid @RequestBody ReqCadastroProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.criarProduto(produto));
     }
 
@@ -32,7 +32,7 @@ public class ProdutoExibicaoController {
             description = "Endpoint para edição de produtos de exibição no sistema," +
                     "onde é gerado um novo produto com as informações atualizadas")
     @PostMapping("/editar/{id}")
-    public ResponseEntity<ResProdutoExibicaoDTO>
+    public ResponseEntity<ResProdutoExibicaoDto>
     editarProduto(@PathVariable Long id,
                   @Valid @RequestBody ReqEdicaoProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.editarProduto(id, produto));
@@ -41,19 +41,19 @@ public class ProdutoExibicaoController {
     @Operation(summary = "Listar Produtos de Exibição por Status",
                description = "Endpoint para listagem de produtos de exibição por status no sistema")
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ResProdutoExibicaoDTO>> listarProdutosPorStatus(@PathVariable String status){
+    public ResponseEntity<List<ResProdutoExibicaoDto>> listarProdutosPorStatus(@PathVariable String status){
         return ResponseEntity.ok(produtoExibicaoService.listarProdutosPorStatus(status));
     }
 
     @Operation(summary = "Listar Produtos de Exibição",
                description = "Endpoint para listagem de produtos de exibição no sistema")
     @GetMapping
-    public ResponseEntity<List<ResProdutoExibicaoDTO>> listarProdutos(){
+    public ResponseEntity<List<ResProdutoExibicaoDto>> listarProdutos(){
         return ResponseEntity.ok(produtoExibicaoService.listarProdutos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ResProdutoExibicaoDTO> buscarPorId(@PathVariable Long id){
+    public ResponseEntity<ResProdutoExibicaoDto> buscarPorId(@PathVariable Long id){
         return ResponseEntity.ok(produtoExibicaoService.resBuscarPorId(id));
     }
 

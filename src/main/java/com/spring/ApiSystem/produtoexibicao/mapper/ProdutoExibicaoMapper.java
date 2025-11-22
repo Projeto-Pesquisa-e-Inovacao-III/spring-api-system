@@ -4,7 +4,7 @@ import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicao
 import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -20,10 +20,10 @@ public interface ProdutoExibicaoMapper {
     ProdutoExibicao toEntity(ReqCadastroProdutoExibicaoDTO reqCadastroProdutoExibicaoDTO);
 
     ProdutoExibicao toEntity(ReqEdicaoProdutoExibicaoDTO dto);
-    ResProdutoExibicaoDTO toResProdutoExibicaoDTO(ProdutoExibicao produtoExibicao);
+    ResProdutoExibicaoDto toResProdutoExibicaoDTO(ProdutoExibicao produtoExibicao);
 
     ReqCadastroProdutoExibicaoDTO toCadastroProdutoExibicaoDTO(ReqEdicaoProdutoExibicaoDTO produtoExibicao);
-  List  <ResProdutoExibicaoDTO> toResProdutoExibicaoDTOList(List<ProdutoExibicao> produtoExibicaos);
+  List  <ResProdutoExibicaoDto> toResProdutoExibicaoDTOList(List<ProdutoExibicao> produtoExibicaos);
 
 
 }

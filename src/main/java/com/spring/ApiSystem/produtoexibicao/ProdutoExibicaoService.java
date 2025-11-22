@@ -2,7 +2,7 @@ package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
 import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
+import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
 import com.spring.ApiSystem.produtoexibicao.mapper.ProdutoExibicaoMapper;
@@ -21,24 +21,24 @@ public class ProdutoExibicaoService {
         this.produtoExibicaoMapper = produtoExibicaoMapper;
     }
 
-    public ResProdutoExibicaoDTO criarProduto(ReqCadastroProdutoExibicaoDTO produto){
+    public ResProdutoExibicaoDto criarProduto(ReqCadastroProdutoExibicaoDTO produto){
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
         produtoEntity.setDataCriacao(LocalDateTime.now());
         produtoExibicaoRepository.save(produtoEntity);
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(produtoEntity);
     }
 
-    public ResProdutoExibicaoDTO editarProduto(Long id, ReqEdicaoProdutoExibicaoDTO produto){
+    public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDTO produto){
         desativarProduto(id);
         return criarProduto(produtoExibicaoMapper.toCadastroProdutoExibicaoDTO(produto));
     }
 
-    public List<ResProdutoExibicaoDTO> listarProdutosPorStatus(String status){
+    public List<ResProdutoExibicaoDto> listarProdutosPorStatus(String status){
         return produtoExibicaoRepository.findByStatus(ProdutoExibicaoStatus.valueOf(status.toUpperCase()));
     }
 
-    public List<ResProdutoExibicaoDTO> listarProdutos(){
-        List<ResProdutoExibicaoDTO> resProdutoExibicaoDTO = produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
+    public List<ResProdutoExibicaoDto> listarProdutos(){
+        List<ResProdutoExibicaoDto> resProdutoExibicaoDTO = produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
         return  resProdutoExibicaoDTO;
     }
 
@@ -47,7 +47,7 @@ public class ProdutoExibicaoService {
                 .orElseThrow(() -> new ProdutoExibicaoNaoEncontradoPorId(id));
     }
 
-    public ResProdutoExibicaoDTO resBuscarPorId(Long id){
+    public ResProdutoExibicaoDto resBuscarPorId(Long id){
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(buscarPorId(id));
     }
 
