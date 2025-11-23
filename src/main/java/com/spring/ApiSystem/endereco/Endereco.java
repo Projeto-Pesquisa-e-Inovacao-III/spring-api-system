@@ -3,6 +3,7 @@ package com.spring.ApiSystem.endereco;
 import com.spring.ApiSystem.cep.CEP;
 import com.spring.ApiSystem.usuario.Usuario;
 import jakarta.persistence.*;
+import org.springframework.data.jpa.repository.EntityGraph;
 
 import java.time.LocalDateTime;
 

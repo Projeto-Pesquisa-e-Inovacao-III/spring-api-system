@@ -66,7 +66,6 @@ public class EnderecoService {
            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
            Endereco enderecoEncontrado = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
 
-
             CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
             if (cep == null) {
                 throw new CepNaoEncontradoException();

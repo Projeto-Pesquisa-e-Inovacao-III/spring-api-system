@@ -1,11 +1,10 @@
 
 package com.spring.ApiSystem.agendamento;
 
-import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
-import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
+import com.spring.ApiSystem.agendamento.dto.request.*;
+import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -16,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Agendamentos", description = "Operações relacionadas a agendamentos")
@@ -24,11 +24,9 @@ import java.util.List;
 public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
-    private final UsuarioService usuarioService;
 
-    public AgendamentoController(AgendamentoService agendamentoService, UsuarioService usuarioService) {
+    public AgendamentoController(AgendamentoService agendamentoService) {
         this.agendamentoService = agendamentoService;
-        this.usuarioService = usuarioService;
     }
 
     @Operation(summary = "Criar agendamento", description = "Cria um novo agendamento e retorna o recurso criado com status 201.")
@@ -48,6 +46,16 @@ public class AgendamentoController {
                 PageRequest.of(pageable.getPageNumber(), 8, pageable.getSort())
         );
         return ResponseEntity.ok(res);
+    }
+
+    @Operation(summary = "Contar agendamentos por personal, status e data",
+            description = "Retorna a contagem de agendamentos de um personal, filtrados por status e data específica.")
+    @PostMapping("/contagem-status-data")
+    public ResponseEntity<Integer> contarPorPersonalStatusEData(@Valid @RequestBody ReqContarAgendamentoPorPersonalStatusDataDto dto) {
+        Integer contagem = agendamentoService.buscarContagemDeAgendamentosPorPersonalStatusData(
+                dto.status(), dto.data()
+        );
+        return ResponseEntity.ok(contagem);
     }
 
     @Operation(summary = "Reagendar agendamento", description = "Reagenda um agendamento existente. Retorna 204 quando bem sucedido.")
