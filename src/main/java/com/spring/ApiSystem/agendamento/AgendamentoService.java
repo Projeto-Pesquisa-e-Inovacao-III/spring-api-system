@@ -286,10 +286,9 @@ public class AgendamentoService {
             return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(agendamento,agendamento.getPersonal().getTelefones().getFirst()));
         } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
             Page<Agendamento> agendamentosPage = agendamentoRepository
-                    .buscarPorPersonalComFiltros(
+                    .buscarPorPersonalPorNomeEStatus(
                             usuario.getId(),
-                            reqBuscarAgendamentosFiltrados.dataInicio(),
-                            reqBuscarAgendamentosFiltrados.dataFim(),
+                            reqBuscarAgendamentosFiltrados.nome(),
                             reqBuscarAgendamentosFiltrados.status(),
                             pageable);
             return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento,agendamento.getAluno().getTelefones().getFirst()));
