@@ -3,6 +3,7 @@ package com.spring.ApiSystem.personal;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonalService;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
+import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonalService;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;

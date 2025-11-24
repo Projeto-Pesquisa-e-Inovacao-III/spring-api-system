@@ -5,6 +5,7 @@ import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
+import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
