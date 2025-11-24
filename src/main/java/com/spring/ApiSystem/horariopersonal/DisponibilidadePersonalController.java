@@ -30,24 +30,6 @@ public class DisponibilidadePersonalController {
     }
 
 
-//    @Operation(summary = "Criar um novo horário",
-//            description = "Cadastra um novo bloco de horário (disponibilidade, intervalo ou restrito) para um personal.")
-//    @PostMapping("/{personalId}/horarios")
-//    public ResponseEntity<ResHorarioDTO> criarHorario(@PathVariable Long personalId, @Valid @RequestBody ReqHorarioDTO request) {
-//
-//        ResHorarioDTO horarioCriado = disponibilidadeService.criarHorario(personalId, request);
-//        return ResponseEntity.status(HttpStatus.CREATED).body(horarioCriado);
-//    }
-
-    @Operation(summary = "Listar todos horários cadastrados",
-            description = "Retorna uma lista de todos os blocos de horário de um personal.")
-    @GetMapping("/{personalId}/horarios")
-    public ResponseEntity<List<ResHorarioDTO>> listarHorariosPorPersonal(@PathVariable Long personalId) {
-
-        List<ResHorarioDTO> horarios = disponibilidadeService.listarHorariosPorPersonal(personalId);
-        return ResponseEntity.ok(horarios);
-    }
-
     @Operation(summary = "Consultar slots de horários disponíveis",
             description = "Retorna os slots de tempo livres de um personal, subtraindo intervalos e restrições.")
     @GetMapping("/{personalId}/horarios-disponiveis")
@@ -71,14 +53,4 @@ public class DisponibilidadePersonalController {
         ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorarios(horarioId, request);
         return ResponseEntity.ok(horarioAtualizado);
     }
-
-//    @Operation(summary = "Deletar um horário",
-//            description = "Remove um bloco de horário pelo id.")
-//    @DeleteMapping("/horarios/{horarioId}")
-//    public ResponseEntity<Void> deletarHorario(
-//            @PathVariable Long horarioId) {
-//
-//        disponibilidadeService.deletarHorario(horarioId);
-//        return ResponseEntity.noContent().build();
-//    }
 }

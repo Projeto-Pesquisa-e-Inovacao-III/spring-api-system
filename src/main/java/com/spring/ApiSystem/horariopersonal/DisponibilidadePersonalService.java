@@ -46,29 +46,6 @@ public class DisponibilidadePersonalService {
     }
 
 
-    @Transactional(readOnly = true)
-    public List<ResHorarioDTO> listarHorariosPorPersonal(Long personalId) {
-
-        if (!personalRepository.existsById(personalId)) {
-            throw new PersonalNaoExisteExcpetion();
-        }
-
-        List<DisponibilidadePersonal> existentes = disponibilidadeRepository.findByPersonalId(personalId);
-
-        return existentes.stream()
-                .map(ResHorarioDTO::new)
-                .collect(Collectors.toList());
-    }
-
-//    @Transactional
-//    public void deletarHorario(Long horarioId) {
-//        if (!disponibilidadeRepository.existsById(horarioId)) {
-//            throw new EntityNotFoundException("Horário não encontrado com ID: " + horarioId);
-//        }
-//        disponibilidadeRepository.deleteById(horarioId);
-//    }
-
-
     @Transactional
     public void criarDisponibilidadePadrao(Long personalId) {
         Personal personal = personalRepository.findById(personalId)
