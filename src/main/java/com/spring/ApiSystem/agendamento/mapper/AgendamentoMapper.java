@@ -54,7 +54,7 @@ public abstract class AgendamentoMapper {
     public abstract ReqCadastrarHistoricoAgendamentoDTO toReqCriarHistoricoAgendamentoDTO(Agendamento agendamento);
 
     protected Usuario obterUsuarioAtual() {
-        return userDetailsService.getCurrentUser();
+        return userDetailsService.getCurrentUser(Usuario.class);
     }
 
     @Mapping(target = "agendamentoId", source = "id")

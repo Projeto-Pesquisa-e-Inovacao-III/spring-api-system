@@ -16,7 +16,8 @@ import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
-import com.spring.ApiSystem.usuario.exception.PersonalNaoTemAcessoException;
+import com.spring.ApiSystem.usuario.exception.AlunoTemAcessoApenasException;
+import com.spring.ApiSystem.usuario.exception.PersonalTemAcessoApenasException;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.spring.ApiSystem.usuario.Usuario;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -184,7 +186,7 @@ public class AgendamentoService {
 
 
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
-            throw new PersonalNaoTemAcessoException();
+            throw new PersonalTemAcessoApenasException();
         }
 
         if (usuario.getTipo() == TipoUsuario.PERSONAL
@@ -209,7 +211,7 @@ public class AgendamentoService {
         }
 
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
-            throw new PersonalNaoTemAcessoException();
+            throw new PersonalTemAcessoApenasException();
         }
 
         agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
@@ -312,7 +314,7 @@ public class AgendamentoService {
 
 
     private Usuario obterUsuarioAutenticado() {
-        return jpaUserDetailsService.getCurrentUser();
+        return jpaUserDetailsService.getCurrentUser(Usuario.class);
     }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
@@ -344,7 +346,13 @@ public class AgendamentoService {
 
     private void validarSeUsuarioDoTipoAluno(Usuario usuario) {
         if (!usuario.getTipo().equals(TipoUsuario.ALUNO)) {
-            throw new PersonalNaoTemAcessoException();
+            throw new AlunoTemAcessoApenasException();
+        }
+    }
+
+    private void validarSeUsuarioDoTipoPersonal(Usuario usuario) {
+        if (!usuario.getTipo().equals(TipoUsuario.PERSONAL)) {
+            throw new PersonalTemAcessoApenasException();
         }
     }
 
@@ -376,5 +384,16 @@ public class AgendamentoService {
             return horarioInicio.plusMinutes(30);
         }
         throw new AgendamentoTipoDeAulaInvalido();
+    }
+
+    public Integer buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
+                                                                     LocalDate data) {
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+        return agendamentoRepository.countByPersonalIdAndStatusAndOptionalData(
+                usuario.getId(),
+                status,
+                data);
     }
 }
