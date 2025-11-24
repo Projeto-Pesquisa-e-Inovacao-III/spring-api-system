@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.personal;
 
+import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.BuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
@@ -27,9 +28,12 @@ public class PersonalController {
 
     }
 
-    @PostMapping("/{id}/buffer")
-    public ResponseEntity<Void> atualizarBufferMinutos(@PathVariable Long personalId, @RequestParam Integer bufferMinutos) {
-        personalService.atualizarBufferMinutos(personalId, bufferMinutos);
+    @PutMapping("/{personalId}/buffer")
+    public ResponseEntity<Void> atualizarBufferMinutos(
+            @PathVariable Long personalId,
+            @Valid @RequestBody ReqAtualizarBufferDTO request) {
+
+        personalService.atualizarBufferMinutos(personalId, request.bufferMinutos());
         return ResponseEntity.ok().build();
     }
 
