@@ -60,13 +60,13 @@ public class DisponibilidadePersonalService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
-    public void deletarHorario(Long horarioId) {
-        if (!disponibilidadeRepository.existsById(horarioId)) {
-            throw new EntityNotFoundException("Horário não encontrado com ID: " + horarioId);
-        }
-        disponibilidadeRepository.deleteById(horarioId);
-    }
+//    @Transactional
+//    public void deletarHorario(Long horarioId) {
+//        if (!disponibilidadeRepository.existsById(horarioId)) {
+//            throw new EntityNotFoundException("Horário não encontrado com ID: " + horarioId);
+//        }
+//        disponibilidadeRepository.deleteById(horarioId);
+//    }
 
 
     @Transactional
