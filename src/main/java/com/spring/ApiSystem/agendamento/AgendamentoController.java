@@ -2,9 +2,6 @@
 package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.dto.request.*;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.UsuarioService;
-import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -14,8 +11,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Tag(name = "Agendamentos", description = "Operações relacionadas a agendamentos")

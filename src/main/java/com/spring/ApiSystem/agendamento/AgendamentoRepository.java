@@ -25,8 +25,8 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
     @Query("""
             SELECT COUNT(a) FROM agendamento a
             WHERE a.personal.id = :personalId
-            AND a.status = :status 
-            AND (:data IS NULL OR CAST(a.data AS LocalDate) = :data)
+            AND a.status = :status
+            AND (:data IS NULL OR CAST(a.data AS DATE) = :data)
     """)
     Integer countByPersonalIdAndStatusAndOptionalData(
             @Param("personalId") Long personalId,

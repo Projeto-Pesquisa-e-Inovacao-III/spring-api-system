@@ -314,7 +314,7 @@ public class AgendamentoService {
 
 
     private Usuario obterUsuarioAutenticado() {
-        return jpaUserDetailsService.getCurrentUser();
+        return jpaUserDetailsService.getCurrentUser(Usuario.class);
     }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
@@ -386,9 +386,8 @@ public class AgendamentoService {
         throw new AgendamentoTipoDeAulaInvalido();
     }
 
-    public Integer
-    buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
-                                                      LocalDate data) {
+    public Integer buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
+                                                                     LocalDate data) {
         Usuario usuario = obterUsuarioAutenticado();
         validarSeUsuarioDoTipoPersonal(usuario);
 

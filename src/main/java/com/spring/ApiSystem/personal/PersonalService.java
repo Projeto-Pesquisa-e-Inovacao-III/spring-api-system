@@ -29,6 +29,8 @@ public class PersonalService {
     }
 
     public ResCadastrarPersonalDTO cadastrarUsuario(ReqCadastroPersonalDTO usuarioDTO) {
+        cadastrarCrefExistente(usuarioDTO.cref());
+
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
@@ -67,17 +69,24 @@ public class PersonalService {
                 .orElseThrow(PersonalNaoExisteExcpetion::new);
     }
 
-    public boolean crefExiste(String cref){
-        return personalRepository.existsByCref(cref);
-    }
-
-    public void validarCrefExistente(String cref){
+    public void cadastrarCrefExistente(String cref){
         if(crefExiste(cref)){
             throw new CrefExistenteException();
         }
     }
 
-    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Usuario usuario) {
+    public boolean crefExiste(String cref){
+        return personalRepository.existsByCref(cref);
+    }
+
+    public void validarCrefExistente(String cref, String crefAtual){
+        if(crefExiste(cref) && !cref.equals(crefAtual)){
+            throw new CrefExistenteException();
+        }
+    }
+
+    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Personal usuario) {
+        validarCrefExistente(dto.cref(), usuario.getCref());
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
 
