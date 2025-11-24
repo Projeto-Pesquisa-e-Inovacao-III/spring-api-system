@@ -2,8 +2,6 @@ package com.spring.ApiSystem.produtoexibicao;
 
 
 import com.spring.ApiSystem.agendamento.dto.response.HorarioAgendadoProjectionDto;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.enums.Status;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,8 +15,6 @@ import java.util.List;
 @Repository
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
     List<ResProdutoExibicaoDto> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
-    List<ResProdutoExibicaoDTO> findByStatus(Status status);
-    List<ResProdutoExibicaoDTO> findAllBy();
 
     @Query("SELECT new com.spring.ApiSystem.agendamento.dto.response.HorarioAgendadoProjectionDto(a.data, p.tipoAula, a.situacao) " +
             "FROM agendamento a " +

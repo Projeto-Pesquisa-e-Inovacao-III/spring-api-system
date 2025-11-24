@@ -22,9 +22,8 @@ public class Personal extends Usuario {
     public Personal() {
     }
 
-
-    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, List<Telefone> telefones, Integer bufferMinutos, String cref) {
-        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, telefones);
+    public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, Integer bufferMinutos, String cref) {
+        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
         this.bufferMinutos = bufferMinutos;
         this.cref = cref;
     }
