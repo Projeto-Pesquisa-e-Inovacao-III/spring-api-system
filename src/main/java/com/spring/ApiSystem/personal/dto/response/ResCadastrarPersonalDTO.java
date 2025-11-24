@@ -8,5 +8,7 @@ public record ResCadastrarPersonalDTO(
     String sexo,
     LocalDate dataNascimento,
     String email,
-    boolean ativo
+    boolean ativo,
+    Integer bufferMinutos
+
 ) {}
