@@ -27,7 +27,7 @@ public class NotificacaoProdutoContratado implements ProdutoContrataListener {
         Email email = new Email(
                 usuario.getEmail(),
                 "Confirmação de Contratação de Produto",
-                String.format("Olá %s,\n\nSeu produto  %s foi contratado com sucesso!\n\nObrigado por escolher nossos serviços.",
+                String.format("Olá %s,<br><br>Seu produto %s foi contratado com sucesso!<br><br>Obrigado por escolher nossos serviços.",
                         usuario.getNome(),
                         produtoNome)
         );

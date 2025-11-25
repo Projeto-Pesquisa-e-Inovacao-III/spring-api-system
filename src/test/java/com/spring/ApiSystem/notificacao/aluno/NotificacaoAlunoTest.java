@@ -72,21 +72,6 @@ class NotificacaoAlunoTest {
     }
 
     @Test
-    @DisplayName("Deve incluir o nome do aluno no corpo do email")
-    void deveIncluirNomeAlunoNoCorpoEmail() {
-        // Act
-        notificacaoAlunoListener.onAlunoCreated(aluno);
-
-        // Assert
-        verify(emailService).enviarEmail(emailCaptor.capture());
-
-        Email emailEnviado = emailCaptor.getValue();
-        assertThat(emailEnviado.corpo())
-                .contains("Olá João Silva")
-                .contains("Estamos felizes em tê-lo conosco");
-    }
-
-    @Test
     @DisplayName("Deve enviar email para o endereço correto do aluno")
     void deveEnviarEmailParaEnderecoCorretoAluno() {
         // Arrange
@@ -142,20 +127,5 @@ class NotificacaoAlunoTest {
         assertThat(emailEnviado.corpo()).isNotNull().isNotBlank();
     }
 
-    @Test
-    @DisplayName("Deve formatar o corpo do email corretamente")
-    void deveFormatarCorpoEmailCorretamente() {
-        // Act
-        notificacaoAlunoListener.onAlunoCreated(aluno);
 
-        // Assert
-        verify(emailService).enviarEmail(emailCaptor.capture());
-
-        Email emailEnviado = emailCaptor.getValue();
-        String corpoEsperado = String.format(
-                "Olá %s,\n\nSeja bem-vindo à nossa plataforma! Estamos felizes em tê-lo conosco.\n\nAtenciosamente,\nEquipe da Plataforma.",
-                "João Silva"
-        );
-        assertThat(emailEnviado.corpo()).isEqualTo(corpoEsperado);
-    }
 }

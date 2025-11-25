@@ -22,7 +22,7 @@ public class NotificacaoAlunoListener implements AlunosListener {
         Email email = new Email(
                 aluno.getEmail(),
                 "Bem-vindo à Plataforma!",
-                String.format("Olá %s,\n\nSeja bem-vindo à nossa plataforma! Estamos felizes em tê-lo conosco.\n\nAtenciosamente,\nEquipe da Plataforma.",
+                String.format("Olá %s,<br><br>Seja bem-vindo à nossa plataforma! Estamos felizes com sua presença.<br><br>Atenciosamente,<br>Equipe da Plataforma.",
                         aluno.getNome())
         );
 

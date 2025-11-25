@@ -34,5 +34,7 @@ public class EventConfig {
     ) {
         return new AlunoEventPublisher(listeners);
     }
+
+
 }
 

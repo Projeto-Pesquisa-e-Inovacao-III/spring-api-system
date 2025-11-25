@@ -11,6 +11,7 @@ import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.eventos.agendamentos.AgendamentoEventPublisher;
 import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
@@ -40,8 +41,9 @@ public class AgendamentoService {
     private final AgendamentoMapper agendamentoMapper;
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
+    private final AgendamentoEventPublisher agendamentoEventPublisher;
 
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService) {
+    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService, AgendamentoEventPublisher agendamentoEventPublisher) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
         this.produtoContratadoService = produtoContratadoService;
@@ -50,6 +52,7 @@ public class AgendamentoService {
         this.agendamentoMapper = agendamentoMapper;
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.agendamentoEventPublisher = agendamentoEventPublisher;
     }
 
     @Transactional
@@ -84,6 +87,9 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCreatedEvent(agendamentoSalvo);
+
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
 
@@ -126,10 +132,13 @@ public class AgendamentoService {
         agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
+
         historicoAgendamentoService.cadastrar(
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishReagendamentoSolicitacaoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -146,6 +155,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoAprovadoEvent(agendamentoSalvo, usuario);
     }
 
     @Transactional
@@ -171,6 +182,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCanceladoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -196,6 +209,8 @@ public class AgendamentoService {
                     agendamentoSalvo
             );
         }
+
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
 
@@ -217,8 +232,10 @@ public class AgendamentoService {
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
             produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
             agendamento.ausenciaPersonal();
+            agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
         } else {
             agendamento.ausenciaCliente();
+            agendamentoEventPublisher.AusenciaRegistradaAlunoEvent(agendamento);
         }
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
