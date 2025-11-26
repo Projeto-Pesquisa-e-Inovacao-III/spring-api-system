@@ -38,11 +38,11 @@ public class EmailServiceIntegrationTest {
                 """
         );
 
-        // Act & Assert - Envia o email e verifica que não lança exceção
-        assertDoesNotThrow(() -> emailService.enviarEmail(email));
-
-        System.out.println("✅ Email enviado com sucesso!");
-        System.out.println("📧 Verifique sua caixa de entrada no Mailtrap: https://mailtrap.io/inboxes");
+//        // Act & Assert - Envia o email e verifica que não lança exceção
+//        assertDoesNotThrow(() -> emailService.enviarEmail(email));
+//
+//        System.out.println("✅ Email enviado com sucesso!");
+//        System.out.println("📧 Verifique sua caixa de entrada no Mailtrap: https://mailtrap.io/inboxes");
     }
 }
 

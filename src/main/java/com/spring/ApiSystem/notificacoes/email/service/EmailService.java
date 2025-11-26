@@ -33,21 +33,13 @@ public class EmailService {
             template = template.replace("${corpo}", email.corpo());
 
             helper.setText(template, true);
-            mailSender.send(message);
+//            mailSender.send(message);
 
         }catch (Exception exception){
             System.out.println("Falha no envio do email" + exception);
         }
 
     }
-//    public void enviarEmail(Email email){
-//        var message = new SimpleMailMessage();
-//        message.setFrom("noreply@email.com");
-//        message.setTo(email.destinatario());
-//        message.setSubject(email.assunto());
-//        message.setText(email.corpo());
-//        mailSender.send(message);
-//    }
 
     public String carregaTemplateEmail() throws IOException {
         ClassPathResource resource = new ClassPathResource("templates/emailTemplate.html");
