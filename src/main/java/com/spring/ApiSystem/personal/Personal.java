@@ -16,8 +16,6 @@ public class Personal extends Usuario {
     @Column(unique = true)
     private String cref;
 
-
-
     public Personal() {}
 
     public Personal(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, String cref) {

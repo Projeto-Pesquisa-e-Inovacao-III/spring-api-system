@@ -16,5 +16,6 @@ public record ReqBuscarAgendamentosFiltrados(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
         LocalDateTime dataFim,
 
-        AgendamentoStatus status
+        AgendamentoStatus status,
+        String  nome
 ) {}

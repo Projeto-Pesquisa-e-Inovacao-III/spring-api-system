@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,18 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
+
+    @Query("""
+            SELECT COUNT(a) FROM agendamento a
+            WHERE a.personal.id = :personalId
+            AND a.status = :status
+            AND (:data IS NULL OR CAST(a.data AS DATE) = :data)
+    """)
+    Integer countByPersonalIdAndStatusAndOptionalData(
+            @Param("personalId") Long personalId,
+            @Param("status") AgendamentoStatus status,
+            @Param("data") LocalDate data
+    );
 
 
     Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
@@ -40,16 +53,16 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.personal.id = :personalId " +
+            "  AND (COALESCE(TRIM(:nome), '') = '' OR LOWER(a.aluno.nome) LIKE LOWER(CONCAT('%', TRIM(:nome), '%'))) " +
             "  AND (:status IS NULL OR a.status = :status) " +
-            "  AND a.data >= COALESCE(:dataInicio, a.data) " +
-            "  AND a.data <= COALESCE(:dataFim, a.data) " +
             "ORDER BY a.data ASC")
-    Page<Agendamento> buscarPorPersonalComFiltros(
+    Page<Agendamento> buscarPorPersonalPorNomeEStatus(
             @Param("personalId") Long personalId,
-            @Param("dataInicio") LocalDateTime dataInicio,
-            @Param("dataFim") LocalDateTime dataFim,
+            @Param("nome") String nome,
             @Param("status") AgendamentoStatus status,
             Pageable pageable);
+
+
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +

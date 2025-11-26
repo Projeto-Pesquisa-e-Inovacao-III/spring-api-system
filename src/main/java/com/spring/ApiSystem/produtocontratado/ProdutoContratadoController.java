@@ -7,6 +7,7 @@ import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -82,7 +83,7 @@ public class ProdutoContratadoController {
                     "tiverem o idAluno correspondente")
     @GetMapping("/aluno")
     public ResponseEntity<List<ResProdutoContratadoDto>>
-    listarProdutosContratadosPorIdAluno(@PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
+    listarProdutosContratadosPorIdAluno(@ParameterObject @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
                                         Pageable pageable,
                                         @AuthenticationPrincipal UserDetails userDetails){
         List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
@@ -94,14 +95,5 @@ public class ProdutoContratadoController {
     public ResponseEntity<ResProdutoContratadoAtivoDto>
     buscarProdutoContratadoAtivo(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok(produtoContratadoService.buscarProdutoContratadoAtivo(userDetails.getUsername()));
-    }
-
-    @Operation(summary = "Desativa um produto contratado",
-               description = "Endpoint para desativar um produto contratado")
-    @PatchMapping("/desativar/{id}")
-    public ResponseEntity<ResProdutoContratadoDto> desativarProdutoContratado(@PathVariable Long id){
-        produtoContratadoService.desativarProdutoContratado(id);
-
-        return ResponseEntity.noContent().build();
     }
 }

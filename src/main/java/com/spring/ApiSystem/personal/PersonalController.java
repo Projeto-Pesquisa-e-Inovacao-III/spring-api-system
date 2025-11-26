@@ -56,7 +56,7 @@ public class PersonalController {
     @PutMapping("/me")
     public ResponseEntity<ResAtualizarPersonalDTO> atualizarPersonal(@Valid @RequestBody ReqAtualizarPersonalDTO dto,
                                                                      HttpServletResponse response) {
-        Usuario usuario = userDetails.getCurrentUser();
+        Personal usuario = userDetails.getCurrentUser(Personal.class);
         ResAtualizarPersonalDTO usuarioEditado = personalService.atualizarUsuario(dto, usuario);
 
         if(usuarioEditado == null){

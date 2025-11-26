@@ -70,7 +70,7 @@ public class AlunoController {
     public ResponseEntity<ResAtualizarAlunoDTO> atualizarAluno(@Valid @RequestBody ReqAtualizarAlunoDTO dto,
                                                                HttpServletResponse response) {
 
-        Usuario usuario = userDetails.getCurrentUser();
+        Aluno usuario = userDetails.getCurrentUser(Aluno.class);
         ResAtualizarAlunoDTO usuarioEditado = alunoService.atualizarUsuario(dto, usuario);
 
         if(usuarioEditado == null){

@@ -8,6 +8,7 @@ import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteException;
 import com.spring.ApiSystem.aluno.exception.AlunoPersistenciaException;
 import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
+import com.spring.ApiSystem.aluno.exception.CpfExistenteException;
 import com.spring.ApiSystem.aluno.mapper.AlunoMapper;
 import com.spring.ApiSystem.eventos.aluno.AlunoEventPublisher;
 import com.spring.ApiSystem.telefone.Telefone;
@@ -37,6 +38,8 @@ public class AlunoService {
     }
 
     public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
+        cadastrarCpfExistente(usuarioDTO.cpf());
+
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
@@ -87,7 +90,24 @@ public class AlunoService {
                 .orElseThrow(AlunoNaoExisteException::new);
     }
 
-    public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Usuario usuario) {
+    public void cadastrarCpfExistente(String cpf){
+        if (cpfExiste(cpf)) {
+            throw new CpfExistenteException();
+        }
+    }
+
+    public boolean cpfExiste(String cpf){
+        return alunoRepository.existsByCpf(cpf);
+    }
+
+    public void validarCpfExistente(String cpf, String cpfAtual){
+        if (cpfExiste(cpf) && !cpf.equals(cpfAtual)) {
+            throw new CpfExistenteException();
+        }
+    }
+
+    public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
+        validarCpfExistente(dto.cpf(), usuario.getCpf());
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
 
