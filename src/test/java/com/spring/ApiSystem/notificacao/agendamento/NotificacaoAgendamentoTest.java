@@ -274,13 +274,13 @@ public class NotificacaoAgendamentoTest {
 
         // Verificando que o email foi enviado para o aluno
         assertEquals("joao.silva@email.com", emailEnviado.destinatario());
-        assertEquals("Registro de Ausência do Personal", emailEnviado.assunto());
+        assertEquals("Registro de Ausência", emailEnviado.assunto());
         assertTrue(emailEnviado.corpo().contains("João Silva"));
         assertTrue(emailEnviado.corpo().contains("Carlos Personal"));
         assertTrue(emailEnviado.corpo().contains("2025-11-30"));
         assertTrue(emailEnviado.corpo().contains("14:30"));
         assertTrue(emailEnviado.corpo().contains("registrou uma ausência"));
-        assertTrue(emailEnviado.corpo().contains("o saldo do agendamento retornará a sua conta"));
+        assertTrue(emailEnviado.corpo().contains("saldo do agendamento retornará à sua conta"));
     }
 
     @Test
@@ -306,5 +306,54 @@ public class NotificacaoAgendamentoTest {
         assertTrue(emailEnviado.corpo().contains("14:30"));
         assertTrue(emailEnviado.corpo().contains("registrou sua ausência"));
     }
+
+    @Test
+    @DisplayName("Deve enviar email de notificação quando aluno cancela agendamento")
+    void deveEnviarEmailQuandoAlunoCancelaAgendamento() {
+        // Arrange
+        ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+
+        // Act
+        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, aluno);
+
+        // Assert
+        verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
+
+        Email emailEnviado = emailCaptor.getValue();
+
+        // Verificando que o email foi enviado para o personal (destinatário)
+        assertEquals("carlos.personal@email.com", emailEnviado.destinatario());
+        assertEquals("Agendamento Cancelado", emailEnviado.assunto());
+        assertTrue(emailEnviado.corpo().contains("Carlos Personal"));
+        assertTrue(emailEnviado.corpo().contains("João Silva"));
+        assertTrue(emailEnviado.corpo().contains("2025-11-30"));
+        assertTrue(emailEnviado.corpo().contains("14:30"));
+        assertTrue(emailEnviado.corpo().contains("cancelou o agendamento"));
+    }
+
+    @Test
+    @DisplayName("Deve enviar email de notificação quando personal cancela agendamento")
+    void deveEnviarEmailQuandoPersonalCancelaAgendamento() {
+        // Arrange
+        ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+
+        // Act
+        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, personal);
+
+        // Assert
+        verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
+
+        Email emailEnviado = emailCaptor.getValue();
+
+        // Verificando que o email foi enviado para o aluno (destinatário)
+        assertEquals("joao.silva@email.com", emailEnviado.destinatario());
+        assertEquals("Agendamento Cancelado", emailEnviado.assunto());
+        assertTrue(emailEnviado.corpo().contains("João Silva"));
+        assertTrue(emailEnviado.corpo().contains("Carlos Personal"));
+        assertTrue(emailEnviado.corpo().contains("2025-11-30"));
+        assertTrue(emailEnviado.corpo().contains("14:30"));
+        assertTrue(emailEnviado.corpo().contains("cancelou o agendamento"));
+    }
+
 
 }

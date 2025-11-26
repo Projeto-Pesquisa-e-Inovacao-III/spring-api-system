@@ -88,7 +88,20 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
 
     @Override
     public void onCancelamentoAgendamento(Agendamento agendamento, Usuario usuario) {
+        Usuario destinatario = obterDestinatario(agendamento, usuario);
 
+        Email emailCancelamento = new Email(
+                destinatario.getEmail(),
+                "Agendamento Cancelado",
+                String.format("Olá %s,<br><br>Informamos que %s cancelou o agendamento para a data %s às %s.<br><br>Se tiver alguma dúvida, entre em contato conosco.<br><br>Atenciosamente,<br>Equipe da Plataforma.",
+                        destinatario.getNome(),
+                        usuario.getNome(),
+                        agendamento.getData().toLocalDate().toString(),
+                        agendamento.getData().toLocalTime().toString()
+                )
+        );
+
+        emailService.enviarEmail(emailCancelamento);
     }
 
     @Override
