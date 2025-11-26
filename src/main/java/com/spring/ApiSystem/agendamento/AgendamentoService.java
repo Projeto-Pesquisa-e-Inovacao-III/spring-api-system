@@ -214,7 +214,10 @@ public class AgendamentoService {
             throw new PersonalTemAcessoApenasException();
         }
 
-        agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+        if (reqAgendamento.descricaoCancelamento()!= null) {
+            agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+            produtoContratadoService.incrementar(agendamento.getId());
+        }
 
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
             produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
