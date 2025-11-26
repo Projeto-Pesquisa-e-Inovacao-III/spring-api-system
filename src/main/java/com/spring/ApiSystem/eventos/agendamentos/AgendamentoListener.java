@@ -17,4 +17,6 @@ public interface AgendamentoListener {
     void onAusenciaRegistradaPersonal(Agendamento agendamento);
 
     void onAusenciaRegistradaAluno(Agendamento agendamento);
+
+    void onAusenciaRegistradaAlunoJustificado(Agendamento agendamento);
 }

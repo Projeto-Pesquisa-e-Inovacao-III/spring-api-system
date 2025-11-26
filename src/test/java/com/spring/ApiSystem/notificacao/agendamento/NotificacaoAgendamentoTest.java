@@ -308,6 +308,31 @@ public class NotificacaoAgendamentoTest {
     }
 
     @Test
+    @DisplayName("Deve enviar email quando ausência do aluno for registrada e justificada")
+    void deveEnviarEmailQuandoAusenciaAlunoRegistradaJustificada() {
+        // Arrange
+        ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
+
+        // Act
+        notificacaoAgendamentoListener.onAusenciaRegistradaAlunoJustificado(agendamento);
+
+        // Assert
+        verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
+
+        Email emailEnviado = emailCaptor.getValue();
+
+        // Verificando que o email foi enviado para o aluno
+        assertEquals("joao.silva@email.com", emailEnviado.destinatario());
+        assertEquals("Justificativa de Ausência Aceita", emailEnviado.assunto());
+        assertTrue(emailEnviado.corpo().contains("João Silva"));
+        assertTrue(emailEnviado.corpo().contains("Carlos Personal"));
+        assertTrue(emailEnviado.corpo().contains("2025-11-30"));
+        assertTrue(emailEnviado.corpo().contains("14:30"));
+        assertTrue(emailEnviado.corpo().contains("registrou sua ausência"));
+        assertTrue(emailEnviado.corpo().contains("saldo do agendamento retornará à sua conta"));
+    }
+
+    @Test
     @DisplayName("Deve enviar email de notificação quando aluno cancela agendamento")
     void deveEnviarEmailQuandoAlunoCancelaAgendamento() {
         // Arrange

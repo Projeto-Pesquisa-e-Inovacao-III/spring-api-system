@@ -42,5 +42,9 @@ public class AgendamentoEventPublisher {
         listeners.forEach(listeners -> listeners.onAusenciaRegistradaAluno(agendamento));
     }
 
+    public void AusenciaRegistradaAlunoJustificadoEvent(Agendamento agendamento){
+        listeners.forEach(listeners -> listeners.onAusenciaRegistradaAlunoJustificado(agendamento));
+    }
+
 
 }

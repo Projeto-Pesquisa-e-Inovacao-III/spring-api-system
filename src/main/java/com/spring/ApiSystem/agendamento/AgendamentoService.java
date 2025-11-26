@@ -229,18 +229,23 @@ public class AgendamentoService {
             throw new PersonalTemAcessoApenasException();
         }
 
-        if (reqAgendamento.descricaoCancelamento()!= null) {
-            agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
-            produtoContratadoService.incrementar(agendamento.getId());
-        }
+
 
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
             produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
             agendamento.ausenciaPersonal();
             agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
-        } else {
-            agendamento.ausenciaCliente();
-            agendamentoEventPublisher.AusenciaRegistradaAlunoEvent(agendamento);
+        } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
+
+            if (reqAgendamento.descricaoCancelamento()!= null) {
+                agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+                produtoContratadoService.incrementar(agendamento.getId());
+                agendamentoEventPublisher.AusenciaRegistradaAlunoJustificadoEvent(agendamento);
+            }else {
+                agendamento.ausenciaCliente();
+                agendamentoEventPublisher.AusenciaRegistradaAlunoEvent(agendamento);
+            }
+
         }
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);

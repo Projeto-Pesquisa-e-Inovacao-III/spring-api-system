@@ -172,6 +172,22 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         emailService.enviarEmail(email);
     }
 
+    @Override
+    public void onAusenciaRegistradaAlunoJustificado(Agendamento agendamento) {
+        Email email = new Email(
+                agendamento.getAluno().getEmail(),
+                "Justificativa de Ausência Aceita",
+                String.format("Olá %s,<br><br>Informamos que %s registrou sua ausência para o agendamento na data %s às %s.<br>O saldo do agendamento retornará à sua conta em breve.<br><br>Atenciosamente,<br>Equipe da Plataforma.",
+                        agendamento.getAluno().getNome(),
+                        agendamento.getPersonal().getNome(),
+                        agendamento.getData().toLocalDate().toString(),
+                        agendamento.getData().toLocalTime().toString()
+                )
+        );
+
+        emailService.enviarEmail(email);
+    }
+
 
     /**
      * Determina o destinatário da notificação com base no tipo de usuário solicitante.
