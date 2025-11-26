@@ -160,4 +160,23 @@ public class ProdutoContratadoService {
                 produtoContratado.getDataExpiracao().isAfter(LocalDate.now());
     }
 
+    public List<ResListarGanhoMensalDto> listarGanhosMensais(Integer quantidadeMeses){
+        return produtoContratadoRepository.listarGanhosPorMesDeCompra(quantidadeMeses)
+                .stream()
+                .map(this::converterParaResListarGanhoMensalDto)
+                .toList();
+    }
+
+    private ResListarGanhoMensalDto converterParaResListarGanhoMensalDto(Object[] row) {
+        return new ResListarGanhoMensalDto(
+                ((Number) row[0]).intValue(),
+                ((Number) row[1]).intValue(),
+                ((Number) row[2]).doubleValue()
+        );
+    }
+
+    public Integer contarProdutosVendidosUltimosDias(Integer dias){
+        LocalDate dataInicio = LocalDate.now().minusDays(dias);
+        return produtoContratadoRepository.totalPlanosVendidosUltimosDias(dataInicio, LocalDate.now());
+    }
 }

@@ -3,13 +3,15 @@ package com.spring.ApiSystem.produtocontratado;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.util.List;
 
+@Component
 public class ProdutoContratadoScheduler {
     private final ProdutoContratadoRepository produtoContratadoRepository;
-    private static final Logger logger = LoggerFactory.getLogger(ProdutoContratadoService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProdutoContratadoScheduler.class);
 
     public ProdutoContratadoScheduler(ProdutoContratadoRepository produtoContratadoRepository) {
         this.produtoContratadoRepository = produtoContratadoRepository;
