@@ -9,6 +9,7 @@ import com.spring.ApiSystem.telefone.exception.TelefoneDeveTerUmCadastroExceptio
 import com.spring.ApiSystem.telefone.exception.TelefoneDuplicadoException;
 import com.spring.ApiSystem.telefone.exception.TelefoneNaoEncontradoException;
 import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
+import com.spring.ApiSystem.usuario.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class TelefoneService {
     }
 
     public ResCadastrarTelefoneDTO cadastrarTelefone(ReqCadastrarTelefoneDTO telefoneDTO) {
-        validarTelefoneDuplicado(telefoneDTO.ddd(), telefoneDTO.numero());
+        validarTelefoneDuplicado(telefoneDTO.pais(),telefoneDTO.ddd(), telefoneDTO.numero());
 
         Telefone telefone = telefoneMapper.toEntity(telefoneDTO);
         telefone = telefoneRepository.save(telefone);
@@ -54,13 +55,20 @@ public class TelefoneService {
         );
     }
 
+    public Usuario buscarUsuarioPorPaisDddNumero(String pais, String ddd, String numero) {
+        return telefoneRepository
+                .findTelefoneByPaisAndDddAndNumero(pais, ddd, numero)
+                .map(Telefone::getUsuario)
+                .orElseThrow(TelefoneNaoEncontradoException::new);
+    }
+
     private Telefone buscarTelefonePorId(Long idTelefone) {
         return telefoneRepository.findById(idTelefone)
                 .orElseThrow(TelefoneNaoEncontradoException::new);
     }
 
-    private void validarTelefoneDuplicado(String ddd, String numero) {
-        if (telefoneRepository.findTelefoneByDddAndNumero(ddd, numero).isPresent())
+    private void validarTelefoneDuplicado(String pais, String ddd, String numero) {
+        if (telefoneRepository.findTelefoneByPaisAndDddAndNumero(pais, ddd, numero).isPresent())
             throw new TelefoneDuplicadoException();
     }
 

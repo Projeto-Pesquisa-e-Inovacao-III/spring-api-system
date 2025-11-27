@@ -27,14 +27,6 @@ argon:
   memory: 65536
   iterations: 3
 
-pagbank:
-  token: dummy-token-1234567890
-  endpoint: https://api.pagbank.com.br
-  client:
-    id: dummy-client-id
-    secret: dummy-client-secret
-
-
 # CONFIGURAÇÕES INFOBIP
 infobip:
   base:
@@ -55,7 +47,6 @@ logging:
 discord:
   webhook:
     url: https://ptb.discord.com/api/webhooks/1431904865545617472/6hkid2IeJ2YIp4E3D_4Zjbdp1toVo-IuZkQ9jUDg7--WOSkMQhRzAbDb1Y6HojlZO4mb
-
 
 server:
   port: 8080

@@ -1,13 +1,12 @@
 package com.spring.ApiSystem.usuario;
 
+import com.spring.ApiSystem.telefone.TelefoneService;
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.shared.security.ArgonService;
-import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,12 +22,14 @@ public class UsuarioService {
     private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
     private final LocalImageStorageService imageStorageService;
+    private final TelefoneService telefoneService;
 
-    public UsuarioService(LocalImageStorageService imageStorageService, ArgonService argonService, UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository) {
-        this.imageStorageService = imageStorageService;
-        this.argonService = argonService;
-        this.usuarioMapper = usuarioMapper;
+    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService) {
         this.usuarioRepository = usuarioRepository;
+        this.usuarioMapper = usuarioMapper;
+        this.argonService = argonService;
+        this.imageStorageService = imageStorageService;
+        this.telefoneService = telefoneService;
     }
 
     public Boolean removerUsuario(String email) {
@@ -117,6 +118,10 @@ public class UsuarioService {
                         telefone.setNumero(telefoneDTO.numero());
                     });
         }
+    }
+
+    public Usuario buscarUsuarioPorPaisDddNumero(String pais, String ddd, String numero) {
+        return telefoneService.buscarUsuarioPorPaisDddNumero(pais, ddd, numero);
     }
 
 }

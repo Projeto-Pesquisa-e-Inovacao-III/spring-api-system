@@ -6,9 +6,7 @@ public class WhatsappRequest {
     private String code; // Código
 
 
-    public WhatsappRequest() {
-
-    }
+    public WhatsappRequest() {}
 
     public String getTo() {
             return to;
