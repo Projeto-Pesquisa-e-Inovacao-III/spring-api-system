@@ -20,7 +20,6 @@ public class Agendamento {
     @Column(nullable = false)
     private LocalDateTime data;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private LocalDateTime dataFim;
 

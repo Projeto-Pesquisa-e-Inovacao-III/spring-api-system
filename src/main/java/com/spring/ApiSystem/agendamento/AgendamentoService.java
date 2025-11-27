@@ -8,6 +8,7 @@ import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
@@ -57,10 +58,6 @@ public class AgendamentoService {
         validarAntecedenciaDeHorarioMarcado(criarAgendamentoDTO.data());
         LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(criarAgendamentoDTO.data(), criarAgendamentoDTO.tipoAulaProdutoContratado());
 
-        BuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(dto.alunoId());
-        personalService.buscarPersonalPorId((long) Math.toIntExact(dto.personalId()));
-
-        produtoContratadoService.buscarPorIdProdutoContratado(Math.toIntExact(dto.produtoContratadoId()));
         Usuario usuario = obterUsuarioAutenticado();
         validarSeUsuarioDoTipoAluno(usuario);
 
@@ -90,6 +87,7 @@ public class AgendamentoService {
         );
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
+
 
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {

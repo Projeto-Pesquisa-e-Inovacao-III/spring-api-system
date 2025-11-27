@@ -6,6 +6,8 @@ import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.*;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
+import com.spring.ApiSystem.personal.Personal;
+import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
@@ -29,6 +31,8 @@ public abstract class AgendamentoMapper {
     protected JpaUserDetailsService userDetailsService;
     @Autowired
     public TelefoneMapper telefoneMapper;
+    @Autowired
+    private PersonalService personalService;
 
     @Mapping(target = "personal.id", source = "personalId")
     @Mapping(target = "endereco", source = "novoEndereco")
@@ -54,8 +58,9 @@ public abstract class AgendamentoMapper {
     public abstract ReqCadastrarHistoricoAgendamentoDTO toReqCriarHistoricoAgendamentoDTO(Agendamento agendamento);
 
     @Named("idToPersonal")
-    protected Personal dToPersonal (Long id){
+    protected Personal idToPersonal (Long id) {
         return personalService.findById(id);
+    }
 
     protected Usuario obterUsuarioAtual() {
         return userDetailsService.getCurrentUser();
