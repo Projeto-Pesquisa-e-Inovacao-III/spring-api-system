@@ -26,6 +26,17 @@
       init:
         mode: always
         encoding: UTF-8
+    mail:
+      host: sandbox.smtp.mailtrap.io
+      port: 2525
+      username: 85c0b5155bde1a
+      password: 995436dbd41272
+      properties:
+        mail:
+          smtp:
+            auth: true
+            starttls:
+              enable: true
 
-  storage:
     local-dir: imagens
+
