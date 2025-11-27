@@ -143,5 +143,16 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("agendamentoId") Long agendamentoId
     );
 
+    @Query("SELECT MONTH(a.data) as mes," +
+                  "YEAR(a.data) as ano," +
+                  "COUNT(a) FROM agendamento a" +
+            " WHERE a.personal.id = :personalId AND" +
+            " a.status = :status" +
+            " GROUP BY ano, mes" +
+            " ORDER BY ano DESC, mes DESC" +
+            " LIMIT :quantidadeMeses")
+    List<Object[]> listarConsultoriasRealizadasMes(@Param("personalId") Long personalId,
+                                            @Param("status") AgendamentoStatus status,
+                                            @Param("quantidadeMeses") Integer quantidadeMeses);
 }
 

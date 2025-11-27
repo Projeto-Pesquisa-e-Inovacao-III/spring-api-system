@@ -5,6 +5,7 @@ import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
 import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
@@ -14,6 +15,7 @@ import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
 import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.AlunoTemAcessoApenasException;
@@ -398,5 +400,25 @@ public class AgendamentoService {
                 usuario.getId(),
                 status,
                 data);
+    }
+
+    public List<ResListarConsultoriasRealizadasDto> listarConsultoriasRealizadasMes(Integer quantidadeMeses){
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+
+        return agendamentoRepository.listarConsultoriasRealizadasMes(usuario.getId(),
+                        AgendamentoStatus.CONCLUIDO, quantidadeMeses)
+                .stream()
+                .map(this::converterResListarConsultoriasRealizadas)
+                .toList();
+    }
+
+    private ResListarConsultoriasRealizadasDto converterResListarConsultoriasRealizadas(Object[] row) {
+        return new ResListarConsultoriasRealizadasDto(
+                ((Number) row[0]).intValue(),
+                ((Number) row[1]).intValue(),
+                ((Number) row[2]).intValue()
+        );
     }
 }

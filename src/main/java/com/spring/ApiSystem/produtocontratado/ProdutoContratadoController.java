@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
@@ -59,7 +60,7 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtosContratados);
     }
 
-    @Operation(summary = "Lista o produto contratado com base no ID (necessário login)",
+    @Operation(summary = "Busca o produto contratado com base no ID (necessário login)",
             description = "Endpoint para listar o produto contratado com base no ID informado")
     @GetMapping("/id/{id}")
     public ResponseEntity<ResProdutoContratadoDto>
@@ -91,9 +92,27 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtosContratados);
     }
 
+    @Operation(summary = "Busca o produto contratado ativo do usuário logado (necessário login)",
+            description = "Endpoint para buscar o produto contratado ativo do usuário logado")
     @GetMapping("/ativo")
     public ResponseEntity<ResProdutoContratadoAtivoDto>
     buscarProdutoContratadoAtivo(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok(produtoContratadoService.buscarProdutoContratadoAtivo(userDetails.getUsername()));
+    }
+
+    @Operation(summary = "Lista os ganhos mensais dos últimos meses (necessário login)",
+            description = "Endpoint para listar os ganhos mensais dos últimos meses com base na quantidade de meses informada, " +
+                    "ou seja, se for informado 3, irá retornar os ganhos dos últimos 3 meses")
+    @GetMapping("/ganhos-mes/{quantidadeMeses}")
+    public ResponseEntity<List<ResListarGanhoMensalDto>> listarGanhosMensais(@PathVariable Integer quantidadeMeses){
+        return ResponseEntity.ok(produtoContratadoService.listarGanhosMensais(quantidadeMeses));
+    }
+
+    @Operation(summary = "Contagem de planos vendidos nos últimos dias (necessário login)",
+            description = "Endpoint para contar a quantidade de planos vendidos com base na quantidade de dias informada, " +
+                    "ou seja, se for informado 7, irá retornar a quantidade de planos vendidos nos últimos 7 dias")
+    @GetMapping("/planos-vendidos/{quantidadeDias}")
+    public ResponseEntity<Integer> contarPlanosVendidosUltimosDias(@PathVariable Integer quantidadeDias){
+        return ResponseEntity.ok(produtoContratadoService.contarProdutosVendidosUltimosDias(quantidadeDias));
     }
 }

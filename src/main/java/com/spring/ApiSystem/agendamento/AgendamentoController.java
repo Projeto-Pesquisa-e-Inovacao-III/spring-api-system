@@ -2,6 +2,7 @@
 package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.dto.request.*;
+import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -126,5 +127,15 @@ public class AgendamentoController {
         return ResponseEntity.ok(
                 agendamentoService.buscarAgendamentosPorUsuario()
         );
+    }
+
+    @Operation(summary = "Conta as consultorias realizadas por mês do personal logado",
+            description = "Endpoint para retornar a quantidade de consultorias realizadas nos últimos meses " +
+                    "do personal logado. Onde há a necessidade de informar a quantidade de meses desejada, ou seja, " +
+                    "últimos 3 meses, 6 meses, 12 meses, etc.")
+    @GetMapping("/consultoria-realizadas/{quantidadeMeses}")
+    public ResponseEntity<List<ResListarConsultoriasRealizadasDto>>
+    listarConsultoriasRealizadasMeses(@PathVariable Integer quantidadeMeses){
+        return ResponseEntity.ok(agendamentoService.listarConsultoriasRealizadasMes(quantidadeMeses));
     }
 }

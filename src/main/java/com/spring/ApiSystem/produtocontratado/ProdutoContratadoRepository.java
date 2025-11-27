@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,5 +49,26 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
         WHERE pc.situacao = true
           AND pc.produtoExibicao.tipoAula = :tipoAula
        """)
-        Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula);
+    Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula);
+
+    @Query("""
+    SELECT MONTH(pc.dataCompra) as mes,
+           YEAR(pc.dataCompra) as ano,
+           SUM(pe.preco) as totalPreco
+      FROM produto_contratado pc
+      JOIN produto_exibicao pe ON pc.produtoExibicao.id = pe.id
+     GROUP BY ano, mes
+     ORDER BY ano DESC, mes DESC
+     LIMIT :quantidadeMeses
+    """)
+    List<Object[]> listarGanhosPorMesDeCompra(@Param("quantidadeMeses") Integer quantidadeMeses);
+
+    @Query("""
+       SELECT COUNT(pc)
+         FROM produto_contratado pc
+        WHERE pc.dataCompra >= :dataInicio AND
+        pc.dataCompra <= :dataFinal
+     """)
+    Integer totalPlanosVendidosUltimosDias(@Param("dataInicio") LocalDate dataInicio,
+                                           @Param("dataFinal") LocalDate dataFinal);
 }
