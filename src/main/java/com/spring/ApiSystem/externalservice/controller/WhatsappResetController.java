@@ -57,29 +57,4 @@ public class WhatsappResetController {
         }
     }
 
-    @PostMapping("/status-callback")
-    public ResponseEntity<String> handleStatusCallback(@RequestBody Map<String, Object> infobipPayload) {
-        List<Map<String, Object>> results = (List<Map<String, Object>>) infobipPayload.get("results");
-
-        if (results == null || results.isEmpty()) {
-            logger.warn("WEBHOOK INFOBIP RECEBIDO - Payload vazio ou formato inesperado.");
-            return new ResponseEntity<>("OK", HttpStatus.OK);
-        }
-
-        Map<String, Object> firstResult = results.get(0);
-        String messageId = (String) firstResult.get("messageId");
-        Map<String, Object> statusInfo = (Map<String, Object>) firstResult.get("status");
-        String statusGroupName = statusInfo != null ? (String) statusInfo.get("groupName") : "UNKNOWN";
-        String errorDescription = (String) firstResult.get("errorDescription");
-
-        logger.info("WEBHOOK INFOBIP RECEBIDO - ID: {}, Status Grupo: {}, Descrição: {}",
-                messageId, statusGroupName, errorDescription != null ? errorDescription : "N/A");
-
-        if ("DELIVERED".equalsIgnoreCase(statusGroupName)) {
-            logger.info("A mensagem {} foi ENTREGUE ao usuário com sucesso.", messageId);
-        } else if ("UNDELIVERABLE".equalsIgnoreCase(statusGroupName) || "REJECTED".equalsIgnoreCase(statusGroupName)) {
-            logger.error("A mensagem {} FALHOU. Status: {}. Causa: {}", messageId, statusGroupName, errorDescription);
-        }
-        return new ResponseEntity<>("OK", HttpStatus.OK);
-    }
 }
