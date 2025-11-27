@@ -157,7 +157,7 @@ public class DisponibilidadePersonalService {
 
         for (HorarioAgendadoProjectionDto slot : agendamentos) {
             LocalDateTime inicioAula = slot.dataInicio();
-            int duracaoMinutos = TipoAula.FUNCIONAL.name().equals(slot.tipoAula()) ? 30 : 60;
+            int duracaoMinutos = TipoAula.FUNCIONAL == slot.tipoAula() ? 30 : 60;
 
             // [Início da Aula] até [Fim da Aula + Buffer Pós-Atendimento]
             LocalDateTime fimBloqueio = inicioAula.plusMinutes(duracaoMinutos).plusMinutes(bufferPosAtendimento);
@@ -294,7 +294,7 @@ public class DisponibilidadePersonalService {
         for (HorarioAgendadoProjectionDto slot : agendamentos) {
             LocalDateTime inicioAula = slot.dataInicio();
             TipoAula tipoAula = slot.tipoAula();
-            int duracao = TipoAula.FUNCIONAL.name().equals(tipoAula) ? 30 : 60;
+            int duracao = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
 
             // Calculo do tempo bloqueado pelo agendamento (Aula + Buffer Pós-Atendimento)
             LocalDateTime agendamentoStart = inicioAula;
