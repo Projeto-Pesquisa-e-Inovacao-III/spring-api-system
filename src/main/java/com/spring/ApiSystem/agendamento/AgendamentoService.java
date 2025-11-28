@@ -9,6 +9,7 @@ import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealiz
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
@@ -96,6 +97,7 @@ public class AgendamentoService {
 
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
+
 
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {
