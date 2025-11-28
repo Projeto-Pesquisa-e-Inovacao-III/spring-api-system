@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.produtoexibicao;
 
-
 import com.spring.ApiSystem.agendamento.dto.response.HorarioAgendadoProjectionDto;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;

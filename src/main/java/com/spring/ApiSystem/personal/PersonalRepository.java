@@ -5,4 +5,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PersonalRepository extends JpaRepository <Personal, Long>{
+    boolean existsByCref(String cref);
 }

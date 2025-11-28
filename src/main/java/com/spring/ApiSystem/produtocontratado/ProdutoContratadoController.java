@@ -1,12 +1,14 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -58,7 +60,7 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtosContratados);
     }
 
-    @Operation(summary = "Lista o produto contratado com base no ID (necessário login)",
+    @Operation(summary = "Busca o produto contratado com base no ID (necessário login)",
             description = "Endpoint para listar o produto contratado com base no ID informado")
     @GetMapping("/id/{id}")
     public ResponseEntity<ResProdutoContratadoDto>
@@ -82,7 +84,7 @@ public class ProdutoContratadoController {
                     "tiverem o idAluno correspondente")
     @GetMapping("/aluno")
     public ResponseEntity<List<ResProdutoContratadoDto>>
-    listarProdutosContratadosPorIdAluno(@PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
+    listarProdutosContratadosPorIdAluno(@ParameterObject @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
                                         Pageable pageable,
                                         @AuthenticationPrincipal UserDetails userDetails){
         List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
@@ -90,18 +92,27 @@ public class ProdutoContratadoController {
         return ResponseEntity.ok(produtosContratados);
     }
 
+    @Operation(summary = "Busca o produto contratado ativo do usuário logado (necessário login)",
+            description = "Endpoint para buscar o produto contratado ativo do usuário logado")
     @GetMapping("/ativo")
     public ResponseEntity<ResProdutoContratadoAtivoDto>
     buscarProdutoContratadoAtivo(@AuthenticationPrincipal UserDetails userDetails){
         return ResponseEntity.ok(produtoContratadoService.buscarProdutoContratadoAtivo(userDetails.getUsername()));
     }
 
-    @Operation(summary = "Desativa um produto contratado",
-               description = "Endpoint para desativar um produto contratado")
-    @PatchMapping("/desativar/{id}")
-    public ResponseEntity<ResProdutoContratadoDto> desativarProdutoContratado(@PathVariable Long id){
-        produtoContratadoService.desativarProdutoContratado(id);
+    @Operation(summary = "Lista os ganhos mensais dos últimos meses (necessário login)",
+            description = "Endpoint para listar os ganhos mensais dos últimos meses com base na quantidade de meses informada, " +
+                    "ou seja, se for informado 3, irá retornar os ganhos dos últimos 3 meses")
+    @GetMapping("/ganhos-mes/{quantidadeMeses}")
+    public ResponseEntity<List<ResListarGanhoMensalDto>> listarGanhosMensais(@PathVariable Integer quantidadeMeses){
+        return ResponseEntity.ok(produtoContratadoService.listarGanhosMensais(quantidadeMeses));
+    }
 
-        return ResponseEntity.noContent().build();
+    @Operation(summary = "Contagem de planos vendidos nos últimos dias (necessário login)",
+            description = "Endpoint para contar a quantidade de planos vendidos com base na quantidade de dias informada, " +
+                    "ou seja, se for informado 7, irá retornar a quantidade de planos vendidos nos últimos 7 dias")
+    @GetMapping("/planos-vendidos/{quantidadeDias}")
+    public ResponseEntity<Integer> contarPlanosVendidosUltimosDias(@PathVariable Integer quantidadeDias){
+        return ResponseEntity.ok(produtoContratadoService.contarProdutosVendidosUltimosDias(quantidadeDias));
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -20,6 +21,18 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
+
+    @Query("""
+            SELECT COUNT(a) FROM agendamento a
+            WHERE a.personal.id = :personalId
+            AND a.status = :status
+            AND (:data IS NULL OR CAST(a.data AS DATE) = :data)
+    """)
+    Integer countByPersonalIdAndStatusAndOptionalData(
+            @Param("personalId") Long personalId,
+            @Param("status") AgendamentoStatus status,
+            @Param("data") LocalDate data
+    );
 
 
     Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
@@ -130,5 +143,16 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("agendamentoId") Long agendamentoId
     );
 
+    @Query("SELECT MONTH(a.data) as mes," +
+                  "YEAR(a.data) as ano," +
+                  "COUNT(a) FROM agendamento a" +
+            " WHERE a.personal.id = :personalId AND" +
+            " a.status = :status" +
+            " GROUP BY ano, mes" +
+            " ORDER BY ano DESC, mes DESC" +
+            " LIMIT :quantidadeMeses")
+    List<Object[]> listarConsultoriasRealizadasMes(@Param("personalId") Long personalId,
+                                            @Param("status") AgendamentoStatus status,
+                                            @Param("quantidadeMeses") Integer quantidadeMeses);
 }
 

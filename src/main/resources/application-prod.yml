@@ -13,6 +13,17 @@ spring:
     hibernate:
       ddl-auto: validate
     show-sql: false
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: a4bf5efe97da28
+    password: 5b58865b16d7db
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   swagger-ui:
@@ -20,4 +31,3 @@ springdoc:
 
 storage:
   local-dir: imagens
-

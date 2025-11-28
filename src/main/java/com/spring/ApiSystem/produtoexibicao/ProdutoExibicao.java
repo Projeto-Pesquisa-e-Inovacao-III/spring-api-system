@@ -2,6 +2,7 @@ package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,10 @@ public class ProdutoExibicao {
     @Column(nullable = false,name = "status")
     private ProdutoExibicaoStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_produto", nullable = false)
+    private TipoProduto tipoProduto;
+
     @Column(name = "data_criacao",
             nullable = false,
             updatable = false)
@@ -50,7 +55,7 @@ public class ProdutoExibicao {
     public ProdutoExibicao() {
     }
 
-    public ProdutoExibicao(Long id, String titulo, String subtitulo, String descricao, Double preco, String periodo, ProdutoExibicaoStatus status, LocalDateTime dataCriacao, TipoAula tipoAula, Integer quantidadeAula, Integer duracaoMes) {
+    public ProdutoExibicao(Long id, String titulo, String subtitulo, String descricao, Double preco, String periodo, ProdutoExibicaoStatus status, TipoProduto tipoProduto, LocalDateTime dataCriacao, TipoAula tipoAula, Integer quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
@@ -58,6 +63,7 @@ public class ProdutoExibicao {
         this.preco = preco;
         this.periodo = periodo;
         this.status = status;
+        this.tipoProduto = tipoProduto;
         this.dataCriacao = dataCriacao;
         this.tipoAula = tipoAula;
         this.quantidadeAula = quantidadeAula;
@@ -142,5 +148,13 @@ public class ProdutoExibicao {
 
     public void setDuracaoMes(Integer duracaoMes) {
         this.duracaoMes = duracaoMes;
+    }
+
+    public TipoProduto getTipoProduto() {
+        return tipoProduto;
+    }
+
+    public void setTipoProduto(TipoProduto tipoProduto) {
+        this.tipoProduto = tipoProduto;
     }
 }

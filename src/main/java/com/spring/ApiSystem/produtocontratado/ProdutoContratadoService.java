@@ -2,6 +2,8 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContratadoEventPublisher;
+import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
@@ -22,15 +24,18 @@ public class ProdutoContratadoService {
     private final ProdutoContratadoMapper produtoContratadoMapper;
     private final ProdutoExibicaoService produtoExibicaoService;
     private final AlunoService alunoService;
+    private final ProdutoContratadoEventPublisher produtoContratadoEventPublisher;
 
     public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository,
                                     ProdutoContratadoMapper produtoContratadoMapper,
                                     ProdutoExibicaoService produtoExibicaoService,
-                                    AlunoService alunoService) {
+                                    AlunoService alunoService,
+                                    ProdutoContratadoEventPublisher produtoContratadoEventPublisher) {
         this.produtoContratadoRepository = produtoContratadoRepository;
         this.produtoExibicaoService = produtoExibicaoService;
         this.alunoService = alunoService;
         this.produtoContratadoMapper = produtoContratadoMapper;
+        this.produtoContratadoEventPublisher = produtoContratadoEventPublisher;
     }
 
     @Transactional
@@ -49,6 +54,9 @@ public class ProdutoContratadoService {
         );
 
         produtoContratadoRepository.save(produtoContratado);
+
+        produtoContratadoEventPublisher.publishProdutoContratadoCreatedEvent(produtoContratado);
+
         return produtoContratadoMapper.toDto(produtoContratado);
     }
 
@@ -160,4 +168,23 @@ public class ProdutoContratadoService {
                 produtoContratado.getDataExpiracao().isAfter(LocalDate.now());
     }
 
+    public List<ResListarGanhoMensalDto> listarGanhosMensais(Integer quantidadeMeses){
+        return produtoContratadoRepository.listarGanhosPorMesDeCompra(quantidadeMeses)
+                .stream()
+                .map(this::converterParaResListarGanhoMensalDto)
+                .toList();
+    }
+
+    private ResListarGanhoMensalDto converterParaResListarGanhoMensalDto(Object[] row) {
+        return new ResListarGanhoMensalDto(
+                ((Number) row[0]).intValue(),
+                ((Number) row[1]).intValue(),
+                ((Number) row[2]).doubleValue()
+        );
+    }
+
+    public Integer contarProdutosVendidosUltimosDias(Integer dias){
+        LocalDate dataInicio = LocalDate.now().minusDays(dias);
+        return produtoContratadoRepository.totalPlanosVendidosUltimosDias(dataInicio, LocalDate.now());
+    }
 }

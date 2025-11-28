@@ -40,7 +40,8 @@ public class JpaUserDetailsService implements UserDetailsService {
         return  null;
     }
 
-    public Usuario getCurrentUser(){
+
+    public <T extends Usuario> T getCurrentUser(Class<T> tipo) {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
@@ -51,12 +52,36 @@ public class JpaUserDetailsService implements UserDetailsService {
 
         Optional<Usuario> optUser = usuarioRepository.findByEmail(authentication.getName());
 
-        if(optUser.isEmpty()){
+        if (optUser.isEmpty()) {
             throw new UsuarioNaoEncontradoException();
         }
 
-        return optUser.get();
+        Usuario usuario = optUser.get();
+        if (!tipo.isInstance(usuario)) {
+            throw new UsuarioNaoEncontradoException();
+        }
+
+        return tipo.cast(usuario);
     }
+
+
+//    public Usuario getCurrentUser(){
+//        Authentication authentication = SecurityContextHolder
+//                .getContext()
+//                .getAuthentication();
+//
+//        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
+//            throw new NaoAutorizadoException();
+//        }
+//
+//        Optional<Usuario> optUser = usuarioRepository.findByEmail(authentication.getName());
+//
+//        if(optUser.isEmpty()){
+//            throw new UsuarioNaoEncontradoException();
+//        }
+//
+//        return optUser.get();
+//    }
 
     public Optional<Usuario> isLogged(){
         Authentication authentication = SecurityContextHolder

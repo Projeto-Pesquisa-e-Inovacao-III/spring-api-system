@@ -8,6 +8,7 @@ import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.personal.exception.CrefExistenteException;
 import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcpetion;
 import com.spring.ApiSystem.personal.mapper.PersonalMapper;
 import com.spring.ApiSystem.telefone.Telefone;
@@ -38,6 +39,8 @@ public class PersonalService {
     }
 
     public ResCadastrarPersonalDTO cadastrarUsuario(ReqCadastroPersonalDTO usuarioDTO) {
+        cadastrarCrefExistente(usuarioDTO.cref());
+
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
@@ -90,7 +93,24 @@ public class PersonalService {
                 .orElseThrow(PersonalNaoExisteExcpetion::new);
     }
 
-    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Usuario usuario) {
+    public void cadastrarCrefExistente(String cref){
+        if(crefExiste(cref)){
+            throw new CrefExistenteException();
+        }
+    }
+
+    public boolean crefExiste(String cref){
+        return personalRepository.existsByCref(cref);
+    }
+
+    public void validarCrefExistente(String cref, String crefAtual){
+        if(crefExiste(cref) && !cref.equals(crefAtual)){
+            throw new CrefExistenteException();
+        }
+    }
+
+    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Personal usuario) {
+        validarCrefExistente(dto.cref(), usuario.getCref());
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
 

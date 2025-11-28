@@ -63,7 +63,7 @@ public abstract class AgendamentoMapper {
     }
 
     protected Usuario obterUsuarioAtual() {
-        return userDetailsService.getCurrentUser();
+        return userDetailsService.getCurrentUser(Usuario.class);
     }
 
     @Mapping(target = "agendamentoId", source = "id")

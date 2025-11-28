@@ -34,7 +34,9 @@ public class ProdutoExibicaoService {
     }
 
     public List<ResProdutoExibicaoDto> listarProdutosPorStatus(String status){
-        return produtoExibicaoRepository.findByStatus(ProdutoExibicaoStatus.valueOf(status.toUpperCase()));
+        return produtoExibicaoMapper.toResProdutoExibicaoDTOList(
+                produtoExibicaoRepository.findByStatus(ProdutoExibicaoStatus.valueOf(status.toUpperCase()))
+        );
     }
 
     public List<ResProdutoExibicaoDto> listarProdutos(){

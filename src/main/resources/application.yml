@@ -8,6 +8,17 @@ spring:
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 
+  mail:
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: 85c0b5155bde1a
+    password: 995436dbd41272
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 jwt:
   public:
     key: classpath:keys/public.pem
@@ -35,6 +46,8 @@ pagbank:
     secret: dummy-client-secret
 
 
+
+# CONFIGURAÇÕES INFOBIP
 # CONFIGURAÇÕES INFOBIP
 infobip:
   base:
@@ -45,10 +58,12 @@ infobip:
     sender: 447860088970
     template:
       name: authentication
+# Logs
 
 # Logs
 logging:
   level:
+# Url Webhook - Disc
     org.example: INFO
 
 # Url Webhook - Disc
