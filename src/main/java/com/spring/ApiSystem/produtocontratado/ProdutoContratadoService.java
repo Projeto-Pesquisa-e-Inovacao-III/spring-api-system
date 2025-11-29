@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -38,6 +39,7 @@ public class ProdutoContratadoService {
         this.produtoContratadoMapper = produtoContratadoMapper;
         this.produtoContratadoEventPublisher = produtoContratadoEventPublisher;
         this.detailsService = detailsService;
+
     }
 
     @Transactional
@@ -149,18 +151,21 @@ public class ProdutoContratadoService {
         return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
     }
 
-    public ResProdutoContratadoDto buscarPorIdAlunoEmail(Long id, String email){
-        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdAndAlunoEmail(id, email)
+    public ResProdutoContratadoDto buscarPorIdAndAluno(Long id){
+        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdAndAluno(id, detailsService.getCurrentAluno())
                 .orElseThrow(() -> new ProdutoContratadoAlunoNaoTemEsseProdutoException(id));
         return produtoContratadoMapper.toDto(produtoContratado);
     }
 
 
-    public List<ResProdutoContratadoDto> listarPorAluno(String email, Pageable pageable){
-        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoEmail(email, pageable);
-        if (produtosContratados.isEmpty()) {
-            throw new ProdutoContratadoPorAlunoNaoExisteException();
-        }
+    public List<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDateTime dataInicio, LocalDateTime dataFim){
+        detailsService.getCurrentAluno();
+        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
+                detailsService.getCurrentAluno(),
+                nomeProduto,
+                dataInicio,
+                dataFim,
+                pageable);
         return produtoContratadoMapper.toListDto(produtosContratados);
     }
 

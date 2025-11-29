@@ -25,7 +25,7 @@ public record ReqEdicaoProdutoExibicaoDTO(
     @NotBlank(message = "Período é obrigatório")
     String periodo,
 
-    @NotBlank(message = "Status é obrigatório")
+    @NotNull(message = "Status é obrigatório")
     ProdutoExibicaoStatus status,
 
     @NotNull(message = "Tipo de aula é obrigatório")

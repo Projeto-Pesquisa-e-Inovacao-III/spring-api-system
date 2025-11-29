@@ -7,6 +7,7 @@ import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoA
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -19,8 +20,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -55,13 +58,6 @@ public class ProdutoContratadoController {
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
-    @Operation(summary = "Lista todos os produtos contratados",
-              description = "Endpoint para listar todos os produtos contratados em sistema")
-    @GetMapping
-    public ResponseEntity<List<ResProdutoContratadoDto>> listarProdutosContratados(){
-        List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService.listarProdutosContratados();
-        return ResponseEntity.ok(produtosContratados);
-    }
 
     @Operation(summary = "Lista dos produtos contratados com base na situacao",
             description = "Endpoint para listar todos os produtos contratados em sistema com base" +
@@ -77,10 +73,9 @@ public class ProdutoContratadoController {
             description = "Endpoint para listar o produto contratado com base no ID informado")
     @GetMapping("/id/{id}")
     public ResponseEntity<ResProdutoContratadoDto>
-    buscarProdutoContratadoPorId(@PathVariable Long id,
-                                   @AuthenticationPrincipal UserDetails userDetails){
+    buscarProdutoContratadoPorId(@PathVariable Long id){
         ResProdutoContratadoDto produtoContratado = produtoContratadoService
-                .buscarPorIdAlunoEmail(id, userDetails.getUsername());
+                .buscarPorIdAndAluno(id);
         if(produtoContratado == null){
             return ResponseEntity.notFound().build();
         }
@@ -97,11 +92,13 @@ public class ProdutoContratadoController {
                     "tiverem o idAluno correspondente")
     @GetMapping("/aluno")
     public ResponseEntity<List<ResProdutoContratadoDto>>
-    listarProdutosContratadosPorIdAluno(@ParameterObject @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
-                                        Pageable pageable,
-                                        @AuthenticationPrincipal UserDetails userDetails){
+    listarProdutosContratadosPorIdAluno(@RequestParam(required = false) String nomeProduto,
+                                        @RequestParam(required = false) LocalDateTime dataInicio,
+                                        @RequestParam(required = false) LocalDateTime dataFim,
+                                        @ParameterObject @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
+                                        Pageable pageable){
         List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
-                .listarPorAluno(userDetails.getUsername(), pageable);
+                .listarPorAluno(pageable, nomeProduto, dataInicio, dataFim);
         return ResponseEntity.ok(produtosContratados);
     }
 

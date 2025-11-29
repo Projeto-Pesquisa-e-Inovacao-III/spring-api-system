@@ -21,6 +21,7 @@ import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -34,6 +35,7 @@ import static org.mockito.Mockito.*;
 
 
 @DisplayName("Testes do DisponibilidadePersonalService")
+@ActiveProfiles("test")
 @SpringBootTest
 class DisponibilidadePersonalServiceTest {
 
