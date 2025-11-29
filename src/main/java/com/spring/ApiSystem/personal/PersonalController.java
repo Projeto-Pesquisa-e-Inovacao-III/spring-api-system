@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.personal;
 
+import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
@@ -10,6 +11,7 @@ import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
@@ -17,8 +19,12 @@ import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/personais")
@@ -50,6 +56,13 @@ public class PersonalController {
         return ResponseEntity.ok().build();
     }
 
+    @Operation(summary = "Listar alunos (necessário login)",
+            description = "Endpoint para listar alunos no sistema")
+    @GetMapping
+    public ResponseEntity<List<ResListarPersonaisDTO>> listarPersonais(@PageableDefault(sort = "nome")
+                                                                 Pageable pageable) {
+        return ResponseEntity.ok(personalService.listarPersonais(pageable));
+    }
 
     @Operation (summary = "Buscar personal por ID (necessário login)",
             description = "Endpoint para buscar um personal específico pelo ID no sistema")

@@ -20,4 +20,5 @@ public interface UsuarioBaseRepository<T extends Usuario> extends JpaRepository<
 
     @Query("SELECT u FROM #{#entityName} u WHERE u.nome LIKE %:nome%")
     List<T> findByNomeContaining(@Param("nome") String nome);
+
 }

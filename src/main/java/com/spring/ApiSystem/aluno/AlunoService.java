@@ -70,7 +70,7 @@ public class AlunoService {
     }
 
     public List<ResListarAlunosDto> listarAlunos(Pageable pageable) {
-        List<Aluno> alunos = alunoRepository.findAllBy(pageable);
+        List<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
         return alunoMapper.toResListarAlunosDto(alunos);
     }
 

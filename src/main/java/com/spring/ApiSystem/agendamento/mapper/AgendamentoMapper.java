@@ -72,6 +72,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "caminhoFoto", source = "personal.caminhoFoto")
     public abstract ResAgendamentoAlunoOverviewDTO toResAgendamentoAlunoOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoAlunoOverviewDTO> toResAgendamentoAlunoOverviewDTOList(List<Agendamento> agendamentos);
@@ -83,6 +84,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "caminhoFoto", source = "aluno.caminhoFoto")
     public abstract ResAgendamentoPersonalOverviewDTO toResAgendamentoPersonalOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoPersonalOverviewDTO> toResAgendamentoPersonalOverviewDTOList(List<Agendamento> agendamentos);

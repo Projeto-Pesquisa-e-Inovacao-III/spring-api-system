@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.personal;
 
 import com.spring.ApiSystem.aluno.Aluno;
+import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
 import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonalService;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonalService;
@@ -8,6 +9,7 @@ import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
 import com.spring.ApiSystem.personal.exception.CrefExistenteException;
 import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.personal.mapper.PersonalMapper;
@@ -18,8 +20,10 @@ import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import jakarta.transaction.Transactional;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -66,47 +70,6 @@ public class PersonalService {
         return personalMapper.toDtoCadastrarPersonal(personalRepository.save(usuarioEntity));
     }
 
-    @Transactional
-    public void atualizarBufferMinutos(Long personalId, Integer novoBufferMinutos) {
-
-        Personal personal = buscarPorId(personalId);
-        personal.setBufferMinutos(novoBufferMinutos);
-        personalRepository.save(personal);
-    }
-
-    public ResBuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {
-        Personal personal = buscarPorId(id);
-        return personalMapper.toDtoBuscarPersonalPorIdDTO(personal);
-    }
-
-
-    public Personal buscarPorId(Long id) {
-        return personalRepository
-                .findById(id)
-                .orElseThrow(PersonalNaoExisteExcepetion::new);
-    }
-
-    public Personal buscarPorEmail(String email) {
-        return personalRepository.findByEmail(email)
-                .orElseThrow(PersonalNaoExisteExcepetion::new);
-    }
-
-    public void cadastrarCrefExistente(String cref){
-        if(crefExiste(cref)){
-            throw new CrefExistenteException();
-        }
-    }
-
-    public boolean crefExiste(String cref){
-        return personalRepository.existsByCref(cref);
-    }
-
-    public void validarCrefExistente(String cref, String crefAtual){
-        if(crefExiste(cref) && !cref.equals(crefAtual)){
-            throw new CrefExistenteException();
-        }
-    }
-
     public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Personal usuario) {
         validarCrefExistente(dto.cref(), usuario.getCref());
 
@@ -129,5 +92,51 @@ public class PersonalService {
         personalRepository.save(personal);
 
         return personalMapper.toDtoAtualizarPersonal(personal);
+    }
+
+    @Transactional
+    public void atualizarBufferMinutos(Long personalId, Integer novoBufferMinutos) {
+
+        Personal personal = buscarPorId(personalId);
+        personal.setBufferMinutos(novoBufferMinutos);
+        personalRepository.save(personal);
+    }
+
+
+    public List<ResListarPersonaisDTO> listarPersonais(Pageable pageable) {
+        List<Personal> personals = personalRepository.findAllAtivos(pageable);
+        return personalMapper.toDtoListarPersonaisDTO(personals);
+    }
+
+    public ResBuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {
+        Personal personal = buscarPorId(id);
+        return personalMapper.toDtoBuscarPersonalPorIdDTO(personal);
+    }
+
+    public Personal buscarPorId(Long id) {
+        return personalRepository
+                .findById(id)
+                .orElseThrow(PersonalNaoExisteExcepetion::new);
+    }
+
+    private Personal buscarPorEmail(String email) {
+        return personalRepository.findByEmail(email)
+                .orElseThrow(PersonalNaoExisteExcepetion::new);
+    }
+
+    public void cadastrarCrefExistente(String cref){
+        if(crefExiste(cref)){
+            throw new CrefExistenteException();
+        }
+    }
+
+    private boolean crefExiste(String cref){
+        return personalRepository.existsByCref(cref);
+    }
+
+    private void validarCrefExistente(String cref, String crefAtual){
+        if(crefExiste(cref) && !cref.equals(crefAtual)){
+            throw new CrefExistenteException();
+        }
     }
 }

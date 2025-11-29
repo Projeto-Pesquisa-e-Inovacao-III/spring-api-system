@@ -13,6 +13,7 @@ public record ResAgendamentoPersonalOverviewDTO(
         LocalDateTime datafim,
         String personalNome,
         String alunoNome,
+        String caminhoFoto,
         TipoAula tipoAula,
         ResEnderecoAgendamentoDTO endereco
 ) {}
