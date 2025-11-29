@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  * Use @SpringBootTest para carregar o contexto completo do Spring
  */
 @SpringBootTest
-@ActiveProfiles("dev") // Usa as configurações de application-dev.yml
+@ActiveProfiles("test") // Usa as configurações de application-dev.yml
 public class EmailServiceIntegrationTest {
 
     @Autowired
