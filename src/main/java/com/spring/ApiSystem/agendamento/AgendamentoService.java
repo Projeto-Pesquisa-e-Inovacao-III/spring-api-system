@@ -343,7 +343,7 @@ public class AgendamentoService {
 
 
     private Usuario obterUsuarioAutenticado() {
-        return jpaUserDetailsService.getCurrentUser(Usuario.class);
+        return jpaUserDetailsService.getCurrentUser();
     }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {

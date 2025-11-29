@@ -132,7 +132,7 @@ public class WhatsappController {
             ).execute();
 
             // Message ID e Log
-            String messageId = response.getMessages().get(0).getMessageId();
+            String messageId = response.getMessages().getFirst().getMessageId();
             String messageIdSafe = (messageId != null) ? messageId : "N/A";
             logger.info("<- Mensagem Infobip WhatsApp enviada. Message ID: {}", messageId);
 
@@ -228,8 +228,15 @@ public class WhatsappController {
 
         String messageId = (String) firstResult.get("messageId");
 
-        Map<String, String> statusInfo = (Map<String, String>) firstResult.get("status");
-        String statusGroupName = statusInfo != null ? statusInfo.get("groupName") : "UNKNOWN";
+        Object statusObj = firstResult.get("status");
+        String statusGroupName = "UNKNOWN";
+
+        if (statusObj instanceof Map<?, ?> statusMap) {
+            Object groupNameObj = statusMap.get("groupName");
+            if (groupNameObj instanceof String) {
+                statusGroupName = (String) groupNameObj;
+            }
+        }
 
         String errorDescription = (String) firstResult.get("errorDescription");
 

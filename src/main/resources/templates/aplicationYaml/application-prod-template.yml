@@ -1,12 +1,12 @@
 server:
-  port: 8080
+  port:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/spring_api_system
+    url:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: senhaSeguraAqui
+    username:
+    password:
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
@@ -14,10 +14,10 @@ spring:
       ddl-auto: validate
     show-sql: false
   mail:
-    host: sandbox.smtp.mailtrap.io
-    port: 2525
-    username: a4bf5efe97da28
-    password: 5b58865b16d7db
+    host:
+    port:
+    username:
+    password:
     properties:
       mail:
         smtp:

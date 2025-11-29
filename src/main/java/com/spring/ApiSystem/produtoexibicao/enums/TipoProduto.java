@@ -1,4 +1,6 @@
 package com.spring.ApiSystem.produtoexibicao.enums;
 
-public class TipoProduto {
+public enum TipoProduto {
+    PACOTE,
+    ADICIONAL
 }

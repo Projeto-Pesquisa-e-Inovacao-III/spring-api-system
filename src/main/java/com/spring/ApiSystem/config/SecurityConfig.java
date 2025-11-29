@@ -52,11 +52,13 @@ public class SecurityConfig {
                                     "/personais/{id}/buffer"
                             ).permitAll()
                             .requestMatchers(HttpMethod.GET, "/usuarios/auth").permitAll()
+                            .requestMatchers(HttpMethod.POST, "/produtos-contratados/pagamento").permitAll()
                             .requestMatchers("/agendamentos/**").permitAll()
                             .requestMatchers("/checkouts/**").permitAll()
                             .requestMatchers("/api/password-reset/**").permitAll()
-                            .requestMatchers("/checkouts/**").permitAll()
-                            .requestMatchers("/produtos-contratados/**").permitAll();
+                            .requestMatchers("/produtos-contratados/**").permitAll()
+                            .requestMatchers("/comprar/**").permitAll();
+
 
                     if (perfilAtivo.equals("dev")) {
                         auth.requestMatchers(HttpMethod.GET,

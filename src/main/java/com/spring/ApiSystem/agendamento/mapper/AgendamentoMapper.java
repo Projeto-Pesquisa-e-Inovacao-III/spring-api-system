@@ -59,11 +59,11 @@ public abstract class AgendamentoMapper {
 
     @Named("idToPersonal")
     protected Personal idToPersonal (Long id) {
-        return personalService.findById(id);
+        return personalService.buscarPorId(id);
     }
 
     protected Usuario obterUsuarioAtual() {
-        return userDetailsService.getCurrentUser(Usuario.class);
+        return userDetailsService.getCurrentUser();
     }
 
     @Mapping(target = "agendamentoId", source = "id")

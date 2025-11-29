@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.usuario;
 
+import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.personal.PersonalService;
@@ -94,7 +95,7 @@ public class UsuarioController {
     @Operation(summary = "Buscar informações de usuario", description = "Endpoint para a busca as informações do usuario")
     @GetMapping("/me")
     public ResponseEntity<?> buscarEu(HttpServletResponse response){
-        Usuario usuario = userDetails.getCurrentUser(Usuario.class);
+        Usuario usuario = userDetails.getCurrentUser();
 
         if(usuario.getTipo() == TipoUsuario.ALUNO){
             ResBuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
@@ -114,7 +115,7 @@ public class UsuarioController {
     @PostMapping("/me/imagem")
     public ResponseEntity<?> adicionarImagemPerfil(@RequestParam("imagem") MultipartFile imagem) {
         try {
-            Usuario usuario = userDetails.getCurrentUser(Usuario.class);
+            Usuario usuario = userDetails.getCurrentUser();
 
             String novoPath;
             if (usuario.getCaminhoFoto() != null && !usuario.getCaminhoFoto().isBlank()) {
@@ -138,7 +139,7 @@ public class UsuarioController {
     @GetMapping("/me/imagem")
     public ResponseEntity<Resource> buscarImagemPerfil() {
         try {
-            Usuario usuario = userDetails.getCurrentUser(Usuario.class);
+            Usuario usuario = userDetails.getCurrentUser();
 
             if (usuario.getCaminhoFoto() == null || usuario.getCaminhoFoto().isBlank()) {
                 return ResponseEntity.notFound().build();
@@ -159,7 +160,7 @@ public class UsuarioController {
     @DeleteMapping("/me/imagem")
     public ResponseEntity<?> deletarImagemPerfil() {
         try {
-            Usuario usuario = userDetails.getCurrentUser(Usuario.class);
+            Usuario usuario = userDetails.getCurrentUser();
 
             if (usuario.getCaminhoFoto() == null || usuario.getCaminhoFoto().isBlank()) {
                 return ResponseEntity.notFound().build();
@@ -179,7 +180,7 @@ public class UsuarioController {
     @GetMapping("/foto/{nomeArquivo}")
     public ResponseEntity<Resource> buscarFotoPorNome(@PathVariable String nomeArquivo) {
         try {
-            Usuario usuario = userDetails.getCurrentUser(Usuario.class);
+            Usuario usuario = userDetails.getCurrentUser();
 
             Resource resource = usuarioService.buscarFoto(nomeArquivo);
             return ResponseEntity.ok()

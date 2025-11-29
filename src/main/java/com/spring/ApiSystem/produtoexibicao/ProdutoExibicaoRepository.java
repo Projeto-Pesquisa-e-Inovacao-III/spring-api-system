@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.produtoexibicao;
 
 import com.spring.ApiSystem.agendamento.dto.response.HorarioAgendadoProjectionDto;
+import com.spring.ApiSystem.horariopersonal.HorarioAgendadoProjection;
 import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,19 +14,16 @@ import java.util.List;
 
 @Repository
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
-    List<ResProdutoExibicaoDto> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
+    List<ProdutoExibicao> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
 
-    @Query("SELECT new com.spring.ApiSystem.agendamento.dto.response.HorarioAgendadoProjectionDto(a.data AS dataInicio, p.tipoAula, a.status) " +
+    @Query("SELECT a.data, p.tipoAula, a.status " +
             "FROM agendamento a " +
-            "LEFT JOIN a.produtoContratado pc " +
-            "LEFT JOIN pc.produtoExibicao p " +
+            "JOIN a.produtoContratado pc " +
+            "JOIN pc.produtoExibicao p " +
             "WHERE a.personal.id = :personalId " +
             "AND a.data BETWEEN :start AND :end " +
-            "AND a.status IN (" +
-            "com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.PENDENTE_PERSONAL_APROVACAO, " +
-            "com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.PENDENTE_CLIENTE_APROVACAO, " +
-            "com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.APROVADO)")
-    List<HorarioAgendadoProjectionDto> findAgendamentoSlotsByPersonalIdAndDataBetween(
+            "AND a.status IN ('PENDENTE_PERSONAL_APROVACAO', 'PENDENTE_CLIENTE_APROVACAO', 'APROVADO')")
+    List<HorarioAgendadoProjection> findAgendamentoSlotsByPersonalIdAndDataBetween(
             @Param("personalId") Long personalId,
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end

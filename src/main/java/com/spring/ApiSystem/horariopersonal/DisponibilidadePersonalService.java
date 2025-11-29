@@ -9,7 +9,7 @@ import com.spring.ApiSystem.horariopersonal.dto.response.ResSlotDisponivelDTO;
 import com.spring.ApiSystem.horariopersonal.exception.SobreposicaoHorarioException;
 import com.spring.ApiSystem.personal.Personal;
 import com.spring.ApiSystem.personal.PersonalRepository;
-import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcpetion;
+import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoRepository;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import jakarta.persistence.EntityNotFoundException;
@@ -50,7 +50,7 @@ public class DisponibilidadePersonalService {
     @Transactional
     public void criarDisponibilidadePadrao(Long personalId) {
         Personal personal = personalRepository.findById(personalId)
-                .orElseThrow(PersonalNaoExisteExcpetion::new);
+                .orElseThrow(PersonalNaoExisteExcepetion::new);
 
         List<DisponibilidadePersonal> defaults = new ArrayList<>();
         for (DiaSemana dia : DiaSemana.values()) {
@@ -99,7 +99,7 @@ public class DisponibilidadePersonalService {
     public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada) {
 
         Personal personal = personalRepository.findById(personalId)
-                .orElseThrow(PersonalNaoExisteExcpetion::new);
+                .orElseThrow(PersonalNaoExisteExcepetion::new);
 
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
@@ -152,12 +152,12 @@ public class DisponibilidadePersonalService {
         LocalDateTime endOfDay = dataDesejada.atTime(23, 59, 59);
 
 
-        List<HorarioAgendadoProjectionDto> agendamentos = produtoExibicaoRepository
+        List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
                 .findAgendamentoSlotsByPersonalIdAndDataBetween(personalId, startOfDay, endOfDay);
 
-        for (HorarioAgendadoProjectionDto slot : agendamentos) {
-            LocalDateTime inicioAula = slot.dataInicio();
-            int duracaoMinutos = TipoAula.FUNCIONAL == slot.tipoAula() ? 30 : 60;
+        for (HorarioAgendadoProjection slot : agendamentos) {
+            LocalDateTime inicioAula = slot.getDataInicio();
+            int duracaoMinutos = TipoAula.FUNCIONAL == slot.getTipoAula() ? 30 : 60;
 
             // [Início da Aula] até [Fim da Aula + Buffer Pós-Atendimento]
             LocalDateTime fimBloqueio = inicioAula.plusMinutes(duracaoMinutos).plusMinutes(bufferPosAtendimento);
@@ -271,7 +271,7 @@ public class DisponibilidadePersonalService {
      * Valida se o 'novo período' (Restrição) sobrepõe qualquer agendamento ATIVO + INTERVALO PÓS-ATENDIMENTO.
      */
     private void validarContraAgendamentosAtivos(Long personalId, DiaSemana diaSemana, LocalDateTime novoPeriodoStart, LocalDateTime novoPeriodoEnd) {
-        Personal personal = personalRepository.findById(personalId).orElseThrow(PersonalNaoExisteExcpetion::new);
+        Personal personal = personalRepository.findById(personalId).orElseThrow(PersonalNaoExisteExcepetion::new);
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
 
         // Encontra a próxima ocorrência do dia da semana (para buscar agendamentos)
@@ -284,21 +284,20 @@ public class DisponibilidadePersonalService {
         LocalDateTime end = dataRef.atTime(23,59,59);
 
 
-        List<HorarioAgendadoProjectionDto> agendamentos = produtoExibicaoRepository
+        List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
                 .findAgendamentoSlotsByPersonalIdAndDataBetween(personalId, start, end);
 
         // Ajusta o novo período de restrição para a data de referência
         LocalDateTime novoRestricaoStart = dataRef.atTime(novoPeriodoStart.toLocalTime());
         LocalDateTime novoRestricaoEnd = dataRef.atTime(novoPeriodoEnd.toLocalTime());
 
-        for (HorarioAgendadoProjectionDto slot : agendamentos) {
-            LocalDateTime inicioAula = slot.dataInicio();
-            TipoAula tipoAula = slot.tipoAula();
+        for (HorarioAgendadoProjection slot : agendamentos) {
+            LocalDateTime agendamentoStart = slot.getDataInicio();
+            TipoAula tipoAula = slot.getTipoAula();
             int duracao = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
 
             // Calculo do tempo bloqueado pelo agendamento (Aula + Buffer Pós-Atendimento)
-            LocalDateTime agendamentoStart = inicioAula;
-            LocalDateTime agendamentoEnd = inicioAula.plusMinutes(duracao).plusMinutes(bufferPosAtendimento);
+            LocalDateTime agendamentoEnd = agendamentoStart.plusMinutes(duracao).plusMinutes(bufferPosAtendimento);
 
             if (intervalsOverlap(agendamentoStart, agendamentoEnd, novoRestricaoStart, novoRestricaoEnd)) {
                 throw new SobreposicaoHorarioException();
