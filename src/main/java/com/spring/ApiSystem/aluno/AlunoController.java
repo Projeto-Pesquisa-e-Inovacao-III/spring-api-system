@@ -3,6 +3,7 @@ package com.spring.ApiSystem.aluno;
 import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResAlunosPagantesDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
@@ -80,5 +81,12 @@ public class AlunoController {
         filterService.removerCookie(response);
         filterService.gerarCookie(response, usuarioEditado.email());
         return ResponseEntity.ok(usuarioEditado);
+    }
+
+    @Operation(summary = "Buscar quantidade de alunos com planos ativos",
+            description = "Endpoint para buscar a quantidade de alunos pagantes (com planos ativos)")
+    @GetMapping("/alunos-ativos")
+    public ResponseEntity<ResAlunosPagantesDTO> buscarAlunosAtivos() {
+        return ResponseEntity.ok(alunoService.contarAlunosComPlanosAtivos());
     }
 }
