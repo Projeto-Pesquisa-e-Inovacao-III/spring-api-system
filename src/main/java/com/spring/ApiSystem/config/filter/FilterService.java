@@ -43,21 +43,20 @@ public class FilterService extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String cookie = this.recuperarCookie(request);
-        if(cookie != null){
+        if (cookie != null) {
             String email = tokenService.subjectToken(cookie);
             UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
-            if(usuario == null){
+            if (usuario == null || !usuario.isEnabled()) {
                 this.removerCookie(response);
-            }
-            else{
+            } else {
                 Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
-                            null, usuario.getAuthorities());
+                        null, usuario.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         }
-        // Fazer o próximo filtro
         filterChain.doFilter(request, response);
     }
+
 
     /*
     Gera um cookie com o token gerado

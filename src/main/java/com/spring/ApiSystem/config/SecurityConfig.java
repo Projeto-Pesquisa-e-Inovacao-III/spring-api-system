@@ -1,3 +1,4 @@
+
 package com.spring.ApiSystem.config;
 
 import com.spring.ApiSystem.config.filter.FilterService;
@@ -30,12 +31,6 @@ public class SecurityConfig {
     @Value("${spring.profiles.active}")
     private String perfilAtivo;
 
-    /*
-    Configura como será o acesso aos endpoints aqui:
-    - formulário padrão de login desabilitado
-    - endpoints de login e cadastro liberado para todos
-    - demais endpoints requerem o token
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         return httpSecurity
@@ -45,29 +40,54 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers(HttpMethod.POST,
-                                    "/alunos/cadastro",
-                                    "/personais/cadastro",
-                                    "/usuarios/login",
-                                    "/personais/{id}/buffer"
-                            ).permitAll()
-                            .requestMatchers(HttpMethod.GET, "/usuarios/auth").permitAll()
-                            .requestMatchers(HttpMethod.POST, "/produtos-contratados/pagamento").permitAll()
-                            .requestMatchers("/agendamentos/**").permitAll()
-                            .requestMatchers("/checkouts/**").permitAll()
-                            .requestMatchers("/api/password-reset/**").permitAll()
-                            .requestMatchers("/produtos-contratados/**").permitAll()
-                            .requestMatchers("/comprar/**").permitAll();
-
-
-                    if (perfilAtivo.equals("dev")) {
+                    if ("dev".equals(perfilAtivo)) {
                         auth.requestMatchers(HttpMethod.GET,
-                                        "/v3/api-docs/**",
-                                        "/swagger-ui/**",
-                                        "/doc"
-                                ).permitAll()
-                                .requestMatchers("/h2-console/**").permitAll();
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/doc"
+                        ).permitAll();
+                        auth.requestMatchers("/h2-console/**").permitAll();
                     }
+
+                    auth.requestMatchers(HttpMethod.POST,
+                            "/alunos/cadastro",
+                            "/personais/cadastro",
+                            "/usuarios/login",
+                            "/produtos-contratados/pagamento",
+                            "/api/password-reset/**"
+                    ).permitAll();
+
+                    auth.requestMatchers(HttpMethod.GET,
+                            "/produtos-exibicoes",
+                            "/usuarios/auth"
+                    ).permitAll();
+
+                    auth.requestMatchers(HttpMethod.GET, "/alunos")
+                            .hasAnyRole("PERSONAL");
+
+                    auth.requestMatchers(HttpMethod.GET, "/personais")
+                            .hasRole("ALUNO");
+
+                    auth.requestMatchers(
+                            "/personais/**",
+                            "/agendamentos/*/confirmar-conclusao",
+                            "/agendamentos/ausencia",
+                            "/agendamentos/consultoria-realizadas/*",
+                            "/agendamentos/contagem-status-data",
+                            "/produtos-exibicoes/**"
+                    ).hasRole("PERSONAL");
+
+                    auth.requestMatchers(
+                            "/alunos/**",
+                            "/comprar/**",
+                            "/checkouts/**",
+                            "/produtos-contratados/**"
+                    ).hasRole("ALUNO");
+
+                    auth.requestMatchers(
+                            "/agendamentos/**",
+                            "/usuarios/**"
+                    ).hasAnyRole("PERSONAL", "ALUNO");
 
                     auth.anyRequest().authenticated();
                 })
@@ -95,9 +115,9 @@ public class SecurityConfig {
     @Bean
     public Argon2PasswordEncoder argon2PasswordEncoder() {
         return new Argon2PasswordEncoder(saltLength,
-                                        hashLength,
-                                        parallelism,
-                                        memory,
-                                        iterations);
+                hashLength,
+                parallelism,
+                memory,
+                iterations);
     }
 }
