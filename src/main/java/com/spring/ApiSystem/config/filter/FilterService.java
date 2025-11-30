@@ -12,6 +12,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -43,20 +44,49 @@ public class FilterService extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String cookie = this.recuperarCookie(request);
-        if (cookie != null) {
-            String email = tokenService.subjectToken(cookie);
-            UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
-            if (usuario == null || !usuario.isEnabled()) {
-                this.removerCookie(response);
-            } else {
-                Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
-                        null, usuario.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(authentication);
-            }
+
+        if (cookie == null) {
+            filterChain.doFilter(request, response);
+            return;
         }
+
+        String email;
+        try {
+            email = tokenService.subjectToken(cookie);
+        } catch (Exception ex) {
+            // Token mal formado / inválido -> remover cookie e rejeitar
+            this.removerCookie(response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
+            return;
+        }
+
+        if (email == null) {
+            this.removerCookie(response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token sem subject");
+            return;
+        }
+
+        UserDetails usuario;
+        try {
+            usuario = jpaUserDetailsService.loadUserByUsername(email);
+        } catch (UsernameNotFoundException ex) {
+            this.removerCookie(response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuário não encontrado");
+            return;
+        }
+
+        if (usuario == null || !usuario.isEnabled()) {
+            this.removerCookie(response);
+            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuário inválido ou desabilitado");
+            return;
+        }
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
+                null, usuario.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
         filterChain.doFilter(request, response);
     }
-
 
     /*
     Gera um cookie com o token gerado

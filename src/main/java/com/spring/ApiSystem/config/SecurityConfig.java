@@ -48,7 +48,7 @@ public class SecurityConfig {
                         ).permitAll();
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
-
+                    auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     auth.requestMatchers(HttpMethod.POST,
                             "/alunos/cadastro",
                             "/personais/cadastro",
@@ -56,7 +56,6 @@ public class SecurityConfig {
                             "/produtos-contratados/pagamento",
                             "/api/password-reset/**"
                     ).permitAll();
-
                     auth.requestMatchers(HttpMethod.GET,
                             "/produtos-exibicoes",
                             "/usuarios/auth"
