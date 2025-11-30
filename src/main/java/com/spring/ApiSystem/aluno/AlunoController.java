@@ -85,7 +85,7 @@ public class AlunoController {
 
     @Operation(summary = "Buscar quantidade de alunos com planos ativos",
             description = "Endpoint para buscar a quantidade de alunos pagantes (com planos ativos)")
-    @GetMapping("/alunos-ativos")
+    @GetMapping("/quantidade-ativos")
     public ResponseEntity<ResAlunosPagantesDTO> buscarAlunosAtivos() {
         return ResponseEntity.ok(alunoService.contarAlunosComPlanosAtivos());
     }

@@ -42,13 +42,15 @@ public class ProdutoExibicao {
 
     @Column(name = "tipo_aula",
             nullable = false)
+
+    @Enumerated(EnumType.STRING)
     private TipoAula tipoAula;
 
     @Column(name = "quantidade_aula",
             nullable = false)
     private Integer quantidadeAula;
 
-    @Column(name = "duracaoMes",
+    @Column(name = "duracao_mes",
             nullable = false)
     private Integer duracaoMes;
 

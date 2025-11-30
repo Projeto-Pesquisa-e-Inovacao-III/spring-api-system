@@ -44,7 +44,6 @@ public class PersonalController {
     @PostMapping("/cadastro")
     public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
-
     }
 
     @PutMapping("/{personalId}/buffer")
