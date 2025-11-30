@@ -53,4 +53,12 @@ public class DisponibilidadePersonalController {
         ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorarios(horarioId, request);
         return ResponseEntity.ok(horarioAtualizado);
     }
+
+    @Operation(summary = "Cronograma do Personal Logado",
+    description = "Retorna o cronograma do personal logado")
+    @GetMapping("/me/cronograma")
+    public ResponseEntity<?> pegarCronograma(){
+        List<DisponibilidadePersonal> cronograma = disponibilidadeService.pegarCronograma();
+        return ResponseEntity.ok(cronograma);
+    }
 }

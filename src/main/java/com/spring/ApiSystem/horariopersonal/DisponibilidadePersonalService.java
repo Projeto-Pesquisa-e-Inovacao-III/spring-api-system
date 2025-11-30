@@ -12,6 +12,7 @@ import com.spring.ApiSystem.personal.PersonalRepository;
 import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoRepository;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,11 +34,13 @@ public class DisponibilidadePersonalService {
     private final DisponibilidadePersonalRepository disponibilidadeRepository;
     private final PersonalRepository personalRepository;
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
+    private final JpaUserDetailsService detailsService;
 
-    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository) {
+    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository, JpaUserDetailsService detailsService) {
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.personalRepository = personalRepository;
         this.produtoExibicaoRepository = produtoExibicaoRepository;
+        this.detailsService = detailsService;
     }
 
     private boolean intervalsOverlap(LocalDateTime aStart, LocalDateTime aEnd, LocalDateTime bStart, LocalDateTime bEnd) {
@@ -303,5 +306,10 @@ public class DisponibilidadePersonalService {
                 throw new SobreposicaoHorarioException();
             }
         }
+    }
+
+    public List<DisponibilidadePersonal> pegarCronograma() {
+        Personal personal = detailsService.getCurrentPersonal();
+        return disponibilidadeRepository.findByPersonal(personal);
     }
 }

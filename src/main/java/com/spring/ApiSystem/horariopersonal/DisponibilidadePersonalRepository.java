@@ -1,6 +1,8 @@
 package com.spring.ApiSystem.horariopersonal;
 
 import com.spring.ApiSystem.enums.DiaSemana;
+import com.spring.ApiSystem.horariopersonal.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.personal.Personal;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,4 +32,5 @@ public interface DisponibilidadePersonalRepository extends JpaRepository<Disponi
             @Param("horarioId") Long horarioId
     );
 
+    List<DisponibilidadePersonal> findByPersonal(Personal personal);
 }
