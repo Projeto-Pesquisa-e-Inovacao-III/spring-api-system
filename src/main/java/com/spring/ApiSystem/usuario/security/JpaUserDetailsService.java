@@ -38,14 +38,17 @@ public class JpaUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+
         Usuario usuarioEncontrado = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
 
         String role = "ROLE_" + usuarioEncontrado.getTipo().name();
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
         return User.builder()
                 .username(usuarioEncontrado.getEmail())
+                .password(usuarioEncontrado.getSenha())
                 .authorities(authorities)
                 .disabled(!usuarioEncontrado.isAtivo())
                 .build();
