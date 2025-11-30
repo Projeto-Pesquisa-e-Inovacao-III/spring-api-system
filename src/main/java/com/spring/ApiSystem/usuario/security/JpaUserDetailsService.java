@@ -39,19 +39,17 @@ public class JpaUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Usuario usuarioEncontrado = usuarioRepository.findByEmail(email)
-                .orElse(null);
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        if(usuarioEncontrado != null){
-            // Olhar no futuro quando for separado as roles dos usuários
-            return new User(usuarioEncontrado.getEmail(),
-                            usuarioEncontrado.getSenha(),
-                            List.of(new SimpleGrantedAuthority("ROLE_USER" + usuarioEncontrado.getTipo()))
-            );
-        }
+        String role = "ROLE_" + usuarioEncontrado.getTipo().name();
+        List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(role));
 
-        return  null;
+        return User.builder()
+                .username(usuarioEncontrado.getEmail())
+                .authorities(authorities)
+                .disabled(!usuarioEncontrado.isAtivo())
+                .build();
     }
-
 
     public Usuario getCurrentUser() {
         String email = getAuthenticatedEmail();
