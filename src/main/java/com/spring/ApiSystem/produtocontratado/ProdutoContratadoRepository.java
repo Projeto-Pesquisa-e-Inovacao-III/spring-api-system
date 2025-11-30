@@ -43,13 +43,13 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     WHERE pc.aluno = :aluno
     AND (:nomeProduto IS NULL OR pc.produtoExibicao.titulo LIKE %:nomeProduto%)
     AND (:dataInicio IS NULL OR pc.dataCompra >= :dataInicio)
-    AND (:dataFim IS NULL OR pc.dataCompra <= :dataFim)
+    AND (:dataFim IS NULL OR pc.dataExpiracao <= :dataFim)
     """)
     List<ProdutoContratado> findByAlunoIdWithFilters(
             @Param("aluno") Aluno aluno,
             @Param("nomeProduto") String nomeProduto,
-            @Param("dataInicio") LocalDateTime dataInicio,
-            @Param("dataFim") LocalDateTime dataFim,
+            @Param("dataInicio") LocalDate dataInicio,
+            @Param("dataFim") LocalDate dataFim,
             Pageable pageable
     );
 

@@ -2,10 +2,8 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoPagamentoDTO;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,6 +21,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,9 +30,11 @@ import java.util.List;
 public class ProdutoContratadoController {
     private static final Logger logger = LoggerFactory.getLogger(ProdutoContratadoController.class);
     private final ProdutoContratadoService produtoContratadoService;
+    private final ProdutoContratadoMapper produtoContratadoMapper;
 
-    public ProdutoContratadoController(ProdutoContratadoService produtoContratadoService) {
+    public ProdutoContratadoController(ProdutoContratadoService produtoContratadoService, ProdutoContratadoMapper produtoContratadoMapper) {
         this.produtoContratadoService = produtoContratadoService;
+        this.produtoContratadoMapper = produtoContratadoMapper;
     }
 
     @Operation(summary = "Cria um produto contratado (necessário login)",
@@ -74,12 +75,12 @@ public class ProdutoContratadoController {
     @GetMapping("/id/{id}")
     public ResponseEntity<ResProdutoContratadoDto>
     buscarProdutoContratadoPorId(@PathVariable Long id){
-        ResProdutoContratadoDto produtoContratado = produtoContratadoService
+        ProdutoContratado produtoContratado = produtoContratadoService
                 .buscarPorIdAndAluno(id);
         if(produtoContratado == null){
             return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.ok(produtoContratado);
+        return ResponseEntity.ok(produtoContratadoMapper.toDto(produtoContratado));
     }
 
     @GetMapping("/total-tipo/{tipoAula}")
@@ -93,13 +94,19 @@ public class ProdutoContratadoController {
     @GetMapping("/aluno")
     public ResponseEntity<List<ResProdutoContratadoDto>>
     listarProdutosContratadosPorIdAluno(@RequestParam(required = false) String nomeProduto,
-                                        @RequestParam(required = false) LocalDateTime dataInicio,
-                                        @RequestParam(required = false) LocalDateTime dataFim,
+                                        @RequestParam(required = false) LocalDate dataInicio,
+                                        @RequestParam(required = false) LocalDate dataFim,
                                         @ParameterObject @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC)
                                         Pageable pageable){
         List<ResProdutoContratadoDto> produtosContratados = produtoContratadoService
                 .listarPorAluno(pageable, nomeProduto, dataInicio, dataFim);
         return ResponseEntity.ok(produtosContratados);
+    }
+
+    @GetMapping("/detalhado/{id}")
+    public ResponseEntity<ResProdutoContratadoDetalhadoDTO> buscarProdutoContratadoDetalhe(@PathVariable Long id){
+        ProdutoContratado produtoContratado = produtoContratadoService.buscarPorIdAndAluno(id);
+        return ResponseEntity.ok(produtoContratadoMapper.toResProdutoContratadoDetalhadoDTO(produtoContratado));
     }
 
     @Operation(summary = "Busca o produto contratado ativo do usuário logado (necessário login)",

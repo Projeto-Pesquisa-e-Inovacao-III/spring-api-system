@@ -151,15 +151,15 @@ public class ProdutoContratadoService {
         return produtoContratadoMapper.toBuscarProdutoContratadoPorIdDto(produtoContratado);
     }
 
-    public ResProdutoContratadoDto buscarPorIdAndAluno(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdAndAluno(id, detailsService.getCurrentAluno())
+    public ProdutoContratado buscarPorIdAndAluno(Long id){
+        return produtoContratadoRepository.findByIdAndAluno(id, detailsService.getCurrentAluno())
                 .orElseThrow(() -> new ProdutoContratadoAlunoNaoTemEsseProdutoException(id));
-        return produtoContratadoMapper.toDto(produtoContratado);
     }
 
 
-    public List<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDateTime dataInicio, LocalDateTime dataFim){
-        detailsService.getCurrentAluno();
+    public List<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDate dataInicio, LocalDate dataFim){
+
+        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "+dataFim);
         List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
                 detailsService.getCurrentAluno(),
                 nomeProduto,
