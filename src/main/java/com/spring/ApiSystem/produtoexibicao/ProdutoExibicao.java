@@ -48,7 +48,7 @@ public class ProdutoExibicao {
             nullable = false)
     private Integer quantidadeAula;
 
-    @Column(name = "duracaoMes",
+    @Column(name = "duracao_mes",
             nullable = false)
     private Integer duracaoMes;
 
