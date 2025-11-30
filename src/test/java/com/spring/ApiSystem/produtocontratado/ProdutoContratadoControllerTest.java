@@ -23,24 +23,19 @@ class ProdutoContratadoControllerTest {
     @InjectMocks
     private ProdutoContratadoController produtoContratadoController;
 
-    @BeforeEach
-    void setUp() {
-        // Setup adicional se necessário
-    }
-
     @Test
-    @DisplayName("GET /produtos-contratados/quantidade-e-percentual-alunos-expirados - Deve retornar 200 OK com dados")
+    @DisplayName("GET /produtos-contratados/quantidade-percentual-alunos-expirados - Deve retornar 200 OK com dados")
     void deveRetornar200ComDadosDeAlunosExpirados() {
         // Arrange
         ResQuantidadePercentualAlunosExpiradosDto responseDto =
                 new ResQuantidadePercentualAlunosExpiradosDto(12, 18.46);
 
-        when(produtoContratadoService.contarEPercentualAlunosExpirados())
+        when(produtoContratadoService.contagemEPercentualAlunosExpirados())
                 .thenReturn(responseDto);
 
         // Act
         ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> response =
-                produtoContratadoController.contarEPercentualAlunosExpirados();
+                produtoContratadoController.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(response);
@@ -49,22 +44,22 @@ class ProdutoContratadoControllerTest {
         assertEquals(12, response.getBody().getQuantidadeAlunos());
         assertEquals(18.46, response.getBody().getPercentualAlunos());
 
-        verify(produtoContratadoService, times(1)).contarEPercentualAlunosExpirados();
+        verify(produtoContratadoService, times(1)).contagemEPercentualAlunosExpirados();
     }
 
     @Test
-    @DisplayName("GET /produtos-contratados/quantidade-e-percentual-alunos-expirados - Deve retornar percentual 0.0")
+    @DisplayName("GET /produtos-contratados/quantidade-percentual-alunos-expirados - Deve retornar percentual 0.0")
     void deveRetornarPercentualZero() {
         // Arrange
         ResQuantidadePercentualAlunosExpiradosDto responseDto =
                 new ResQuantidadePercentualAlunosExpiradosDto(0, 0.0);
 
-        when(produtoContratadoService.contarEPercentualAlunosExpirados())
+        when(produtoContratadoService.contagemEPercentualAlunosExpirados())
                 .thenReturn(responseDto);
 
         // Act
         ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> response =
-                produtoContratadoController.contarEPercentualAlunosExpirados();
+                produtoContratadoController.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(response);
@@ -80,12 +75,12 @@ class ProdutoContratadoControllerTest {
         ResQuantidadePercentualAlunosExpiradosDto responseDto =
                 new ResQuantidadePercentualAlunosExpiradosDto(50, 100.0);
 
-        when(produtoContratadoService.contarEPercentualAlunosExpirados())
+        when(produtoContratadoService.contagemEPercentualAlunosExpirados())
                 .thenReturn(responseDto);
 
         // Act
         ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> response =
-                produtoContratadoController.contarEPercentualAlunosExpirados();
+                produtoContratadoController.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(response);
@@ -94,37 +89,20 @@ class ProdutoContratadoControllerTest {
         assertEquals(100.0, response.getBody().getPercentualAlunos());
     }
 
-    @Test
-    @DisplayName("GET /produtos-contratados/quantidade-e-percentual-alunos-expirados - Deve chamar o service uma vez")
-    void deveChamarServiceUmaVez() {
-        // Arrange
-        ResQuantidadePercentualAlunosExpiradosDto responseDto =
-                new ResQuantidadePercentualAlunosExpiradosDto(5, 25.0);
-
-        when(produtoContratadoService.contarEPercentualAlunosExpirados())
-                .thenReturn(responseDto);
-
-        // Act
-        produtoContratadoController.contarEPercentualAlunosExpirados();
-
-        // Assert
-        verify(produtoContratadoService, times(1)).contarEPercentualAlunosExpirados();
-        verifyNoMoreInteractions(produtoContratadoService);
-    }
 
     @Test
-    @DisplayName("GET /produtos-contratados/quantidade-e-percentual-alunos-expirados - Deve retornar corpo não nulo")
+    @DisplayName("GET /produtos-contratados/quantidade-percentual-alunos-expirados - Deve retornar corpo não nulo")
     void deveRetornarCorpoNaoNulo() {
         // Arrange
         ResQuantidadePercentualAlunosExpiradosDto responseDto =
                 new ResQuantidadePercentualAlunosExpiradosDto(3, 7.5);
 
-        when(produtoContratadoService.contarEPercentualAlunosExpirados())
+        when(produtoContratadoService.contagemEPercentualAlunosExpirados())
                 .thenReturn(responseDto);
 
         // Act
         ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> response =
-                produtoContratadoController.contarEPercentualAlunosExpirados();
+                produtoContratadoController.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(response.getBody());

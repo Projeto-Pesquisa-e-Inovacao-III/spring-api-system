@@ -29,10 +29,6 @@ class ProdutoContratadoServiceTest {
     @InjectMocks
     private ProdutoContratadoService produtoContratadoService;
 
-    @BeforeEach
-    void setUp() {
-    }
-
     @Test
     @DisplayName("Deve calcular quantidade e percentual corretamente quando há alunos expirados")
     void deveCalcularQuantidadeEPercentualCorretamente() {
@@ -47,7 +43,7 @@ class ProdutoContratadoServiceTest {
 
         // Act
         ResQuantidadePercentualAlunosExpiradosDto resultado =
-                produtoContratadoService.contarEPercentualAlunosExpirados();
+                produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(resultado);
@@ -72,7 +68,7 @@ class ProdutoContratadoServiceTest {
 
         // Act
         ResQuantidadePercentualAlunosExpiradosDto resultado =
-                produtoContratadoService.contarEPercentualAlunosExpirados();
+                produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(resultado);
@@ -94,7 +90,7 @@ class ProdutoContratadoServiceTest {
 
         // Act
         ResQuantidadePercentualAlunosExpiradosDto resultado =
-                produtoContratadoService.contarEPercentualAlunosExpirados();
+                produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(resultado);
@@ -116,7 +112,7 @@ class ProdutoContratadoServiceTest {
 
         // Act
         ResQuantidadePercentualAlunosExpiradosDto resultado =
-                produtoContratadoService.contarEPercentualAlunosExpirados();
+                produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(resultado);
@@ -138,7 +134,7 @@ class ProdutoContratadoServiceTest {
 
         // Act
         ResQuantidadePercentualAlunosExpiradosDto resultado =
-                produtoContratadoService.contarEPercentualAlunosExpirados();
+                produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         assertNotNull(resultado);
@@ -155,7 +151,7 @@ class ProdutoContratadoServiceTest {
         when(alunoRepository.count()).thenReturn(20L);
 
         // Act
-        produtoContratadoService.contarEPercentualAlunosExpirados();
+        produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
         verify(produtoContratadoRepository).countAlunosComPlanosExpirados(any(LocalDate.class));

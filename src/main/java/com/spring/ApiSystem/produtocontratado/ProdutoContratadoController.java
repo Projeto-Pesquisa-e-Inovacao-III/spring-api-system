@@ -119,9 +119,9 @@ public class ProdutoContratadoController {
 
     @Operation(summary = "Contagem e percentual de alunos com planos expirados)",
             description = "Endpoint para contar a quantidade e o percentual de alunos que possuem planos expirados")
-    @GetMapping("/quantidade-percentual-alunos-expirados")
-    public ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> contarEPercentualAlunosExpirados(){
-        return ResponseEntity.ok(produtoContratadoService.contarEPercentualAlunosExpirados());
+    @GetMapping("/quantidade-e-percentual-alunos-expirados")
+    public ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> contagemEPercentualAlunosExpirados(){
+        return ResponseEntity.ok(produtoContratadoService.contagemEPercentualAlunosExpirados());
     }
 
 }

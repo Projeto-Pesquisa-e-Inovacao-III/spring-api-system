@@ -184,7 +184,7 @@ public class ProdutoContratadoService {
         return produtoContratadoRepository.totalPlanosVendidosUltimosDias(dataInicio, LocalDate.now());
     }
 
-    public ResQuantidadePercentualAlunosExpiradosDto contarEPercentualAlunosExpirados() {
+    public ResQuantidadePercentualAlunosExpiradosDto contagemEPercentualAlunosExpirados() {
         Integer quantidadeExpirados = produtoContratadoRepository.countAlunosComPlanosExpirados(LocalDate.now());
         long totalAlunos = alunoRepository.count();
 
