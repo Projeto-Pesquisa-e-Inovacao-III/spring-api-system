@@ -1,10 +1,7 @@
 package com.spring.ApiSystem.produtocontratado.mapper;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqOperacaoSaldoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResBuscarProdutoContratadoPorIdDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResOperacaoSaldoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
 import org.mapstruct.*;
 
@@ -27,4 +24,20 @@ public interface ProdutoContratadoMapper {
     ProdutoContratado toEntity(ResProdutoContratadoDto ResProdutoContratadoDto);
     ProdutoContratado toEntity(ResBuscarProdutoContratadoPorIdDto buscarProdutoContratadoPorIdDto);
 
+    @Mapping(target = "nomeComprador", source = "aluno.nome")
+    @Mapping(target = "emailComprador", source = "aluno.email")
+    @Mapping(target = "telefone", expression = "java(formatarTelefone(produtoContratado))")
+    @Mapping(target = "cpf", source = "aluno.cpf")
+    @Mapping(target = "produtoComprado", source = "produtoExibicao.titulo")
+    @Mapping(target = "valorCompra", source = "produtoExibicao.preco")
+    ResProdutoContratadoDetalhadoDTO toResProdutoContratadoDetalhadoDTO(ProdutoContratado produtoContratado);
+
+
+    default String formatarTelefone(ProdutoContratado produtoContratado) {
+        if (produtoContratado.getAluno().getTelefones().isEmpty()) {
+            return null;
+        }
+        var telefone = produtoContratado.getAluno().getTelefones().get(0);
+        return telefone.getDdd() + telefone.getNumero();
+    }
 }
