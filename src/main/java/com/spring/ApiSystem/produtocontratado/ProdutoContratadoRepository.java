@@ -71,4 +71,12 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
      """)
     Integer totalPlanosVendidosUltimosDias(@Param("dataInicio") LocalDate dataInicio,
                                            @Param("dataFinal") LocalDate dataFinal);
+
+    @Query("""
+       SELECT COUNT(DISTINCT pc.aluno)
+         FROM produto_contratado pc
+        WHERE pc.dataExpiracao < :today
+           OR pc.situacao = false
+     """)
+    Integer countAlunosComPlanosExpirados(@Param("today") LocalDate today);
 }

@@ -3,6 +3,7 @@ package com.spring.ApiSystem.aluno;
 import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
+import com.spring.ApiSystem.aluno.dto.response.ResAlunosPagantesDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
 import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteException;
@@ -112,5 +113,10 @@ public class AlunoService {
         alunoRepository.save(aluno);
 
         return alunoMapper.toDtoAtualizarAluno(aluno);
+    }
+
+    public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
+        Integer quantidade = alunoRepository.countAlunosComPlanosAtivos();
+        return new ResAlunosPagantesDTO(quantidade);
     }
 }

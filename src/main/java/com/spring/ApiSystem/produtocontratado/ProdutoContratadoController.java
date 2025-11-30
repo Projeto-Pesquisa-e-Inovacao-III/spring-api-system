@@ -4,6 +4,7 @@ import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContrat
 import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
@@ -115,4 +116,12 @@ public class ProdutoContratadoController {
     public ResponseEntity<Integer> contarPlanosVendidosUltimosDias(@PathVariable Integer quantidadeDias){
         return ResponseEntity.ok(produtoContratadoService.contarProdutosVendidosUltimosDias(quantidadeDias));
     }
+
+    @Operation(summary = "Contagem e percentual de alunos com planos expirados)",
+            description = "Endpoint para contar a quantidade e o percentual de alunos que possuem planos expirados")
+    @GetMapping("/quantidade-percentual-alunos-expirados")
+    public ResponseEntity<ResQuantidadePercentualAlunosExpiradosDto> contarEPercentualAlunosExpirados(){
+        return ResponseEntity.ok(produtoContratadoService.contarEPercentualAlunosExpirados());
+    }
+
 }

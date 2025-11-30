@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.Aluno;
+import com.spring.ApiSystem.aluno.AlunoRepository;
 import com.spring.ApiSystem.aluno.AlunoService;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
@@ -22,15 +23,18 @@ public class ProdutoContratadoService {
     private final ProdutoContratadoMapper produtoContratadoMapper;
     private final ProdutoExibicaoService produtoExibicaoService;
     private final AlunoService alunoService;
+    private final AlunoRepository alunoRepository;
 
     public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository,
                                     ProdutoContratadoMapper produtoContratadoMapper,
                                     ProdutoExibicaoService produtoExibicaoService,
-                                    AlunoService alunoService) {
+                                    AlunoService alunoService,
+                                    AlunoRepository alunoRepository) {
         this.produtoContratadoRepository = produtoContratadoRepository;
         this.produtoExibicaoService = produtoExibicaoService;
         this.alunoService = alunoService;
         this.produtoContratadoMapper = produtoContratadoMapper;
+        this.alunoRepository = alunoRepository;
     }
 
     @Transactional
@@ -179,4 +183,17 @@ public class ProdutoContratadoService {
         LocalDate dataInicio = LocalDate.now().minusDays(dias);
         return produtoContratadoRepository.totalPlanosVendidosUltimosDias(dataInicio, LocalDate.now());
     }
+
+    public ResQuantidadePercentualAlunosExpiradosDto contarEPercentualAlunosExpirados() {
+        Integer quantidadeExpirados = produtoContratadoRepository.countAlunosComPlanosExpirados(LocalDate.now());
+        long totalAlunos = alunoRepository.count();
+
+        double percentual = 0.0;
+        if (totalAlunos > 0) {
+            percentual = (quantidadeExpirados.doubleValue() / (double) totalAlunos) * 100.0;
+        }
+
+        return new ResQuantidadePercentualAlunosExpiradosDto(quantidadeExpirados, percentual);
+    }
+
 }
