@@ -69,30 +69,30 @@ public class DisponibilidadePersonalService {
 
     // Atualização dos horarios
     @Transactional
-    public ResHorarioDTO atualizarHorarios(Long horarioId, ReqHorarioDTO requests) {
+    public ResHorarioDTO atualizarHorarios(Long horarioId, ReqHorarioDTO request) {
 
         DisponibilidadePersonal horarioExistente = disponibilidadeRepository.findById(horarioId)
-                .orElseThrow(() -> new EntityNotFoundException("Horário não encontrado com ID: " + horarioId));
+                .orElseThrow(() -> new EntityNotFoundException("Horário não encontrado"));
 
         Long personalId = horarioExistente.getPersonal().getId();
 
+        horarioExistente.setDiaSemana(request.diaSemana());
+        horarioExistente.setTipo(request.tipo());
+        horarioExistente.setHoraInicio(request.horaInicio());
+        horarioExistente.setHoraFim(request.horaFim());
+
         validarConflito(
                 personalId,
-                requests.diaSemana(),
-                requests.horaInicio(),
-                requests.horaFim(),
+                request.diaSemana(),
+                request.horaInicio(),
+                request.horaFim(),
                 horarioId,
-                requests.tipo()
+                request.tipo()
         );
 
-        horarioExistente.setDiaSemana(requests.diaSemana());
-        horarioExistente.setTipo(requests.tipo());
-        horarioExistente.setHoraInicio(requests.horaInicio());
-        horarioExistente.setHoraFim(requests.horaFim());
-
-        DisponibilidadePersonal horarioSalvo = disponibilidadeRepository.save(horarioExistente);
-        return new ResHorarioDTO(horarioSalvo);
+        return new ResHorarioDTO(disponibilidadeRepository.saveAndFlush(horarioExistente));
     }
+
 
 
     @Transactional(readOnly = true)
