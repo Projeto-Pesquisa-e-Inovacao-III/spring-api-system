@@ -33,8 +33,7 @@ public class ProdutoContratadoService {
                                     ProdutoContratadoMapper produtoContratadoMapper,
                                     ProdutoExibicaoService produtoExibicaoService,
                                     AlunoService alunoService,
-                                    AlunoRepository alunoRepository) {
-                                    AlunoService alunoService,
+                                    AlunoRepository alunoRepository,
                                     ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService detailsService) {
         this.produtoContratadoRepository = produtoContratadoRepository;
         this.produtoExibicaoService = produtoExibicaoService;
