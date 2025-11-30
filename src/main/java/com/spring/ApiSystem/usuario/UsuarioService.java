@@ -1,13 +1,12 @@
 package com.spring.ApiSystem.usuario;
 
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResAtualizarUsuarioDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.shared.security.ArgonService;
-import com.spring.ApiSystem.usuario.dto.request.ReqEditarUsuarioDTO;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +23,10 @@ public class UsuarioService {
     private final ArgonService argonService;
     private final LocalImageStorageService imageStorageService;
 
-    public UsuarioService(LocalImageStorageService imageStorageService, ArgonService argonService, UsuarioMapper usuarioMapper, UsuarioRepository usuarioRepository) {
+    public UsuarioService(LocalImageStorageService imageStorageService,
+                          ArgonService argonService,
+                          UsuarioMapper usuarioMapper,
+                          UsuarioRepository usuarioRepository) {
         this.imageStorageService = imageStorageService;
         this.argonService = argonService;
         this.usuarioMapper = usuarioMapper;
@@ -119,4 +121,9 @@ public class UsuarioService {
         }
     }
 
+    public void atualizarSenha(ReqAtualizarSenhaDto dto, Usuario usuario){
+        validarSenhaAtual(dto.senhaAtual(), usuario);
+        aplicarSenhaCriptografada(usuario, dto.senhaNova());
+        salvarUsuario(usuario);
+    }
 }

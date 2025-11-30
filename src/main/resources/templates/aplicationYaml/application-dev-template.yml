@@ -1,0 +1,39 @@
+server:
+  port:
+
+spring:
+  datasource:
+    url:
+    driver-class-name:
+    username:
+    password:
+
+  jpa:
+    defer-datasource-initialization:
+    show-sql:
+    properties:
+      hibernate:
+        format_sql:
+        dialect:
+    hibernate:
+      ddl-auto:
+
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+
+  mail:
+    host:
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+    local-dir: imagens
+

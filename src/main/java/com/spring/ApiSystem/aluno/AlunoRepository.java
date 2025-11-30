@@ -1,17 +1,20 @@
 package com.spring.ApiSystem.aluno;
 
+import com.spring.ApiSystem.usuario.UsuarioBaseRepository;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AlunoRepository extends JpaRepository<Aluno, Long> {
+public interface AlunoRepository extends UsuarioBaseRepository<Aluno> {
     boolean existsByCpf(String cpf);
-    Optional<Aluno> findByEmail(String email);
+
     List<Aluno> findAllBy(Pageable pageable);
 
     @Query("""
@@ -21,4 +24,5 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
         WHERE pc.situacao = true
        """)
     Integer countAlunosComPlanosAtivos();
+
 }

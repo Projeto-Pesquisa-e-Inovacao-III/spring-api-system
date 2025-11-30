@@ -1,18 +1,29 @@
 server:
-  port: 8080
+  port:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/spring_api_system
+    url:
     driver-class-name: org.postgresql.Driver
-    username: postgres
-    password: senhaSeguraAqui
+    username:
+    password:
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     hibernate:
       ddl-auto: validate
     show-sql: false
+  mail:
+    host:
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 
 springdoc:
   swagger-ui:
@@ -20,4 +31,3 @@ springdoc:
 
 storage:
   local-dir: imagens
-

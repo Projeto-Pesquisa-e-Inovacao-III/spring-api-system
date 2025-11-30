@@ -9,9 +9,11 @@ import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealiz
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.eventos.agendamentos.AgendamentoEventPublisher;
 import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
@@ -44,8 +46,9 @@ public class AgendamentoService {
     private final AgendamentoMapper agendamentoMapper;
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
+    private final AgendamentoEventPublisher agendamentoEventPublisher;
 
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService) {
+    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService, AgendamentoEventPublisher agendamentoEventPublisher) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
         this.produtoContratadoService = produtoContratadoService;
@@ -54,6 +57,7 @@ public class AgendamentoService {
         this.agendamentoMapper = agendamentoMapper;
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.agendamentoEventPublisher = agendamentoEventPublisher;
     }
 
     @Transactional
@@ -88,8 +92,12 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCreatedEvent(agendamentoSalvo);
+
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
+
 
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {
@@ -130,10 +138,13 @@ public class AgendamentoService {
         agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
+
         historicoAgendamentoService.cadastrar(
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishReagendamentoSolicitacaoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -150,6 +161,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoAprovadoEvent(agendamentoSalvo, usuario);
     }
 
     @Transactional
@@ -175,6 +188,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCanceladoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -200,6 +215,8 @@ public class AgendamentoService {
                     agendamentoSalvo
             );
         }
+
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
 
@@ -216,16 +233,23 @@ public class AgendamentoService {
             throw new PersonalTemAcessoApenasException();
         }
 
-        if (reqAgendamento.descricaoCancelamento()!= null) {
-            agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
-            produtoContratadoService.incrementar(agendamento.getId());
-        }
+
 
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
             produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
             agendamento.ausenciaPersonal();
-        } else {
-            agendamento.ausenciaCliente();
+            agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
+        } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
+
+            if (reqAgendamento.descricaoCancelamento()!= null) {
+                agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+                produtoContratadoService.incrementar(agendamento.getId());
+                agendamentoEventPublisher.AusenciaRegistradaAlunoJustificadoEvent(agendamento);
+            }else {
+                agendamento.ausenciaCliente();
+                agendamentoEventPublisher.AusenciaRegistradaAlunoEvent(agendamento);
+            }
+
         }
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
@@ -319,7 +343,7 @@ public class AgendamentoService {
 
 
     private Usuario obterUsuarioAutenticado() {
-        return jpaUserDetailsService.getCurrentUser(Usuario.class);
+        return jpaUserDetailsService.getCurrentUser();
     }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {

@@ -8,6 +8,17 @@ spring:
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 
+  mail:
+    host:
+    port:
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
 jwt:
   public:
     key: classpath:keys/public.pem
@@ -27,24 +38,19 @@ argon:
   memory: 65536
   iterations: 3
 
-pagbank:
-  token: dummy-token-1234567890
-  endpoint: https://api.pagbank.com.br
-  client:
-    id: dummy-client-id
-    secret: dummy-client-secret
-
+pagAPI:
+  url:
 
 # CONFIGURAÇÕES INFOBIP
 infobip:
   base:
-    url: https://xk4qx3.api.infobip.com
+    url:
   api:
-    key: 0bcb56b553932d710b5b07c35833dbba-5844faef-ca2e-42d1-982e-d79e5272e4f3
+    key:
   whatsapp:
-    sender: 447860088970
+    sender:
     template:
-      name: authentication
+      name:
 
 # Logs
 logging:
@@ -54,8 +60,7 @@ logging:
 # Url Webhook - Disc
 discord:
   webhook:
-    url: https://ptb.discord.com/api/webhooks/1431904865545617472/6hkid2IeJ2YIp4E3D_4Zjbdp1toVo-IuZkQ9jUDg7--WOSkMQhRzAbDb1Y6HojlZO4mb
-
+    url:
 
 server:
-  port: 8080
+  port:

@@ -5,5 +5,6 @@ import com.spring.ApiSystem.cep.dto.response.ResBuscarSolicitacoesPorPersonalCEP
 
 public record ResBuscarSolicitacoesPorAlunoEnderecoDTO(
         ResBuscarSolicitacoesPorAlunoCEPDto cep,
-        String numero
+        String numero,
+        String complemento
 ){}
