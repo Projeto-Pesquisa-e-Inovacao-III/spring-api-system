@@ -3,12 +3,14 @@ package com.spring.ApiSystem.produtocontratado;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.aluno.AlunoRepository;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContratadoEventPublisher;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +40,7 @@ public class ProdutoContratadoService {
     }
 
     @Transactional
-    public ResProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, String email){
-        Aluno aluno = alunoService.buscarPorEmail(email);
+    public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -53,7 +54,21 @@ public class ProdutoContratadoService {
         );
 
         produtoContratadoRepository.save(produtoContratado);
+
+        produtoContratadoEventPublisher.publishProdutoContratadoCreatedEvent(produtoContratado);
+
         return produtoContratadoMapper.toDto(produtoContratado);
+    }
+
+    @Transactional
+    public ResProdutoContratadoDto criarPordutoContratadoDoAlunoAtual(Long idProdutoExibicao){
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao,detailsService.getCurrentAluno());
+    }
+
+    @Transactional
+    public ResProdutoContratadoDto criarProdutoContratadoPeloIdAluno(Long idProdutoExibicao, Long idAluno){
+        Aluno aluno = alunoService.buscarPorId(idAluno);
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao, aluno);
     }
 
     @Transactional

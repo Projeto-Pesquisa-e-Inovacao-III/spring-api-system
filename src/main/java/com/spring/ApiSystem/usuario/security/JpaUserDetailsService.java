@@ -1,5 +1,11 @@
 package com.spring.ApiSystem.usuario.security;
 
+import com.spring.ApiSystem.aluno.Aluno;
+import com.spring.ApiSystem.aluno.AlunoRepository;
+import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteException;
+import com.spring.ApiSystem.personal.Personal;
+import com.spring.ApiSystem.personal.PersonalRepository;
+import com.spring.ApiSystem.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.UsuarioRepository;
 import com.spring.ApiSystem.usuario.exception.NaoAutorizadoException;
@@ -18,10 +24,16 @@ import java.util.Optional;
 
 @Service
 public class JpaUserDetailsService implements UserDetailsService {
-    public final UsuarioRepository usuarioRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    public JpaUserDetailsService(UsuarioRepository usuarioRepository) {
+    private final AlunoRepository alunoRepository;
+    private final PersonalRepository personalRepository;
+
+    public JpaUserDetailsService(UsuarioRepository usuarioRepository,
+                                 AlunoRepository alunoRepository, PersonalRepository personalRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.alunoRepository = alunoRepository;
+        this.personalRepository = personalRepository;
     }
 
     @Override
@@ -41,47 +53,33 @@ public class JpaUserDetailsService implements UserDetailsService {
     }
 
 
-    public <T extends Usuario> T getCurrentUser(Class<T> tipo) {
+    public Usuario getCurrentUser() {
+        String email = getAuthenticatedEmail();
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(UsuarioNaoEncontradoException::new);
+    }
+
+    public Aluno getCurrentAluno() {
+        String email = getAuthenticatedEmail();
+        return alunoRepository.findByEmail(email)
+                .orElseThrow(AlunoNaoExisteException::new);
+    }
+
+    public Personal getCurrentPersonal() {
+        String email = getAuthenticatedEmail();
+        return personalRepository.findByEmail(email)
+                .orElseThrow(PersonalNaoExisteExcepetion::new);
+    }
+
+    private String getAuthenticatedEmail() {
         Authentication authentication = SecurityContextHolder
                 .getContext()
                 .getAuthentication();
-
         if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
             throw new NaoAutorizadoException();
         }
-
-        Optional<Usuario> optUser = usuarioRepository.findByEmail(authentication.getName());
-
-        if (optUser.isEmpty()) {
-            throw new UsuarioNaoEncontradoException();
-        }
-
-        Usuario usuario = optUser.get();
-        if (!tipo.isInstance(usuario)) {
-            throw new UsuarioNaoEncontradoException();
-        }
-
-        return tipo.cast(usuario);
+        return authentication.getName();
     }
-
-
-//    public Usuario getCurrentUser(){
-//        Authentication authentication = SecurityContextHolder
-//                .getContext()
-//                .getAuthentication();
-//
-//        if (authentication == null || !authentication.isAuthenticated() || authentication.getPrincipal().equals("anonymousUser")) {
-//            throw new NaoAutorizadoException();
-//        }
-//
-//        Optional<Usuario> optUser = usuarioRepository.findByEmail(authentication.getName());
-//
-//        if(optUser.isEmpty()){
-//            throw new UsuarioNaoEncontradoException();
-//        }
-//
-//        return optUser.get();
-//    }
 
     public Optional<Usuario> isLogged(){
         Authentication authentication = SecurityContextHolder

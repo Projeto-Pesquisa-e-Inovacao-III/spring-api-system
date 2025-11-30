@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
+import com.spring.ApiSystem.produtocontratado.dto.request.ReqCriarProdutoContratadoPagamentoDTO;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoAtivoDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoDto;
@@ -9,10 +10,13 @@ import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -23,6 +27,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/produtos-contratados")
 public class ProdutoContratadoController {
+    private static final Logger logger = LoggerFactory.getLogger(ProdutoContratadoController.class);
     private final ProdutoContratadoService produtoContratadoService;
 
     public ProdutoContratadoController(ProdutoContratadoService produtoContratadoService) {
@@ -31,16 +36,24 @@ public class ProdutoContratadoController {
 
     @Operation(summary = "Cria um produto contratado (necessário login)",
               description = "Endpoint para criar um produto contratado com base no ID do produto" +
-                      "de exibição e no ID do aluno")
+                      "de exibição e no ID do aluno logado")
     @PostMapping
-    public ResponseEntity<ResProdutoContratadoDto>
-    criarProdutoContratado(@Valid @RequestBody ReqCriarProdutoContratadoDto reqCriarProdutoContratadoDto, @AuthenticationPrincipal UserDetails userDetails){
-        ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarProdutoContratado(
-                reqCriarProdutoContratadoDto.idProdutoExibicao(),
-                userDetails.getUsername()
+    public ResponseEntity<ResProdutoContratadoDto> criarProdutoContratado(@Valid @RequestBody ReqCriarProdutoContratadoDto reqCriarProdutoContratadoDto){
+        ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarPordutoContratadoDoAlunoAtual(
+                reqCriarProdutoContratadoDto.idProdutoExibicao()
         );
 
         return ResponseEntity.ok(resProdutoContratadoDto);
+    }
+
+    @PostMapping("/pagamento")
+    public ResponseEntity<?> criarProdutoContratadoPagamento(@Valid @RequestBody ReqCriarProdutoContratadoPagamentoDTO reqCriarProdutoContratadoPagamentoDTO){
+        Long idProdutoExibicao = reqCriarProdutoContratadoPagamentoDTO.itemId();
+        Long idAluno = reqCriarProdutoContratadoPagamentoDTO.consumerId();
+        logger.info("Iniciando criação de produto exibicao, recebido: {}", reqCriarProdutoContratadoPagamentoDTO);
+        ResProdutoContratadoDto resProdutoContratadoDto = produtoContratadoService.criarProdutoContratadoPeloIdAluno(idProdutoExibicao, idAluno);
+
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @Operation(summary = "Lista todos os produtos contratados",
