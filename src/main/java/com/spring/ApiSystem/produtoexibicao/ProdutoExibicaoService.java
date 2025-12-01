@@ -29,6 +29,7 @@ public class ProdutoExibicaoService {
     }
 
     public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDTO produto){
+        produto =  produto.withTipoProduto(buscarPorId(id).getTipoProduto());
         desativarProduto(id);
         return criarProduto(produtoExibicaoMapper.toCadastroProdutoExibicaoDTO(produto));
     }
