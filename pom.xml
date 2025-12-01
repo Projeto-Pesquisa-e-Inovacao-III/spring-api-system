@@ -31,11 +31,11 @@
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 	</properties>
 	<dependencies>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>runtime</scope>
+		</dependency>
         <dependency>
             <groupId>com.infobip</groupId>
             <artifactId>infobip-api-java-client</artifactId>
@@ -112,7 +112,11 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+		</dependency>
+	</dependencies>
 	<build>
 		<plugins>
 			<plugin>

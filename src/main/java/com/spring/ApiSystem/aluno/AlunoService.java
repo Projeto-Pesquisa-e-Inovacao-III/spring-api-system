@@ -108,11 +108,9 @@ public class AlunoService {
     }
 
     public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
-        validarCpfExistente(dto.cpf(), usuario.getCpf());
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
 
-        usuarioService.validarSenhaAtual(dto.senha(), usuario);
 
         Aluno aluno = buscarPorId(usuario.getId());
 
@@ -120,10 +118,6 @@ public class AlunoService {
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
             usuarioService.atualizarTelefones(aluno, dto.telefones());
-        }
-
-        if (dto.senhaNova() != null) {
-            usuarioService.aplicarSenhaCriptografada(aluno, dto.senhaNova());
         }
 
         alunoRepository.save(aluno);
