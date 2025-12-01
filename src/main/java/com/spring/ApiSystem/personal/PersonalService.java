@@ -7,6 +7,7 @@ import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonalService;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
+import com.spring.ApiSystem.personal.dto.response.ResBuscarBufferDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
@@ -100,6 +101,12 @@ public class PersonalService {
         Personal personal = buscarPorId(personalId);
         personal.setBufferMinutos(novoBufferMinutos);
         personalRepository.save(personal);
+    }
+
+    public ResBuscarBufferDTO buscarBuffer(Long personalId) {
+        Personal personal = buscarPorId(personalId);
+        Integer buffer = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
+        return new ResBuscarBufferDTO(buffer);
     }
 
 

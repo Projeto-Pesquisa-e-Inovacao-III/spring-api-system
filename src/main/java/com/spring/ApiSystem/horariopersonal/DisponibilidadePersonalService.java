@@ -105,6 +105,7 @@ public class DisponibilidadePersonalService {
                 .orElseThrow(PersonalNaoExisteExcepetion::new);
 
 
+
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
 
         LocalTime horaCorte = LocalTime.MIN;
@@ -138,7 +139,7 @@ public class DisponibilidadePersonalService {
             if (disp.getTipo() == TipoHorario.DISPONIVEL) {
                 blocosDisponibilidade.add(disp);
             } else {
-                // Aplica o buffer de 15 minutos antes do início da restrição
+                // Aplica o buffer antes do início da restrição
                 LocalTime inicio = disp.getHoraInicio().minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
                 LocalTime fim = disp.getHoraFim();
                 LocalTime current = inicio;

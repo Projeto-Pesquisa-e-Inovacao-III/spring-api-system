@@ -1,14 +1,12 @@
 package com.spring.ApiSystem.personal;
 
-import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
-import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
-import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.config.filter.FilterService;
+import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
+import com.spring.ApiSystem.personal.dto.response.ResBuscarBufferDTO;
 import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
@@ -52,7 +50,16 @@ public class PersonalController {
             @Valid @RequestBody ReqAtualizarBufferDTO request) {
 
         personalService.atualizarBufferMinutos(personalId, request.bufferMinutos());
+        System.out.println("Buffer atualizado para personalId " + personalId + " com valor " + request.bufferMinutos());
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Buscar buffer do personal (necessário login)",
+            description = "Endpoint para buscar o buffer de minutos de um personal específico")
+    @GetMapping("/{personalId}/buffer")
+    public ResponseEntity<ResBuscarBufferDTO> buscarBuffer(@PathVariable Long personalId) {
+        ResBuscarBufferDTO buffer = personalService.buscarBuffer(personalId);
+        return ResponseEntity.ok(buffer);
     }
 
     @Operation(summary = "Listar alunos (necessário login)",
