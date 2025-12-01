@@ -10,6 +10,7 @@ import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -210,15 +211,16 @@ public class ProdutoContratadoService {
     }
 
     public ResQuantidadePercentualAlunosExpiradosDto contagemEPercentualAlunosExpirados() {
-        Integer quantidadeExpirados = produtoContratadoRepository.countAlunosComPlanosExpirados(LocalDate.now());
+        Integer quantidadeExpirados = produtoContratadoRepository.countAlunosComPlanosExpirados(TipoProduto.PACOTE);
         long totalAlunos = alunoRepository.count();
 
+        int qtd = (quantidadeExpirados != null) ? quantidadeExpirados : 0;
         double percentual = 0.0;
         if (totalAlunos > 0) {
-            percentual = (quantidadeExpirados.doubleValue() / (double) totalAlunos) * 100.0;
+            percentual = ((double) qtd / (double) totalAlunos) * 100.0;
         }
 
-        return new ResQuantidadePercentualAlunosExpiradosDto(quantidadeExpirados, percentual);
+        return new ResQuantidadePercentualAlunosExpiradosDto(qtd, percentual);
     }
 
 }
