@@ -8,6 +8,7 @@ import com.spring.ApiSystem.produtocontratado.dto.response.ResProdutoContratadoD
 import com.spring.ApiSystem.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResSaldoDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
