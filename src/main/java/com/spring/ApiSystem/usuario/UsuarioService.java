@@ -27,7 +27,6 @@ public class UsuarioService {
 
     public UsuarioService(UsuarioRepository usuarioRepository,
                           UsuarioMapper usuarioMapper,
-                          UsuarioRepository usuarioRepository,
                           ArgonService argonService,
                           LocalImageStorageService imageStorageService,
                           TelefoneService telefoneService) {
