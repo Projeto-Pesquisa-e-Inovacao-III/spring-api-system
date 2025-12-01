@@ -11,6 +11,7 @@ import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.usuario.Usuario;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -30,13 +31,14 @@ public class ProdutoContratadoService {
     private final AlunoRepository alunoRepository;
     private final ProdutoContratadoEventPublisher produtoContratadoEventPublisher;
     private final JpaUserDetailsService detailsService;
+    private final JpaUserDetailsService jpaUserDetailsService;
 
     public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository,
                                     ProdutoContratadoMapper produtoContratadoMapper,
                                     ProdutoExibicaoService produtoExibicaoService,
                                     AlunoService alunoService,
                                     AlunoRepository alunoRepository,
-                                    ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService detailsService) {
+                                    ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService detailsService, JpaUserDetailsService jpaUserDetailsService) {
         this.produtoContratadoRepository = produtoContratadoRepository;
         this.produtoExibicaoService = produtoExibicaoService;
         this.alunoService = alunoService;
@@ -44,7 +46,7 @@ public class ProdutoContratadoService {
         this.alunoRepository = alunoRepository;
         this.produtoContratadoEventPublisher = produtoContratadoEventPublisher;
         this.detailsService = detailsService;
-
+        this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
     @Transactional
@@ -181,8 +183,9 @@ public class ProdutoContratadoService {
     }
 
     public ResSaldoDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
+        Usuario usuario = jpaUserDetailsService.getCurrentUser();
         return new ResSaldoDto(
-                tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula));
+                tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula,usuario));
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
