@@ -214,7 +214,6 @@ public class DisponibilidadePersonalService {
     }
 
     // Esse metodo serve pra encontrar o próximo bloqueio a partir de um horário inicial dentro de um limite.
-
     private LocalTime encontrarProximoBloqueio(LocalTime start, LocalTime limite, Set<LocalTime> bloqueios) {
         LocalTime next = start.plusMinutes(15);
         while (next.isBefore(limite) || next.equals(limite)) {
@@ -234,30 +233,6 @@ public class DisponibilidadePersonalService {
                 personalId, diaSemana, horaInicio, horaFim, horarioId
         );
 
-        if (!sobrepostos.isEmpty()) {
-
-            boolean temConflito = sobrepostos.stream()
-                    .anyMatch(existente -> {
-                        TipoHorario existenteTipo = existente.getTipo();
-
-                        // Bloco não-disponível (RESTRITO) sobrepondo qualquer bloco não-disponível.
-                        if ((tipo == TipoHorario.RESTRITO) && (existenteTipo == TipoHorario.RESTRITO)) {
-                            return true;
-                        }
-
-                        // Isto impede que o Personal marque como "Disponível" um horário que ele já marcou como restrito.
-                        if (tipo == TipoHorario.DISPONIVEL &&
-                                (existenteTipo == TipoHorario.RESTRITO)) {
-                            return true;
-                        }
-
-                        return false;
-                    });
-
-            if (temConflito) {
-                throw new SobreposicaoHorarioException();
-            }
-        }
 
         if (tipo == TipoHorario.RESTRITO) {
 
