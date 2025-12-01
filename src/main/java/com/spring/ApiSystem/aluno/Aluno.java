@@ -13,6 +13,7 @@ import java.time.Period;
 @Table(name = "aluno")
 @PrimaryKeyJoinColumn(name = "id")
 public class Aluno extends Usuario {
+
     @Column(unique = true)
     private String cpf;
 

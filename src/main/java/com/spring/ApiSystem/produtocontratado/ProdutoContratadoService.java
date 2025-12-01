@@ -1,13 +1,16 @@
 package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.Aluno;
+import com.spring.ApiSystem.aluno.AlunoRepository;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContratadoEventPublisher;
 import com.spring.ApiSystem.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.produtocontratado.exception.*;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,20 +25,27 @@ public class ProdutoContratadoService {
     private final ProdutoContratadoMapper produtoContratadoMapper;
     private final ProdutoExibicaoService produtoExibicaoService;
     private final AlunoService alunoService;
+    private final AlunoRepository alunoRepository;
+    private final ProdutoContratadoEventPublisher produtoContratadoEventPublisher;
+    private final JpaUserDetailsService detailsService;
 
     public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository,
                                     ProdutoContratadoMapper produtoContratadoMapper,
                                     ProdutoExibicaoService produtoExibicaoService,
-                                    AlunoService alunoService) {
+                                    AlunoService alunoService,
+                                    AlunoRepository alunoRepository,
+                                    ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService detailsService) {
         this.produtoContratadoRepository = produtoContratadoRepository;
         this.produtoExibicaoService = produtoExibicaoService;
         this.alunoService = alunoService;
         this.produtoContratadoMapper = produtoContratadoMapper;
+        this.alunoRepository = alunoRepository;
+        this.produtoContratadoEventPublisher = produtoContratadoEventPublisher;
+        this.detailsService = detailsService;
     }
 
     @Transactional
-    public ResProdutoContratadoDto criarProdutoContratado(Long idProdutoExibicao, String email){
-        Aluno aluno = alunoService.buscarPorEmail(email);
+    public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -49,7 +59,21 @@ public class ProdutoContratadoService {
         );
 
         produtoContratadoRepository.save(produtoContratado);
+
+        produtoContratadoEventPublisher.publishProdutoContratadoCreatedEvent(produtoContratado);
+
         return produtoContratadoMapper.toDto(produtoContratado);
+    }
+
+    @Transactional
+    public ResProdutoContratadoDto criarPordutoContratadoDoAlunoAtual(Long idProdutoExibicao){
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao,detailsService.getCurrentAluno());
+    }
+
+    @Transactional
+    public ResProdutoContratadoDto criarProdutoContratadoPeloIdAluno(Long idProdutoExibicao, Long idAluno){
+        Aluno aluno = alunoService.buscarPorId(idAluno);
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao, aluno);
     }
 
     @Transactional
@@ -158,6 +182,38 @@ public class ProdutoContratadoService {
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
         return produtoContratado.getSituacao() &&
                 produtoContratado.getDataExpiracao().isAfter(LocalDate.now());
+    }
+
+    public List<ResListarGanhoMensalDto> listarGanhosMensais(Integer quantidadeMeses){
+        return produtoContratadoRepository.listarGanhosPorMesDeCompra(quantidadeMeses)
+                .stream()
+                .map(this::converterParaResListarGanhoMensalDto)
+                .toList();
+    }
+
+    private ResListarGanhoMensalDto converterParaResListarGanhoMensalDto(Object[] row) {
+        return new ResListarGanhoMensalDto(
+                ((Number) row[0]).intValue(),
+                ((Number) row[1]).intValue(),
+                ((Number) row[2]).doubleValue()
+        );
+    }
+
+    public Integer contarProdutosVendidosUltimosDias(Integer dias){
+        LocalDate dataInicio = LocalDate.now().minusDays(dias);
+        return produtoContratadoRepository.totalPlanosVendidosUltimosDias(dataInicio, LocalDate.now());
+    }
+
+    public ResQuantidadePercentualAlunosExpiradosDto contagemEPercentualAlunosExpirados() {
+        Integer quantidadeExpirados = produtoContratadoRepository.countAlunosComPlanosExpirados(LocalDate.now());
+        long totalAlunos = alunoRepository.count();
+
+        double percentual = 0.0;
+        if (totalAlunos > 0) {
+            percentual = (quantidadeExpirados.doubleValue() / (double) totalAlunos) * 100.0;
+        }
+
+        return new ResQuantidadePercentualAlunosExpiradosDto(quantidadeExpirados, percentual);
     }
 
 }

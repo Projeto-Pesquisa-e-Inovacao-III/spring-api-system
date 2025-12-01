@@ -5,18 +5,23 @@ import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
 import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
 import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
+import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.eventos.agendamentos.AgendamentoEventPublisher;
 import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
-import com.spring.ApiSystem.usuario.exception.PersonalNaoTemAcessoException;
+import com.spring.ApiSystem.usuario.exception.AlunoTemAcessoApenasException;
+import com.spring.ApiSystem.usuario.exception.PersonalTemAcessoApenasException;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Page;
@@ -25,6 +30,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.spring.ApiSystem.usuario.Usuario;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -40,8 +46,9 @@ public class AgendamentoService {
     private final AgendamentoMapper agendamentoMapper;
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
+    private final AgendamentoEventPublisher agendamentoEventPublisher;
 
-    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService) {
+    public AgendamentoService(AgendamentoRepository agendamentoRepository, PersonalService personalService, ProdutoContratadoService produtoContratadoService, AlunoService alunoService, EnderecoService enderecoService, AgendamentoMapper agendamentoMapper, HistoricoAgendamentoService historicoAgendamentoService, JpaUserDetailsService jpaUserDetailsService, AgendamentoEventPublisher agendamentoEventPublisher) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
         this.produtoContratadoService = produtoContratadoService;
@@ -50,6 +57,7 @@ public class AgendamentoService {
         this.agendamentoMapper = agendamentoMapper;
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.agendamentoEventPublisher = agendamentoEventPublisher;
     }
 
     @Transactional
@@ -84,8 +92,12 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCreatedEvent(agendamentoSalvo);
+
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
+
 
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {
@@ -126,10 +138,13 @@ public class AgendamentoService {
         agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
+
         historicoAgendamentoService.cadastrar(
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishReagendamentoSolicitacaoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -146,6 +161,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoAprovadoEvent(agendamentoSalvo, usuario);
     }
 
     @Transactional
@@ -171,6 +188,8 @@ public class AgendamentoService {
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo
         );
+
+        agendamentoEventPublisher.publishAgendamentoCanceladoEvent(agendamento, usuario);
     }
 
     @Transactional
@@ -184,7 +203,7 @@ public class AgendamentoService {
 
 
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
-            throw new PersonalNaoTemAcessoException();
+            throw new PersonalTemAcessoApenasException();
         }
 
         if (usuario.getTipo() == TipoUsuario.PERSONAL
@@ -196,6 +215,8 @@ public class AgendamentoService {
                     agendamentoSalvo
             );
         }
+
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
 
@@ -209,16 +230,26 @@ public class AgendamentoService {
         }
 
         if (usuario.getTipo() != TipoUsuario.PERSONAL) {
-            throw new PersonalNaoTemAcessoException();
+            throw new PersonalTemAcessoApenasException();
         }
 
-        agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+
 
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
             produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
             agendamento.ausenciaPersonal();
-        } else {
-            agendamento.ausenciaCliente();
+            agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
+        } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
+
+            if (reqAgendamento.descricaoCancelamento()!= null) {
+                agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
+                produtoContratadoService.incrementar(agendamento.getId());
+                agendamentoEventPublisher.AusenciaRegistradaAlunoJustificadoEvent(agendamento);
+            }else {
+                agendamento.ausenciaCliente();
+                agendamentoEventPublisher.AusenciaRegistradaAlunoEvent(agendamento);
+            }
+
         }
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
@@ -344,7 +375,13 @@ public class AgendamentoService {
 
     private void validarSeUsuarioDoTipoAluno(Usuario usuario) {
         if (!usuario.getTipo().equals(TipoUsuario.ALUNO)) {
-            throw new PersonalNaoTemAcessoException();
+            throw new AlunoTemAcessoApenasException();
+        }
+    }
+
+    private void validarSeUsuarioDoTipoPersonal(Usuario usuario) {
+        if (!usuario.getTipo().equals(TipoUsuario.PERSONAL)) {
+            throw new PersonalTemAcessoApenasException();
         }
     }
 
@@ -376,5 +413,36 @@ public class AgendamentoService {
             return horarioInicio.plusMinutes(30);
         }
         throw new AgendamentoTipoDeAulaInvalido();
+    }
+
+    public Integer buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
+                                                                     LocalDate data) {
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+        return agendamentoRepository.countByPersonalIdAndStatusAndOptionalData(
+                usuario.getId(),
+                status,
+                data);
+    }
+
+    public List<ResListarConsultoriasRealizadasDto> listarConsultoriasRealizadasMes(Integer quantidadeMeses){
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+
+        return agendamentoRepository.listarConsultoriasRealizadasMes(usuario.getId(),
+                        AgendamentoStatus.CONCLUIDO, quantidadeMeses)
+                .stream()
+                .map(this::converterResListarConsultoriasRealizadas)
+                .toList();
+    }
+
+    private ResListarConsultoriasRealizadasDto converterResListarConsultoriasRealizadas(Object[] row) {
+        return new ResListarConsultoriasRealizadasDto(
+                ((Number) row[0]).intValue(),
+                ((Number) row[1]).intValue(),
+                ((Number) row[2]).intValue()
+        );
     }
 }

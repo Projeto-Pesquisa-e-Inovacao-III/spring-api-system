@@ -6,6 +6,8 @@ import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.agendamento.dto.response.*;
 import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
+import com.spring.ApiSystem.personal.Personal;
+import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.telefone.Telefone;
 import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
@@ -29,6 +31,8 @@ public abstract class AgendamentoMapper {
     protected JpaUserDetailsService userDetailsService;
     @Autowired
     public TelefoneMapper telefoneMapper;
+    @Autowired
+    private PersonalService personalService;
 
     @Mapping(target = "personal.id", source = "personalId")
     @Mapping(target = "endereco", source = "novoEndereco")
@@ -53,6 +57,11 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "endereco", source = "endereco")
     public abstract ReqCadastrarHistoricoAgendamentoDTO toReqCriarHistoricoAgendamentoDTO(Agendamento agendamento);
 
+    @Named("idToPersonal")
+    protected Personal idToPersonal (Long id) {
+        return personalService.buscarPorId(id);
+    }
+
     protected Usuario obterUsuarioAtual() {
         return userDetailsService.getCurrentUser();
     }
@@ -63,6 +72,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "caminhoFoto", source = "personal.caminhoFoto")
     public abstract ResAgendamentoAlunoOverviewDTO toResAgendamentoAlunoOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoAlunoOverviewDTO> toResAgendamentoAlunoOverviewDTOList(List<Agendamento> agendamentos);
@@ -74,6 +84,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
+    @Mapping(target = "caminhoFoto", source = "aluno.caminhoFoto")
     public abstract ResAgendamentoPersonalOverviewDTO toResAgendamentoPersonalOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoPersonalOverviewDTO> toResAgendamentoPersonalOverviewDTOList(List<Agendamento> agendamentos);
@@ -97,7 +108,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "nome", source = "aluno.nome")
     @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorAlunoTelefone(telefone))")
     @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
-    @Mapping(target = "foto", source = "aluno.caminhoFoto")
+    @Mapping(target = "foto", source = "personal.caminhoFoto")
     @Mapping(target = "dataInicio", source = "data")
     @Mapping(target = "dataFim", source = "dataFim")
     @Mapping(target = "endereco", source = "endereco")

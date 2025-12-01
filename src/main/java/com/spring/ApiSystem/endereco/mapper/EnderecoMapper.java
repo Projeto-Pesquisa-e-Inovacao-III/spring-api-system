@@ -23,8 +23,7 @@ public interface EnderecoMapper {
 
     ResCadastrarEnderecoDTO toResCadastrarEnderecoDTO(Endereco endereco);
     ResAtualizarEnderecoDTO toResAtualizarEnderecoDTO(Endereco endereco);
-    @Mapping(target = "cep", source = "cep")
-    ResBuscarSolicitacoesPorPersonalEnderecoDTO toResBuscarSolicitacoesPorPersonalEnderecoDTO(Endereco endereco);
+
     @Mapping(target = "cidade", source = "cep.localidade")
     @Mapping(target = "uf", source = "cep.uf")
     @Mapping(target = "bairro", source = "cep.bairro")

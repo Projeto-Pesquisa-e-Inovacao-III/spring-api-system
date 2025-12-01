@@ -1,10 +1,7 @@
 package com.spring.ApiSystem.personal.dto.request;
 
 import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.util.Date;
 
@@ -26,7 +23,11 @@ public record ReqCadastroPersonalDTO(
     String senha,
 
     @NotBlank
-     String cref,
-    ReqCadastrarTelefoneDTO telefone
+    String cref,
+    ReqCadastrarTelefoneDTO telefone,
+
+    @Min(value = 15, message = "O intervalo deve ser de no mínimo 15 minutos")
+    @Max(value = 60, message = "O intervalo deve ser de no máximo 60 minutos")
+    Integer bufferMinutos
 
 ) {}

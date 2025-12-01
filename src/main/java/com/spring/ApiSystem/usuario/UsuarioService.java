@@ -2,6 +2,7 @@ package com.spring.ApiSystem.usuario;
 
 import com.spring.ApiSystem.telefone.TelefoneService;
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
+import com.spring.ApiSystem.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
@@ -24,7 +25,12 @@ public class UsuarioService {
     private final LocalImageStorageService imageStorageService;
     private final TelefoneService telefoneService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, UsuarioMapper usuarioMapper, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService) {
+    public UsuarioService(UsuarioRepository usuarioRepository,
+                          UsuarioMapper usuarioMapper,
+                          UsuarioRepository usuarioRepository,
+                          ArgonService argonService,
+                          LocalImageStorageService imageStorageService,
+                          TelefoneService telefoneService) {
         this.usuarioRepository = usuarioRepository;
         this.usuarioMapper = usuarioMapper;
         this.argonService = argonService;
@@ -118,6 +124,12 @@ public class UsuarioService {
                         telefone.setNumero(telefoneDTO.numero());
                     });
         }
+    }
+
+    public void atualizarSenha(ReqAtualizarSenhaDto dto, Usuario usuario){
+        validarSenhaAtual(dto.senhaAtual(), usuario);
+        aplicarSenhaCriptografada(usuario, dto.senhaNova());
+        salvarUsuario(usuario);
     }
 
     public Usuario buscarUsuarioPorPaisDddNumero(String pais, String ddd, String numero) {

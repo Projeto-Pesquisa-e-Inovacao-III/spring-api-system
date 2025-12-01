@@ -2,6 +2,7 @@ package com.spring.ApiSystem.produtoexibicao.dto.request;
 
 import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -29,6 +30,9 @@ public record ReqEdicaoProdutoExibicaoDTO(
 
     @NotBlank(message = "Tipo de aula é obrigatório")
     TipoAula tipoAula,
+
+    @NotNull(message = "Tipo de produto é obrigatório")
+    TipoProduto tipoProduto,
 
     @NotNull(message = "Quantidade de aulas é obrigatória")
     String quantidadeAula,
