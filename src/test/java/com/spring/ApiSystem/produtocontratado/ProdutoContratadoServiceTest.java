@@ -2,6 +2,7 @@ package com.spring.ApiSystem.produtocontratado;
 
 import com.spring.ApiSystem.aluno.AlunoRepository;
 import com.spring.ApiSystem.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ class ProdutoContratadoServiceTest {
         Long totalAlunos = 100L;
         Double percentualEsperado = 15.0;
 
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(quantidadeExpirados);
         when(alunoRepository.count()).thenReturn(totalAlunos);
 
@@ -51,7 +52,7 @@ class ProdutoContratadoServiceTest {
         assertEquals(percentualEsperado, resultado.getPercentualAlunos());
 
         verify(produtoContratadoRepository, times(1))
-                .countAlunosComPlanosExpirados(any(LocalDate.class));
+                .countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class));
         verify(alunoRepository, times(1)).count();
     }
 
@@ -62,7 +63,7 @@ class ProdutoContratadoServiceTest {
         Integer quantidadeExpirados = 0;
         Long totalAlunos = 0L;
 
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(quantidadeExpirados);
         when(alunoRepository.count()).thenReturn(totalAlunos);
 
@@ -84,7 +85,7 @@ class ProdutoContratadoServiceTest {
         Long totalAlunos = 50L;
         Double percentualEsperado = 0.0;
 
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(quantidadeExpirados);
         when(alunoRepository.count()).thenReturn(totalAlunos);
 
@@ -106,7 +107,7 @@ class ProdutoContratadoServiceTest {
         Long totalAlunos = 30L;
         Double percentualEsperado = 100.0;
 
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(quantidadeExpirados);
         when(alunoRepository.count()).thenReturn(totalAlunos);
 
@@ -128,7 +129,7 @@ class ProdutoContratadoServiceTest {
         Long totalAlunos = 13L;
         Double percentualEsperado = (7.0 / 13.0) * 100.0; // ~53.846...
 
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(quantidadeExpirados);
         when(alunoRepository.count()).thenReturn(totalAlunos);
 
@@ -146,7 +147,7 @@ class ProdutoContratadoServiceTest {
     @DisplayName("Deve usar LocalDate.now() como parâmetro para a query")
     void deveUsarLocalDateNowComoParametro() {
         // Arrange
-        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(LocalDate.class)))
+        when(produtoContratadoRepository.countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class)))
                 .thenReturn(5);
         when(alunoRepository.count()).thenReturn(20L);
 
@@ -154,7 +155,6 @@ class ProdutoContratadoServiceTest {
         produtoContratadoService.contagemEPercentualAlunosExpirados();
 
         // Assert
-        verify(produtoContratadoRepository).countAlunosComPlanosExpirados(any(LocalDate.class));
+        verify(produtoContratadoRepository).countAlunosComPlanosExpirados(any(TipoProduto.class), any(LocalDate.class));
     }
 }
-
