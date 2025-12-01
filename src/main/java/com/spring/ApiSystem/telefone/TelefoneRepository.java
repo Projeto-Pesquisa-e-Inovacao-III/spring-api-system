@@ -10,5 +10,5 @@ import java.util.Optional;
 public interface TelefoneRepository extends JpaRepository<Telefone, Long> {
 
     List<Telefone> findTelefoneByUsuario_Id(Long usuarioId);
-    Optional<Telefone> findTelefoneByDddAndNumero(String ddd, String numero);
+    Optional<Telefone> findTelefoneByPaisAndDddAndNumero(String pais,String ddd, String numero);
 }

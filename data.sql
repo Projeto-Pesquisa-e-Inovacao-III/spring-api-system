@@ -1,4 +1,4 @@
-it-- ==============================================================================
+-- ==============================================================================
 -- Script SQL para popular dados de teste para os endpoints:
 -- 1. /produtos-contratados/planos-vendidos/{quantidadeDias}
 -- 2. /produtos-contratados/ganhos-mes/{quantidadeMeses}
