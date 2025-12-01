@@ -32,7 +32,5 @@ public class NotificacaoProdutoContratado implements ProdutoContrataListener {
                         produtoNome)
         );
         emailService.enviarEmail(email);
-
-        System.out.println("Notificação: Produto contratado com ID " + produtoContratado.getId() + " foi criado.");
     }
 }

@@ -5,6 +5,7 @@ import com.spring.ApiSystem.horariopersonal.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
 import com.spring.ApiSystem.horariopersonal.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.horariopersonal.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.horariopersonal.mapper.DisponibilidadePersonalMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,8 +26,11 @@ description = "Operações para gerenciar os horários e a disponibilidade do Pe
 public class DisponibilidadePersonalController {
 
     private final DisponibilidadePersonalService disponibilidadeService;
-    public DisponibilidadePersonalController(DisponibilidadePersonalService disponibilidadeService) {
+    private final DisponibilidadePersonalMapper disponibilidadePersonalMapper;
+
+    public DisponibilidadePersonalController(DisponibilidadePersonalService disponibilidadeService, DisponibilidadePersonalMapper disponibilidadePersonalMapper) {
         this.disponibilidadeService = disponibilidadeService;
+        this.disponibilidadePersonalMapper = disponibilidadePersonalMapper;
     }
 
 
@@ -52,5 +56,13 @@ public class DisponibilidadePersonalController {
 
         ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorarios(horarioId, request);
         return ResponseEntity.ok(horarioAtualizado);
+    }
+
+    @Operation(summary = "Cronograma do Personal Logado",
+    description = "Retorna o cronograma do personal logado")
+    @GetMapping("/me/cronograma")
+    public ResponseEntity<List<ResHorarioDTO>> pegarCronograma(){
+        List<ResHorarioDTO> cronograma = disponibilidadePersonalMapper.toResHorarioDto(disponibilidadeService.pegarCronograma());
+        return ResponseEntity.ok(cronograma);
     }
 }

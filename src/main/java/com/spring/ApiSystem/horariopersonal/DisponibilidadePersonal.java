@@ -27,7 +27,7 @@ public class DisponibilidadePersonal {
     private DiaSemana diaSemana;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "disponibilidade_personalcol", nullable = false)
+    @Column(name = "disponibilidade_personal", nullable = false)
     private TipoHorario tipo;
 
     @Column(name = "hora_inicio", nullable = false)

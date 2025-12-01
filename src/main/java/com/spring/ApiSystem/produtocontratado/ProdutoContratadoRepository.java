@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.produtocontratado;
 
+import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
@@ -10,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +19,7 @@ import java.util.Optional;
 public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContratado, Long> {
     List<ProdutoContratado> findBySituacao(Boolean status);
     List<ProdutoContratado> findByAlunoEmail(String email, Pageable pageable);
+    List<ProdutoContratado> findByAlunoId(Long id, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM produto_contratado p WHERE p.id = :id")
@@ -33,7 +36,22 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
             "WHERE a.produtoContratado = pc AND a.id = :agendamentoId")
     ProdutoContratado findByAgendamentoId(@Param("agendamentoId") Long agendamentoId);
 
-    Optional<ProdutoContratado> findByIdAndAlunoEmail(Long id, String email);
+    Optional<ProdutoContratado> findByIdAndAluno(Long id, Aluno aluno);
+
+    @Query("""
+    SELECT pc FROM produto_contratado pc
+    WHERE pc.aluno = :aluno
+    AND (:nomeProduto IS NULL OR pc.produtoExibicao.titulo LIKE %:nomeProduto%)
+    AND (:dataInicio IS NULL OR pc.dataCompra >= :dataInicio)
+    AND (:dataFim IS NULL OR pc.dataExpiracao <= :dataFim)
+    """)
+    List<ProdutoContratado> findByAlunoIdWithFilters(
+            @Param("aluno") Aluno aluno,
+            @Param("nomeProduto") String nomeProduto,
+            @Param("dataInicio") LocalDate dataInicio,
+            @Param("dataFim") LocalDate dataFim,
+            Pageable pageable
+    );
 
     @Query("""
        SELECT pc
@@ -52,13 +70,13 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula);
 
     @Query("""
-    SELECT MONTH(pc.dataCompra) as mes,
-           YEAR(pc.dataCompra) as ano,
+    SELECT YEAR(pc.dataCompra) as ano,
+           MONTH(pc.dataCompra) as mes,
            SUM(pe.preco) as totalPreco
       FROM produto_contratado pc
       JOIN produto_exibicao pe ON pc.produtoExibicao.id = pe.id
-     GROUP BY ano, mes
-     ORDER BY ano DESC, mes DESC
+     GROUP BY YEAR(pc.dataCompra), MONTH(pc.dataCompra)
+     ORDER BY YEAR(pc.dataCompra) DESC, MONTH(pc.dataCompra) DESC
      LIMIT :quantidadeMeses
     """)
     List<Object[]> listarGanhosPorMesDeCompra(@Param("quantidadeMeses") Integer quantidadeMeses);
