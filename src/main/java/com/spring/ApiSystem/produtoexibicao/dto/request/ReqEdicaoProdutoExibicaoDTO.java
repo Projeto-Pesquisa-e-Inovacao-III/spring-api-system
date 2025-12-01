@@ -31,7 +31,6 @@ public record ReqEdicaoProdutoExibicaoDTO(
     @NotNull(message = "Tipo de aula é obrigatório")
     TipoAula tipoAula,
 
-    @NotNull(message = "Tipo de produto é obrigatório")
     TipoProduto tipoProduto,
 
     @NotNull(message = "Quantidade de aulas é obrigatória")
@@ -40,4 +39,20 @@ public record ReqEdicaoProdutoExibicaoDTO(
     @NotNull(message = "Duração em meses é obrigatória")
     @Positive(message = "Duração deve ser positiva")
     Integer duracaoMes
-) {}
+) {
+
+    public ReqEdicaoProdutoExibicaoDTO withTipoProduto(TipoProduto newTipoProduto){
+        return new ReqEdicaoProdutoExibicaoDTO(
+                this.titulo,
+                this.subtitulo,
+                this.descricao,
+                this.preco,
+                this.periodo,
+                this.status,
+                this.tipoAula,
+                newTipoProduto,
+                this.quantidadeAula,
+                this.duracaoMes
+        );
+    }
+}
