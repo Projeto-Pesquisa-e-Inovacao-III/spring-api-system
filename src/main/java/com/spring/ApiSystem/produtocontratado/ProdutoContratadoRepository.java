@@ -3,6 +3,7 @@ package com.spring.ApiSystem.produtocontratado;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.usuario.Usuario;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -67,8 +68,9 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
          FROM produto_contratado pc
         WHERE pc.situacao = true
           AND pc.produtoExibicao.tipoAula = :tipoAula
+           AND Usuario = :usuario
        """)
-    Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula);
+    Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula, @Param("usuario") Usuario usuario);
 
     @Query("""
     SELECT YEAR(pc.dataCompra) as ano,
