@@ -67,7 +67,7 @@ public class AlunoController {
 
     @Operation(summary = "Editar aluno (necessário login)",
             description = "Endpoint para a edição de dados de aluno no sistema")
-    @PutMapping("/me")
+    @PutMapping("/me/")
     public ResponseEntity<ResAtualizarAlunoDTO> atualizarAluno(@Valid @RequestBody ReqAtualizarAlunoDTO dto,
                                                                HttpServletResponse response) {
 
