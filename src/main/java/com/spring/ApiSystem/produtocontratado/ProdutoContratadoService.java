@@ -182,10 +182,9 @@ public class ProdutoContratadoService {
                         .orElseThrow(SemPlanoAtivoException::new));
     }
 
-    public ResSaldoDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
-        Usuario usuario = jpaUserDetailsService.getCurrentUser();
-        return new ResSaldoDto(
-                tipoAula, produtoContratadoRepository.totalSaldoAtivoPorTipo(tipoAula,usuario));
+    public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
+        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+        return produtoContratadoMapper.toBuscarSaldoPorTipoAulaDto(produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario,tipoAula));
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {

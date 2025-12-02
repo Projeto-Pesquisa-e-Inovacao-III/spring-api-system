@@ -18,6 +18,9 @@ public interface ProdutoContratadoMapper {
     @Mapping(target = "nome", source = "produtoExibicao.titulo")
     ResProdutoContratadoAtivoDto toResProdutoContratadoAtivoDto(ProdutoContratado produtoContratado);
 
+    @Mapping(target = "tipoAula", source = "produtoExibicao.tipoAula")
+    ResBuscarSaldoPorTipoAulaDto toBuscarSaldoPorTipoAulaDto(ProdutoContratado produtoContratado);
+
     ResProdutoContratadoDto toDto(ProdutoContratado produtoContratado);
     List<ResProdutoContratadoDto> toListDto(List<ProdutoContratado> produtoContratado);
 

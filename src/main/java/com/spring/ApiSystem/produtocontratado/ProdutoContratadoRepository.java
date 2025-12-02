@@ -64,13 +64,16 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     Optional<ProdutoContratado> buscarProdutoContratadoAtivo(@Param("email") String email);
 
     @Query("""
-       SELECT COALESCE(SUM(pc.saldoAula), 0)
-         FROM produto_contratado pc
-        WHERE pc.situacao = true
-          AND pc.produtoExibicao.tipoAula = :tipoAula
-           AND Usuario = :usuario
-       """)
-    Integer totalSaldoAtivoPorTipo(@Param("tipoAula") TipoAula tipoAula, @Param("usuario") Usuario usuario);
+   SELECT pc FROM produto_contratado pc
+    WHERE pc.situacao = true
+      AND pc.produtoExibicao.tipoAula = :tipoAula
+      AND pc.aluno = :aluno
+   """)
+    ProdutoContratado buscarProdutoContratadoAtivoPorAlunoETipoAula(
+            @Param("aluno") Aluno aluno,
+            @Param("tipoAula") TipoAula tipoAula);
+
+
 
     @Query("""
     SELECT YEAR(pc.dataCompra) as ano,

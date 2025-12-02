@@ -88,7 +88,7 @@ public class ProdutoContratadoController {
     }
 
     @GetMapping("/total-tipo/{tipoAula}")
-    public ResponseEntity<ResSaldoDto> buscarTotalSaldoAulaPorTipo(@PathVariable TipoAula tipoAula){
+    public ResponseEntity<ResBuscarSaldoPorTipoAulaDto> buscarTotalSaldoAulaPorTipo(@PathVariable TipoAula tipoAula){
         return ResponseEntity.ok(produtoContratadoService.buscarTotalSaldoAulaPorTipo(tipoAula));
     }
 
