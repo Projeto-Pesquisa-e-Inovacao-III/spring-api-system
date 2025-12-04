@@ -42,6 +42,7 @@ logs/*.log
 ### Imagens ###
 imagens/*
 
-src/main/resources/application.yml
-src/main/resources/application-dev.yml
-src/main/resources/application-prod.yml
+### Environment Variables ###
+src/main/resources/.env
+.env.local
+.env.*.local
