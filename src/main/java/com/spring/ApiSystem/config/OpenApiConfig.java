@@ -73,11 +73,5 @@ public class OpenApiConfig {
                 .build();
     }
 
-    @Bean
-    public GroupedOpenApi horarioPersonalApi() {
-        return GroupedOpenApi.builder()
-                .group("Horário Personal")
-                .pathsToMatch("/horarios-personais/**")
-                .build();
-    }
+
 }
