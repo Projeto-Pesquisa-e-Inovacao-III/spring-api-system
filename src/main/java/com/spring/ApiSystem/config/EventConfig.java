@@ -6,6 +6,8 @@ import com.spring.ApiSystem.eventos.aluno.AlunoEventPublisher;
 import com.spring.ApiSystem.eventos.aluno.AlunosListener;
 import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContrataListener;
 import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContratadoEventPublisher;
+import com.spring.ApiSystem.eventos.usuario.UsuarioEventPublisher;
+import com.spring.ApiSystem.eventos.usuario.UsuarioListener;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,6 +35,13 @@ public class EventConfig {
             List<AlunosListener> listeners
     ) {
         return new AlunoEventPublisher(listeners);
+    }
+
+    @Bean
+    public UsuarioEventPublisher usuarioEventPublisher(
+            List<UsuarioListener> listeners
+    ) {
+        return new UsuarioEventPublisher(listeners);
     }
 
 

@@ -30,22 +30,15 @@ public class ProdutoContratadoService {
     private final AlunoService alunoService;
     private final AlunoRepository alunoRepository;
     private final ProdutoContratadoEventPublisher produtoContratadoEventPublisher;
-    private final JpaUserDetailsService detailsService;
     private final JpaUserDetailsService jpaUserDetailsService;
 
-    public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository,
-                                    ProdutoContratadoMapper produtoContratadoMapper,
-                                    ProdutoExibicaoService produtoExibicaoService,
-                                    AlunoService alunoService,
-                                    AlunoRepository alunoRepository,
-                                    ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService detailsService, JpaUserDetailsService jpaUserDetailsService) {
+    public ProdutoContratadoService(ProdutoContratadoRepository produtoContratadoRepository, ProdutoContratadoMapper produtoContratadoMapper, ProdutoExibicaoService produtoExibicaoService, AlunoService alunoService, AlunoRepository alunoRepository, ProdutoContratadoEventPublisher produtoContratadoEventPublisher, JpaUserDetailsService jpaUserDetailsService) {
         this.produtoContratadoRepository = produtoContratadoRepository;
+        this.produtoContratadoMapper = produtoContratadoMapper;
         this.produtoExibicaoService = produtoExibicaoService;
         this.alunoService = alunoService;
-        this.produtoContratadoMapper = produtoContratadoMapper;
         this.alunoRepository = alunoRepository;
         this.produtoContratadoEventPublisher = produtoContratadoEventPublisher;
-        this.detailsService = detailsService;
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
@@ -72,7 +65,7 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarPordutoContratadoDoAlunoAtual(Long idProdutoExibicao){
-        return criarProdutoContratadoPeloAluno(idProdutoExibicao,detailsService.getCurrentAluno());
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao,jpaUserDetailsService.getCurrentAluno());
     }
 
     @Transactional
@@ -159,7 +152,7 @@ public class ProdutoContratadoService {
     }
 
     public ProdutoContratado buscarPorIdAndAluno(Long id){
-        return produtoContratadoRepository.findByIdAndAluno(id, detailsService.getCurrentAluno())
+        return produtoContratadoRepository.findByIdAndAluno(id, jpaUserDetailsService.getCurrentAluno())
                 .orElseThrow(() -> new ProdutoContratadoAlunoNaoTemEsseProdutoException(id));
     }
 
@@ -168,7 +161,7 @@ public class ProdutoContratadoService {
 
         System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "+dataFim);
         List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
-                detailsService.getCurrentAluno(),
+                jpaUserDetailsService.getCurrentAluno(),
                 nomeProduto,
                 dataInicio,
                 dataFim,

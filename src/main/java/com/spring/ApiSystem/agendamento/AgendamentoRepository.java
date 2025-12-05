@@ -2,6 +2,7 @@ package com.spring.ApiSystem.agendamento;
 
 
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,22 +22,9 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
-
-    @Query("""
-            SELECT COUNT(a) FROM agendamento a
-            WHERE a.personal.id = :personalId
-            AND a.status = :status
-            AND (:data IS NULL OR CAST(a.data AS DATE) = :data)
-    """)
-    Integer countByPersonalIdAndStatusAndOptionalData(
-            @Param("personalId") Long personalId,
-            @Param("status") AgendamentoStatus status,
-            @Param("data") LocalDate data
-    );
-
-
     Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
     Page<Agendamento>findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
+
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
@@ -61,8 +49,6 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("nome") String nome,
             @Param("status") AgendamentoStatus status,
             Pageable pageable);
-
-
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
@@ -117,29 +103,42 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
     int atualizarStatusPorIds(@Param("novoStatus") AgendamentoStatus novoStatus,
                               @Param("ids") List<Long> ids);
 
+    @Modifying
+    @Transactional
+    @Query("UPDATE agendamento a SET a.status = :novoStatus " +
+            "WHERE ((:tipo = 'ALUNO' AND a.aluno.id = :idUsuario) " +
+            "   OR (:tipo = 'PERSONAL' AND a.personal.id = :idUsuario)) " +
+            "  AND a.status <> :novoStatus " +
+            "  AND a.data > CURRENT_TIMESTAMP")
+    void cancelarTodosAgendamentosPorUsuario(@Param("idUsuario") Long idUsuario,
+                                             @Param("tipo") String tipo,
+                                             @Param("novoStatus") AgendamentoStatus novoStatus);
+
+
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
             "  AND a.personal.id = :personalId " +
-            "  AND a.data < :datafim " +
-            "  AND a.dataFim > :data")
-    boolean existeConflito(
-            @Param("alunoId") Long alunoId,
-            @Param("personalId") Long personalId,
-            @Param("data") LocalDateTime data,
-            @Param("datafim") LocalDateTime datafim
-    );
+            "  AND a.status NOT IN (com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_CLIENTE, com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_PERSONAL) " +
+            "  AND a.data < :dataFim " +
+            "  AND a.dataFim > :dataInicio")
+    boolean existeConflito(@Param("alunoId") Long alunoId,
+                           @Param("personalId") Long personalId,
+                           @Param("dataInicio") LocalDateTime dataInicio,
+                           @Param("dataFim") LocalDateTime dataFim);
+
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
             "  AND a.personal.id = :personalId " +
             "  AND a.id <> :agendamentoId " +
-            "  AND a.data < :datafim " +
-            "  AND a.dataFim > :data")
+            "  AND a.status NOT IN (com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_CLIENTE, com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_PERSONAL) " +
+            "  AND a.data < :dataFim " +
+            "  AND a.dataFim > :dataInicio")
     boolean existeConflitoExcluindoAgendamento(
             @Param("alunoId") Long alunoId,
             @Param("personalId") Long personalId,
-            @Param("data") LocalDateTime data,
-            @Param("datafim") LocalDateTime datafim,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim,
             @Param("agendamentoId") Long agendamentoId
     );
 
@@ -154,5 +153,18 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
     List<Object[]> listarConsultoriasRealizadasMes(@Param("personalId") Long personalId,
                                             @Param("status") AgendamentoStatus status,
                                             @Param("quantidadeMeses") Integer quantidadeMeses);
+
+    @Query("""
+            SELECT COUNT(a) FROM agendamento a
+            WHERE a.personal.id = :personalId
+            AND a.status = :status
+            AND (:data IS NULL OR CAST(a.data AS DATE) = :data)
+    """)
+    Integer countByPersonalIdAndStatusAndOptionalData(
+            @Param("personalId") Long personalId,
+            @Param("status") AgendamentoStatus status,
+            @Param("data") LocalDate data
+    );
+
 }
 

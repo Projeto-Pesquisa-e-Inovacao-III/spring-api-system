@@ -1,5 +1,8 @@
 package com.spring.ApiSystem.usuario;
 
+import com.spring.ApiSystem.agendamento.Agendamento;
+import com.spring.ApiSystem.agendamento.AgendamentoService;
+import com.spring.ApiSystem.eventos.usuario.UsuarioEventPublisher;
 import com.spring.ApiSystem.telefone.TelefoneService;
 import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.usuario.dto.request.ReqAtualizarSenhaDto;
@@ -20,36 +23,34 @@ import java.util.List;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final UsuarioMapper usuarioMapper;
     private final ArgonService argonService;
     private final LocalImageStorageService imageStorageService;
     private final TelefoneService telefoneService;
+    private final UsuarioEventPublisher usuarioEventPublisher;
 
-    public UsuarioService(UsuarioRepository usuarioRepository,
-                          UsuarioMapper usuarioMapper,
-                          ArgonService argonService,
-                          LocalImageStorageService imageStorageService,
-                          TelefoneService telefoneService) {
+    public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
-        this.usuarioMapper = usuarioMapper;
         this.argonService = argonService;
         this.imageStorageService = imageStorageService;
         this.telefoneService = telefoneService;
+        this.usuarioEventPublisher = usuarioEventPublisher;
     }
 
     public Boolean removerUsuario(String email) {
         Usuario usuario = buscarUsuarioPorEmail(email);
         usuario.setAtivo(false);
+        usuarioEventPublisher.publishUsuarioRemovido(usuario);
         usuarioRepository.save(usuario);
+
         return true;
     }
 
     public Boolean loginUsuario(String email, String senha) {
-    Usuario userOpt = buscarUsuarioPorEmail(email);
+        Usuario userOpt = buscarUsuarioPorEmail(email);
 
         return
                 userOpt.isAtivo() &&
-                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
+                        argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -125,7 +126,7 @@ public class UsuarioService {
         }
     }
 
-    public void atualizarSenha(ReqAtualizarSenhaDto dto, Usuario usuario){
+    public void atualizarSenha(ReqAtualizarSenhaDto dto, Usuario usuario) {
         validarSenhaAtual(dto.senhaAtual(), usuario);
         aplicarSenhaCriptografada(usuario, dto.senhaNova());
         salvarUsuario(usuario);

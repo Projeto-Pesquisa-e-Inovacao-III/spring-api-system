@@ -9,7 +9,6 @@ import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealiz
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.agendamento.exception.*;
 import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.endereco.EnderecoService;
 import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
@@ -17,7 +16,6 @@ import com.spring.ApiSystem.eventos.agendamentos.AgendamentoEventPublisher;
 import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.personal.PersonalService;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResListarGanhoMensalDto;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.usuario.exception.AlunoTemAcessoApenasException;
@@ -179,7 +177,7 @@ public class AgendamentoService {
         }
 
         produtoContratadoService.incrementar(
-                agendamento.getProdutoContratado().getId()
+                agendamento.getId()
         );
 
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
@@ -236,7 +234,7 @@ public class AgendamentoService {
 
 
         if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
-            produtoContratadoService.incrementar(agendamento.getProdutoContratado().getId());
+            produtoContratadoService.incrementar(agendamento.getId());
             agendamento.ausenciaPersonal();
             agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
         } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
@@ -341,6 +339,28 @@ public class AgendamentoService {
         throw new UsuarioNaoEncontradoException();
     }
 
+    public Integer buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
+                                                                     LocalDate data) {
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+        return agendamentoRepository.countByPersonalIdAndStatusAndOptionalData(
+                usuario.getId(),
+                status,
+                data);
+    }
+
+    public List<ResListarConsultoriasRealizadasDto> listarConsultoriasRealizadasMes(Integer quantidadeMeses){
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoPersonal(usuario);
+
+
+        return agendamentoRepository.listarConsultoriasRealizadasMes(usuario.getId(),
+                        AgendamentoStatus.CONCLUIDO, quantidadeMeses)
+                .stream()
+                .map(this::converterResListarConsultoriasRealizadas)
+                .toList();
+    }
 
     private Usuario obterUsuarioAutenticado() {
         return jpaUserDetailsService.getCurrentUser();
@@ -413,29 +433,6 @@ public class AgendamentoService {
             return horarioInicio.plusMinutes(30);
         }
         throw new AgendamentoTipoDeAulaInvalido();
-    }
-
-    public Integer buscarContagemDeAgendamentosPorPersonalStatusData(AgendamentoStatus status,
-                                                                     LocalDate data) {
-        Usuario usuario = obterUsuarioAutenticado();
-        validarSeUsuarioDoTipoPersonal(usuario);
-
-        return agendamentoRepository.countByPersonalIdAndStatusAndOptionalData(
-                usuario.getId(),
-                status,
-                data);
-    }
-
-    public List<ResListarConsultoriasRealizadasDto> listarConsultoriasRealizadasMes(Integer quantidadeMeses){
-        Usuario usuario = obterUsuarioAutenticado();
-        validarSeUsuarioDoTipoPersonal(usuario);
-
-
-        return agendamentoRepository.listarConsultoriasRealizadasMes(usuario.getId(),
-                        AgendamentoStatus.CONCLUIDO, quantidadeMeses)
-                .stream()
-                .map(this::converterResListarConsultoriasRealizadas)
-                .toList();
     }
 
     private ResListarConsultoriasRealizadasDto converterResListarConsultoriasRealizadas(Object[] row) {
