@@ -20,7 +20,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi usuariosApi() {
         return GroupedOpenApi.builder()
-                .group("usuários")
+                .group("Usuários")
                 .pathsToMatch("/usuarios/**")
                 .build();
     }
@@ -28,7 +28,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi enderecosApi() {
         return GroupedOpenApi.builder()
-                .group("endereços")
+                .group("Endereços")
                 .pathsToMatch("/enderecos/**")
                 .build();
     }
@@ -36,7 +36,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi agendamentoApi() {
         return GroupedOpenApi.builder()
-                .group("agendamento")
+                .group("Agendamento")
                 .pathsToMatch("/agendamentos/**")
                 .build();
     }
@@ -44,7 +44,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi alunoAPi() {
         return GroupedOpenApi.builder()
-                .group("aluno")
+                .group("Aluno")
                 .pathsToMatch("/alunos/**")
                 .build();
     }
@@ -52,7 +52,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi personalAPi() {
         return GroupedOpenApi.builder()
-                .group("personal")
+                .group("Personal")
                 .pathsToMatch("/personais/**")
                 .build();
     }
@@ -60,7 +60,7 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi produtoContratadoAPi() {
         return GroupedOpenApi.builder()
-                .group("produto contratado")
+                .group("Produto Contratado")
                 .pathsToMatch("/produtos-contratados/**")
                 .build();
     }
@@ -68,8 +68,16 @@ public class OpenApiConfig {
     @Bean
     public GroupedOpenApi produtoExibicaoAPi() {
         return GroupedOpenApi.builder()
-                .group("produto exibição")
+                .group("Produto Exibição")
                 .pathsToMatch("/produtos-exibicoes/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi horarioPersonalApi() {
+        return GroupedOpenApi.builder()
+                .group("Horário Personal")
+                .pathsToMatch("/horarios-personais/**")
                 .build();
     }
 }
