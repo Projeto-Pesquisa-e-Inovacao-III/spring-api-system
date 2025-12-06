@@ -33,8 +33,9 @@ spring:
           starttls:
             enable: true
 
+pag:
+  url: ${PAG_API_URL}
 
-# CONFIGURAÇÕES INFOBIP
 infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
@@ -45,7 +46,8 @@ infobip:
     template:
       name: ${INFOBIP_TEMPLATE_NAME:authentication}
 
-# Discord Webhook
+
+
 discord:
   webhook:
     url: ${DISCORD_WEBHOOK_URL}

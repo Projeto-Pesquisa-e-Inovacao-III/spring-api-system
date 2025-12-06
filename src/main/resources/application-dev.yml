@@ -36,7 +36,9 @@ spring:
           starttls:
             enable: true
 
-# CONFIGURAÇÕES INFOBIP
+pag:
+  url: http://localhost:8081
+
 infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
