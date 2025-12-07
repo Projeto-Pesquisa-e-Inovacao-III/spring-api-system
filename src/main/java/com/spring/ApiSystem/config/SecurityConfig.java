@@ -61,10 +61,20 @@ public class SecurityConfig {
                             "/usuarios/auth"
                     ).permitAll();
 
-                    auth.requestMatchers(HttpMethod.GET, "/alunos")
+                    auth.requestMatchers(
+                            "/agendamentos/**",
+                            "/usuarios/**",
+                            "/produtos-contratados/**"
+                    ).hasAnyRole("PERSONAL", "ALUNO");
+
+                    auth.requestMatchers(HttpMethod.GET,
+                                    "/alunos",
+                                    "alunos/*")
                             .hasAnyRole("PERSONAL");
 
-                    auth.requestMatchers(HttpMethod.GET, "/personais")
+                    auth.requestMatchers(HttpMethod.GET,
+                                    "/personais",
+                                    "/personais/*/horarios-disponiveis")
                             .hasRole("ALUNO");
 
                     auth.requestMatchers(
@@ -82,11 +92,6 @@ public class SecurityConfig {
                             "/checkouts/**",
                             "/produtos-contratados/**"
                     ).hasRole("ALUNO");
-
-                    auth.requestMatchers(
-                            "/agendamentos/**",
-                            "/usuarios/**"
-                    ).hasAnyRole("PERSONAL", "ALUNO");
 
                     auth.anyRequest().authenticated();
                 })

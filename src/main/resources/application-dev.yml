@@ -4,6 +4,7 @@ spring:
       enabled: true
       path: /h2-console
 
+
   datasource:
     url: jdbc:h2:mem:testdb
     driver-class-name: org.h2.Driver
@@ -25,10 +26,10 @@ spring:
       mode: always
       encoding: UTF-8
   mail:
-    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
-    port: ${MAIL_PORT:2525}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: sandbox.smtp.mailtrap.io
+    port: 2525
+    username: a
+    password: a
     properties:
       mail:
         smtp:
@@ -41,18 +42,18 @@ pag:
 
 infobip:
   base:
-    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+    url: https://xk4qx3.api.infobip.com
   api:
-    key: ${INFOBIP_API_KEY}
+    key: a
   whatsapp:
-    sender: ${INFOBIP_WHATSAPP_SENDER}
+    sender: a
     template:
-      name: ${INFOBIP_TEMPLATE_NAME:authentication}
+      name: authentication
 
 # Discord Webhook
 discord:
   webhook:
-    url: ${DISCORD_WEBHOOK_URL}
+    url: a
 
 storage:
   local-dir: imagens
