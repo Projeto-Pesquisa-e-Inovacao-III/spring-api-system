@@ -19,7 +19,4 @@ public record ReqHorarioDTO(
 
         @NotNull(message = "A hora de fim não pode ser nula")
         LocalTime horaFim
-
-) {
-
-}
+) {}

@@ -44,13 +44,13 @@ public class PersonalController {
         return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
-    @PutMapping("/{personalId}/buffer")
+    @PutMapping("/buffer")
     public ResponseEntity<Void> atualizarBufferMinutos(
-            @PathVariable Long personalId,
             @Valid @RequestBody ReqAtualizarBufferDTO request) {
 
-        personalService.atualizarBufferMinutos(personalId, request.bufferMinutos());
-        System.out.println("Buffer atualizado para personalId " + personalId + " com valor " + request.bufferMinutos());
+        Personal personal = userDetails.getCurrentPersonal();
+        personalService.atualizarBufferMinutos(personal.getId(), request.bufferMinutos());
+        System.out.println("Buffer atualizado para personalId " + personal.getId() + " com valor " + request.bufferMinutos());
         return ResponseEntity.ok().build();
     }
 
