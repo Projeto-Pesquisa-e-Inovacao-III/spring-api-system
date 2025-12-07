@@ -117,7 +117,7 @@ public class ProdutoContratadoService {
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
-                .findFirstByAlunoIdAndTipoAulaWithSaldoGreaterThanOne(
+                .findFirstByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
                        alunoId, tipoAula
                 ).orElseThrow(UsuarioSemTipoAulaException::new);
 
@@ -165,8 +165,6 @@ public class ProdutoContratadoService {
 
 
     public List<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDate dataInicio, LocalDate dataFim){
-
-        System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "+dataFim);
         List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
                 detailsService.getCurrentAluno(),
                 nomeProduto,
