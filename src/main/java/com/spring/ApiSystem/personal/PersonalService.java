@@ -20,6 +20,7 @@ import com.spring.ApiSystem.usuario.UsuarioService;
 import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
 import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
 import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
+import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -33,12 +34,14 @@ public class PersonalService {
     private final PersonalRepository personalRepository;
     private final UsuarioService usuarioService;
     private final PersonalMapper personalMapper;
+    private final JpaUserDetailsService detailsService;
     private final DisponibilidadePersonalService disponibilidadeService;
 
-    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, DisponibilidadePersonalService disponibilidadeService) {
+    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, JpaUserDetailsService detailsService, DisponibilidadePersonalService disponibilidadeService) {
         this.personalRepository = personalRepository;
         this.usuarioService = usuarioService;
         this.personalMapper = personalMapper;
+        this.detailsService = detailsService;
         this.disponibilidadeService = disponibilidadeService;
     }
 
@@ -103,8 +106,8 @@ public class PersonalService {
         personalRepository.save(personal);
     }
 
-    public ResBuscarBufferDTO buscarBuffer(Long personalId) {
-        Personal personal = buscarPorId(personalId);
+    public ResBuscarBufferDTO buscarBuffer() {
+        Personal personal = detailsService.getCurrentPersonal();
         Integer buffer = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
         return new ResBuscarBufferDTO(buffer);
     }

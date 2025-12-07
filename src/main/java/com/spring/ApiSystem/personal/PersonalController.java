@@ -44,7 +44,7 @@ public class PersonalController {
         return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
-    @PutMapping("/buffer")
+    @PutMapping("/me/buffer")
     public ResponseEntity<Void> atualizarBufferMinutos(
             @Valid @RequestBody ReqAtualizarBufferDTO request) {
 
@@ -56,9 +56,9 @@ public class PersonalController {
 
     @Operation(summary = "Buscar buffer do personal (necessário login)",
             description = "Endpoint para buscar o buffer de minutos de um personal específico")
-    @GetMapping("/{personalId}/buffer")
-    public ResponseEntity<ResBuscarBufferDTO> buscarBuffer(@PathVariable Long personalId) {
-        ResBuscarBufferDTO buffer = personalService.buscarBuffer(personalId);
+    @GetMapping("/me/buffer")
+    public ResponseEntity<ResBuscarBufferDTO> buscarBuffer() {
+        ResBuscarBufferDTO buffer = personalService.buscarBuffer();
         return ResponseEntity.ok(buffer);
     }
 
