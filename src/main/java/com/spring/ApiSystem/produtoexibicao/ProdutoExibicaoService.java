@@ -40,6 +40,10 @@ public class ProdutoExibicaoService {
         );
     }
 
+    public List<ResProdutoExibicaoDto> listarProdutosAtivos(){
+        return listarProdutosPorStatus("ATIVO");
+    }
+
     public List<ResProdutoExibicaoDto> listarProdutos(){
         List<ResProdutoExibicaoDto> resProdutoExibicaoDTO = produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
         return  resProdutoExibicaoDTO;

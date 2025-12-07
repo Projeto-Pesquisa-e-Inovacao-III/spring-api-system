@@ -45,6 +45,13 @@ public class ProdutoExibicaoController {
         return ResponseEntity.ok(produtoExibicaoService.listarProdutosPorStatus(status));
     }
 
+    @Operation(summary = "Listagem de Produtos de Exibição por Status ativo",
+    description = "Endpoint para listagem de produtos de exibição com status ativo. É para ser utilizado no site institucional")
+    @GetMapping("/ativos")
+    public ResponseEntity<List<ResProdutoExibicaoDto>> listarProdutosAtivos(){
+        return ResponseEntity.ok(produtoExibicaoService.listarProdutosAtivos());
+    }
+
     @Operation(summary = "Listar Produtos de Exibição",
                description = "Endpoint para listagem de produtos de exibição no sistema")
     @GetMapping
