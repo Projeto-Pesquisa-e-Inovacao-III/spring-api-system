@@ -18,7 +18,7 @@ public class ComprarController {
     }
 
 
-    @PostMapping("{produtoExibicaoId}")
+    @PostMapping("/{produtoExibicaoId}")
     public ResponseEntity<?> pagar(@PathVariable Long produtoExibicaoId){
         return new ResponseEntity<>(comprarService.comprar(produtoExibicaoId), HttpStatus.OK);
     }

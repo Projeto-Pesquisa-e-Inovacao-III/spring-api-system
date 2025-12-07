@@ -1,0 +1,66 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+spring:
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
+
+  datasource:
+    url: ${SPRING_DATASOURCE_URL}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQLDialect
+    hibernate:
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: false
+
+  mail:
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+pag:
+  url: ${PAG_API_URL}
+
+infobip:
+  base:
+    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+  api:
+    key: ${INFOBIP_API_KEY}
+  whatsapp:
+    sender: ${INFOBIP_WHATSAPP_SENDER}
+    template:
+      name: ${INFOBIP_TEMPLATE_NAME:authentication}
+
+
+
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
+
+springdoc:
+  swagger-ui:
+    enabled: true
+
+storage:
+  local-dir: /app/imagens
+
+logging:
+  level:
+    root: INFO
+    com.spring: INFO
+

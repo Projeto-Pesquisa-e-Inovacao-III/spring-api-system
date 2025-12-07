@@ -1,0 +1,58 @@
+spring:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: drop
+
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+pag:
+  url: http://localhost:8081
+
+infobip:
+  base:
+    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+  api:
+    key: ${INFOBIP_API_KEY}
+  whatsapp:
+    sender: ${INFOBIP_WHATSAPP_SENDER}
+    template:
+      name: ${INFOBIP_TEMPLATE_NAME:authentication}
+
+# Discord Webhook
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL}
+
+storage:
+  local-dir: imagens

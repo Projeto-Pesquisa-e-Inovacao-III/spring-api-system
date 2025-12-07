@@ -27,12 +27,14 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     @Query("SELECT p FROM produto_contratado p WHERE p.id = :id")
     ProdutoContratado findByIdWithLock(Long id);
 
-
-    @Query("SELECT pc FROM produto_contratado pc WHERE pc.aluno.id = :alunoId " +
-            "AND pc.produtoExibicao.tipoAula = :tipoAula AND pc.situacao = true " +
-            "AND pc.saldoAula > 1 ORDER BY pc.dataExpiracao ASC")
-    Optional<ProdutoContratado> findFirstByAlunoIdAndTipoAulaWithSaldoGreaterThanOne(
-            @Param("alunoId") Long alunoId, @Param("tipoAula") TipoAula tipoAula);
+    @Query("SELECT p FROM produto_contratado p " +
+            "WHERE p.aluno.id = :alunoId " +
+            "AND p.produtoExibicao.tipoAula = :tipoAula " +
+            "AND p.saldoAula > 0")
+    Optional<ProdutoContratado> findFirstByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
+            @Param("alunoId") Long alunoId,
+            @Param("tipoAula") TipoAula tipoAula
+    );
 
     @Query("SELECT pc FROM produto_contratado pc, agendamento a " +
             "WHERE a.produtoContratado = pc AND a.id = :agendamentoId")
