@@ -24,16 +24,6 @@ public record ReqAtualizarPersonalDTO(
         @Email(message = "Email deve ter formato válido")
         String email,
 
-        @NotBlank(message = "O CREF não pode ficar vazio ou nulo")
-        String cref,
-
-        @NotBlank(message = "A senha atual não pode ficar vazia ou nula")
-        @Size(min = 6, message = "A senha atual deve ter no mínimo 6 caracteres")
-        String senha,
-
-        @Size(min = 6, message = "A senha nova deve ter no mínimo 6 caracteres")
-        String senhaNova,
-
         String caminhoFoto,
 
         List<ReqAtualizarTelefoneDTO> telefones

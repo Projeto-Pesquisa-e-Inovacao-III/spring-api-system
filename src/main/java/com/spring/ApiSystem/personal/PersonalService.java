@@ -74,23 +74,14 @@ public class PersonalService {
         return personalMapper.toDtoCadastrarPersonal(personalRepository.save(usuarioEntity));
     }
 
-    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Personal usuario) {
-        validarCrefExistente(dto.cref(), usuario.getCref());
+    public ResAtualizarPersonalDTO atualizarUsuario(ReqAtualizarPersonalDTO dto, Personal personal) {
 
-        usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
-
-        usuarioService.validarSenhaAtual(dto.senha(), usuario);
-
-        Personal personal = buscarPorId(usuario.getId());
+        usuarioService.validarEmailNaoEmUso(dto.email(), personal.getEmail());
 
         personalMapper.atualizarPersonalParaAtualizarPersonalDto(dto, personal);
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
             usuarioService.atualizarTelefones(personal, dto.telefones());
-        }
-
-        if (dto.senhaNova() != null) {
-            usuarioService.aplicarSenhaCriptografada(personal, dto.senhaNova());
         }
 
         personalRepository.save(personal);
