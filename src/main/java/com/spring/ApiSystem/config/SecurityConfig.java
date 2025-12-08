@@ -79,7 +79,10 @@ public class SecurityConfig {
                             "/agendamentos/*/confirmar-conclusao",
                             "/agendamentos/ausencia",
                             "/agendamentos/consultoria-realizadas/*",
-                            "/agendamentos/contagem-status-data"
+                            "/agendamentos/contagem-status-data",
+                            "/produtos-contratados/ganhos-mes/*",
+                            "/produtos-contratados/planos-vendidos/*",
+                            "/produtos-contratados/quantidade-e-percentual-alunos-expirados"
                     ).hasRole("PERSONAL");
 
                     // 4. ROTAS COMPARTILHADAS (PERSONAL E ALUNO)
