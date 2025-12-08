@@ -48,6 +48,7 @@ public class SecurityConfig {
                         ).permitAll();
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
+                    // 1. ROTAS PÚBLICAS
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
                     auth.requestMatchers(HttpMethod.GET, "/produtos-exibicoes/ativos").permitAll();
                     auth.requestMatchers(HttpMethod.POST,
@@ -62,31 +63,39 @@ public class SecurityConfig {
                             "/usuarios/auth"
                     ).permitAll();
 
-                    auth.requestMatchers(
-                            "/agendamentos/**",
-                            "/usuarios/**",
-                            "/produtos-contratados/**"
-                    ).hasAnyRole("PERSONAL", "ALUNO");
-
+                    // 2. ROTAS ESPECÍFICAS DO ALUNO (antes das genéricas)
                     auth.requestMatchers(HttpMethod.GET,
-                                    "/alunos",
-                                    "alunos/*")
-                            .hasAnyRole("PERSONAL");
+                            "/produtos-contratados/total-tipo/*",
+                            "/personais"
+                    ).hasRole("ALUNO");
 
+                    // 3. ROTAS ESPECÍFICAS DO PERSONAL (antes das genéricas)
                     auth.requestMatchers(HttpMethod.GET,
-                                    "/personais",
-                                    "/personais/*/horarios-disponiveis")
-                            .hasRole("ALUNO");
+                            "/alunos",
+                            "/alunos/*"
+                    ).hasRole("PERSONAL");
 
                     auth.requestMatchers(
-                            "/personais/**",
                             "/agendamentos/*/confirmar-conclusao",
                             "/agendamentos/ausencia",
                             "/agendamentos/consultoria-realizadas/*",
-                            "/agendamentos/contagem-status-data",
+                            "/agendamentos/contagem-status-data"
+                    ).hasRole("PERSONAL");
+
+                    // 4. ROTAS COMPARTILHADAS (PERSONAL E ALUNO)
+                    auth.requestMatchers(
+                            "/personais/*/horarios-disponiveis",
+                            "/agendamentos/**",
+                            "/usuarios/**"
+                    ).hasAnyRole("PERSONAL", "ALUNO");
+
+                    // 5. ROTAS GENÉRICAS DO PERSONAL (depois das específicas)
+                    auth.requestMatchers(
+                            "/personais/**",
                             "/produtos-exibicoes/**"
                     ).hasRole("PERSONAL");
 
+                    // 6. ROTAS GENÉRICAS DO ALUNO (depois das específicas)
                     auth.requestMatchers(
                             "/alunos/**",
                             "/comprar/**",
