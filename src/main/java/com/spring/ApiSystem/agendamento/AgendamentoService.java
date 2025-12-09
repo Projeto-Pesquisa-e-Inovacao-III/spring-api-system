@@ -168,7 +168,12 @@ public class AgendamentoService {
         Usuario usuario = obterUsuarioAutenticado();
         Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, usuario.getEmail());
 
-        validarAntecedenciaDeHorarioMarcado(agendamento.getData());
+        try {
+            validarAntecedenciaDeHorarioMarcado(agendamento.getData());
+        } catch (AgendamentoComAtencedenciaException e) {
+            throw new AgendamentoCanceladoComAtencedenciaExeception();
+        }
+
 
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             agendamento.canceladoCliente();
