@@ -173,9 +173,19 @@ public class ProdutoContratadoService {
                         .orElseThrow(SemPlanoAtivoException::new));
     }
 
+    public boolean temProdutoContratadoAtivo(Aluno aluno){
+        return produtoContratadoRepository.temProdutoContratadoPacoteAtivo(aluno);
+    }
+
     public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
         Aluno usuario = jpaUserDetailsService.getCurrentAluno();
-        return produtoContratadoMapper.toBuscarSaldoPorTipoAulaDto(produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario,tipoAula));
+        List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
+
+        Integer total = produtos.stream()
+                .map(ProdutoContratado::getSaldoAula)
+                .reduce(0, Integer::sum);
+
+        return new ResBuscarSaldoPorTipoAulaDto(tipoAula, total);
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
@@ -215,5 +225,7 @@ public class ProdutoContratadoService {
 
         return new ResQuantidadePercentualAlunosExpiradosDto(qtd, percentual);
     }
+
+
 
 }

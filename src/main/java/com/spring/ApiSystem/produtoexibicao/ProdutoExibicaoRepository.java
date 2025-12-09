@@ -28,4 +28,11 @@ public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao
             @Param("start") LocalDateTime start,
             @Param("end") LocalDateTime end
     );
+
+    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
+            "FROM produto_exibicao p " +
+            "WHERE p.id = :id " +
+            "AND p.status = com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus.ATIVO")
+    boolean existsProdutoExibicaoAtivoById(@Param("id") Long id);
+
 }

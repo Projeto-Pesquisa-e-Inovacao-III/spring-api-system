@@ -95,7 +95,7 @@ public class AgendamentoController {
 
         Pageable pageableComTamanhoFixado = PageRequest.of(
                 pageable.getPageNumber(),
-                8,
+                9,
                 pageable.getSort()
         );
 

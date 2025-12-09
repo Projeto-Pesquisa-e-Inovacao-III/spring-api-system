@@ -40,7 +40,7 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> {
-                    if ("dev".equals(perfilAtivo)) {
+                    if ("dev".equals(perfilAtivo) || "docker".equals(perfilAtivo)) {
                         auth.requestMatchers(HttpMethod.GET,
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",

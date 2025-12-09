@@ -21,7 +21,8 @@ public interface AlunoRepository extends UsuarioBaseRepository<Aluno> {
        SELECT COUNT(DISTINCT a)
          FROM Aluno a
          JOIN produto_contratado pc ON pc.aluno = a
-        WHERE pc.situacao = true
+        WHERE pc.situacao = true AND 
+        pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
        """)
     Integer countAlunosComPlanosAtivos();
 

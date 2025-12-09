@@ -3,7 +3,6 @@ package com.spring.ApiSystem.produtocontratado;
 import com.spring.ApiSystem.aluno.Aluno;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
-import com.spring.ApiSystem.usuario.Usuario;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -13,7 +12,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +60,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
          FROM produto_contratado pc
         WHERE pc.situacao = true
           AND pc.aluno.email = :email
+          AND pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
        """)
     Optional<ProdutoContratado> buscarProdutoContratadoAtivo(@Param("email") String email);
 
@@ -71,7 +70,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
       AND pc.produtoExibicao.tipoAula = :tipoAula
       AND pc.aluno = :aluno
    """)
-    ProdutoContratado buscarProdutoContratadoAtivoPorAlunoETipoAula(
+    List<ProdutoContratado> buscarProdutoContratadoAtivoPorAlunoETipoAula(
             @Param("aluno") Aluno aluno,
             @Param("tipoAula") TipoAula tipoAula);
 
@@ -109,5 +108,15 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
         AND pc.id IS NULL
     """)
     Integer countAlunosComPlanosExpirados(@Param("tipoProduto") TipoProduto tipoProduto);
+
+    @Query("""
+    SELECT CASE WHEN COUNT(pc) > 0 THEN true ELSE false END
+      FROM produto_contratado pc
+     WHERE pc.aluno = :aluno
+       AND pc.situacao = true
+       AND pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
+       AND pc.dataExpiracao >= CURRENT_DATE
+    """)
+    boolean temProdutoContratadoPacoteAtivo(@Param("aluno") Aluno aluno);
 
 }

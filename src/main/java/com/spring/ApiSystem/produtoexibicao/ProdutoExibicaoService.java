@@ -54,6 +54,10 @@ public class ProdutoExibicaoService {
                 .orElseThrow(() -> new ProdutoExibicaoNaoEncontradoPorId(id));
     }
 
+    public Boolean produtoExibicaoAtivoExiste(Long id){
+        return produtoExibicaoRepository.existsProdutoExibicaoAtivoById(id);
+    }
+
     public ResProdutoExibicaoDto resBuscarPorId(Long id){
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(buscarPorId(id));
     }
