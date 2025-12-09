@@ -6,6 +6,7 @@ import com.spring.ApiSystem.comprar.exception.AlunoJaTemProdutoContratado;
 import com.spring.ApiSystem.comprar.exception.CompraDeProdutoExibicaoInexistente;
 import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
+import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -44,7 +45,9 @@ public class ComprarService {
         Aluno aluno = userDetailsService.getCurrentAluno();
         Long userId = aluno.getId();
 
-        if(produtoContratadoService.temProdutoContratadoAtivo(aluno)){
+        if(produtoContratadoService.temProdutoContratadoAtivo(aluno) &&
+           produtoExibicaoService.buscarPorId(produtoExibicaoId).getTipoProduto() == TipoProduto.PACOTE
+        ){
             throw new AlunoJaTemProdutoContratado();
         }
 
