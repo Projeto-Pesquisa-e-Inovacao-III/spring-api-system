@@ -105,7 +105,7 @@ public abstract class AgendamentoMapper {
 
     @Mapping(target = "agendamentoId", source = "id")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
-    @Mapping(target = "nome", source = "aluno.nome")
+    @Mapping(target = "nome", source = "personal.nome")
     @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorAlunoTelefone(telefone))")
     @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
     @Mapping(target = "foto", source = "personal.caminhoFoto")
