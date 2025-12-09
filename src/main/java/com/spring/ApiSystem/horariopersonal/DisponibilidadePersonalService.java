@@ -227,6 +227,12 @@ public class DisponibilidadePersonalService {
                 personalId, diaSemana, horaInicio, horaFim, horarioId
         );
 
+        // Valida conflitos com horários RESTRITOS existentes
+        for (DisponibilidadePersonal sobreposto : sobrepostos) {
+            if (sobreposto.getTipo() == TipoHorario.RESTRITO) {
+                throw new SobreposicaoHorarioException();
+            }
+        }
 
         if (tipo == TipoHorario.RESTRITO) {
 

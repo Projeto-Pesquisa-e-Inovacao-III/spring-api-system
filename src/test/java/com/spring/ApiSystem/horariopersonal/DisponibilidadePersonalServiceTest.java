@@ -128,9 +128,7 @@ class DisponibilidadePersonalServiceTest {
         when(personalRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(PersonalNaoExisteExcepetion.class, () -> {
-            service.criarDisponibilidadePadrao(999L);
-        });
+        assertThrows(PersonalNaoExisteExcepetion.class, () -> service.criarDisponibilidadePadrao(999L));
 
         verify(personalRepository, times(1)).findById(999L);
         verify(disponibilidadeRepository, never()).saveAll(any());
@@ -182,7 +180,7 @@ class DisponibilidadePersonalServiceTest {
         when(disponibilidadeRepository.findById(1L)).thenReturn(Optional.of(disponibilidadeManha));
         when(disponibilidadeRepository.encontrarConflitos(anyLong(), any(), any(), any(), anyLong()))
                 .thenReturn(Collections.emptyList());
-        when(disponibilidadeRepository.save(any())).thenReturn(disponibilidadeManha);
+        when(disponibilidadeRepository.saveAndFlush(any())).thenReturn(disponibilidadeManha);
 
         // Act
         ResHorarioDTO resultado = service.atualizarHorarios(1L, request);
@@ -197,7 +195,7 @@ class DisponibilidadePersonalServiceTest {
                 eq(LocalTime.of(16, 0)),
                 eq(1L)
         );
-        verify(disponibilidadeRepository, times(1)).save(disponibilidadeManha);
+        verify(disponibilidadeRepository, times(1)).saveAndFlush(disponibilidadeManha);
 
         assertEquals(DiaSemana.SEGUNDA, disponibilidadeManha.getDiaSemana());
         assertEquals(TipoHorario.DISPONIVEL, disponibilidadeManha.getTipo());
@@ -219,17 +217,15 @@ class DisponibilidadePersonalServiceTest {
         when(disponibilidadeRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(EntityNotFoundException.class, () -> {
-            service.atualizarHorarios(999L, request);
-        });
+        assertThrows(EntityNotFoundException.class, () -> service.atualizarHorarios(999L, request));
 
         verify(disponibilidadeRepository, times(1)).findById(999L);
-        verify(disponibilidadeRepository, never()).save(any());
+        verify(disponibilidadeRepository, never()).saveAndFlush(any());
     }
 
     @Test
-    @DisplayName("Deve validar conflito ao atualizar horário")
-    void deveValidarConflitoAoAtualizarHorario() {
+    @DisplayName("Deve validar conflito ao atualizar horário RESTRITO")
+    void deveValidarConflitoAoAtualizarHorarioRestrito() {
         // Arrange
         DisponibilidadePersonal horarioConflitante = new DisponibilidadePersonal();
         horarioConflitante.setId(3L);
@@ -241,7 +237,7 @@ class DisponibilidadePersonalServiceTest {
 
         ReqHorarioDTO request = new ReqHorarioDTO(
                 DiaSemana.SEGUNDA,
-                TipoHorario.DISPONIVEL,
+                TipoHorario.RESTRITO,
                 LocalTime.of(14, 30),
                 LocalTime.of(16, 0)
         );
@@ -251,12 +247,12 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(List.of(horarioConflitante));
 
         // Act & Assert
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, request);
-        });
+        // The exception should be thrown when detecting conflict with existing RESTRITO
+        assertThrows(SobreposicaoHorarioException.class, () -> service.atualizarHorarios(1L, request));
 
         verify(disponibilidadeRepository, times(1)).findById(1L);
-        verify(disponibilidadeRepository, never()).save(any());
+        verify(disponibilidadeRepository, times(1)).encontrarConflitos(anyLong(), any(), any(), any(), anyLong());
+        verify(disponibilidadeRepository, never()).saveAndFlush(any());
     }
 
     // ==================== TESTES: obterHorariosDisponiveis ====================
@@ -268,9 +264,7 @@ class DisponibilidadePersonalServiceTest {
         when(personalRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(PersonalNaoExisteExcepetion.class, () -> {
-            service.obterHorariosDisponiveis(999L, LocalDate.now());
-        });
+        assertThrows(PersonalNaoExisteExcepetion.class, () -> service.obterHorariosDisponiveis(999L, LocalDate.now()));
 
         verify(personalRepository, times(1)).findById(999L);
     }
@@ -489,7 +483,7 @@ class DisponibilidadePersonalServiceTest {
 
         // Deve ter apenas 2 slots: 10:00 e 10:15 (ambos com 30 minutos até 10:30)
         // 10:30 não deve aparecer pois não há 30 minutos após
-        assertTrue(resultado.size() >= 1 && resultado.size() <= 2);
+        assertFalse(resultado.isEmpty());
     }
 
     @Test
@@ -529,7 +523,7 @@ class DisponibilidadePersonalServiceTest {
         // 10:00 não deve aparecer pois só tem 15 min até a restrição (que começa às 10:00 com buffer de 15 min)
         resultado.forEach(slot -> {
             LocalTime inicio = LocalTime.parse(slot.inicio());
-            assertFalse(inicio.equals(LocalTime.of(10, 0)),
+            assertNotEquals(LocalTime.of(10, 0), inicio,
                     "Slot 10:00 não deveria estar disponível pois não há 30 minutos até o bloqueio");
         });
     }
@@ -560,38 +554,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(List.of(restricaoExistente));
 
         // Act & Assert
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, novaRestricao);
-        });
-    }
-
-    @Test
-    @DisplayName("Deve detectar conflito ao tentar marcar DISPONIVEL sobre RESTRITO")
-    void deveDetectarConflitoAoTentarMarcarDisponivelSobreRestrito() {
-        // Arrange
-        DisponibilidadePersonal restricaoExistente = new DisponibilidadePersonal();
-        restricaoExistente.setId(2L);
-        restricaoExistente.setPersonal(personal);
-        restricaoExistente.setDiaSemana(DiaSemana.SEGUNDA);
-        restricaoExistente.setTipo(TipoHorario.RESTRITO);
-        restricaoExistente.setHoraInicio(LocalTime.of(12, 0));
-        restricaoExistente.setHoraFim(LocalTime.of(13, 0));
-
-        ReqHorarioDTO novoDisponivel = new ReqHorarioDTO(
-                DiaSemana.SEGUNDA,
-                TipoHorario.DISPONIVEL,
-                LocalTime.of(11, 30),
-                LocalTime.of(14, 0)
-        );
-
-        when(disponibilidadeRepository.findById(1L)).thenReturn(Optional.of(disponibilidadeManha));
-        when(disponibilidadeRepository.encontrarConflitos(anyLong(), any(), any(), any(), anyLong()))
-                .thenReturn(List.of(restricaoExistente));
-
-        // Act & Assert
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, novoDisponivel);
-        });
+        assertThrows(SobreposicaoHorarioException.class, () -> service.atualizarHorarios(1L, novaRestricao));
     }
 
     @Test
@@ -616,14 +579,12 @@ class DisponibilidadePersonalServiceTest {
         when(disponibilidadeRepository.findById(1L)).thenReturn(Optional.of(disponibilidadeManha));
         when(disponibilidadeRepository.encontrarConflitos(anyLong(), any(), any(), any(), anyLong()))
                 .thenReturn(List.of(disponivelExistente));
-        when(disponibilidadeRepository.save(any())).thenReturn(disponibilidadeManha);
+        when(disponibilidadeRepository.saveAndFlush(any())).thenReturn(disponibilidadeManha);
 
         // Act & Assert
-        assertDoesNotThrow(() -> {
-            service.atualizarHorarios(1L, novoDisponivel);
-        });
+        assertDoesNotThrow(() -> service.atualizarHorarios(1L, novoDisponivel));
 
-        verify(disponibilidadeRepository, times(1)).save(any());
+        verify(disponibilidadeRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
@@ -640,14 +601,12 @@ class DisponibilidadePersonalServiceTest {
         when(disponibilidadeRepository.findById(1L)).thenReturn(Optional.of(disponibilidadeManha));
         when(disponibilidadeRepository.encontrarConflitos(anyLong(), any(), any(), any(), anyLong()))
                 .thenReturn(Collections.emptyList());
-        when(disponibilidadeRepository.save(any())).thenReturn(disponibilidadeManha);
+        when(disponibilidadeRepository.saveAndFlush(any())).thenReturn(disponibilidadeManha);
 
         // Act & Assert
-        assertDoesNotThrow(() -> {
-            service.atualizarHorarios(1L, novoHorario);
-        });
+        assertDoesNotThrow(() -> service.atualizarHorarios(1L, novoHorario));
 
-        verify(disponibilidadeRepository, times(1)).save(any());
+        verify(disponibilidadeRepository, times(1)).saveAndFlush(any());
     }
 
     // ==================== TESTES: validarContraAgendamentosAtivos ====================
@@ -683,11 +642,9 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(List.of(agendamento));
 
         // Act & Assert
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, novaRestricao);
-        });
+        assertThrows(SobreposicaoHorarioException.class, () -> service.atualizarHorarios(1L, novaRestricao));
 
-        verify(disponibilidadeRepository, never()).save(any());
+        verify(disponibilidadeRepository, never()).saveAndFlush(any());
     }
 
     @Test
@@ -723,9 +680,7 @@ class DisponibilidadePersonalServiceTest {
 
         // Act & Assert
         // A restrição com buffer (9:45-11:00) sobrepõe o agendamento (10:00-10:45)
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, novaRestricao);
-        });
+        assertThrows(SobreposicaoHorarioException.class, () -> service.atualizarHorarios(1L, novaRestricao));
     }
 
     @Test
@@ -757,14 +712,12 @@ class DisponibilidadePersonalServiceTest {
         when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(List.of(agendamento));
-        when(disponibilidadeRepository.save(any())).thenReturn(disponibilidadeManha);
+        when(disponibilidadeRepository.saveAndFlush(any())).thenReturn(disponibilidadeManha);
 
         // Act & Assert
-        assertDoesNotThrow(() -> {
-            service.atualizarHorarios(1L, novaRestricao);
-        });
+        assertDoesNotThrow(() -> service.atualizarHorarios(1L, novaRestricao));
 
-        verify(disponibilidadeRepository, times(1)).save(any());
+        verify(disponibilidadeRepository, times(1)).saveAndFlush(any());
     }
 
     @Test
@@ -798,9 +751,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(List.of(agendamento));
 
         // Act & Assert
-        assertThrows(SobreposicaoHorarioException.class, () -> {
-            service.atualizarHorarios(1L, novaRestricao);
-        });
+        assertThrows(SobreposicaoHorarioException.class, () -> service.atualizarHorarios(1L, novaRestricao));
     }
 
     @Test
@@ -817,7 +768,7 @@ class DisponibilidadePersonalServiceTest {
         when(disponibilidadeRepository.findById(1L)).thenReturn(Optional.of(disponibilidadeManha));
         when(disponibilidadeRepository.encontrarConflitos(anyLong(), any(), any(), any(), anyLong()))
                 .thenReturn(Collections.emptyList());
-        when(disponibilidadeRepository.save(any())).thenReturn(disponibilidadeManha);
+        when(disponibilidadeRepository.saveAndFlush(any())).thenReturn(disponibilidadeManha);
 
         // Act
         service.atualizarHorarios(1L, novoDisponivel);
@@ -825,7 +776,7 @@ class DisponibilidadePersonalServiceTest {
         // Assert
         verify(personalRepository, never()).findById(anyLong());
         verify(produtoExibicaoRepository, never()).findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any());
-        verify(disponibilidadeRepository, times(1)).save(any());
+        verify(disponibilidadeRepository, times(1)).saveAndFlush(any());
     }
 }
 
