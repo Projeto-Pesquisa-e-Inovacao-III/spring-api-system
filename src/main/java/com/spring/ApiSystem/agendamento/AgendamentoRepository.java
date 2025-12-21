@@ -1,8 +1,6 @@
-package com.spring.ApiSystem.agendamento;
-
+        package com.spring.ApiSystem.agendamento;
 
 import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,13 +16,19 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long> {
+public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
+
+    /* -------------------- Buscas simples -------------------- */
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
-    List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
-    Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
-    Page<Agendamento>findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
 
+    List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
+
+    Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
+
+    Page<Agendamento> findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
+
+    /* -------------------- Consultas com filtros/custom -------------------- */
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
@@ -37,7 +41,8 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("dataInicio") LocalDateTime dataInicio,
             @Param("dataFim") LocalDateTime dataFim,
             @Param("status") AgendamentoStatus status,
-            Pageable pageable);
+            Pageable pageable
+    );
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.personal.id = :personalId " +
@@ -48,7 +53,8 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("personalId") Long personalId,
             @Param("nome") String nome,
             @Param("status") AgendamentoStatus status,
-            Pageable pageable);
+            Pageable pageable
+    );
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
@@ -62,7 +68,6 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "LIMIT 4")
     List<Agendamento> buscarAgendamentosMaisProximosPorAluno(@Param("alunoId") Long alunoId);
 
-
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao pe " +
@@ -74,7 +79,6 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "ORDER BY a.data ASC " +
             "LIMIT 4")
     List<Agendamento> buscarAgendamentosMaisProximosPorPersonal(@Param("personalId") Long personalId);
-
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
@@ -90,18 +94,22 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("email") String email
     );
 
-
     @Query("SELECT a.id FROM agendamento a WHERE a.data <= :agora AND a.status = :status ORDER BY a.id")
-    List<Long> buscarIdsPorDataAnteriorEStatus(@Param("agora") LocalDateTime agora,
-                                               @Param("status") AgendamentoStatus status,
-                                               Pageable pageable);
+    List<Long> buscarIdsPorDataAnteriorEStatus(
+            @Param("agora") LocalDateTime agora,
+            @Param("status") AgendamentoStatus status,
+            Pageable pageable
+    );
 
+    /* -------------------- Modificações -------------------- */
 
     @Modifying
     @Transactional
     @Query("UPDATE agendamento a SET a.status = :novoStatus WHERE a.id IN :ids")
-    int atualizarStatusPorIds(@Param("novoStatus") AgendamentoStatus novoStatus,
-                              @Param("ids") List<Long> ids);
+    int atualizarStatusPorIds(
+            @Param("novoStatus") AgendamentoStatus novoStatus,
+            @Param("ids") List<Long> ids
+    );
 
     @Modifying
     @Transactional
@@ -110,10 +118,13 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "   OR (:tipo = 'PERSONAL' AND a.personal.id = :idUsuario)) " +
             "  AND a.status <> :novoStatus " +
             "  AND a.data > CURRENT_TIMESTAMP")
-    void cancelarTodosAgendamentosPorUsuario(@Param("idUsuario") Long idUsuario,
-                                             @Param("tipo") String tipo,
-                                             @Param("novoStatus") AgendamentoStatus novoStatus);
+    void cancelarTodosAgendamentosPorUsuario(
+            @Param("idUsuario") Long idUsuario,
+            @Param("tipo") String tipo,
+            @Param("novoStatus") AgendamentoStatus novoStatus
+    );
 
+    /* -------------------- Verificações de conflito -------------------- */
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
@@ -121,11 +132,12 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             "  AND a.status NOT IN (com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_CLIENTE, com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_PERSONAL) " +
             "  AND a.data < :dataFim " +
             "  AND a.dataFim > :dataInicio")
-    boolean existeConflito(@Param("alunoId") Long alunoId,
-                           @Param("personalId") Long personalId,
-                           @Param("dataInicio") LocalDateTime dataInicio,
-                           @Param("dataFim") LocalDateTime dataFim);
-
+    boolean existeConflito(
+            @Param("alunoId") Long alunoId,
+            @Param("personalId") Long personalId,
+            @Param("dataInicio") LocalDateTime dataInicio,
+            @Param("dataFim") LocalDateTime dataFim
+    );
 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
@@ -142,17 +154,21 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("agendamentoId") Long agendamentoId
     );
 
+    /* -------------------- Relatórios / Agregações -------------------- */
+
     @Query("SELECT MONTH(a.data) as mes," +
-                  "YEAR(a.data) as ano," +
-                  "COUNT(a) FROM agendamento a" +
+            "YEAR(a.data) as ano," +
+            "COUNT(a) FROM agendamento a" +
             " WHERE a.personal.id = :personalId AND" +
             " a.status = :status" +
             " GROUP BY ano, mes" +
             " ORDER BY ano DESC, mes DESC" +
             " LIMIT :quantidadeMeses")
-    List<Object[]> listarConsultoriasRealizadasMes(@Param("personalId") Long personalId,
-                                            @Param("status") AgendamentoStatus status,
-                                            @Param("quantidadeMeses") Integer quantidadeMeses);
+    List<Object[]> listarConsultoriasRealizadasMes(
+            @Param("personalId") Long personalId,
+            @Param("status") AgendamentoStatus status,
+            @Param("quantidadeMeses") Integer quantidadeMeses
+    );
 
     @Query("""
             SELECT COUNT(a) FROM agendamento a
@@ -165,6 +181,4 @@ public interface AgendamentoRepository  extends JpaRepository<Agendamento, Long>
             @Param("status") AgendamentoStatus status,
             @Param("data") LocalDate data
     );
-
 }
-
