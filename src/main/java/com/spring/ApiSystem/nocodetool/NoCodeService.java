@@ -22,6 +22,7 @@ public class NoCodeService {
 
         NoCode content = noCodeRepository.getReferenceById(id);
 
+        content.setIdentifier(noCodeDTO.getIdentifier());
         content.setContent(noCodeDTO.getContent());
         content.setElementTag(noCodeDTO.getElementTag());
 

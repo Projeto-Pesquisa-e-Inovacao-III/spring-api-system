@@ -10,13 +10,18 @@ public class NoCode {
     @Id
     private UUID id;
 
+    // name to identify what is being edited
+    private String identifier;
+
+    // the text that the user wrote
     private String content;
 
     // h1, h2, p, span, img, button etc
     private String elementTag;
 
-    public NoCode(UUID id, String content, String elementTag) {
+    public NoCode(UUID id, String identifier, String content, String elementTag) {
         this.id = id;
+        this.identifier = identifier;
         this.content = content;
         this.elementTag = elementTag;
     }
@@ -27,6 +32,14 @@ public class NoCode {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
     }
 
     public String getContent() {

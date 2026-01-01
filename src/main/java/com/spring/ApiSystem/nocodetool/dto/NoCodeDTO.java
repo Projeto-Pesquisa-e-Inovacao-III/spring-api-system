@@ -6,6 +6,7 @@ import java.util.UUID;
 
 public class NoCodeDTO {
     private UUID id;
+    private String identifier;
     private String content;
     private String elementTag;
 
@@ -13,13 +14,15 @@ public class NoCodeDTO {
     public NoCodeDTO() {
     }
 
-    public NoCodeDTO(UUID id, String content, String elementTag) {
+    public NoCodeDTO(UUID id, String identifier, String content, String elementTag) {
         this.id = id;
+        this.identifier = identifier;
         this.content = content;
         this.elementTag = elementTag;
     }
 
     public NoCodeDTO(NoCode noCode) {
+        this.identifier = noCode.getIdentifier();
         this.content = noCode.getContent();
         this.elementTag = noCode.getElementTag();
     }
@@ -48,5 +51,11 @@ public class NoCodeDTO {
         this.elementTag = elementTag;
     }
 
+    public String getIdentifier() {
+        return identifier;
+    }
 
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 }
