@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.security;
+package com.spring.ApiSystem.security;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;

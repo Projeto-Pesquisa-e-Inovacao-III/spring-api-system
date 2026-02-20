@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.exception;
+package com.spring.ApiSystem.exception;
 
 import org.springframework.http.HttpStatus;
 

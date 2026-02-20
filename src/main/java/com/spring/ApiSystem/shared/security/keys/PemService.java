@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.shared.security.keys;
+package com.spring.ApiSystem.security.keys;
 
-import com.spring.ApiSystem.shared.exception.PemNaoEncontradaException;
+import com.spring.ApiSystem.exception.PemNaoEncontradaException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
