@@ -1,9 +1,9 @@
+package com.spring.ApiSystem.domain.agendamento;
 
-package com.spring.ApiSystem.agendamento;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
-import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
+import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;

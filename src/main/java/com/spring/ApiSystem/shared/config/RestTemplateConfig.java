@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.config;
+package com.spring.ApiSystem.shared.config;
 
 import com.infobip.ApiClient;
 import com.infobip.api.WhatsAppApi;

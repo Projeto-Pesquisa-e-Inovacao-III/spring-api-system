@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.agendamento.exception;
+package com.spring.ApiSystem.domain.agendamento.exception;
 
 public class AgendamentoExistenteNestaDataHorarioException extends RuntimeException {
     public AgendamentoExistenteNestaDataHorarioException() {

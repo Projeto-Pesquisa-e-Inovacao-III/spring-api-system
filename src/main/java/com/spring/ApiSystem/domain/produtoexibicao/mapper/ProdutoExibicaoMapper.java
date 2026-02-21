@@ -1,10 +1,10 @@
-package com.spring.ApiSystem.produtoexibicao.mapper;
+package com.spring.ApiSystem.domain.produtoexibicao.mapper;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ProdutoExibicaoDto;
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

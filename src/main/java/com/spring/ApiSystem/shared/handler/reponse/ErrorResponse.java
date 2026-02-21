@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.handler.reponse;
+package com.spring.ApiSystem.shared.handler.reponse;
 
 import java.time.LocalDateTime;
 

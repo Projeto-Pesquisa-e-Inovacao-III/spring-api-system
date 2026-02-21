@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.aluno.dto.response;
+package com.spring.ApiSystem.domain.aluno.dto.response;
 
 public record ResListarAlunosDto(
     Long id,

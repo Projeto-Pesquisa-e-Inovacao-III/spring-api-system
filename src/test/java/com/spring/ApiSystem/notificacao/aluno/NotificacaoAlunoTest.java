@@ -1,10 +1,11 @@
 package com.spring.ApiSystem.notificacao.aluno;
 
-import com.spring.ApiSystem.aluno.Aluno;
-import com.spring.ApiSystem.notificacoes.email.dto.Email;
-import com.spring.ApiSystem.notificacoes.email.listener.NotificacaoAlunoListener;
-import com.spring.ApiSystem.notificacoes.email.service.EmailService;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.aluno.events.NotificacaoAlunoListener;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

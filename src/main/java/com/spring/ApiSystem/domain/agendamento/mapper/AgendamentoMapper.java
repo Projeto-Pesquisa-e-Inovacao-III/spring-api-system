@@ -1,20 +1,20 @@
-package com.spring.ApiSystem.agendamento.mapper;
+package com.spring.ApiSystem.domain.agendamento.mapper;
 
-import com.spring.ApiSystem.agendamento.Agendamento;
-import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.response.*;
-import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
-import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
-import com.spring.ApiSystem.personal.Personal;
-import com.spring.ApiSystem.personal.PersonalService;
-import com.spring.ApiSystem.produtocontratado.mapper.ProdutoContratadoMapper;
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.mapper.UsuarioMapper;
 
-import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.domain.agendamento.Agendamento;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.*;
+import com.spring.ApiSystem.domain.endereco.mapper.EnderecoMapper;
+import com.spring.ApiSystem.domain.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
+import com.spring.ApiSystem.domain.personal.Personal;
+import com.spring.ApiSystem.domain.personal.PersonalService;
+import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.telefone.mapper.TelefoneMapper;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.mapper.UsuarioMapper;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.mapstruct.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -100,7 +100,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "dataFim", source = "dataFim")
     @Mapping(target = "endereco", source = "endereco")
     @Mapping(target = "status", source = "status")
-    public abstract ResBuscarSolicitacaoPorPersonal toResBuscarSolicitacaoPorPersonal(Agendamento agendamento,@Context  Telefone telefone);
+    public abstract ResBuscarSolicitacaoPorPersonal toResBuscarSolicitacaoPorPersonal(Agendamento agendamento, @Context Telefone telefone);
 
 
     @Mapping(target = "agendamentoId", source = "id")
@@ -113,7 +113,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "dataFim", source = "dataFim")
     @Mapping(target = "endereco", source = "endereco")
     @Mapping(target = "status", source = "status")
-    public abstract ResBuscarSolicitacaoPorAluno toResBuscarSolicitacaoPorAluno(Agendamento agendamento,@Context  Telefone telefone);
+    public abstract ResBuscarSolicitacaoPorAluno toResBuscarSolicitacaoPorAluno(Agendamento agendamento, @Context  Telefone telefone);
 
     // -------------------------------------------------------------
     // DETALHES ALUNO

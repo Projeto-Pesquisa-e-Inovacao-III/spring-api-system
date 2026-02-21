@@ -1,10 +1,11 @@
-package com.spring.ApiSystem.historicoagendamento;
+package com.spring.ApiSystem.domain.historicoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.domain.endereco.Endereco;
+
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,7 @@
-package com.spring.ApiSystem.notificacoes.email.service;
+package com.spring.ApiSystem.shared.infrastructure.email.service;
 
-import com.spring.ApiSystem.notificacoes.email.dto.Email;
+
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.SimpleMailMessage;

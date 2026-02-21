@@ -1,9 +1,9 @@
-package com.spring.ApiSystem.aluno;
+package com.spring.ApiSystem.domain.aluno;
 
-import com.spring.ApiSystem.usuario.UsuarioBaseRepository;
+import com.spring.ApiSystem.domain.usuario.UsuarioBaseRepository;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -22,8 +22,8 @@ public interface AlunoRepository extends UsuarioBaseRepository<Aluno> {
          FROM Aluno a
          JOIN produto_contratado pc ON pc.aluno = a
         WHERE pc.situacao = true AND 
-        pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
+        pc.produtoExibicao.tipoProduto = :tipoProduto
        """)
-    Integer countAlunosComPlanosAtivos();
+    Integer countAlunosComPlanosAtivos(@Param("tipoProduto") TipoProduto tipoProduto);
 
 }

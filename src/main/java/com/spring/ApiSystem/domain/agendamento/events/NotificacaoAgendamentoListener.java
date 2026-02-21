@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.infrastructure.email.listener;
+package com.spring.ApiSystem.domain.agendamento.events;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;

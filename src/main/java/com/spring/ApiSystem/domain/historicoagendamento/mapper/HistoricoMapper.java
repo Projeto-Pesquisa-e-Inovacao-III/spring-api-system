@@ -1,8 +1,9 @@
-package com.spring.ApiSystem.historicoagendamento.mapper;
+package com.spring.ApiSystem.domain.historicoagendamento.mapper;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
-import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamento;
-import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
+
+import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamento;
+import com.spring.ApiSystem.domain.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

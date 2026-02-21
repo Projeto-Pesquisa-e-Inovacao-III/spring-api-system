@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.config;
+package com.spring.ApiSystem.shared.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

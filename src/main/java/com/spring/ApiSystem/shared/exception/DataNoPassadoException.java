@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.exception;
+package com.spring.ApiSystem.shared.exception;
 
 public class DataNoPassadoException extends RuntimeException {
     public DataNoPassadoException() {

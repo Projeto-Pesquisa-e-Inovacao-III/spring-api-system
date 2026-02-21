@@ -1,7 +1,9 @@
-package com.spring.ApiSystem.handler;
+package com.spring.ApiSystem.shared.handler;
 
-import com.spring.ApiSystem.exception.CustomApiException;
-import com.spring.ApiSystem.handler.reponse.ErrorResponse;
+
+
+import com.spring.ApiSystem.shared.exception.CustomApiException;
+import com.spring.ApiSystem.shared.handler.reponse.ErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

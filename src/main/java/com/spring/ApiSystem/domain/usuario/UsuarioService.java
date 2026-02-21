@@ -1,12 +1,15 @@
 package com.spring.ApiSystem.domain.usuario;
 
-import com.spring.ApiSystem.eventos.usuario.UsuarioEventPublisher;
+
 import com.spring.ApiSystem.domain.telefone.TelefoneService;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
+import com.spring.ApiSystem.domain.usuario.events.UsuarioEventPublisher;
 import com.spring.ApiSystem.domain.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.domain.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
+
+
 import com.spring.ApiSystem.shared.security.ArgonService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;

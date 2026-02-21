@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.personal.dto.response;
+package com.spring.ApiSystem.domain.personal.dto.response;
 
-import com.spring.ApiSystem.personal.Personal;
+import com.spring.ApiSystem.domain.personal.Personal;
 
 import java.io.Serializable;
 import java.time.LocalDate;

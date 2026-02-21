@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.aluno.dto.response;
+package com.spring.ApiSystem.domain.aluno.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,46 +1,36 @@
-package com.spring.ApiSystem.agendamento;
+package com.spring.ApiSystem.domain.agendamento;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.List;
-
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
+import com.spring.ApiSystem.domain.agendamento.exception.*;
+import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
+import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.endereco.EnderecoService;
+import com.spring.ApiSystem.domain.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
+import com.spring.ApiSystem.domain.personal.PersonalService;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
+import com.spring.ApiSystem.domain.usuario.exception.PersonalTemAcessoApenasException;
+import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
-import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
-import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.response.ResCriarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoAlunoNaoPodeConfirmaOAgendamento;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoCanceladoComAtencedenciaExeception;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoComAtencedenciaException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoExistenteNestaDataHorarioException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoExisteException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoPodeSerAprovadoException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoPodeSerConcluidoException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoNaoPodeRegistrarAusenciaException;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoPersonalNaoPodeConfirmaOAgendamento;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoTipoDeAulaInvalido;
-import com.spring.ApiSystem.aluno.AlunoService;
-import com.spring.ApiSystem.endereco.EnderecoService;
-import com.spring.ApiSystem.endereco.dto.response.ResCadastrarEnderecoDTO;
-import com.spring.ApiSystem.eventos.agendamentos.AgendamentoEventPublisher;
-import com.spring.ApiSystem.historicoagendamento.HistoricoAgendamentoService;
-import com.spring.ApiSystem.personal.PersonalService;
-import com.spring.ApiSystem.produtocontratado.ProdutoContratadoService;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
-import com.spring.ApiSystem.usuario.exception.AlunoTemAcessoApenasException;
-import com.spring.ApiSystem.usuario.exception.PersonalTemAcessoApenasException;
-import com.spring.ApiSystem.usuario.exception.UsuarioNaoEncontradoException;
-import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.agendamento.mapper.AgendamentoMapper;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class AgendamentoService {

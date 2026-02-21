@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.personal;
+package com.spring.ApiSystem.domain.personal;
 
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.PrimaryKeyJoinColumn;

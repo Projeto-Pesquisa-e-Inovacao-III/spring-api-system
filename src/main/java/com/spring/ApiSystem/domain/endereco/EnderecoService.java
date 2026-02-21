@@ -1,17 +1,17 @@
-package com.spring.ApiSystem.endereco;
+package com.spring.ApiSystem.domain.endereco;
 
 import com.spring.ApiSystem.domain.cep.CepRepository;
 import com.spring.ApiSystem.domain.cep.dto.response.DadosCepDTO;
 
 import com.spring.ApiSystem.domain.cep.exception.CepNaoEncontradoException;
-import com.spring.ApiSystem.endereco.dto.request.ReqAtualizarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.*;
-import com.spring.ApiSystem.usuario.UsuarioService;
-import com.spring.ApiSystem.endereco.exception.EnderecoNaoExistePorId;
-import com.spring.ApiSystem.endereco.mapper.EnderecoMapper;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqAtualizarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.response.*;
+import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import com.spring.ApiSystem.domain.endereco.exception.EnderecoNaoExistePorId;
+import com.spring.ApiSystem.domain.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.domain.cep.CEP;
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.cep.ViaCepService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

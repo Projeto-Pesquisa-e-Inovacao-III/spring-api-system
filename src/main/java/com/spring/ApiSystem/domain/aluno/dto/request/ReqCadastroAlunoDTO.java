@@ -1,7 +1,7 @@
-package com.spring.ApiSystem.aluno.dto.request;
+package com.spring.ApiSystem.domain.aluno.dto.request;
 
-import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;

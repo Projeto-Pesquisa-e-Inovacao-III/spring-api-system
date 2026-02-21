@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.endereco.exception;
+package com.spring.ApiSystem.domain.endereco.exception;
 
 public class EnderecoNaoExistePorId extends RuntimeException {
     public EnderecoNaoExistePorId() {

@@ -1,6 +1,7 @@
-package com.spring.ApiSystem.personal.dto.request;
+package com.spring.ApiSystem.domain.personal.dto.request;
 
-import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
+
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import jakarta.validation.constraints.*;
 
 import java.util.Date;

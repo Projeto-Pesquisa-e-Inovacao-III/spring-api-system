@@ -1,7 +1,8 @@
 package com.spring.ApiSystem.domain.produtocontratado.dto.response;
 
-import com.spring.ApiSystem.produtoexibicao.dto.response.ProdutoExibicaoDto;
+
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ProdutoExibicaoDto;
 import jakarta.validation.constraints.NotNull;
 
 import java.io.Serializable;

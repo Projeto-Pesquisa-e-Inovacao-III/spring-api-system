@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.horariopersonal.dto.request;
+package com.spring.ApiSystem.domain.horariopersonal.dto.request;
 
-import com.spring.ApiSystem.enums.DiaSemana;
-import com.spring.ApiSystem.enums.TipoHorario;
+
+import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
+import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;

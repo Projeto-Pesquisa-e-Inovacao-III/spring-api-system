@@ -1,11 +1,12 @@
-package com.spring.ApiSystem.endereco.mapper;
+package com.spring.ApiSystem.domain.endereco.mapper;
 
 import com.spring.ApiSystem.domain.cep.mapper.CepMapper;
 
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.endereco.dto.request.ReqAtualizarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.*;
+
+import com.spring.ApiSystem.domain.endereco.Endereco;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqAtualizarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.response.*;
 import org.mapstruct.*;
 
 import java.util.List;

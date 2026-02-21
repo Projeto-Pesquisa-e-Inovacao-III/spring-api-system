@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.enums;
+package com.spring.ApiSystem.domain.horariopersonal.enums;
 
 public enum TipoHorario {
     DISPONIVEL,

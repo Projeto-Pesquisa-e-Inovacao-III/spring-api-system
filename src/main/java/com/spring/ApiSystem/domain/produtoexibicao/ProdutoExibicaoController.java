@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.produtoexibicao;
+package com.spring.ApiSystem.domain.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -15,6 +15,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/produtos-exibicoes")
 public class ProdutoExibicaoController {
+
     private final ProdutoExibicaoService produtoExibicaoService;
 
     public ProdutoExibicaoController(ProdutoExibicaoService produtoExibicaoService) {

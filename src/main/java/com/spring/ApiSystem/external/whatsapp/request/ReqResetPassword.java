@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.externalservice.dto.request;
+package com.spring.ApiSystem.external.whatsapp.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

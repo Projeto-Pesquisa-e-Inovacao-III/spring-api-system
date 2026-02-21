@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.aluno.exception;
+package com.spring.ApiSystem.domain.aluno.exception;
 
 public class AlunoNaoExisteException extends RuntimeException {
     public AlunoNaoExisteException() {

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.comprar.dto;
+package com.spring.ApiSystem.external.comprar.dto;
 
 import jakarta.validation.constraints.NotBlank;
 

@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.agendamento.dto.request;
+package com.spring.ApiSystem.domain.agendamento.dto.request;
 
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 
 public record ReqRegistrarAusenciaAgendamento(
         Long idAgendamento,

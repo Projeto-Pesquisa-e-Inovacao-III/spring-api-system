@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.historicoagendamento;
+package com.spring.ApiSystem.domain.historicoagendamento;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.externalservice.service;
+package com.spring.ApiSystem.external.whatsapp;
 
 import com.infobip.ApiException;
 import com.infobip.api.WhatsAppApi;
@@ -9,11 +9,11 @@ import com.infobip.model.WhatsAppTemplateBodyContent;
 import com.infobip.model.WhatsAppTemplateContent;
 import com.infobip.model.WhatsAppTemplateDataContent;
 import com.infobip.model.WhatsAppTemplateUrlButtonContent;
-import com.spring.ApiSystem.externalservice.dto.request.ReqSendResetCode;
-import com.spring.ApiSystem.externalservice.dto.request.ReqVerifyCode;
-import com.spring.ApiSystem.externalservice.dto.request.ReqResetPassword;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import com.spring.ApiSystem.external.whatsapp.request.ReqResetPassword;
+import com.spring.ApiSystem.external.whatsapp.request.ReqSendResetCode;
+import com.spring.ApiSystem.external.whatsapp.request.ReqVerifyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -62,6 +62,7 @@ public class WhatsappResetService {
     // GERAR E ENVIAR VIA INFOBIP
     // Retorna messageId da Infobip
     // ==========================
+
     public String sendResetCodeViaInfobip(ReqSendResetCode req) {
         String normalized = normalize(req.pais(), req.ddd(), req.numero());
         if (normalized.isBlank()) throw new RuntimeException("Telefone inválido.");
@@ -117,6 +118,7 @@ public class WhatsappResetService {
     // ==========================
     // VALIDAR CÓDIGO
     // ==========================
+
     public String verifyCode(ReqVerifyCode req) {
         String normalized = normalize(req.pais(), req.ddd(), req.numero());
         String storedCode = verificationCodes.get(normalized);

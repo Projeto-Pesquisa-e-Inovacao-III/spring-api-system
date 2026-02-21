@@ -1,6 +1,10 @@
 package com.spring.ApiSystem.aluno;
 
-import com.spring.ApiSystem.aluno.dto.response.ResAlunosPagantesDTO;
+
+import com.spring.ApiSystem.domain.aluno.AlunoRepository;
+import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResAlunosPagantesDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -28,7 +32,7 @@ class AlunoServiceTest {
         // Arrange
         Integer quantidadeEsperada = 25;
 
-        when(alunoRepository.countAlunosComPlanosAtivos())
+        when(alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE))
                 .thenReturn(quantidadeEsperada);
 
         // Act
@@ -38,7 +42,7 @@ class AlunoServiceTest {
         assertNotNull(resultado);
         assertEquals(quantidadeEsperada, resultado.getQuantidadeAlunos());
 
-        verify(alunoRepository, times(1)).countAlunosComPlanosAtivos();
+        verify(alunoRepository, times(1)).countAlunosComPlanosAtivos(TipoProduto.PACOTE);
     }
 
     @Test
@@ -47,7 +51,7 @@ class AlunoServiceTest {
         // Arrange
         Integer quantidadeEsperada = 0;
 
-        when(alunoRepository.countAlunosComPlanosAtivos())
+        when(alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE))
                 .thenReturn(quantidadeEsperada);
 
         // Act
@@ -65,7 +69,7 @@ class AlunoServiceTest {
         // Arrange
         Integer valorRepositorio = 42;
 
-        when(alunoRepository.countAlunosComPlanosAtivos())
+        when(alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE))
                 .thenReturn(valorRepositorio);
 
         // Act

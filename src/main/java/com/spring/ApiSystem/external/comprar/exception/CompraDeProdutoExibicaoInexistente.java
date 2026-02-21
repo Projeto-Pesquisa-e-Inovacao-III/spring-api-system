@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.comprar.exception;
+package com.spring.ApiSystem.external.comprar.exception;
 
 public class CompraDeProdutoExibicaoInexistente extends RuntimeException {
     public CompraDeProdutoExibicaoInexistente(Long id) {

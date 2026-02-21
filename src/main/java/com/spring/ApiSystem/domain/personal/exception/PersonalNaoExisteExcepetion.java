@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.personal.exception;
+package com.spring.ApiSystem.domain.personal.exception;
 
 public class PersonalNaoExisteExcepetion extends RuntimeException {
     public PersonalNaoExisteExcepetion() {

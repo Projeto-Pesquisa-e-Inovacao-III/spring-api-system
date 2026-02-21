@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.agendamento.dto.request;
+package com.spring.ApiSystem.domain.agendamento.dto.request;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;

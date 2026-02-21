@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.telefone;
+package com.spring.ApiSystem.domain.telefone;
 
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
 @Entity(name = "telefone")

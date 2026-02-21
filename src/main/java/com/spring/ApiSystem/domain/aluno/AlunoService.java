@@ -1,21 +1,22 @@
-package com.spring.ApiSystem.aluno;
+package com.spring.ApiSystem.domain.aluno;
 
-import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResAlunosPagantesDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
-import com.spring.ApiSystem.aluno.exception.AlunoNaoExisteException;
-import com.spring.ApiSystem.aluno.exception.AlunoPersistenciaException;
-import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
-import com.spring.ApiSystem.aluno.exception.CpfExistenteException;
-import com.spring.ApiSystem.aluno.mapper.AlunoMapper;
-import com.spring.ApiSystem.eventos.aluno.AlunoEventPublisher;
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.UsuarioService;
+import com.spring.ApiSystem.domain.aluno.dto.request.ReqAtualizarAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.request.ReqCadastroAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResAtualizarAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResAlunosPagantesDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResCadastrarAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.exception.AlunoNaoExisteException;
+import com.spring.ApiSystem.domain.aluno.exception.AlunoPersistenciaException;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
+import com.spring.ApiSystem.domain.aluno.exception.CpfExistenteException;
+import com.spring.ApiSystem.domain.aluno.mapper.AlunoMapper;
+import com.spring.ApiSystem.domain.aluno.events.AlunoEventPublisher;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -126,7 +127,7 @@ public class AlunoService {
     }
 
     public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
-        Integer quantidade = alunoRepository.countAlunosComPlanosAtivos();
+        Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
         return new ResAlunosPagantesDTO(quantidade);
     }
 }

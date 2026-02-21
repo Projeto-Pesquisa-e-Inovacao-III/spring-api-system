@@ -1,7 +1,9 @@
-package com.spring.ApiSystem.agendamento.dto.response;
+package com.spring.ApiSystem.domain.agendamento.dto.response;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+
+
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 
 import java.time.LocalDateTime;
 

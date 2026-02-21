@@ -1,14 +1,16 @@
-package com.spring.ApiSystem.personal.mapper;
+package com.spring.ApiSystem.domain.personal.mapper;
 
-import com.spring.ApiSystem.personal.Personal;
-import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
-import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+
+import com.spring.ApiSystem.domain.personal.Personal;
+import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
+
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

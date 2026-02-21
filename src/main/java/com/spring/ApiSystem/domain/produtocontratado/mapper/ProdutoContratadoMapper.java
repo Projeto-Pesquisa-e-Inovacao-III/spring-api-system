@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.produtocontratado.mapper;
 
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
-import com.spring.ApiSystem.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import org.mapstruct.*;
 

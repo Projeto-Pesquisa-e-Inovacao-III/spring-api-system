@@ -1,11 +1,12 @@
-package com.spring.ApiSystem.horariopersonal;
+package com.spring.ApiSystem.domain.horariopersonal;
 
-import com.spring.ApiSystem.enums.DiaSemana;
-import com.spring.ApiSystem.horariopersonal.dto.request.ReqHorarioDTO;
-import com.spring.ApiSystem.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
-import com.spring.ApiSystem.horariopersonal.dto.response.ResHorarioDTO;
-import com.spring.ApiSystem.horariopersonal.dto.response.ResSlotDisponivelDTO;
-import com.spring.ApiSystem.horariopersonal.mapper.DisponibilidadePersonalMapper;
+
+import com.spring.ApiSystem.domain.horariopersonal.dto.request.ReqHorarioDTO;
+import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
+import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.domain.horariopersonal.mapper.DisponibilidadePersonalMapper;
+import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonalService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

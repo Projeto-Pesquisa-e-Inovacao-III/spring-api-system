@@ -1,23 +1,20 @@
-package com.spring.ApiSystem.shared.infrastructure.email.listener;
+package com.spring.ApiSystem.domain.produtocontratado.events;
 
-import com.spring.ApiSystem.domain.produtocontratado.events.ProdutoContrataListener;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
-import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NotificacaoProdutoContratado implements ProdutoContrataListener {
+public class NotificacaoProdutoContratado {
 
     private final EmailService emailService;
 
-    public NotificacaoProdutoContratado(EmailService emailService, UsuarioService usuarioService) {
+    public NotificacaoProdutoContratado(EmailService emailService) {
         this.emailService = emailService;
     }
 
-    @Override
     public void onProdutoContratadoCreated(ProdutoContratado produtoContratado) {
 
         Usuario usuario =produtoContratado.getAluno();
@@ -32,4 +29,5 @@ public class NotificacaoProdutoContratado implements ProdutoContrataListener {
         );
         emailService.enviarEmail(email);
     }
+
 }

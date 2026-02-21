@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.endereco;
+package com.spring.ApiSystem.domain.endereco;
 
-import com.spring.ApiSystem.endereco.dto.request.ReqAtualizarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.*;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqAtualizarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

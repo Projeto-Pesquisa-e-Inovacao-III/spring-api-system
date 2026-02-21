@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.agendamento.dto.request;
+package com.spring.ApiSystem.domain.agendamento.dto.request;
 
 public record ReqCancelarAgendamento(
         Long idAgendamento,

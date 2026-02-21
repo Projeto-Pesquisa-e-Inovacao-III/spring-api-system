@@ -7,11 +7,12 @@ import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdD
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAuthDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqLoginUsuarioDTO;
-import com.spring.ApiSystem.config.filter.FilterService;
+
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;

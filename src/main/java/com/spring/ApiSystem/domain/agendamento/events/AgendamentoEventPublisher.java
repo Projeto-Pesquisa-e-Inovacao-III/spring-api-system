@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.eventos.agendamentos;
+package com.spring.ApiSystem.domain.agendamento.events;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.usuario.Usuario;

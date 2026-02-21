@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.agendamento.dto.response;
+package com.spring.ApiSystem.domain.agendamento.dto.response;
 
 public record ResListarConsultoriasRealizadasDto(
         Integer mes,

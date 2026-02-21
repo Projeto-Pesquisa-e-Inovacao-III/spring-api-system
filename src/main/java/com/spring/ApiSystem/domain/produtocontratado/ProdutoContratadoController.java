@@ -3,7 +3,7 @@ package com.spring.ApiSystem.domain.produtocontratado;
 import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqCriarProdutoContratadoPagamentoDTO;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import com.spring.ApiSystem.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
 
 import java.time.LocalDate;

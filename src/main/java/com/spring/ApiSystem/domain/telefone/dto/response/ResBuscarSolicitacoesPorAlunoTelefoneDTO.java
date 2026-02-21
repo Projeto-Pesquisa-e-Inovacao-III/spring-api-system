@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.telefone.dto.response;
+package com.spring.ApiSystem.domain.telefone.dto.response;
 
 public record ResBuscarSolicitacoesPorAlunoTelefoneDTO(
         String pais,

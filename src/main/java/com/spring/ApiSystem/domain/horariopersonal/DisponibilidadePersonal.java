@@ -1,8 +1,9 @@
-package com.spring.ApiSystem.horariopersonal;
+package com.spring.ApiSystem.domain.horariopersonal;
 
-import com.spring.ApiSystem.enums.DiaSemana;
-import com.spring.ApiSystem.enums.TipoHorario;
-import com.spring.ApiSystem.personal.Personal;
+
+import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
+import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
+import com.spring.ApiSystem.domain.personal.Personal;
 import jakarta.persistence.*;
 
 

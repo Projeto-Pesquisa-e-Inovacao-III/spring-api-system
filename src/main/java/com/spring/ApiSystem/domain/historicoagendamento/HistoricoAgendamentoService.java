@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.historicoagendamento;
+package com.spring.ApiSystem.domain.historicoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
-import com.spring.ApiSystem.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
-import com.spring.ApiSystem.historicoagendamento.mapper.HistoricoMapper;
+import com.spring.ApiSystem.domain.historicoagendamento.dtos.request.ReqCadastrarHistoricoAgendamentoDTO;
+import com.spring.ApiSystem.domain.historicoagendamento.mapper.HistoricoMapper;
 import org.springframework.stereotype.Service;
 
 @Service

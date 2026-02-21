@@ -1,7 +1,6 @@
-package com.spring.ApiSystem.produtoexibicao.dto.response;
+package com.spring.ApiSystem.domain.produtoexibicao.dto.response;
 
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 
 import java.io.Serializable;
 

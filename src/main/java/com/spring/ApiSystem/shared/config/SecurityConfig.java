@@ -1,7 +1,8 @@
 
-package com.spring.ApiSystem.config;
+package com.spring.ApiSystem.shared.config;
 
-import com.spring.ApiSystem.config.filter.FilterService;
+
+import com.spring.ApiSystem.shared.config.filter.FilterService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

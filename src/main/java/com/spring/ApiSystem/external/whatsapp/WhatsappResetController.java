@@ -1,9 +1,9 @@
-package com.spring.ApiSystem.externalservice.controller;
+package com.spring.ApiSystem.external.whatsapp;
 
-import com.spring.ApiSystem.externalservice.dto.request.ReqSendResetCode;
-import com.spring.ApiSystem.externalservice.dto.request.ReqVerifyCode;
-import com.spring.ApiSystem.externalservice.dto.request.ReqResetPassword;
-import com.spring.ApiSystem.externalservice.service.WhatsappResetService;
+
+import com.spring.ApiSystem.external.whatsapp.request.ReqResetPassword;
+import com.spring.ApiSystem.external.whatsapp.request.ReqSendResetCode;
+import com.spring.ApiSystem.external.whatsapp.request.ReqVerifyCode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.*;

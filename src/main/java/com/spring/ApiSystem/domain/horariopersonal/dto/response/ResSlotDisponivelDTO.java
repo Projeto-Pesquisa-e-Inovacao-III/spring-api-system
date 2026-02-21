@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.horariopersonal.dto.response;
+package com.spring.ApiSystem.domain.horariopersonal.dto.response;
 
 import java.time.LocalTime;
 

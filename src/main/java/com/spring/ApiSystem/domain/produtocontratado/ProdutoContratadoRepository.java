@@ -1,8 +1,9 @@
 package com.spring.ApiSystem.domain.produtocontratado;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import jakarta.persistence.LockModeType;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -60,7 +61,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
          FROM produto_contratado pc
         WHERE pc.situacao = true
           AND pc.aluno.email = :email
-          AND pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
+          AND pc.produtoExibicao.tipoProduto = TipoProduto.PACOTE
        """)
     Optional<ProdutoContratado> buscarProdutoContratadoAtivo(@Param("email") String email);
 
@@ -114,7 +115,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
       FROM produto_contratado pc
      WHERE pc.aluno = :aluno
        AND pc.situacao = true
-       AND pc.produtoExibicao.tipoProduto = com.spring.ApiSystem.produtoexibicao.enums.TipoProduto.PACOTE
+       AND pc.produtoExibicao.tipoProduto = TipoProduto.PACOTE
        AND pc.dataExpiracao >= CURRENT_DATE
     """)
     boolean temProdutoContratadoPacoteAtivo(@Param("aluno") Aluno aluno);

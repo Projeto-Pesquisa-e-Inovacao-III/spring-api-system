@@ -1,19 +1,20 @@
-package com.spring.ApiSystem.personal;
+package com.spring.ApiSystem.domain.personal;
 
-import com.spring.ApiSystem.config.filter.FilterService;
-import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
-import com.spring.ApiSystem.personal.dto.request.ReqAtualizarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.request.ReqAtualizarBufferDTO;
-import com.spring.ApiSystem.personal.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResAtualizarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResBuscarBufferDTO;
-import com.spring.ApiSystem.personal.dto.response.ResBuscarPersonalPorIdDTO;
-import com.spring.ApiSystem.personal.dto.response.ResCadastrarPersonalDTO;
-import com.spring.ApiSystem.personal.dto.response.ResListarPersonaisDTO;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.dto.request.ReqCadastroUsuarioDTO;
-import com.spring.ApiSystem.usuario.dto.response.ResCadastrarUsuarioDTO;
-import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
+
+import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarBufferDTO;
+import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarBufferDTO;
+import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarBufferDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.dto.request.ReqCadastroUsuarioDTO;
+import com.spring.ApiSystem.domain.usuario.dto.response.ResCadastrarUsuarioDTO;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;

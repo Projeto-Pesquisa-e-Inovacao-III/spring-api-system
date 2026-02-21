@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.config;
+package com.spring.ApiSystem.shared.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

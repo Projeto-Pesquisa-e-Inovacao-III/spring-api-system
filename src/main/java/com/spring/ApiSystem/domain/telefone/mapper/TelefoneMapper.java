@@ -1,9 +1,11 @@
-package com.spring.ApiSystem.telefone.mapper;
+package com.spring.ApiSystem.domain.telefone.mapper;
 
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.*;
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.response.*;
+
+
 import org.mapstruct.Mapper;
 
 import java.util.List;

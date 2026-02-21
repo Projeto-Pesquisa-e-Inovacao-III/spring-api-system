@@ -1,4 +1,5 @@
-package com.spring.ApiSystem.eventos.usuario;
+package com.spring.ApiSystem.domain.usuario.events;
+
 
 import com.spring.ApiSystem.domain.usuario.Usuario;
 

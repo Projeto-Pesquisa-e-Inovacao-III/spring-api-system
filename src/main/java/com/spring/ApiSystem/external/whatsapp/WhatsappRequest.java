@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.externalservice.model;
+package com.spring.ApiSystem.external.whatsapp;
 
 public class WhatsappRequest {
 

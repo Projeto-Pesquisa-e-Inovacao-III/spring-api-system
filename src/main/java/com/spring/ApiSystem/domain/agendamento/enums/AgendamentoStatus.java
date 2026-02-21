@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.agendamento.enums;
+package com.spring.ApiSystem.domain.agendamento.enums;
 
 public enum AgendamentoStatus {
     APROVADO,

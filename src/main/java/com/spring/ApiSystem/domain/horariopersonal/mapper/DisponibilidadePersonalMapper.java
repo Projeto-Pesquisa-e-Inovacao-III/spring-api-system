@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.horariopersonal.mapper;
+package com.spring.ApiSystem.domain.horariopersonal.mapper;
 
-import com.spring.ApiSystem.horariopersonal.DisponibilidadePersonal;
-import com.spring.ApiSystem.horariopersonal.dto.response.ResHorarioDTO;
+
+import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonal;
+import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -4,16 +4,18 @@ import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoRepository;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.domain.produtocontratado.events.ProdutoContratadoEventPublisher;
 import com.spring.ApiSystem.domain.produtocontratado.exception.*;
-import com.spring.ApiSystem.eventos.produtocontratado.ProdutoContratadoEventPublisher;
-import com.spring.ApiSystem.produtocontratado.dto.response.*;
-import com.spring.ApiSystem.produtocontratado.exception.*;
+
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.domain.produtocontratado.exception.*;
 import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicaoService;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
-import com.spring.ApiSystem.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
+
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

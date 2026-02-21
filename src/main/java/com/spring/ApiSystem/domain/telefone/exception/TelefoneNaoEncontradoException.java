@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.telefone.exception;
+package com.spring.ApiSystem.domain.telefone.exception;
 
 public class TelefoneNaoEncontradoException extends RuntimeException {
     public TelefoneNaoEncontradoException() {

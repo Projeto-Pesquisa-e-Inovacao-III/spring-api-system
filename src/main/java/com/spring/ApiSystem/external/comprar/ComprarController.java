@@ -1,4 +1,5 @@
-package com.spring.ApiSystem.domain.comprar;
+package com.spring.ApiSystem.external.comprar;
+
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.personal.dto.response;
+package com.spring.ApiSystem.domain.personal.dto.response;
 
 public record ResBuscarBufferDTO(
         Integer bufferMinutos

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.personal.dto.request;
+package com.spring.ApiSystem.domain.personal.dto.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

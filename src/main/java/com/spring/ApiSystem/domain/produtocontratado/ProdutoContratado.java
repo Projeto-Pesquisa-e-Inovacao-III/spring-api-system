@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.produtocontratado;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.agendamento.dto.request;
+package com.spring.ApiSystem.domain.agendamento.dto.request;
 
-import com.spring.ApiSystem.endereco.dto.request.ReqCadastrarEnderecoDTO;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
+
+import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 

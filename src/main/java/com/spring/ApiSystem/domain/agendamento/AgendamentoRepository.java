@@ -1,6 +1,6 @@
-        package com.spring.ApiSystem.agendamento;
+package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -129,7 +129,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
             "  AND a.personal.id = :personalId " +
-            "  AND a.status NOT IN (com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_CLIENTE, com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_PERSONAL) " +
+            "  AND a.status NOT IN (AgendamentoStatus.CANCELADO_CLIENTE, AgendamentoStatus.CANCELADO_PERSONAL) " +
             "  AND a.data < :dataFim " +
             "  AND a.dataFim > :dataInicio")
     boolean existeConflito(
@@ -143,7 +143,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             "WHERE a.aluno.id = :alunoId " +
             "  AND a.personal.id = :personalId " +
             "  AND a.id <> :agendamentoId " +
-            "  AND a.status NOT IN (com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_CLIENTE, com.spring.ApiSystem.agendamento.enums.AgendamentoStatus.CANCELADO_PERSONAL) " +
+            "  AND a.status NOT IN (AgendamentoStatus.CANCELADO_CLIENTE, AgendamentoStatus.CANCELADO_PERSONAL) " +
             "  AND a.data < :dataFim " +
             "  AND a.dataFim > :dataInicio")
     boolean existeConflitoExcluindoAgendamento(

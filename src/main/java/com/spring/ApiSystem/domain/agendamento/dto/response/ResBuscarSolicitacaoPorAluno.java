@@ -1,10 +1,9 @@
-package com.spring.ApiSystem.agendamento.dto.response;
+package com.spring.ApiSystem.domain.agendamento.dto.response;
 
-import com.spring.ApiSystem.endereco.dto.response.ResBuscarSolicitacoesPorAlunoEnderecoDTO;
-import com.spring.ApiSystem.endereco.dto.response.ResBuscarSolicitacoesPorPersonalEnderecoDTO;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.telefone.dto.response.ResBuscarSolicitacoesPorAlunoTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResBuscarSolicitacoesPorPersonalTelefoneDTO;
+
+import com.spring.ApiSystem.domain.endereco.dto.response.ResBuscarSolicitacoesPorAlunoEnderecoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResBuscarSolicitacoesPorAlunoTelefoneDTO;
 
 import java.time.LocalDateTime;
 

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.comprar.exception;
+package com.spring.ApiSystem.external.comprar.exception;
 
 public class AlunoJaTemProdutoContratado extends RuntimeException {
     public AlunoJaTemProdutoContratado() {

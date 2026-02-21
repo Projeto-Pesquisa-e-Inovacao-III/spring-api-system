@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.endereco.dto.response;
+package com.spring.ApiSystem.domain.endereco.dto.response;
 
 import com.spring.ApiSystem.domain.cep.dto.response.ResBuscarAgendamentosPersonalPorIdCEPDto;
 

@@ -1,7 +1,8 @@
 package com.spring.ApiSystem.notificacao;
 
-import com.spring.ApiSystem.notificacoes.email.dto.Email;
-import com.spring.ApiSystem.notificacoes.email.service.EmailService;
+
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

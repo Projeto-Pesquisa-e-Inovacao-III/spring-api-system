@@ -1,7 +1,9 @@
-package com.spring.ApiSystem.agendamento.state;
+package com.spring.ApiSystem.domain.agendamento.state;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.agendamento.exception.AgendamentoStateException;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.exception.AgendamentoStateException;
+
+
 
 public class AgendamentoAprovado implements AgendamentoState {
 

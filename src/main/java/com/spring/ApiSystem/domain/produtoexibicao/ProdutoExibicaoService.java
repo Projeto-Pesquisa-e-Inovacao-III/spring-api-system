@@ -1,11 +1,11 @@
-package com.spring.ApiSystem.produtoexibicao;
+package com.spring.ApiSystem.domain.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.produtoexibicao.dto.response.ResProdutoExibicaoDto;
-import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
-import com.spring.ApiSystem.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
-import com.spring.ApiSystem.produtoexibicao.mapper.ProdutoExibicaoMapper;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
+import com.spring.ApiSystem.domain.produtoexibicao.mapper.ProdutoExibicaoMapper;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;

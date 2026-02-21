@@ -1,7 +1,7 @@
-package com.spring.ApiSystem.personal.dto.request;
+package com.spring.ApiSystem.domain.personal.dto.request;
 
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
+
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;

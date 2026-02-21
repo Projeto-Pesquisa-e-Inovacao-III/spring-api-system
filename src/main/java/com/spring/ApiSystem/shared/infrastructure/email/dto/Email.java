@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.notificacoes.email.dto;
+package com.spring.ApiSystem.shared.infrastructure.email.dto;
 
 public record Email(
         String destinatario,

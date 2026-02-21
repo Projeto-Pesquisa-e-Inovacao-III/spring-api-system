@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.produtoexibicao;
+package com.spring.ApiSystem.domain.produtoexibicao;
 
 import com.spring.ApiSystem.domain.horariopersonal.HorarioAgendadoProjection;
-import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
+
+import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -30,7 +31,7 @@ public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao
     @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
             "FROM produto_exibicao p " +
             "WHERE p.id = :id " +
-            "AND p.status = com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus.ATIVO")
+            "AND p.status = ProdutoExibicaoStatus.ATIVO")
     boolean existsProdutoExibicaoAtivoById(@Param("id") Long id);
 
 }

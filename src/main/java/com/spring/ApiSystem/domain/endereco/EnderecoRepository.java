@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.endereco;
+package com.spring.ApiSystem.domain.endereco;
 
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

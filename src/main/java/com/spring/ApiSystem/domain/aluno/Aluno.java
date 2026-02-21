@@ -1,8 +1,9 @@
-package com.spring.ApiSystem.aluno;
+package com.spring.ApiSystem.domain.aluno;
 
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.usuario.enums.TipoUsuario;
+
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;

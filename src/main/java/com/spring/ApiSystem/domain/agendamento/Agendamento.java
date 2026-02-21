@@ -1,11 +1,11 @@
-package com.spring.ApiSystem.agendamento;
+package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.agendamento.state.*;
-import com.spring.ApiSystem.aluno.Aluno;
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.personal.Personal;
-import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.state.*;
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.endereco.Endereco;
+import com.spring.ApiSystem.domain.personal.Personal;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

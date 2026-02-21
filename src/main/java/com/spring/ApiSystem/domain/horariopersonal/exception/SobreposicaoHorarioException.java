@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.horariopersonal.exception;
+package com.spring.ApiSystem.domain.horariopersonal.exception;
 
 public class SobreposicaoHorarioException extends RuntimeException {
     public SobreposicaoHorarioException() {

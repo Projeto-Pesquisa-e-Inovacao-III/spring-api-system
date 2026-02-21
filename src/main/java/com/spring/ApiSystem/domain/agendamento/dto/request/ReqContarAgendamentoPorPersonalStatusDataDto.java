@@ -1,6 +1,7 @@
-package com.spring.ApiSystem.agendamento.dto.request;
+package com.spring.ApiSystem.domain.agendamento.dto.request;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 

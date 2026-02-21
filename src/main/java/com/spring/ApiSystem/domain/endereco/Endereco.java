@@ -1,7 +1,8 @@
-package com.spring.ApiSystem.endereco;
+package com.spring.ApiSystem.domain.endereco;
 
 import com.spring.ApiSystem.domain.cep.CEP;
-import com.spring.ApiSystem.usuario.Usuario;
+
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 

@@ -1,9 +1,9 @@
-package com.spring.ApiSystem.historicoagendamento.dtos.request;
+package com.spring.ApiSystem.domain.historicoagendamento.dtos.request;
 
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
-import com.spring.ApiSystem.endereco.Endereco;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.usuario.Usuario;
+import com.spring.ApiSystem.domain.endereco.Endereco;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 

@@ -1,12 +1,12 @@
 
-package com.spring.ApiSystem.agendamento;
+package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
-import com.spring.ApiSystem.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.request.ReqContarAgendamentoPorPersonalStatusDataDto;
-import com.spring.ApiSystem.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
-import com.spring.ApiSystem.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqContarAgendamentoPorPersonalStatusDataDto;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
+import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

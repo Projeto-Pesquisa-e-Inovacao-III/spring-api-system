@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.agendamento.state;
+package com.spring.ApiSystem.domain.agendamento.state;
 
-import com.spring.ApiSystem.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 
 public interface AgendamentoState {
 

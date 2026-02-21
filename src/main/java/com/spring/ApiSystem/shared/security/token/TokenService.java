@@ -1,11 +1,12 @@
-package com.spring.ApiSystem.security.token;
+package com.spring.ApiSystem.shared.security.token;
 
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
-import com.spring.ApiSystem.security.keys.PemService;
+
+import com.spring.ApiSystem.shared.security.keys.PemService;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import java.time.Instant;

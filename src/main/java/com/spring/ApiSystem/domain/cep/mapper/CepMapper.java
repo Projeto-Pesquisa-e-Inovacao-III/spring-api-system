@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.domain.cep.mapper;
 
-import com.spring.ApiSystem.cep.dto.response.*;
 import com.spring.ApiSystem.domain.cep.CEP;
 import com.spring.ApiSystem.domain.cep.dto.response.*;
 import org.mapstruct.BeanMapping;

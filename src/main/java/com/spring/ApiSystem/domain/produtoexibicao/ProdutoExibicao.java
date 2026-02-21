@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.produtoexibicao;
+package com.spring.ApiSystem.domain.produtoexibicao;
 
-import com.spring.ApiSystem.produtoexibicao.enums.ProdutoExibicaoStatus;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

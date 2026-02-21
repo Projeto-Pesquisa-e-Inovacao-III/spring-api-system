@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.eventos.produtocontratado;
+package com.spring.ApiSystem.domain.produtocontratado.events;
 
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 

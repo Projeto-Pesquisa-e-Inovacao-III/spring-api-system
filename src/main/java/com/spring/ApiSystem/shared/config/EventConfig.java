@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.config;
+package com.spring.ApiSystem.shared.config;
 
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoListener;

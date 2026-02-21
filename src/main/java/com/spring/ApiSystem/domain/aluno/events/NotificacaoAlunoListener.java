@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.infrastructure.email.listener;
+package com.spring.ApiSystem.domain.aluno.events;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.events.AlunosListener;

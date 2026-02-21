@@ -1,16 +1,17 @@
-package com.spring.ApiSystem.aluno.mapper;
+package com.spring.ApiSystem.domain.aluno.mapper;
 
-import com.spring.ApiSystem.aluno.Aluno;
-import com.spring.ApiSystem.aluno.dto.request.ReqAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.request.ReqCadastroAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResAtualizarAlunoDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResBuscarAlunoPorIdDTO;
-import com.spring.ApiSystem.aluno.dto.response.ResCadastrarAlunoDTO;
-import com.spring.ApiSystem.telefone.Telefone;
-import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
-import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
-import com.spring.ApiSystem.usuario.Usuario;
-import com.spring.ApiSystem.aluno.dto.response.ResListarAlunosDto;
+
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.aluno.dto.request.ReqAtualizarAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.request.ReqCadastroAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResAtualizarAlunoDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResCadastrarAlunoDTO;
+
+import com.spring.ApiSystem.domain.telefone.Telefone;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.telefone.dto.request;
+package com.spring.ApiSystem.domain.telefone.dto.request;
 
 
 import jakarta.validation.constraints.NotBlank;

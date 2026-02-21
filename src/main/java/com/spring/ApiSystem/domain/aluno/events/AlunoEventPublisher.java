@@ -1,5 +1,4 @@
-package com.spring.ApiSystem.eventos.aluno;
-
+package com.spring.ApiSystem.domain.aluno.events;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 

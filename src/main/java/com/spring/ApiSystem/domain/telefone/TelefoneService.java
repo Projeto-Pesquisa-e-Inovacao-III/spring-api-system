@@ -1,15 +1,16 @@
-package com.spring.ApiSystem.telefone;
+package com.spring.ApiSystem.domain.telefone;
 
-import com.spring.ApiSystem.telefone.dto.request.ReqAtualizarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResAtualizarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResCadastrarTelefoneDTO;
-import com.spring.ApiSystem.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
-import com.spring.ApiSystem.telefone.exception.TelefoneDeveTerUmCadastroException;
-import com.spring.ApiSystem.telefone.exception.TelefoneDuplicadoException;
-import com.spring.ApiSystem.telefone.exception.TelefoneNaoEncontradoException;
-import com.spring.ApiSystem.telefone.mapper.TelefoneMapper;
-import com.spring.ApiSystem.usuario.Usuario;
+
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResAtualizarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+import com.spring.ApiSystem.domain.telefone.exception.TelefoneDeveTerUmCadastroException;
+import com.spring.ApiSystem.domain.telefone.exception.TelefoneDuplicadoException;
+import com.spring.ApiSystem.domain.telefone.exception.TelefoneNaoEncontradoException;
+import com.spring.ApiSystem.domain.telefone.mapper.TelefoneMapper;
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
