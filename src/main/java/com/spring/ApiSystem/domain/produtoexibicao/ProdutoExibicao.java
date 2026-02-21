@@ -1,11 +1,14 @@
 package com.spring.ApiSystem.domain.produtoexibicao;
 
+import com.spring.ApiSystem.domain.beneficio.Beneficio;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity(name = "produto_exibicao")
 public class ProdutoExibicao {
@@ -20,6 +23,10 @@ public class ProdutoExibicao {
 
     @Column(nullable = false)
     private String descricao;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "beneficios", nullable = false)
+    private List<Beneficio> beneficios = new ArrayList<>();
 
     @Column(nullable = false)
     private Double preco;
@@ -57,11 +64,12 @@ public class ProdutoExibicao {
     public ProdutoExibicao() {
     }
 
-    public ProdutoExibicao(Long id, String titulo, String subtitulo, String descricao, Double preco, String periodo, ProdutoExibicaoStatus status, TipoProduto tipoProduto, LocalDateTime dataCriacao, TipoAula tipoAula, Integer quantidadeAula, Integer duracaoMes) {
+    public ProdutoExibicao(Long id, String titulo, String subtitulo, String descricao, List<Beneficio> beneficios, Double preco, String periodo, ProdutoExibicaoStatus status, TipoProduto tipoProduto, LocalDateTime dataCriacao, TipoAula tipoAula, Integer quantidadeAula, Integer duracaoMes) {
         this.id = id;
         this.titulo = titulo;
         this.subtitulo = subtitulo;
         this.descricao = descricao;
+        this.beneficios = beneficios;
         this.preco = preco;
         this.periodo = periodo;
         this.status = status;
@@ -104,6 +112,14 @@ public class ProdutoExibicao {
         this.descricao = descricao;
     }
 
+    public List<Beneficio> getBeneficios() {
+        return beneficios;
+    }
+
+    public void setBeneficios(List<Beneficio> beneficios) {
+        this.beneficios = beneficios;
+    }
+
     public Double getPreco() {
         return preco;
     }
@@ -128,6 +144,14 @@ public class ProdutoExibicao {
         this.status = status;
     }
 
+    public TipoProduto getTipoProduto() {
+        return tipoProduto;
+    }
+
+    public void setTipoProduto(TipoProduto tipoProduto) {
+        this.tipoProduto = tipoProduto;
+    }
+
     public LocalDateTime getDataCriacao() {
         return dataCriacao;
     }
@@ -136,13 +160,21 @@ public class ProdutoExibicao {
         this.dataCriacao = dataCriacao;
     }
 
-    public TipoAula getTipoAula() {return tipoAula;}
+    public TipoAula getTipoAula() {
+        return tipoAula;
+    }
 
-    public void setTipoAula(TipoAula tipoAula) {this.tipoAula = tipoAula;}
+    public void setTipoAula(TipoAula tipoAula) {
+        this.tipoAula = tipoAula;
+    }
 
-    public Integer getQuantidadeAula() {return quantidadeAula;}
+    public Integer getQuantidadeAula() {
+        return quantidadeAula;
+    }
 
-    public void setQuantidadeAula(Integer quantidadeAula) {this.quantidadeAula = quantidadeAula;}
+    public void setQuantidadeAula(Integer quantidadeAula) {
+        this.quantidadeAula = quantidadeAula;
+    }
 
     public Integer getDuracaoMes() {
         return duracaoMes;
@@ -152,11 +184,5 @@ public class ProdutoExibicao {
         this.duracaoMes = duracaoMes;
     }
 
-    public TipoProduto getTipoProduto() {
-        return tipoProduto;
-    }
 
-    public void setTipoProduto(TipoProduto tipoProduto) {
-        this.tipoProduto = tipoProduto;
-    }
 }

@@ -1,13 +1,14 @@
 package com.spring.ApiSystem.domain.produtoexibicao.dto.request;
 
 
+import com.spring.ApiSystem.domain.beneficio.Beneficio;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
-import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
+
+import java.util.List;
 
 public record ReqEdicaoProdutoExibicaoDTO(
     @NotBlank(message = "Título é obrigatório")
@@ -17,6 +18,11 @@ public record ReqEdicaoProdutoExibicaoDTO(
 
     @NotBlank(message = "Descrição é obrigatória")
     String descricao,
+
+    @Valid
+    @NotNull(message = "Benefícios são obrigatórios")
+    @Size(min = 1, max = 8,  message = "Deve haver entre 1 e 8 benefícios")
+    List<Beneficio> beneficios,
 
     @NotNull(message = "Preço é obrigatório")
     @Positive(message = "Preço deve ser positivo")
@@ -47,6 +53,7 @@ public record ReqEdicaoProdutoExibicaoDTO(
                 this.titulo,
                 this.subtitulo,
                 this.descricao,
+                this.beneficios,
                 this.preco,
                 this.periodo,
                 this.status,

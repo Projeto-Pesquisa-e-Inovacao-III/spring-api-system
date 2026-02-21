@@ -64,6 +64,7 @@ public class TokenService {
     para que seja gerado um tempo de expiração correto
     independente da localidade
     */
+
     private Instant gerarDataExpiracao(){
         return LocalDateTime.now()
                 .plusHours(1)

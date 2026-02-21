@@ -33,8 +33,7 @@ public class ProdutoExibicaoController {
             description = "Endpoint para edição de produtos de exibição no sistema," +
                     "onde é gerado um novo produto com as informações atualizadas")
     @PostMapping("/editar/{id}")
-    public ResponseEntity<ResProdutoExibicaoDto>
-    editarProduto(@PathVariable Long id,
+    public ResponseEntity<ResProdutoExibicaoDto> editarProduto(@PathVariable Long id,
                   @Valid @RequestBody ReqEdicaoProdutoExibicaoDTO produto){
         return ResponseEntity.ok(produtoExibicaoService.editarProduto(id, produto));
     }
