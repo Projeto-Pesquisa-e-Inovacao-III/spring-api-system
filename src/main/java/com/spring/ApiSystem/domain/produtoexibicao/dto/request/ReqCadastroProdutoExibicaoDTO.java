@@ -2,7 +2,7 @@ package com.spring.ApiSystem.domain.produtoexibicao.dto.request;
 
 
 import com.spring.ApiSystem.domain.beneficio.Beneficio;
-import com.spring.ApiSystem.domain.beneficio.dto.request.ReqBeneficioDTO;
+import com.spring.ApiSystem.domain.beneficio.dto.request.ReqCreateBeneficioDTO;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
@@ -23,7 +23,7 @@ public record ReqCadastroProdutoExibicaoDTO(
     @Valid
     @NotNull(message = "Lista de benefícios não pode ser nula")
     @Size(min = 1, max = 8,  message = "Deve haver entre 1 e 8 benefícios")
-    List<ReqBeneficioDTO> beneficios,
+    List<ReqCreateBeneficioDTO> beneficios,
 
     @NotNull(message = "Preço é obrigatório")
     @Positive(message = "Preço deve ser positivo")

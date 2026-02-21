@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.domain.beneficio.dto.response;
 
-public record ResBeneficioDTO(
+public record ResListBeneficioDTO(
     Long id,
     String valor
 )

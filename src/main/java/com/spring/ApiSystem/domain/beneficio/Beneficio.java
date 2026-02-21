@@ -19,7 +19,7 @@ public class Beneficio {
     private String valor;
 
     @ManyToOne (fetch = FetchType.LAZY)
-    @JoinColumn(name = "produto_exibicao", nullable = false)
+    @JoinColumn(name = "produto_exibicao_id", nullable = false)
     private ProdutoExibicao produtoExibicao;
 
     public Beneficio() {
