@@ -7,8 +7,19 @@ import java.time.LocalDateTime;
 
 public record ReqGetAgendamentoDto(
         String nomeDoAluno,
-        AgendamentoStatus status,
-        TipoAula tipoAgendamento,
+        String status,
+        String tipoAgendamento,
         LocalDateTime dataInic,
         LocalDateTime dataFim
-) {}
+)
+{
+    public AgendamentoStatus getStatusEnum() {
+        return status != null &&  !status.isBlank() ?
+                AgendamentoStatus.valueOf(status.toUpperCase()) : null;
+    }
+
+    public TipoAula getTipoAgendamentoEnum() {
+        return tipoAgendamento != null && !tipoAgendamento.isBlank()  ?
+                TipoAula.valueOf(tipoAgendamento.toUpperCase()) : null;
+    }
+}

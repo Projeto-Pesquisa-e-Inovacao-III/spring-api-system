@@ -286,8 +286,8 @@ public class AgendamentoService {
             Page<Agendamento> agendamentosPage = agendamentoRepository.findByPersonalIdOrderByDataAsc(
                     usuario.getId(),
                     dto.nomeDoAluno(),
-                    dto.status(),
-                    dto.tipoAgendamento(),
+                    dto.getStatusEnum(),
+                    dto.getTipoAgendamentoEnum(),
                     dto.dataInic(),
                     dto.dataFim(),
                     pageable);
