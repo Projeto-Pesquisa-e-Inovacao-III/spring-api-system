@@ -1,8 +1,8 @@
 package com.spring.ApiSystem.domain.produtoexibicao.mapper;
 
 import com.spring.ApiSystem.domain.beneficio.mapper.BeneficioMapper;
-import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
-import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
@@ -29,12 +29,12 @@ public interface ProdutoExibicaoMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "dataCriacao", ignore = true)
-    ProdutoExibicao toEntity(ReqCadastroProdutoExibicaoDTO reqCadastroProdutoExibicaoDTO);
+    ProdutoExibicao toEntity(ReqCadastroProdutoExibicaoDto reqCadastroProdutoExibicaoDTO);
 
-    ProdutoExibicao toEntity(ReqEdicaoProdutoExibicaoDTO dto);
+    ProdutoExibicao toEntity(ReqEdicaoProdutoExibicaoDto dto);
     ResProdutoExibicaoDto toResProdutoExibicaoDTO(ProdutoExibicao produtoExibicao);
 
-    ReqCadastroProdutoExibicaoDTO toCadastroProdutoExibicaoDTO(ReqEdicaoProdutoExibicaoDTO produtoExibicao);
+    ReqCadastroProdutoExibicaoDto toCadastroProdutoExibicaoDTO(ReqEdicaoProdutoExibicaoDto produtoExibicao);
     List<ResProdutoExibicaoDto> toResProdutoExibicaoDTOList(List<ProdutoExibicao> produtoExibicoes);
 
 

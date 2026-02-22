@@ -21,7 +21,6 @@ public class ProdutoExibicao {
 
     private String subtitulo;
 
-    @Column(nullable = false)
     private String descricao;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
