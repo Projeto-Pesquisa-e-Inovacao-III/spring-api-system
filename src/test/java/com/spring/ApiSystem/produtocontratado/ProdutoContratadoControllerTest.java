@@ -1,6 +1,8 @@
 package com.spring.ApiSystem.produtocontratado;
 
-import com.spring.ApiSystem.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoController;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

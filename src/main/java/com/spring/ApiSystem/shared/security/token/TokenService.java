@@ -5,6 +5,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+
 import com.spring.ApiSystem.shared.security.keys.PemService;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,7 @@ public class TokenService {
     para que seja gerado um tempo de expiração correto
     independente da localidade
     */
+
     private Instant gerarDataExpiracao(){
         return LocalDateTime.now()
                 .plusHours(1)

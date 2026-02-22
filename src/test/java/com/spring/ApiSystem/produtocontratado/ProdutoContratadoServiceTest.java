@@ -1,8 +1,11 @@
 package com.spring.ApiSystem.produtocontratado;
 
-import com.spring.ApiSystem.aluno.AlunoRepository;
-import com.spring.ApiSystem.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
-import com.spring.ApiSystem.produtoexibicao.enums.TipoProduto;
+
+import com.spring.ApiSystem.domain.aluno.AlunoRepository;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoRepository;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResQuantidadePercentualAlunosExpiradosDto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

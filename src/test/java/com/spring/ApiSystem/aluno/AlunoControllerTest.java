@@ -1,6 +1,8 @@
 package com.spring.ApiSystem.aluno;
 
-import com.spring.ApiSystem.aluno.dto.response.ResAlunosPagantesDTO;
+import com.spring.ApiSystem.domain.aluno.AlunoController;
+import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResAlunosPagantesDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -9,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;

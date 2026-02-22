@@ -1,10 +1,11 @@
 package com.spring.ApiSystem.notificacao.produtocontratado;
-import com.spring.ApiSystem.aluno.Aluno;
-import com.spring.ApiSystem.notificacoes.email.dto.Email;
-import com.spring.ApiSystem.notificacoes.email.listener.NotificacaoProdutoContratado;
-import com.spring.ApiSystem.notificacoes.email.service.EmailService;
-import com.spring.ApiSystem.produtocontratado.ProdutoContratado;
-import com.spring.ApiSystem.produtoexibicao.ProdutoExibicao;
+
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.domain.produtocontratado.events.NotificacaoProdutoContratado;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
