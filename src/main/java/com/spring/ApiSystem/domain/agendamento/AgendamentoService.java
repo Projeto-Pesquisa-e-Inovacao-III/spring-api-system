@@ -323,32 +323,6 @@ public class AgendamentoService {
         throw new UsuarioNaoEncontradoException();
     }
 
-    @Transactional
-    public Page<?> buscarAgendamentosFiltrandoPorDatasStatus(
-            ReqBuscarAgendamentosFiltrados reqBuscarAgendamentosFiltrados,
-            Pageable pageable) {
-        Usuario usuario = obterUsuarioAutenticado();
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
-            Page<Agendamento> agendamentosPage = agendamentoRepository
-                    .buscarPorAlunoComFiltros(
-                            usuario.getId(),
-                            reqBuscarAgendamentosFiltrados.dataInicio(),
-                            reqBuscarAgendamentosFiltrados.dataFim(),
-                            reqBuscarAgendamentosFiltrados.status(),
-                            pageable);
-            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(agendamento, agendamento.getPersonal().getTelefones().getFirst()));
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
-            Page<Agendamento> agendamentosPage = agendamentoRepository
-                    .buscarPorPersonalPorNomeEStatus(
-                            usuario.getId(),
-                            reqBuscarAgendamentosFiltrados.nome(),
-                            reqBuscarAgendamentosFiltrados.status(),
-                            pageable);
-            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento, agendamento.getAluno().getTelefones().getFirst()));
-        }
-        throw new UsuarioNaoEncontradoException();
-    }
-
     @Transactional(readOnly = true)
     public Object buscarDadosDoAgendamentoPorId(Long agendamentoId) {
         Usuario usuario = obterUsuarioAutenticado();

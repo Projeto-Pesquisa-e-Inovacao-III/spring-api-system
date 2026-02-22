@@ -47,32 +47,6 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     /* -------------------- Consultas com filtros/custom -------------------- */
 
     @Query("SELECT a FROM agendamento a " +
-            "WHERE a.aluno.id = :alunoId " +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "  AND a.data >= COALESCE(:dataInicio, a.data) " +
-            "  AND a.data <= COALESCE(:dataFim, a.data) " +
-            "ORDER BY a.data ASC")
-    Page<Agendamento> buscarPorAlunoComFiltros(
-            @Param("alunoId") Long alunoId,
-            @Param("dataInicio") LocalDateTime dataInicio,
-            @Param("dataFim") LocalDateTime dataFim,
-            @Param("status") AgendamentoStatus status,
-            Pageable pageable
-    );
-
-    @Query("SELECT a FROM agendamento a " +
-            "WHERE a.personal.id = :personalId " +
-            "  AND (COALESCE(TRIM(:nome), '') = '' OR LOWER(a.aluno.nome) LIKE LOWER(CONCAT('%', TRIM(:nome), '%'))) " +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "ORDER BY a.data ASC")
-    Page<Agendamento> buscarPorPersonalPorNomeEStatus(
-            @Param("personalId") Long personalId,
-            @Param("nome") String nome,
-            @Param("status") AgendamentoStatus status,
-            Pageable pageable
-    );
-
-    @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +
             "LEFT JOIN FETCH pc.produtoExibicao pe " +
             "LEFT JOIN FETCH a.personal p " +

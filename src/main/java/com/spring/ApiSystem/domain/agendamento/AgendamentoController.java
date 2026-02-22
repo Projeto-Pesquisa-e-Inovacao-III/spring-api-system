@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
+import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -24,9 +25,11 @@ public class AgendamentoController {
     private static final int PAGE_SIZE_SOLICITACOES = 30;
 
     private final AgendamentoService agendamentoService;
+    private final PageableService pageableService;
 
-    public AgendamentoController(AgendamentoService agendamentoService) {
+    public AgendamentoController(AgendamentoService agendamentoService, PageableService pageableService) {
         this.agendamentoService = agendamentoService;
+        this.pageableService = pageableService;
     }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */
@@ -79,7 +82,7 @@ public class AgendamentoController {
     @GetMapping("/solicitacoes")
     public ResponseEntity<Page<?>> buscarSolicitacaoPorPersonal(@ModelAttribute ReqGetAgendamentoDto dto,
                                                                 Pageable pageable) {
-        Pageable pageableWithSetSize= setMaxSizePageable(pageable, PAGE_SIZE_SOLICITACOES);
+        Pageable pageableWithSetSize= pageableService.setMaxSizePageable(pageable, PAGE_SIZE_SOLICITACOES);
         Page<?> page = agendamentoService.buscarSolicitacaoPorTipoUsuarios(dto, pageableWithSetSize);
         return ResponseEntity.ok(page);
     }
@@ -103,18 +106,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.buscarAgendamentosPorUsuario());
     }
 
-    @Operation(summary = "Buscar agendamentos filtrados", description = "Busca agendamentos filtrando por datas e status com paginação.")
-    @PostMapping("/filtrar")
-    public ResponseEntity<Page<?>> buscarFiltrando(
-            @Valid @RequestBody ReqBuscarAgendamentosFiltrados filtros,
-            Pageable pageable) {
-        Page<?> res = agendamentoService.buscarAgendamentosFiltrandoPorDatasStatus(
-                filtros,
-                criarPageableComTamanho(pageable, PAGE_SIZE_FILTRAR)
-        );
-        return ResponseEntity.ok(res);
-    }
-
     @Operation(summary = "Contar agendamentos por personal, status e data",
             description = "Retorna a contagem de agendamentos de um personal, filtrados por status e data específica.")
     @PostMapping("/contagem-status-data")
@@ -128,19 +119,5 @@ public class AgendamentoController {
     @GetMapping("/consultoria-realizadas/{quantidadeMeses}")
     public ResponseEntity<List<ResListarConsultoriasRealizadasDto>> listarConsultoriasRealizadasMeses(@PathVariable Integer quantidadeMeses) {
         return ResponseEntity.ok(agendamentoService.listarConsultoriasRealizadasMes(quantidadeMeses));
-    }
-
-    /* -------------------- Helpers -------------------- */
-
-    private Pageable criarPageableComTamanho(Pageable pageable, int tamanho) {
-        return PageRequest.of(pageable.getPageNumber(), tamanho, pageable.getSort());
-    }
-
-    private Pageable setMaxSizePageable(Pageable pageable, int maxSize) {
-        if (pageable.getPageSize() > maxSize) {
-            throw new IllegalArgumentException("O tamanho da página não pode ser maior que " + maxSize);
-        }
-        int size = Math.min(pageable.getPageSize(), maxSize);
-        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 }
