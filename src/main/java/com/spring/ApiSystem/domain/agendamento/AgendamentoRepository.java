@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,7 +25,22 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
 
-    Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.personal.id = :personalId " +
+            "  AND (:nomeDoAluno IS NULL OR a.aluno.nome LIKE %:nomeDoAluno%) " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
+            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
+            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
+            "ORDER BY a.data ASC")
+    Page<Agendamento> findByPersonalIdOrderByDataAsc(
+            @Param("personalId") Long personalId,
+            @Param("nomeDoAluno") String nomeDoAluno,
+            @Param("status") AgendamentoStatus status,
+            @Param("tipoAgendamento") TipoAula tipoAgendamento,
+            @Param("dataInic") LocalDateTime dataInic,
+            @Param("dataFim") LocalDateTime dataFim,
+            Pageable pageable);
 
     Page<Agendamento> findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
 

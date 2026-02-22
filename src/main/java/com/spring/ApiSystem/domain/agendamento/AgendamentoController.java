@@ -1,11 +1,7 @@
 
 package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqContarAgendamentoPorPersonalStatusDataDto;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -25,7 +21,7 @@ import java.util.List;
 public class AgendamentoController {
 
     private static final int PAGE_SIZE_FILTRAR = 8;
-    private static final int PAGE_SIZE_SOLICITACOES = 9;
+    private static final int PAGE_SIZE_SOLICITACOES = 30;
 
     private final AgendamentoService agendamentoService;
 
@@ -81,9 +77,10 @@ public class AgendamentoController {
 
     @Operation(summary = "Buscar solicitações por personal", description = "Retorna solicitações paginadas por tipo de usuário.")
     @GetMapping("/solicitacoes")
-    public ResponseEntity<Page<?>> buscarSolicitacaoPorPersonal(Pageable pageable) {
-        Pageable pageableComTamanhoFixado = criarPageableComTamanho(pageable, PAGE_SIZE_SOLICITACOES);
-        Page<?> page = agendamentoService.buscarSolicitacaoPorTipoUsuarios(pageableComTamanhoFixado);
+    public ResponseEntity<Page<?>> buscarSolicitacaoPorPersonal(@ModelAttribute ReqGetAgendamentoDto dto,
+                                                                Pageable pageable) {
+        Pageable pageableWithSetSize= setMaxSizePageable(pageable, PAGE_SIZE_SOLICITACOES);
+        Page<?> page = agendamentoService.buscarSolicitacaoPorTipoUsuarios(dto, pageableWithSetSize);
         return ResponseEntity.ok(page);
     }
 
@@ -137,5 +134,13 @@ public class AgendamentoController {
 
     private Pageable criarPageableComTamanho(Pageable pageable, int tamanho) {
         return PageRequest.of(pageable.getPageNumber(), tamanho, pageable.getSort());
+    }
+
+    private Pageable setMaxSizePageable(Pageable pageable, int maxSize) {
+        if (pageable.getPageSize() > maxSize) {
+            throw new IllegalArgumentException("O tamanho da página não pode ser maior que " + maxSize);
+        }
+        int size = Math.min(pageable.getPageSize(), maxSize);
+        return PageRequest.of(pageable.getPageNumber(), size, pageable.getSort());
     }
 }
