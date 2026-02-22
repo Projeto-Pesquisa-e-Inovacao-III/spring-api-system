@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.produtoexibicao;
 
-import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDTO;
-import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDTO;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
@@ -24,7 +24,7 @@ public class ProdutoExibicaoService {
     }
 
     @Transactional
-    public ResProdutoExibicaoDto criarProduto(ReqCadastroProdutoExibicaoDTO produto){
+    public ResProdutoExibicaoDto criarProduto(ReqCadastroProdutoExibicaoDto produto){
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
         produtoEntity.setDataCriacao(LocalDateTime.now());
         produtoExibicaoRepository.save(produtoEntity);
@@ -32,7 +32,7 @@ public class ProdutoExibicaoService {
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(produtoEntity);
     }
 
-    public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDTO produto){
+    public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDto produto){
         produto =  produto.withTipoProduto(buscarPorId(id).getTipoProduto());
         desativarProduto(id);
         return criarProduto(produtoExibicaoMapper.toCadastroProdutoExibicaoDTO(produto));
@@ -49,8 +49,7 @@ public class ProdutoExibicaoService {
     }
 
     public List<ResProdutoExibicaoDto> listarProdutos(){
-        List<ResProdutoExibicaoDto> resProdutoExibicaoDTO = produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
-        return  resProdutoExibicaoDTO;
+        return produtoExibicaoMapper.toResProdutoExibicaoDTOList(produtoExibicaoRepository.findAll());
     }
 
     public ProdutoExibicao buscarPorId(Long id){
