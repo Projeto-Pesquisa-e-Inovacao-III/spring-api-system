@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
 
 import java.time.LocalDate;
@@ -82,8 +81,13 @@ public class ProdutoContratadoController {
     }
 
     @GetMapping("/total-tipo/{tipoAula}")
-    public ResponseEntity<ResBuscarSaldoPorTipoAulaDto> buscarTotalSaldoAulaPorTipo(@PathVariable TipoAula tipoAula){
-        return ResponseEntity.ok(produtoContratadoService.buscarTotalSaldoAulaPorTipo(tipoAula));
+    public ResponseEntity<ResBuscarSaldoPorTipoAulaDto> buscarTotalSaldoAulaPorTipoEspecifico(@PathVariable TipoAula tipoAula){
+        return ResponseEntity.ok(produtoContratadoService.buscarTotalSaldoAulaPorTipoEspecifico(tipoAula));
+    }
+
+    @GetMapping("/total-tipo")
+    public ResponseEntity<ResTotalTipoSaldosDto> buscarTotalSaldosPorTipoAula(){
+        return ResponseEntity.ok(produtoContratadoService.getSaldoFromAllTipoAula());
     }
 
     @Operation(summary = "Lista todos os produtos contratados do usuário (necessário login)",
