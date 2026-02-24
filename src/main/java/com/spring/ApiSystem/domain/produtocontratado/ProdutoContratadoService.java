@@ -7,8 +7,6 @@ import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.events.ProdutoContratadoEventPublisher;
 import com.spring.ApiSystem.domain.produtocontratado.exception.*;
 
-import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
-import com.spring.ApiSystem.domain.produtocontratado.exception.*;
 import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
@@ -179,15 +177,30 @@ public class ProdutoContratadoService {
         return produtoContratadoRepository.temProdutoContratadoPacoteAtivo(aluno);
     }
 
-    public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipo(TipoAula tipoAula){
-        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+    public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
         List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
-        Integer total = produtos.stream()
+        return produtos.stream()
                 .map(ProdutoContratado::getSaldoAula)
                 .reduce(0, Integer::sum);
+    }
+
+    public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipoEspecifico(TipoAula tipoAula){
+        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+
+        Integer total = getTotalTipoAula(usuario, tipoAula);
 
         return new ResBuscarSaldoPorTipoAulaDto(tipoAula, total);
+    }
+
+    public ResTotalTipoSaldosDto getSaldoFromAllTipoAula(){
+        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+
+        return new ResTotalTipoSaldosDto(
+                getTotalTipoAula(usuario, TipoAula.PRESENCIAL),
+                getTotalTipoAula(usuario, TipoAula.RESIDENCIAL),
+                getTotalTipoAula(usuario, TipoAula.FUNCIONAL)
+        );
     }
 
     private boolean produtoElegivel(ProdutoContratado produtoContratado) {
