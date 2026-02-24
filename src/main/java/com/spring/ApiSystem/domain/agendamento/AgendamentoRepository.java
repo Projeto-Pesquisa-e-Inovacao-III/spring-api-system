@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -24,37 +25,26 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
 
-    Page<Agendamento> findByPersonalIdOrderByDataAsc(Long personalId, Pageable pageable);
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.personal.id = :personalId " +
+            "  AND (:nomeDoAluno IS NULL OR a.aluno.nome LIKE %:nomeDoAluno%) " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
+            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
+            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
+            "ORDER BY a.data ASC")
+    Page<Agendamento> findByPersonalIdOrderByDataAsc(
+            @Param("personalId") Long personalId,
+            @Param("nomeDoAluno") String nomeDoAluno,
+            @Param("status") AgendamentoStatus status,
+            @Param("tipoAgendamento") TipoAula tipoAgendamento,
+            @Param("dataInic") LocalDateTime dataInic,
+            @Param("dataFim") LocalDateTime dataFim,
+            Pageable pageable);
 
     Page<Agendamento> findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
 
     /* -------------------- Consultas com filtros/custom -------------------- */
-
-    @Query("SELECT a FROM agendamento a " +
-            "WHERE a.aluno.id = :alunoId " +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "  AND a.data >= COALESCE(:dataInicio, a.data) " +
-            "  AND a.data <= COALESCE(:dataFim, a.data) " +
-            "ORDER BY a.data ASC")
-    Page<Agendamento> buscarPorAlunoComFiltros(
-            @Param("alunoId") Long alunoId,
-            @Param("dataInicio") LocalDateTime dataInicio,
-            @Param("dataFim") LocalDateTime dataFim,
-            @Param("status") AgendamentoStatus status,
-            Pageable pageable
-    );
-
-    @Query("SELECT a FROM agendamento a " +
-            "WHERE a.personal.id = :personalId " +
-            "  AND (COALESCE(TRIM(:nome), '') = '' OR LOWER(a.aluno.nome) LIKE LOWER(CONCAT('%', TRIM(:nome), '%'))) " +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "ORDER BY a.data ASC")
-    Page<Agendamento> buscarPorPersonalPorNomeEStatus(
-            @Param("personalId") Long personalId,
-            @Param("nome") String nome,
-            @Param("status") AgendamentoStatus status,
-            Pageable pageable
-    );
 
     @Query("SELECT a FROM agendamento a " +
             "LEFT JOIN FETCH a.produtoContratado pc " +

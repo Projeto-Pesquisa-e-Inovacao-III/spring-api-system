@@ -1,9 +1,6 @@
 package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqBuscarAgendamentosFiltrados;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.domain.agendamento.dto.request.ReqRegistrarAusenciaAgendamento;
+import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
@@ -23,6 +20,8 @@ import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasExcepti
 import com.spring.ApiSystem.domain.usuario.exception.PersonalTemAcessoApenasException;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
+import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -277,16 +276,37 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public Page<?> buscarSolicitacaoPorTipoUsuarios(Pageable pageable) {
+    public Page<?> buscarSolicitacaoPorTipoUsuarios(ReqGetAgendamentoDto dto, Pageable pageable) {
         Usuario usuario = obterUsuarioAutenticado();
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             Page<Agendamento> agendamentosPage = agendamentoRepository.findByAlunoIdOrderByDataAsc(usuario.getId(), pageable);
             return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(agendamento, agendamento.getPersonal().getTelefones().getFirst()));
         } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
-            Page<Agendamento> agendamentosPage = agendamentoRepository.findByPersonalIdOrderByDataAsc(usuario.getId(), pageable);
+            validateDateInicAndEnd(dto.dataInic(), dto.dataFim());
+            Page<Agendamento> agendamentosPage = agendamentoRepository.findByPersonalIdOrderByDataAsc(
+                    usuario.getId(),
+                    dto.nomeDoAluno(),
+                    dto.getStatusEnum(),
+                    dto.getTipoAgendamentoEnum(),
+                    dto.dataInic(),
+                    dto.dataFim(),
+                    pageable);
             return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento, agendamento.getAluno().getTelefones().getFirst()));
         }
         throw new UsuarioNaoEncontradoException();
+    }
+
+    public void validateDateInicAndEnd(LocalDateTime dateBegin, LocalDateTime dateEnd) {
+        if(dateBegin != null && dateEnd == null) {
+            throw new DateBeginAndEndNecessaryException("dateEnd", "dateBegin");
+        }
+        if(dateBegin == null && dateEnd != null) {
+            throw new DateBeginAndEndNecessaryException("dateBegin", "dateEnd");
+        }
+        if(dateBegin != null && dateEnd != null && dateBegin.isAfter(dateEnd)) {
+            throw new DateEndAfterBeginException("dateEnd", "dateBegin");
+        }
+
     }
 
     @Transactional
@@ -299,32 +319,6 @@ public class AgendamentoService {
         } else if (usuario.getTipo()== TipoUsuario.PERSONAL) {
             List<Agendamento> agendamentos = agendamentoRepository.findAgendamentoByPersonal_Id(usuario.getId());
             return agendamentoMapper.resBuscarAgendamentosParaCalendarioPorPersonalList(agendamentos);
-        }
-        throw new UsuarioNaoEncontradoException();
-    }
-
-    @Transactional
-    public Page<?> buscarAgendamentosFiltrandoPorDatasStatus(
-            ReqBuscarAgendamentosFiltrados reqBuscarAgendamentosFiltrados,
-            Pageable pageable) {
-        Usuario usuario = obterUsuarioAutenticado();
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
-            Page<Agendamento> agendamentosPage = agendamentoRepository
-                    .buscarPorAlunoComFiltros(
-                            usuario.getId(),
-                            reqBuscarAgendamentosFiltrados.dataInicio(),
-                            reqBuscarAgendamentosFiltrados.dataFim(),
-                            reqBuscarAgendamentosFiltrados.status(),
-                            pageable);
-            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(agendamento, agendamento.getPersonal().getTelefones().getFirst()));
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
-            Page<Agendamento> agendamentosPage = agendamentoRepository
-                    .buscarPorPersonalPorNomeEStatus(
-                            usuario.getId(),
-                            reqBuscarAgendamentosFiltrados.nome(),
-                            reqBuscarAgendamentosFiltrados.status(),
-                            pageable);
-            return agendamentosPage.map(agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorPersonal(agendamento, agendamento.getAluno().getTelefones().getFirst()));
         }
         throw new UsuarioNaoEncontradoException();
     }
