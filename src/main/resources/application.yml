@@ -1,7 +1,9 @@
 spring:
   application:
     name: spring-api-system
-
+  web:
+    resources:
+      add-mappings: false
   profiles:
     active: dev
 

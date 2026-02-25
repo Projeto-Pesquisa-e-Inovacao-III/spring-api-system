@@ -30,7 +30,7 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 @Tag(name = "Usuários", description = "Operações relacionadas a usuários")
-@RequestMapping("/usuarios")
+@RequestMapping("/api/usuarios")
 @RestController
 public class UsuarioController {
 

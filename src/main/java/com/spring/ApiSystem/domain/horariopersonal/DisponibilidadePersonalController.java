@@ -22,7 +22,7 @@ import java.util.List;
 
 @Tag(name = "Disponibilidade Personal",
 description = "Operações para gerenciar os horários e a disponibilidade do Personal")
-@RequestMapping("/personais")
+@RequestMapping("/api/personais")
 @RestController
 public class DisponibilidadePersonalController {
 

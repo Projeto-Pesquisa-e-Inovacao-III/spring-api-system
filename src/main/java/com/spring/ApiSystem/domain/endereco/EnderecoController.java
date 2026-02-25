@@ -15,7 +15,7 @@ import java.util.List;
 
 @Tag(name = "Endereços", description = "Operações relacionadas a endereços")
 @RestController
-@RequestMapping("/enderecos")
+@RequestMapping("/api/enderecos")
 public class EnderecoController {
     private final EnderecoService enderecoService;
 
@@ -80,7 +80,6 @@ public class EnderecoController {
         ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorIdDto(id);
         return ResponseEntity.ok(enderecoEncontrado);
     }
-
 
     @Operation(summary = "Listar endereços (necessário login)",
                description = "Endpoint para listagem de endereços no sistema")

@@ -18,7 +18,7 @@ import java.util.List;
 
 @Tag(name = "Agendamentos", description = "Operações relacionadas a agendamentos")
 @RestController
-@RequestMapping("/agendamentos")
+@RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
     private static final int PAGE_SIZE_FILTRAR = 8;
@@ -97,7 +97,7 @@ public class AgendamentoController {
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<?> buscarDadosDoAgendamentoPorId(@PathVariable("id") Long agendamentoId) {
         Object dados = agendamentoService.buscarDadosDoAgendamentoPorId(agendamentoId);
-        return ResponseEntity.ok(dados);
+        return ResponseEntity.notFound().build();
     }
 
     @Operation(summary = "Buscar agendamentos do usuário", description = "Retorna os agendamentos do usuário autenticado.")

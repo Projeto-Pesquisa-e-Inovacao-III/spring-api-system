@@ -13,7 +13,7 @@ import java.util.List;
 
 @Tag(name = "Produtos Exibição", description = "Operações relacionadas aos produtos que serão exibidos")
 @RestController
-@RequestMapping("/produtos-exibicoes")
+@RequestMapping("/api/produtos-exibicoes")
 public class ProdutoExibicaoController {
 
     private final ProdutoExibicaoService produtoExibicaoService;
