@@ -15,5 +15,8 @@ public record ReqAtualizarTelefoneDTO(
 
         @NotBlank(message = "Número não pode estar vazio")
         @Pattern(regexp = "\\d{8,9}", message = "Número deve conter 8 ou 9 dígitos")
-        String numero
+        String numero,
+
+        @NotBlank
+        String pais
 ) {}
