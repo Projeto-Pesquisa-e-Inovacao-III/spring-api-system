@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.horariopersonal.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
 import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
 import jakarta.validation.constraints.NotNull;
@@ -16,8 +17,10 @@ public record ReqHorarioDTO(
         TipoHorario tipo,
 
         @NotNull(message = "A hora de início não pode ser nula")
+        @JsonFormat (pattern = "HH:mm")
         LocalTime horaInicio,
 
         @NotNull(message = "A hora de fim não pode ser nula")
+        @JsonFormat (pattern = "HH:mm")
         LocalTime horaFim
 ) {}

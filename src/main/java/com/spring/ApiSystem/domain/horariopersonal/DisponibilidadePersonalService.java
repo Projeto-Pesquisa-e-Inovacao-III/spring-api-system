@@ -6,6 +6,7 @@ import com.spring.ApiSystem.domain.horariopersonal.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
 import com.spring.ApiSystem.domain.horariopersonal.exception.SobreposicaoHorarioException;
+import com.spring.ApiSystem.domain.horariopersonal.exception.HorarioInvalidoException;
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalRepository;
@@ -31,6 +32,11 @@ public class DisponibilidadePersonalService {
 
     private static final int BUFFER_ANTECEDENCIA_RESTRICAO = 15;
     private static final int DURACAO_MINIMA_AULA = 30;
+    private static final int DURACAO_MINIMA_DISPONIBILIDADE = 60;
+    private static final int DURACAO_MAXIMA_PERIODO = 720;
+    private static final LocalTime HORARIO_COMERCIAL_INICIO = LocalTime.of(6, 0);
+    private static final LocalTime HORARIO_COMERCIAL_FIM = LocalTime.of(23, 0);
+    private static final int DIAS_VALIDACAO_AGENDAMENTOS = 30;
 
     private final DisponibilidadePersonalRepository disponibilidadeRepository;
     private final PersonalRepository personalRepository;
@@ -45,9 +51,115 @@ public class DisponibilidadePersonalService {
     }
 
     private boolean intervalsOverlap(LocalDateTime aStart, LocalDateTime aEnd, LocalDateTime bStart, LocalDateTime bEnd) {
-        // Sobremposição ocorre se o fim de um intervalo não é anterior ao início do outro,
+        // Sobreposição ocorre se o fim de um intervalo não é anterior ao início do outro,
         // E o fim do segundo não é anterior ao início do primeiro.
         return aStart.isBefore(bEnd) && aEnd.isAfter(bStart);
+    }
+
+    /**
+     * Valida todas as regras de negócio para criação/atualização de horários
+     */
+    private void validarHorario(Long personalId, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim,
+                                Long horarioId, TipoHorario tipo) {
+
+
+        if (horaFim.isBefore(horaInicio) || horaFim.equals(horaInicio)) {
+            throw new HorarioInvalidoException("Hora fim deve ser posterior à hora início");
+        }
+
+        if (horaInicio.isBefore(HORARIO_COMERCIAL_INICIO) || horaFim.isAfter(HORARIO_COMERCIAL_FIM)) {
+            throw new HorarioInvalidoException(
+                String.format("Horários devem estar entre %s e %s", HORARIO_COMERCIAL_INICIO, HORARIO_COMERCIAL_FIM)
+            );
+        }
+
+        long duracaoMinutos = java.time.temporal.ChronoUnit.MINUTES.between(horaInicio, horaFim);
+
+        if (tipo == TipoHorario.DISPONIVEL && duracaoMinutos < DURACAO_MINIMA_DISPONIBILIDADE) {
+            throw new HorarioInvalidoException(
+                String.format("Período de disponibilidade deve ter no mínimo %d minutos", DURACAO_MINIMA_DISPONIBILIDADE)
+            );
+        }
+
+        if (duracaoMinutos > DURACAO_MAXIMA_PERIODO) {
+            throw new HorarioInvalidoException(
+                String.format("Período não pode exceder %d minutos (12 horas)", DURACAO_MAXIMA_PERIODO)
+            );
+        }
+
+        if (tipo == TipoHorario.RESTRITO) {
+            validarRestricaoDentroDeDisponibilidade(personalId, diaSemana, horaInicio, horaFim, horarioId);
+        }
+
+        validarConflito(personalId, diaSemana, horaInicio, horaFim, horarioId, tipo);
+
+        if (tipo == TipoHorario.RESTRITO) {
+            validarContraAgendamentosFuturos(personalId, diaSemana, horaInicio, horaFim);
+        }
+    }
+
+    /**
+     * Valida se uma restrição está dentro de um período de disponibilidade
+     */
+    private void validarRestricaoDentroDeDisponibilidade(Long personalId, DiaSemana diaSemana,
+                                                         LocalTime horaInicio, LocalTime horaFim, Long horarioId) {
+        List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository
+            .findByPersonalIdAndDiaSemana(personalId, diaSemana)
+            .stream()
+            .filter(d -> d.getTipo() == TipoHorario.DISPONIVEL)
+            .filter(d -> horarioId == null || !d.getId().equals(horarioId))
+            .toList();
+
+        boolean dentroDeDisponibilidade = disponibilidades.stream()
+            .anyMatch(d -> !horaInicio.isBefore(d.getHoraInicio()) && !horaFim.isAfter(d.getHoraFim()));
+
+        if (!dentroDeDisponibilidade) {
+            throw new HorarioInvalidoException(
+                "Restrição deve estar completamente dentro de um período de disponibilidade"
+            );
+        }
+    }
+
+    /**
+     * Valida conflitos com agendamentos ativos nos próximos 30 dias
+     */
+    private void validarContraAgendamentosFuturos(Long personalId, DiaSemana diaSemana,
+                                                   LocalTime horaInicio, LocalTime horaFim) {
+        Personal personal = personalRepository.findById(personalId)
+            .orElseThrow(PersonalNaoExisteExcepetion::new);
+
+        final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
+        LocalTime restritoInicioComBuffer = horaInicio.minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
+
+        LocalDate hoje = LocalDate.now();
+        LocalDate dataFim = hoje.plusDays(DIAS_VALIDACAO_AGENDAMENTOS);
+
+        // Valida para todas as ocorrências do dia da semana nos próximos 30 dias
+        for (LocalDate data = hoje; !data.isAfter(dataFim); data = data.plusDays(1)) {
+            if (data.getDayOfWeek() == diaSemana.getDayOfWeek()) {
+                LocalDateTime inicioValidacao = data.atTime(restritoInicioComBuffer);
+                LocalDateTime fimValidacao = data.atTime(horaFim);
+
+                List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
+                    .findAgendamentoSlotsByPersonalIdAndDataBetween(
+                        personalId,
+                        data.atStartOfDay(),
+                        data.atTime(23, 59, 59)
+                    );
+
+                for (HorarioAgendadoProjection slot : agendamentos) {
+                    LocalDateTime agendamentoStart = slot.getDataInicio();
+                    int duracao = TipoAula.FUNCIONAL == slot.getTipoAula() ? 30 : 60;
+                    LocalDateTime agendamentoEnd = agendamentoStart
+                        .plusMinutes(duracao)
+                        .plusMinutes(bufferPosAtendimento);
+
+                    if (intervalsOverlap(agendamentoStart, agendamentoEnd, inicioValidacao, fimValidacao)) {
+                        throw new SobreposicaoHorarioException();
+                    }
+                }
+            }
+        }
     }
 
 
@@ -69,8 +181,6 @@ public class DisponibilidadePersonalService {
         disponibilidadeRepository.saveAll(defaults);
     }
 
-
-
     // Atualização dos horarios
     @Transactional
     public ResHorarioDTO atualizarHorarios(Long horarioId, ReqHorarioDTO request) {
@@ -80,12 +190,8 @@ public class DisponibilidadePersonalService {
 
         Long personalId = horarioExistente.getPersonal().getId();
 
-        horarioExistente.setDiaSemana(request.diaSemana());
-        horarioExistente.setTipo(request.tipo());
-        horarioExistente.setHoraInicio(request.horaInicio());
-        horarioExistente.setHoraFim(request.horaFim());
-
-        validarConflito(
+        // Valida ANTES de atualizar
+        validarHorario(
                 personalId,
                 request.diaSemana(),
                 request.horaInicio(),
@@ -93,6 +199,11 @@ public class DisponibilidadePersonalService {
                 horarioId,
                 request.tipo()
         );
+
+        horarioExistente.setDiaSemana(request.diaSemana());
+        horarioExistente.setTipo(request.tipo());
+        horarioExistente.setHoraInicio(request.horaInicio());
+        horarioExistente.setHoraFim(request.horaFim());
 
         return new ResHorarioDTO(disponibilidadeRepository.saveAndFlush(horarioExistente));
     }
@@ -158,15 +269,31 @@ public class DisponibilidadePersonalService {
 
         for (HorarioAgendadoProjection slot : agendamentos) {
             LocalDateTime inicioAula = slot.getDataInicio();
-            int duracaoMinutos = TipoAula.FUNCIONAL == slot.getTipoAula() ? 30 : 60;
+            TipoAula tipoAula = slot.getTipoAula();
+            int duracaoMinutos = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
 
             LocalDateTime fimBloqueio = inicioAula.plusMinutes(duracaoMinutos).plusMinutes(bufferPosAtendimento);
 
             LocalDateTime current = inicioAula;
+            // Bloqueia todos os slots desde o início até antes do fimBloqueio
+            // Depois, bloqueia também os slots que não teriam tempo suficiente para uma aula completa
             while (current.isBefore(fimBloqueio)) {
+                System.out.println("  - Bloqueando: " + current.toLocalTime());
                 horariosBloqueados.add(current.toLocalTime());
                 current = current.plusMinutes(15);
             }
+
+            // Bloqueia slots insuficientes entre o último slot bloqueado e o próximo intervalo de 15min
+            LocalTime ultimoSlotBloqueado = current.toLocalTime();
+            LocalTime proximoSlotCompleto = current.plusMinutes(15).toLocalTime();
+            long minutosRestantes = java.time.temporal.ChronoUnit.MINUTES.between(ultimoSlotBloqueado, proximoSlotCompleto);
+
+            if (minutosRestantes < DURACAO_MINIMA_AULA) {
+                System.out.println("  - Bloqueando também: " + ultimoSlotBloqueado + " (tempo insuficiente: " + minutosRestantes + " min)");
+                horariosBloqueados.add(ultimoSlotBloqueado);
+                current = current.plusMinutes(15);
+            }
+
         }
 
         // Filtragem dos horarios final
@@ -190,6 +317,7 @@ public class DisponibilidadePersonalService {
                 LocalTime proximoBloqueio = encontrarProximoBloqueio(current, fimBloco, horariosBloqueados);
 
                 long minutosDisponiveis = java.time.temporal.ChronoUnit.MINUTES.between(current, proximoBloqueio);
+
 
                 if (minutosDisponiveis < DURACAO_MINIMA_AULA) {
                     horariosBloqueados.add(current);
@@ -228,22 +356,26 @@ public class DisponibilidadePersonalService {
                 personalId, diaSemana, horaInicio, horaFim, horarioId
         );
 
-        // Valida conflitos com horários RESTRITOS existentes
+        // Valida conflitos com horários existentes
         for (DisponibilidadePersonal sobreposto : sobrepostos) {
-            if (sobreposto.getTipo() == TipoHorario.RESTRITO) {
+            if (tipo == TipoHorario.DISPONIVEL && sobreposto.getTipo() == TipoHorario.DISPONIVEL) {
+                throw new SobreposicaoHorarioException();
+            }
+
+            if (tipo == TipoHorario.RESTRITO && sobreposto.getTipo() == TipoHorario.RESTRITO) {
                 throw new SobreposicaoHorarioException();
             }
         }
 
         if (tipo == TipoHorario.RESTRITO) {
-
             LocalTime restritoInicioComBuffer = horaInicio.minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
 
             LocalDateTime novoPeriodoStart = LocalDate.now().atTime(restritoInicioComBuffer);
             LocalDateTime novoPeriodoEnd = LocalDate.now().atTime(horaFim);
 
             // Busca agendamentos ativos na próxima ocorrência do diaSemana (para validar o futuro)
-            validarContraAgendamentosAtivos(personalId, diaSemana, novoPeriodoStart, novoPeriodoEnd);        }
+            validarContraAgendamentosAtivos(personalId, diaSemana, novoPeriodoStart, novoPeriodoEnd);
+        }
     }
 
     /**
@@ -289,3 +421,4 @@ public class DisponibilidadePersonalService {
         return disponibilidadeRepository.findByPersonal(personal);
     }
 }
+
