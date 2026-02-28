@@ -97,7 +97,7 @@ public class AgendamentoController {
     @GetMapping("/{id:\\d+}")
     public ResponseEntity<?> buscarDadosDoAgendamentoPorId(@PathVariable("id") Long agendamentoId) {
         Object dados = agendamentoService.buscarDadosDoAgendamentoPorId(agendamentoId);
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(dados);
     }
 
     @Operation(summary = "Buscar agendamentos do usuário", description = "Retorna os agendamentos do usuário autenticado.")
