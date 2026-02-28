@@ -19,8 +19,6 @@ import java.util.Optional;
 @Repository
 public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContratado, Long> {
     List<ProdutoContratado> findBySituacao(Boolean status);
-    List<ProdutoContratado> findByAlunoEmail(String email, Pageable pageable);
-    List<ProdutoContratado> findByAlunoId(Long id, Pageable pageable);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("SELECT p FROM produto_contratado p WHERE p.id = :id")
@@ -74,8 +72,6 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     List<ProdutoContratado> buscarProdutoContratadoAtivoPorAlunoETipoAula(
             @Param("aluno") Aluno aluno,
             @Param("tipoAula") TipoAula tipoAula);
-
-
 
     @Query("""
     SELECT YEAR(pc.dataCompra) as ano,
