@@ -1,8 +1,7 @@
-
 package com.spring.ApiSystem.shared.config;
 
-
 import com.spring.ApiSystem.shared.config.filter.FilterService;
+import com.spring.ApiSystem.shared.config.helper.SecurityAuthorizationHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,35 +11,44 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.crypto.argon2.Argon2PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
+
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
+
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
+
     private final FilterService filterService;
     private final CorsConfig corsConfig;
+    private final SecurityAuthorizationHelper securityAuthorizationHelper;
 
-    public SecurityConfig(FilterService filterService, CorsConfig corsConfig){
-        this.filterService = filterService;
-        this.corsConfig = corsConfig;
-    }
-
-    @Value("${spring.profiles.active}")
+    @Value("${spring.profiles.active:}")
     private String perfilAtivo;
 
+    public SecurityConfig(FilterService filterService, CorsConfig corsConfig, SecurityAuthorizationHelper securityAuthorizationHelper) {
+        this.filterService = filterService;
+        this.corsConfig = corsConfig;
+        this.securityAuthorizationHelper = securityAuthorizationHelper;
+    }
+
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity httpSecurity,
+            HandlerMappingIntrospector introspector
+    ) throws Exception {
+
         return httpSecurity
+                .securityMatcher("/api/**")
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .headers(headers -> headers
-                        .frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin))
                 .authorizeHttpRequests(auth -> {
+
                     if ("dev".equals(perfilAtivo) || "docker".equals(perfilAtivo)) {
                         auth.requestMatchers(HttpMethod.GET,
                                 "/v3/api-docs/**",
@@ -49,65 +57,71 @@ public class SecurityConfig {
                         ).permitAll();
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
-                    // 1. ROTAS PÚBLICAS
+
+                    // 1) ROTAS PÚBLICAS
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
-                    auth.requestMatchers(HttpMethod.GET, "/produtos-exibicoes/ativos").permitAll();
+
+                    auth.requestMatchers(HttpMethod.GET,
+                            "/api/produtos-exibicoes/ativos"
+                    ).permitAll();
+
                     auth.requestMatchers(HttpMethod.POST,
-                            "/alunos/cadastro",
-                            "/personais/cadastro",
-                            "/usuarios/login",
-                            "/produtos-contratados/pagamento",
+                            "/api/alunos/cadastro",
+                            "/api/personais/cadastro",
+                            "/api/usuarios/login",
+                            "/api/produtos-contratados/pagamento",
                             "/api/password-reset/**"
                     ).permitAll();
+
                     auth.requestMatchers(HttpMethod.GET,
-                            "/produtos-exibicoes",
-                            "/usuarios/auth"
+                            "/api/produtos-exibicoes",
+                            "/api/usuarios/auth"
                     ).permitAll();
 
-                    // 2. ROTAS ESPECÍFICAS DO ALUNO (antes das genéricas)
+                    // 2) ESPECÍFICAS DO ALUNO
                     auth.requestMatchers(HttpMethod.GET,
-                            "/produtos-contratados/total-tipo/*",
-                            "/personais"
-                    ).hasRole("ALUNO");
+                            "/api/produtos-contratados/total-tipo/*",
+                            "/api/personais"
+                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_ALUNO"));
 
-                    // 3. ROTAS ESPECÍFICAS DO PERSONAL (antes das genéricas)
+                    // 3) ESPECÍFICAS DO PERSONAL
                     auth.requestMatchers(HttpMethod.GET,
-                            "/alunos",
-                            "/alunos/*"
-                    ).hasRole("PERSONAL");
+                            "/api/alunos",
+                            "/api/alunos/*"
+                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
 
                     auth.requestMatchers(
-                            "/agendamentos/*/confirmar-conclusao",
-                            "/agendamentos/ausencia",
-                            "/agendamentos/consultoria-realizadas/*",
-                            "/agendamentos/contagem-status-data",
-                            "/produtos-contratados/ganhos-mes/*",
-                            "/produtos-contratados/planos-vendidos/*",
-                            "/produtos-contratados/quantidade-e-percentual-alunos-expirados"
-                    ).hasRole("PERSONAL");
+                            "/api/agendamentos/*/confirmar-conclusao",
+                            "/api/agendamentos/ausencia",
+                            "/api/agendamentos/consultoria-realizadas/*",
+                            "/api/agendamentos/contagem-status-data",
+                            "/api/produtos-contratados/ganhos-mes/*",
+                            "/api/produtos-contratados/planos-vendidos/*",
+                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados"
+                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
 
-                    // 4. ROTAS COMPARTILHADAS (PERSONAL E ALUNO)
+                    // 4) COMPARTILHADAS
                     auth.requestMatchers(
-                            "/personais/*/horarios-disponiveis",
-                            "/agendamentos/**",
-                            "/usuarios/**"
-                    ).hasAnyRole("PERSONAL", "ALUNO");
+                            "/api/personais/*/horarios-disponiveis",
+                            "/api/agendamentos/**",
+                            "/api/usuarios/**"
+                    ).access(securityAuthorizationHelper.anyRoleIfExists(introspector, "ROLE_PERSONAL", "ROLE_ALUNO"));
 
-                    // 5. ROTAS GENÉRICAS DO PERSONAL (depois das específicas)
+                    // 5) GENÉRICAS DO PERSONAL
                     auth.requestMatchers(
-                            "/personais/**",
-                            "/produtos-exibicoes/**"
-                    ).hasRole("PERSONAL");
+                            "/api/personais/**",
+                            "/api/produtos-exibicoes/**"
+                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
 
-                    // 6. ROTAS GENÉRICAS DO ALUNO (depois das específicas)
+                    // 6) GENÉRICAS DO ALUNO
                     auth.requestMatchers(
-                            "/alunos/**",
-                            "/comprar/**",
-                            "/checkouts/**",
-                            "/produtos-contratados/**"
-                    ).hasRole("ALUNO");
+                            "/api/alunos/**",
+                            "/api/comprar/**",
+                            "/api/checkouts/**",
+                            "/api/produtos-contratados/**"
+                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_ALUNO"));
 
-                    auth.anyRequest().authenticated();
+                    auth.anyRequest().access(securityAuthorizationHelper.authenticatedIfExists(introspector));
                 })
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
                         UsernamePasswordAuthenticationFilter.class)
@@ -115,27 +129,4 @@ public class SecurityConfig {
                 .build();
     }
 
-    @Value("${argon.saltLength}")
-    Integer saltLength;
-
-    @Value("${argon.hashLength}")
-    Integer hashLength;
-
-    @Value("${argon.parallelism}")
-    Integer parallelism;
-
-    @Value("${argon.memory}")
-    Integer memory;
-
-    @Value("${argon.iterations}")
-    Integer iterations;
-
-    @Bean
-    public Argon2PasswordEncoder argon2PasswordEncoder() {
-        return new Argon2PasswordEncoder(saltLength,
-                hashLength,
-                parallelism,
-                memory,
-                iterations);
-    }
 }

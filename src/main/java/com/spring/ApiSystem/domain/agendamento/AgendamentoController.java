@@ -18,7 +18,7 @@ import java.util.List;
 
 @Tag(name = "Agendamentos", description = "Operações relacionadas a agendamentos")
 @RestController
-@RequestMapping("/agendamentos")
+@RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
     private static final int PAGE_SIZE_FILTRAR = 8;
