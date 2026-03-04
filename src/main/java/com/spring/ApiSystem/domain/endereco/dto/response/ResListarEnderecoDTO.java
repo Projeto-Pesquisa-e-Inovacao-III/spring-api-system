@@ -1,5 +1,5 @@
 package com.spring.ApiSystem.domain.endereco.dto.response;
-import com.spring.ApiSystem.domain.cep.CEP;
+import com.spring.ApiSystem.domain.cep.dto.response.DadosCepDTO;
 
 public record ResListarEnderecoDTO(
         Long id,
@@ -7,5 +7,5 @@ public record ResListarEnderecoDTO(
         String complemento,
         String unidade,
         String tipo,
-        CEP cep
+        DadosCepDTO cep
 ) {}

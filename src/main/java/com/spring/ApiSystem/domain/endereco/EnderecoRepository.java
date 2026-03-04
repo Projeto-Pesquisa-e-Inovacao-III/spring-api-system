@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.endereco;
 
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -14,4 +15,10 @@ public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
     Optional<Endereco> findByCepIdAndNumeroAndComplementoAndUnidadeAndTipo(
             String id, String numero, String complemento, String unidade, String tipo
     );
+
+    @Query(
+"""
+SELECT e FROM endereco e JOIN FETCH e.cep WHERE e.usuario = :usuario
+""")
+    List<Endereco> findByUsuario(Usuario usuario);
 }
