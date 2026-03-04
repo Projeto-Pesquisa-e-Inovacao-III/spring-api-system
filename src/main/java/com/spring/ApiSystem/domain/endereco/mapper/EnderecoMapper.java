@@ -29,6 +29,7 @@ public interface EnderecoMapper {
     @Mapping(target = "bairro", source = "cep.bairro")
     ResEnderecoAgendamentoDTO toResEnderecoAgendamentoDTO(Endereco endereco);
     List<ResListarEnderecoDTO> toResListarEnderecosDTO(List<Endereco> enderecos);
+    List<ResListarEnderecoPorDataDeCriacaoDTO> toResListarEnderecosPorDataDeCriacaoDTO(List<Endereco> enderecos);
 
 
     ResAgendementoDadosEnderecoAlunoDTO toResEnderecoBuscaAgendamentosAlunosPorId(Endereco endereco);

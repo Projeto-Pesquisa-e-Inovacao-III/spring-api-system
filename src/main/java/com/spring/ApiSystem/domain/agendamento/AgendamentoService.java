@@ -135,12 +135,18 @@ public class AgendamentoService {
             agendamento.pendenteClienteAprovacao();
         }
 
-        ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
-                editarAgendamentoDTO.endereco(),
-                agendamento.getAluno().getEmail()
-        );
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            if (editarAgendamentoDTO.endereco() != null) {
+                ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
+                        editarAgendamentoDTO.endereco(),
+                        agendamento.getAluno().getEmail()
+                );
+                agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
+            }
+        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+            throw new AgendamentoPersonalNaoPodeAlterarEnderecoException();
+        }
 
-        agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
         Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
 
         historicoAgendamentoService.cadastrar(
