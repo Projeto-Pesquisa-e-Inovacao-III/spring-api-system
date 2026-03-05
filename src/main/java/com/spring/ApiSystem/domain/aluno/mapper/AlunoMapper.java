@@ -1,5 +1,6 @@
+// language: java
+// File: `src/main/java/com/spring/ApiSystem/domain/aluno/mapper/AlunoMapper.java`
 package com.spring.ApiSystem.domain.aluno.mapper;
-
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.dto.request.ReqAtualizarAlunoDTO;
@@ -7,7 +8,6 @@ import com.spring.ApiSystem.domain.aluno.dto.request.ReqCadastroAlunoDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResCadastrarAlunoDTO;
-
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 import com.spring.ApiSystem.domain.usuario.Usuario;
@@ -18,9 +18,10 @@ import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = CpfMapper.class)
 public interface AlunoMapper {
 
+    @Mapping(source = "cpf.value", target = "cpf")
     @Mapping(target = "tipo", constant = "ALUNO")
     Aluno toEntityAluno(ReqCadastroAlunoDTO usuarioDTO);
 
@@ -45,7 +46,7 @@ public interface AlunoMapper {
     @Mapping(target = "senha", ignore = true)
     @Mapping(target = "telefones", ignore = true)
     void atualizarAlunoParaAtualizarAlunoDto(ReqAtualizarAlunoDTO dto,
-                                              @MappingTarget Aluno aluno);
+                                             @MappingTarget Aluno aluno);
 
     List<ResListarAlunosDto> toResListarAlunosDto(List<Aluno> alunos);
 }

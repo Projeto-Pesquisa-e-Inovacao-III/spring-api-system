@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.aluno.vo;
 import java.util.Objects;
 
 
+import com.spring.ApiSystem.domain.aluno.exception.CpfInvalidoException;
 import com.spring.ApiSystem.domain.aluno.vo.exception.CpfDigitosIguaisException;
 import com.spring.ApiSystem.domain.aluno.vo.exception.CpfNuloOuVazioException;
 import com.spring.ApiSystem.domain.aluno.vo.exception.CpfTamanhoInvalidoException;
@@ -48,7 +49,7 @@ public final class Cpf {
         int informedDigit2 = cpf.charAt(10) - '0';
 
         if (digit1 != informedDigit1 || digit2 != informedDigit2) {
-            throw new CpfTamanhoInvalidoException();
+            throw new CpfInvalidoException();
         }
     }
 
@@ -82,9 +83,6 @@ public final class Cpf {
 
         return remainder < 2 ? 0 : 11 - remainder;
     }
-
-
-
 
     @Override
     public boolean equals(Object o) {

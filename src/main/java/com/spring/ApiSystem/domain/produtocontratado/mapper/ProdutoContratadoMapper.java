@@ -1,13 +1,14 @@
 package com.spring.ApiSystem.domain.produtocontratado.mapper;
 
-import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
+import com.spring.ApiSystem.domain.aluno.mapper.AlunoMapper;
+import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import org.mapstruct.*;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = { AlunoMapper.class, CpfMapper.class })
 public interface ProdutoContratadoMapper {
 
     @Mapping(target = "alunoId", source = "aluno.id")

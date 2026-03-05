@@ -24,10 +24,14 @@ public class Aluno extends Usuario {
     public Aluno() {
     }
 
-    public Aluno(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, String cpf) {
-        super(id, TipoUsuario.ALUNO, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
-        this.cpf = new Cpf(cpf);
+    public Aluno(Long id, TipoUsuario tipo, String nome, String sexo,
+                 LocalDate dataNascimento, String email, String salt,
+                 String senha, boolean ativo, String caminhoFoto,
+                 List<Telefone> telefones, Cpf cpf) {
+        super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
+        this.cpf = cpf;
     }
+
     public Integer getIdade() {
         return Period.between(getDataNascimento(), LocalDate.now()).getYears();
     }

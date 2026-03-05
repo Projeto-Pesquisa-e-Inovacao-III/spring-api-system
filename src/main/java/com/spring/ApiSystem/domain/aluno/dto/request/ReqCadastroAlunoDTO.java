@@ -1,11 +1,13 @@
 package com.spring.ApiSystem.domain.aluno.dto.request;
 
+import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import org.hibernate.validator.constraints.br.CPF;
 
 import java.util.Date;
 
@@ -26,8 +28,7 @@ public record ReqCadastroAlunoDTO(
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha,
 
-    @NotBlank
-    String cpf,
+    ReqCpfDTO cpf,
 
     ReqCadastrarTelefoneDTO telefone
 

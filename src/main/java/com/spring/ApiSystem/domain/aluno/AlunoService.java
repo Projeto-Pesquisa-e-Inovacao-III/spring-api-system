@@ -12,6 +12,8 @@ import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
 import com.spring.ApiSystem.domain.aluno.exception.CpfExistenteException;
 import com.spring.ApiSystem.domain.aluno.mapper.AlunoMapper;
 import com.spring.ApiSystem.domain.aluno.events.AlunoEventPublisher;
+import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
+import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
@@ -31,16 +33,18 @@ public class AlunoService {
     private final UsuarioService usuarioService;
     private final AlunoMapper alunoMapper;
     private final AlunoEventPublisher alunoEventPublisher;
+    private final CpfMapper cpfMapper;
 
-    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher) {
+    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper) {
         this.alunoRepository = alunoRepository;
         this.usuarioService = usuarioService;
         this.alunoMapper = alunoMapper;
         this.alunoEventPublisher = alunoEventPublisher;
+        this.cpfMapper = cpfMapper;
     }
 
     public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
-        cadastrarCpfExistente(usuarioDTO.cpf());
+        cadastrarCpfExistente(cpfMapper.fromReq(usuarioDTO.cpf()));
 
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
@@ -92,17 +96,17 @@ public class AlunoService {
                 .orElseThrow(AlunoNaoExisteException::new);
     }
 
-    public void cadastrarCpfExistente(String cpf){
+    public void cadastrarCpfExistente(Cpf cpf){
         if (cpfExiste(cpf)) {
             throw new CpfExistenteException();
         }
     }
 
-    public boolean cpfExiste(String cpf){
+    public boolean cpfExiste(Cpf cpf){
         return alunoRepository.existsByCpf(cpf);
     }
 
-    public void validarCpfExistente(String cpf, String cpfAtual){
+    public void validarCpfExistente(Cpf cpf, String cpfAtual){
         if (cpfExiste(cpf) && !cpf.equals(cpfAtual)) {
             throw new CpfExistenteException();
         }
