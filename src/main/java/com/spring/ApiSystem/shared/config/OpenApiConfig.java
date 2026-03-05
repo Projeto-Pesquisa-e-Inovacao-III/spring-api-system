@@ -14,14 +14,14 @@ public class OpenApiConfig {
                 .info(new Info()
                         .title("spring-api-system")
                         .description("Documentação de todos os endpoints disponíveis")
-                        .version("1.0.0"));
+                        .version("1.0.1"));
     }
 
     @Bean
     public GroupedOpenApi usuariosApi() {
         return GroupedOpenApi.builder()
                 .group("Usuários")
-                .pathsToMatch("/usuarios/**")
+                .pathsToMatch("/api/usuarios/**")
                 .build();
     }
 
@@ -29,7 +29,7 @@ public class OpenApiConfig {
     public GroupedOpenApi enderecosApi() {
         return GroupedOpenApi.builder()
                 .group("Endereços")
-                .pathsToMatch("/enderecos/**")
+                .pathsToMatch("/api/enderecos/**")
                 .build();
     }
 
@@ -37,7 +37,7 @@ public class OpenApiConfig {
     public GroupedOpenApi agendamentoApi() {
         return GroupedOpenApi.builder()
                 .group("Agendamento")
-                .pathsToMatch("/agendamentos/**")
+                .pathsToMatch("/api/agendamentos/**")
                 .build();
     }
 
@@ -45,7 +45,7 @@ public class OpenApiConfig {
     public GroupedOpenApi alunoAPi() {
         return GroupedOpenApi.builder()
                 .group("Aluno")
-                .pathsToMatch("/alunos/**")
+                .pathsToMatch("/api/alunos/**")
                 .build();
     }
 
@@ -53,7 +53,7 @@ public class OpenApiConfig {
     public GroupedOpenApi personalAPi() {
         return GroupedOpenApi.builder()
                 .group("Personal")
-                .pathsToMatch("/personais/**")
+                .pathsToMatch("/api/personais/**")
                 .build();
     }
 
@@ -61,7 +61,7 @@ public class OpenApiConfig {
     public GroupedOpenApi produtoContratadoAPi() {
         return GroupedOpenApi.builder()
                 .group("Produto Contratado")
-                .pathsToMatch("/produtos-contratados/**")
+                .pathsToMatch("/api/produtos-contratados/**")
                 .build();
     }
 
@@ -69,7 +69,15 @@ public class OpenApiConfig {
     public GroupedOpenApi produtoExibicaoAPi() {
         return GroupedOpenApi.builder()
                 .group("Produto Exibição")
-                .pathsToMatch("/produtos-exibicoes/**")
+                .pathsToMatch("/api/produtos-exibicoes/**")
+                .build();
+    }
+
+    @Bean
+    public GroupedOpenApi allApi() {
+        return GroupedOpenApi.builder()
+                .group("Todos os Endpoints")
+                .pathsToMatch("/api/**")
                 .build();
     }
 
