@@ -28,7 +28,7 @@ public record ReqCadastroAlunoDTO(
     @Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
     String senha,
 
-    ReqCpfDTO cpf,
+    String cpf,
 
     ReqCadastrarTelefoneDTO telefone
 
