@@ -7,6 +7,7 @@ import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
 import com.spring.ApiSystem.domain.horariopersonal.mapper.DisponibilidadePersonalMapper;
 import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonalService;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -39,13 +40,14 @@ public class DisponibilidadePersonalController {
             description = "Retorna os slots de tempo livres de um personal, subtraindo intervalos e restrições.")
     @GetMapping("/{personalId}/horarios-disponiveis")
     public ResponseEntity<List<ResSlotDisponivelDTO>> obterHorariosDisponiveis(@PathVariable Long personalId,
-                                                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data){
+                                                                               @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate data,
+                                                                               @RequestParam TipoAula tipoAula){
 
         if (data.isBefore(LocalDate.now())) {
             throw new IllegalArgumentException("Não é permitido consultar horários disponíveis para datas passadas.");
         }
 
-        List<ResSlotDisponivelDTO> slots = disponibilidadeService.obterHorariosDisponiveis(personalId, data);
+        List<ResSlotDisponivelDTO> slots = disponibilidadeService.obterHorariosDisponiveis(personalId, data, tipoAula);
         return ResponseEntity.ok(slots);
 
     }

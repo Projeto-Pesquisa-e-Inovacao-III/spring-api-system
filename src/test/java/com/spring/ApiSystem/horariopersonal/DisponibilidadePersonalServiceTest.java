@@ -268,7 +268,7 @@ class DisponibilidadePersonalServiceTest {
         when(personalRepository.findById(999L)).thenReturn(Optional.empty());
 
         // Act & Assert
-        assertThrows(PersonalNaoExisteExcepetion.class, () -> service.obterHorariosDisponiveis(999L, LocalDate.now()));
+        assertThrows(PersonalNaoExisteExcepetion.class, () -> service.obterHorariosDisponiveis(999L, LocalDate.now(), TipoAula.FUNCIONAL));
 
         verify(personalRepository, times(1)).findById(999L);
     }
@@ -283,7 +283,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -311,7 +311,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -349,7 +349,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, hoje);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, hoje, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -398,7 +398,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -442,7 +442,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(List.of(agendamento));
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -480,7 +480,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);
@@ -519,7 +519,7 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
 
         // Act
-        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura);
+        List<ResSlotDisponivelDTO> resultado = service.obterHorariosDisponiveis(1L, dataFutura, TipoAula.FUNCIONAL);
 
         // Assert
         assertNotNull(resultado);

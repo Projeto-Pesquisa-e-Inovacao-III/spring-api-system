@@ -170,11 +170,7 @@ public class DisponibilidadePersonalService {
 
         List<DisponibilidadePersonal> defaults = new ArrayList<>();
         for (DiaSemana dia : DiaSemana.values()) {
-            // DISPONIVEL 08:00-18:00
             defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.DISPONIVEL, LocalTime.of(8, 0), LocalTime.of(18, 0)));
-
-            // RESTRITO 12:00-13:00
-            // O bloqueio de 15 min antes será aplicado na leitura (obterHorariosDisponiveis) e na validação.
             defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.RESTRITO, LocalTime.of(12, 0), LocalTime.of(13, 0)));
         }
 
@@ -209,12 +205,13 @@ public class DisponibilidadePersonalService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada) {
+    public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada, TipoAula tipoAula) {
 
         Personal personal = personalRepository.findById(personalId)
                 .orElseThrow(PersonalNaoExisteExcepetion::new);
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
+        final int duracaoAulaNecessaria = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
 
         LocalTime horaCorte = LocalTime.MIN;
         LocalDate hoje = LocalDate.now();
@@ -269,8 +266,8 @@ public class DisponibilidadePersonalService {
 
         for (HorarioAgendadoProjection slot : agendamentos) {
             LocalDateTime inicioAula = slot.getDataInicio();
-            TipoAula tipoAula = slot.getTipoAula();
-            int duracaoMinutos = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
+            TipoAula tipoAulaAgendada = slot.getTipoAula();
+            int duracaoMinutos = TipoAula.FUNCIONAL == tipoAulaAgendada ? 30 : 60;
 
             LocalDateTime fimBloqueio = inicioAula.plusMinutes(duracaoMinutos).plusMinutes(bufferPosAtendimento);
 
@@ -278,7 +275,6 @@ public class DisponibilidadePersonalService {
             // Bloqueia todos os slots desde o início até antes do fimBloqueio
             // Depois, bloqueia também os slots que não teriam tempo suficiente para uma aula completa
             while (current.isBefore(fimBloqueio)) {
-                System.out.println("  - Bloqueando: " + current.toLocalTime());
                 horariosBloqueados.add(current.toLocalTime());
                 current = current.plusMinutes(15);
             }
@@ -289,13 +285,10 @@ public class DisponibilidadePersonalService {
             long minutosRestantes = java.time.temporal.ChronoUnit.MINUTES.between(ultimoSlotBloqueado, proximoSlotCompleto);
 
             if (minutosRestantes < DURACAO_MINIMA_AULA) {
-                System.out.println("  - Bloqueando também: " + ultimoSlotBloqueado + " (tempo insuficiente: " + minutosRestantes + " min)");
                 horariosBloqueados.add(ultimoSlotBloqueado);
-                current = current.plusMinutes(15);
             }
 
         }
-
         // Filtragem dos horarios final
         List<LocalTime> slotsFinais = new ArrayList<>();
 
@@ -316,13 +309,17 @@ public class DisponibilidadePersonalService {
 
                 LocalTime proximoBloqueio = encontrarProximoBloqueio(current, fimBloco, horariosBloqueados);
 
+                // Calcula minutos disponíveis
                 long minutosDisponiveis = java.time.temporal.ChronoUnit.MINUTES.between(current, proximoBloqueio);
 
+                // Verifica se há tempo suficiente para a aula completa sem ultrapassar o fim do bloco
+                LocalTime fimAulaPrevisto = current.plusMinutes(duracaoAulaNecessaria);
 
-                if (minutosDisponiveis < DURACAO_MINIMA_AULA) {
-                    horariosBloqueados.add(current);
-                } else {
+                // A aula deve terminar ANTES do horário de fim da disponibilidade (nesse caso não termina exatamente no limite)
+                if (minutosDisponiveis >= duracaoAulaNecessaria && fimAulaPrevisto.isBefore(fimBloco)) {
                     slotsFinais.add(current);
+                } else {
+                    horariosBloqueados.add(current);
                 }
 
                 current = current.plusMinutes(15);
@@ -346,7 +343,6 @@ public class DisponibilidadePersonalService {
             next = next.plusMinutes(15);
         }
         return limite;
-        // Retorna o limite do bloco se não encontrar bloqueios internos.
     }
 
 
@@ -358,9 +354,9 @@ public class DisponibilidadePersonalService {
 
         // Valida conflitos com horários existentes
         for (DisponibilidadePersonal sobreposto : sobrepostos) {
-            if (tipo == TipoHorario.DISPONIVEL && sobreposto.getTipo() == TipoHorario.DISPONIVEL) {
-                throw new SobreposicaoHorarioException();
-            }
+//            if (tipo == TipoHorario.DISPONIVEL && sobreposto.getTipo() == TipoHorario.DISPONIVEL) {
+//                throw new SobreposicaoHorarioException();
+//            }
 
             if (tipo == TipoHorario.RESTRITO && sobreposto.getTipo() == TipoHorario.RESTRITO) {
                 throw new SobreposicaoHorarioException();
@@ -373,7 +369,6 @@ public class DisponibilidadePersonalService {
             LocalDateTime novoPeriodoStart = LocalDate.now().atTime(restritoInicioComBuffer);
             LocalDateTime novoPeriodoEnd = LocalDate.now().atTime(horaFim);
 
-            // Busca agendamentos ativos na próxima ocorrência do diaSemana (para validar o futuro)
             validarContraAgendamentosAtivos(personalId, diaSemana, novoPeriodoStart, novoPeriodoEnd);
         }
     }
