@@ -101,6 +101,15 @@ public class EnderecoService {
     }
 
     @Transactional(readOnly = true)
+    public List<ResListarEnderecoPorDataDeCriacaoDTO> listarEnderecosPorDataDeCriaCao(String email) {
+        Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
+        List<Endereco> enderecos = enderecoRepository
+                .findByUsuarioId(usuarioEncontrado.getId());
+
+        return enderecoMapper.toResListarEnderecosPorDataDeCriacaoDTO(enderecos);
+    }
+
+    @Transactional(readOnly = true)
     public ResBuscarEnderecoPorIdDTO buscarPorIdDto(Long id) {
         Endereco endereco = buscarPorId(id);
 
