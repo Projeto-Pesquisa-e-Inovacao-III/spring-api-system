@@ -16,12 +16,6 @@ public interface CpfMapper {
         return converter.convertToEntityAttribute(cpf);
     }
 
-    @Named("fromReq")
-    default Cpf fromReq(String cpf) {
-        if (cpf == null) return null;
-        return toCpf(cpf);
-    }
-
     default String toValue(Cpf cpf) {
         return cpf == null ? null : cpf.getValue();
     }
