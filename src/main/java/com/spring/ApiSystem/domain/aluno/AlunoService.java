@@ -17,7 +17,6 @@ import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
-import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -44,7 +43,7 @@ public class AlunoService {
     }
 
     public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
-        cadastrarCpfExistente(cpfMapper.fromReq(usuarioDTO.cpf()));
+        cadastrarCpfExistente(cpfMapper.toCpf(usuarioDTO.cpf()));
 
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
@@ -104,12 +103,6 @@ public class AlunoService {
 
     public boolean cpfExiste(Cpf cpf){
         return alunoRepository.existsByCpf(cpf);
-    }
-
-    public void validarCpfExistente(Cpf cpf, String cpfAtual){
-        if (cpfExiste(cpf) && !cpf.equals(cpfAtual)) {
-            throw new CpfExistenteException();
-        }
     }
 
     public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {

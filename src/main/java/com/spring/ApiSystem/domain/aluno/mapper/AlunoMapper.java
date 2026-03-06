@@ -21,7 +21,7 @@ import java.util.List;
 @Mapper(componentModel = "spring", uses = CpfMapper.class)
 public interface AlunoMapper {
 
-    @Mapping(source = "cpf", target = "cpf", qualifiedByName = "fromReq")
+    @Mapping(source = "cpf", target = "cpf", qualifiedByName = "toCpf")
     @Mapping(target = "tipo", constant = "ALUNO")
     Aluno toEntityAluno(ReqCadastroAlunoDTO usuarioDTO);
 
