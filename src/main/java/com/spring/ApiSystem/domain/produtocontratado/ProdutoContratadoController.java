@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/produtos-contratados")
+@RequestMapping("/api/produtos-contratados")
 public class ProdutoContratadoController {
     private static final Logger logger = LoggerFactory.getLogger(ProdutoContratadoController.class);
     private final ProdutoContratadoService produtoContratadoService;

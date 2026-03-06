@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/personais")
+@RequestMapping("/api/personais")
 public class PersonalController {
 
     private final PersonalService personalService;

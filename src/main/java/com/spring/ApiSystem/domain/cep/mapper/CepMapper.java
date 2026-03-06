@@ -2,10 +2,7 @@ package com.spring.ApiSystem.domain.cep.mapper;
 
 import com.spring.ApiSystem.domain.cep.CEP;
 import com.spring.ApiSystem.domain.cep.dto.response.*;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface CepMapper {
@@ -17,6 +14,7 @@ public interface CepMapper {
     ResBuscarAgendamentosAlunosPorIdCEPDto buscarSolicitacoesAlunolPorCEP(CEP cep);
 
     ResBuscarSolicitacoesPorPersonalCEPDto buscarAgendamentosPorId(CEP cep);
+    @Mapping(source = "id", target = "cep")
     DadosCepDTO toDadosCepDTO(CEP CEP);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)

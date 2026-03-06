@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.produtocontratado;
+package com.spring.ApiSystem.domain.produtocontratado;
 
 
 import com.spring.ApiSystem.domain.aluno.AlunoRepository;

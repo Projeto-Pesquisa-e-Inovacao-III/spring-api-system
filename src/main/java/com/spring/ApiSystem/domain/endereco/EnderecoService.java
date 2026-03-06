@@ -13,6 +13,7 @@ import com.spring.ApiSystem.domain.endereco.mapper.EnderecoMapper;
 import com.spring.ApiSystem.domain.cep.CEP;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.cep.ViaCepService;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +28,16 @@ public class EnderecoService {
     private final EnderecoMapper enderecoMapper;
     private final ViaCepService viaCepService;
     private final CepRepository cepRepository;
+    private final JpaUserDetailsService jpaUserDetailsService;
 
     public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ViaCepService viaCepService,
-                           CepRepository cepRepository) {
+                           CepRepository cepRepository, JpaUserDetailsService jpaUserDetailsService) {
         this.enderecoRepository = enderecoRepository;
         this.usuarioService = usuarioService;
         this.enderecoMapper = enderecoMapper;
         this.viaCepService = viaCepService;
         this.cepRepository = cepRepository;
+        this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
     @Transactional
@@ -89,12 +92,21 @@ public class EnderecoService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResListarEnderecoDTO> listarEnderecos(String email) {
+    public List<ResListarEnderecoDTO> listarEnderecos() {
+        Usuario usuario = jpaUserDetailsService.getCurrentUser();
+        List<Endereco> enderecos = enderecoRepository
+                .findByUsuario(usuario);
+
+        return enderecoMapper.toResListarEnderecosDTO(enderecos);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ResListarEnderecoPorDataDeCriacaoDTO> listarEnderecosPorDataDeCriaCao(String email) {
         Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
         List<Endereco> enderecos = enderecoRepository
                 .findByUsuarioId(usuarioEncontrado.getId());
 
-        return enderecoMapper.toResListarEnderecosDTO(enderecos);
+        return enderecoMapper.toResListarEnderecosPorDataDeCriacaoDTO(enderecos);
     }
 
     @Transactional(readOnly = true)

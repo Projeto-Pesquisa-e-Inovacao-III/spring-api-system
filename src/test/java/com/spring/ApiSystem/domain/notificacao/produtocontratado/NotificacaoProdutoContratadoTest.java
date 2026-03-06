@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.notificacao.produtocontratado;
+package com.spring.ApiSystem.domain.notificacao.produtocontratado;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;

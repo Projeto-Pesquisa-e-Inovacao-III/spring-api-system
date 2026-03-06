@@ -1,8 +1,9 @@
-package com.spring.ApiSystem.notificacao.aluno;
+package com.spring.ApiSystem.domain.notificacao.aluno;
 
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.events.NotificacaoAlunoListener;
+import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
@@ -54,7 +55,7 @@ class NotificacaoAlunoTest {
                 true,
                 "/path/to/photo.jpg",
                 new ArrayList<>(),
-                "12345678900"
+                new Cpf("12345678900")
         );
     }
 
@@ -91,7 +92,7 @@ class NotificacaoAlunoTest {
                 true,
                 null,
                 new ArrayList<>(),
-                "98765432100"
+                new Cpf("98765432100")
         );
 
         // Act
@@ -131,5 +132,15 @@ class NotificacaoAlunoTest {
         assertThat(emailEnviado.corpo()).isNotNull().isNotBlank();
     }
 
+    @Test
+    @DisplayName("Deve lidar com CPF mal formatado")
+    void deveLidarComCPFMalFormatado() {
 
+    }
+
+    @Test
+    @DisplayName("Deve lidar CPF com numero e letras")
+    void deveLidarCPFComNumeroELetras() {
+
+    }
 }
