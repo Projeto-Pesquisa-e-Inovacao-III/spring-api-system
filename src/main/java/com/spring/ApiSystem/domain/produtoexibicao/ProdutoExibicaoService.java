@@ -3,8 +3,10 @@ package com.spring.ApiSystem.domain.produtoexibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoLimitAndSizeDto;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
+import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoOutOfLimitsException;
 import com.spring.ApiSystem.domain.produtoexibicao.mapper.ProdutoExibicaoMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,13 +25,36 @@ public class ProdutoExibicaoService {
         this.produtoExibicaoMapper = produtoExibicaoMapper;
     }
 
+    private final Integer LIMIT_PRODUTO_EXIBICAO = 10;
+
+    public ResProdutoExibicaoLimitAndSizeDto checkLimitByStatus(ProdutoExibicaoStatus status){
+        Integer totalProdutosAtivos = produtoExibicaoRepository.countByStatus(
+                status
+        );
+
+        return new ResProdutoExibicaoLimitAndSizeDto(LIMIT_PRODUTO_EXIBICAO, totalProdutosAtivos);
+    }
+
+    public void defineLimitByStatus(Integer limit, ProdutoExibicaoStatus status){
+        Integer totalProdutosAtivos = produtoExibicaoRepository.countByStatus(
+                status
+        );
+
+        if(totalProdutosAtivos >= limit){
+            throw new ProdutoExibicaoOutOfLimitsException(limit);
+        }
+    }
+
     @Transactional
     public ResProdutoExibicaoDto criarProduto(ReqCadastroProdutoExibicaoDto produto){
+        defineLimitByStatus(LIMIT_PRODUTO_EXIBICAO, ProdutoExibicaoStatus.ATIVO);
+
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
         produtoEntity.setDataCriacao(LocalDateTime.now());
         produtoExibicaoRepository.save(produtoEntity);
 
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(produtoEntity);
+
     }
 
     public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDto produto){

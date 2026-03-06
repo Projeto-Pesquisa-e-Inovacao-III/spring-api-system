@@ -14,6 +14,7 @@ import java.util.List;
 @Repository
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
     List<ProdutoExibicao> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
+    Integer countByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
 
     @Query("SELECT a.data as dataInicio, p.tipoAula, a.status " +
             "FROM agendamento a " +

@@ -3,6 +3,8 @@ package com.spring.ApiSystem.domain.produtoexibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
+import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoLimitAndSizeDto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -50,6 +52,11 @@ public class ProdutoExibicaoController {
     @GetMapping("/ativos")
     public ResponseEntity<List<ResProdutoExibicaoDto>> listarProdutosAtivos(){
         return ResponseEntity.ok(produtoExibicaoService.listarProdutosAtivos());
+    }
+
+    @GetMapping("/check-limit")
+    public ResponseEntity<ResProdutoExibicaoLimitAndSizeDto> checkLimit(){
+        return ResponseEntity.ok(produtoExibicaoService.checkLimitByStatus(ProdutoExibicaoStatus.ATIVO));
     }
 
     @Operation(summary = "Listar Produtos de Exibição",
