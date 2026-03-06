@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.notificacao;
+package com.spring.ApiSystem.domain.notificacao;
 
 
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;

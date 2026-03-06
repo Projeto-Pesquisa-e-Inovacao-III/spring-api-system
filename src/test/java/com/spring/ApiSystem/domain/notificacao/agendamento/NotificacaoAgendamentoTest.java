@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.notificacao.agendamento;
+package com.spring.ApiSystem.domain.notificacao.agendamento;
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.events.NotificacaoAgendamentoListener;
 import com.spring.ApiSystem.domain.aluno.Aluno;

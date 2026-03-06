@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.aluno;
+package com.spring.ApiSystem.domain.aluno;
 
 
 import com.spring.ApiSystem.domain.aluno.AlunoRepository;
