@@ -4,6 +4,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdut
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoLimitAndSizeDto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoOutOfLimitsException;
@@ -25,29 +26,48 @@ public class ProdutoExibicaoService {
         this.produtoExibicaoMapper = produtoExibicaoMapper;
     }
 
-    private final Integer LIMIT_PRODUTO_EXIBICAO = 10;
+    private final Integer LIMIT_PRODUTO_PACOTE = 6;
+    private final Integer LIMIT_PRODUTO_ADICIONAL = 6;
 
-    public ResProdutoExibicaoLimitAndSizeDto checkLimitByStatus(ProdutoExibicaoStatus status){
-        Integer totalProdutosAtivos = produtoExibicaoRepository.countByStatus(
-                status
+    public List<ResProdutoExibicaoLimitAndSizeDto> checkLimitByTipoProduto(){
+        return List.of(
+                new ResProdutoExibicaoLimitAndSizeDto(
+                        TipoProduto.PACOTE,
+                        LIMIT_PRODUTO_PACOTE,
+                        produtoExibicaoRepository.countByStatusAndTipoProduto(
+                                ProdutoExibicaoStatus.ATIVO,
+                                TipoProduto.PACOTE
+                        )
+                ),
+                new ResProdutoExibicaoLimitAndSizeDto(
+                        TipoProduto.ADICIONAL,
+                        LIMIT_PRODUTO_ADICIONAL,
+                        produtoExibicaoRepository.countByStatusAndTipoProduto(
+                                ProdutoExibicaoStatus.ATIVO,
+                                TipoProduto.ADICIONAL
+                        )
+                )
         );
-
-        return new ResProdutoExibicaoLimitAndSizeDto(LIMIT_PRODUTO_EXIBICAO, totalProdutosAtivos);
     }
 
-    public void defineLimitByStatus(Integer limit, ProdutoExibicaoStatus status){
-        Integer totalProdutosAtivos = produtoExibicaoRepository.countByStatus(
-                status
+    public void defineLimitByStatus(Integer limit, ProdutoExibicaoStatus status, TipoProduto tipoProduto){
+        Integer totalProdutosAtivos = produtoExibicaoRepository.countByStatusAndTipoProduto(
+                status,
+                tipoProduto
         );
 
         if(totalProdutosAtivos >= limit){
-            throw new ProdutoExibicaoOutOfLimitsException(limit);
+            throw new ProdutoExibicaoOutOfLimitsException(limit, tipoProduto, status);
         }
     }
 
     @Transactional
     public ResProdutoExibicaoDto criarProduto(ReqCadastroProdutoExibicaoDto produto){
-        defineLimitByStatus(LIMIT_PRODUTO_EXIBICAO, ProdutoExibicaoStatus.ATIVO);
+        if(produto.tipoProduto().equals(TipoProduto.PACOTE)){
+            defineLimitByStatus(LIMIT_PRODUTO_PACOTE, ProdutoExibicaoStatus.ATIVO, produto.tipoProduto());
+        } else if (produto.tipoProduto().equals(TipoProduto.ADICIONAL)) {
+            defineLimitByStatus(LIMIT_PRODUTO_ADICIONAL, ProdutoExibicaoStatus.ATIVO, produto.tipoProduto());
+        }
 
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
         produtoEntity.setDataCriacao(LocalDateTime.now());
