@@ -114,7 +114,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
        AND pc.produtoExibicao.tipoProduto = :tipoProduto
        AND pc.dataExpiracao >= CURRENT_DATE
     """)
-    boolean temProdutoContratadoPacoteAtivo(@Param("aluno") Aluno aluno,
+    boolean temProdutoContratadoTipoProdutoAtivo(@Param("aluno") Aluno aluno,
                                             @Param("tipoProduto") TipoProduto tipoProduto);
 
 }

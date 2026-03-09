@@ -45,9 +45,7 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
-        if(temProdutoContratadoAtivo(aluno, TipoProduto.PACOTE)){
-            throw new AlunoAlreadyHaveProdutoContratadoByTipoProdutoException(TipoProduto.PACOTE);
-        }
+        temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
 
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
@@ -178,8 +176,14 @@ public class ProdutoContratadoService {
                         .orElseThrow(SemPlanoAtivoException::new));
     }
 
-    public boolean temProdutoContratadoAtivo(Aluno aluno, TipoProduto tipoProduto){
-        return produtoContratadoRepository.temProdutoContratadoPacoteAtivo(aluno, tipoProduto);
+    public void temProdutoContratadoTipoProdutoAtivo(Long idProdutoExibicao,
+                                                     Aluno aluno, TipoProduto tipoProduto){
+
+        if(produtoContratadoRepository.temProdutoContratadoTipoProdutoAtivo(aluno, tipoProduto) &&
+                produtoExibicaoService.buscarPorId(idProdutoExibicao).getTipoProduto() == tipoProduto){
+            throw new AlunoAlreadyHaveProdutoContratadoByTipoProdutoException(tipoProduto);
+        }
+
     }
 
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
