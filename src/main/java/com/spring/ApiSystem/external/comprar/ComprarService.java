@@ -7,7 +7,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.external.comprar.dto.LinkDto;
-import com.spring.ApiSystem.external.comprar.exception.AlunoJaTemProdutoContratado;
+import com.spring.ApiSystem.external.comprar.exception.AlunoAlreadyHaveProdutoContratadoByTipoProdutoException;
 import com.spring.ApiSystem.external.comprar.exception.CompraDeProdutoExibicaoInexistente;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -46,10 +46,9 @@ public class ComprarService {
         Aluno aluno = userDetailsService.getCurrentAluno();
         Long userId = aluno.getId();
 
-        if(produtoContratadoService.temProdutoContratadoAtivo(aluno) &&
-           produtoExibicaoService.buscarPorId(produtoExibicaoId).getTipoProduto() == TipoProduto.PACOTE
+        if(produtoContratadoService.temProdutoContratadoAtivo(aluno, TipoProduto.PACOTE)
         ){
-            throw new AlunoJaTemProdutoContratado();
+            throw new AlunoAlreadyHaveProdutoContratadoByTipoProdutoException(TipoProduto.PACOTE);
         }
 
         Map<String, Long> requestBody = new HashMap<>();
