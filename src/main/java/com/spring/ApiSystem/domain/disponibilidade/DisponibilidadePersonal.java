@@ -36,13 +36,18 @@ public class DisponibilidadePersonal {
     @Column(name = "hora_fim", nullable = false)
     private LocalTime horaFim;
 
+    private boolean ativo;
 
-    public DisponibilidadePersonal(Personal personal, DiaSemana dia, TipoHorario tipoHorario, LocalTime horaInicio, LocalTime horaFim) {
+
+    public DisponibilidadePersonal(Personal personal, DiaSemana dia,
+                                   TipoHorario tipoHorario, LocalTime horaInicio,
+                                   LocalTime horaFim, boolean ativo) {
         this.personal = personal;
         this.diaSemana = dia;
         this.tipo = tipoHorario;
         this.horaInicio = horaInicio;
         this.horaFim = horaFim;
+        this.ativo = ativo;
     }
 
     public DisponibilidadePersonal() {
@@ -94,5 +99,13 @@ public class DisponibilidadePersonal {
 
     public void setTipo(TipoHorario tipo) {
         this.tipo = tipo;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }
