@@ -17,7 +17,8 @@ public record ResHorarioDTO(
         @JsonFormat(pattern = "HH:mm")
         LocalTime horaInicio,
         @JsonFormat (pattern = "HH:mm")
-        LocalTime horaFim
+        LocalTime horaFim,
+        boolean ativo
 ) {
 
     public ResHorarioDTO(DisponibilidadePersonal horario) {
@@ -27,7 +28,8 @@ public record ResHorarioDTO(
                 horario.getDiaSemana(),
                 horario.getTipo(),
                 horario.getHoraInicio(),
-                horario.getHoraFim()
+                horario.getHoraFim(),
+                horario.isAtivo()
         );
     }
 }

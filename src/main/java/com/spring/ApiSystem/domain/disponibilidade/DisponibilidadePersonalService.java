@@ -174,10 +174,45 @@ public class DisponibilidadePersonalService {
         for (DiaSemana dia : DiaSemana.values()) {
             defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.DISPONIVEL, LocalTime.of(8, 0), LocalTime.of(18, 0)));
             defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.RESTRITO, LocalTime.of(12, 0), LocalTime.of(13, 0)));
+            // DISPONIVEL 08:00-18:00
+            defaults.add(new DisponibilidadePersonal(
+                    personal, dia, TipoHorario.DISPONIVEL,
+                    LocalTime.of(8, 0),
+                    LocalTime.of(18, 0),
+                    true
+            ));
+
+            // RESTRITO 12:00-13:00
+            // O bloqueio de 15 min antes será aplicado na leitura (obterHorariosDisponiveis) e na validação.
+            defaults.add(new DisponibilidadePersonal(
+                    personal, dia, TipoHorario.RESTRITO,
+                    LocalTime.of(12, 0),
+                    LocalTime.of(13, 0),
+                    true
+            ));
         }
 
         disponibilidadeRepository.saveAll(defaults);
     }
+
+    public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
+        Personal currentPersonal = detailsService.getCurrentPersonal();
+        List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository.findByPersonalIdAndDiaSemana(
+                currentPersonal.getId(), diaSemana);
+
+        for (DisponibilidadePersonal disponibilidade : disponibilidades) {
+            if(disponibilidade.isAtivo()){
+                disponibilidade.setAtivo(false);
+            } else {
+                disponibilidade.setAtivo(true);
+            }
+
+            disponibilidadeRepository.save(disponibilidade);
+        }
+
+        return disponibilidades;
+    }
+
 
     // Atualização dos horarios
     @Transactional
@@ -235,6 +270,10 @@ public class DisponibilidadePersonalService {
         DayOfWeek diaSemana = dataDesejada.getDayOfWeek();
         List<DisponibilidadePersonal> disponibilidade = disponibilidadeRepository
                 .findByPersonalIdAndDiaSemana(personal.getId(), DiaSemana.fromDayOfWeek(diaSemana));
+                .findByPersonalIdAndDiaSemanaAndAtivo(
+                        personalId,
+                        DiaSemana.fromDayOfWeek(diaSemana),
+                        true);
 
         if (disponibilidade.isEmpty()) {
             return Collections.emptyList();

@@ -14,8 +14,8 @@ import java.util.List;
 
 @Repository
 public interface DisponibilidadePersonalRepository extends JpaRepository<DisponibilidadePersonal, Long> {
-
-    List<DisponibilidadePersonal> findByPersonalId(Long personalId);
+    List<DisponibilidadePersonal> findByPersonalIdAndDiaSemanaAndAtivo(Long personalId, DiaSemana diaSemana,
+                                                                       boolean ativo);
 
     List<DisponibilidadePersonal> findByPersonalIdAndDiaSemana(Long personalId, DiaSemana diaSemana);
 
