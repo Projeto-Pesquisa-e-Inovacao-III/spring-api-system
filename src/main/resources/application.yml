@@ -4,6 +4,9 @@ spring:
   web:
     resources:
       add-mappings: false
+  devtools:
+    livereload:
+      enabled: true
   profiles:
     active: dev
 
