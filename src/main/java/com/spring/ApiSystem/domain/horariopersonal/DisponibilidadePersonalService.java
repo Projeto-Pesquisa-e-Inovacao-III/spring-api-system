@@ -10,9 +10,10 @@ import com.spring.ApiSystem.domain.horariopersonal.exception.HorarioInvalidoExce
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalRepository;
+import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoRepository;
-
+import java.time.temporal.ChronoUnit;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,12 +43,14 @@ public class DisponibilidadePersonalService {
     private final PersonalRepository personalRepository;
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
     private final JpaUserDetailsService detailsService;
+    private final PersonalService personalService;
 
-    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository, JpaUserDetailsService detailsService) {
+    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository, JpaUserDetailsService detailsService, PersonalService personalService) {
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.personalRepository = personalRepository;
         this.produtoExibicaoRepository = produtoExibicaoRepository;
         this.detailsService = detailsService;
+        this.personalService = personalService;
     }
 
     private boolean intervalsOverlap(LocalDateTime aStart, LocalDateTime aEnd, LocalDateTime bStart, LocalDateTime bEnd) {
@@ -73,7 +76,7 @@ public class DisponibilidadePersonalService {
             );
         }
 
-        long duracaoMinutos = java.time.temporal.ChronoUnit.MINUTES.between(horaInicio, horaFim);
+        long duracaoMinutos = ChronoUnit.MINUTES.between(horaInicio, horaFim);
 
         if (tipo == TipoHorario.DISPONIVEL && duracaoMinutos < DURACAO_MINIMA_DISPONIBILIDADE) {
             throw new HorarioInvalidoException(
@@ -125,8 +128,7 @@ public class DisponibilidadePersonalService {
      */
     private void validarContraAgendamentosFuturos(Long personalId, DiaSemana diaSemana,
                                                    LocalTime horaInicio, LocalTime horaFim) {
-        Personal personal = personalRepository.findById(personalId)
-            .orElseThrow(PersonalNaoExisteExcepetion::new);
+        Personal personal = personalService.buscarPorId(personalId);
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
         LocalTime restritoInicioComBuffer = horaInicio.minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
@@ -135,29 +137,32 @@ public class DisponibilidadePersonalService {
         LocalDate dataFim = hoje.plusDays(DIAS_VALIDACAO_AGENDAMENTOS);
 
         // Valida para todas as ocorrências do dia da semana nos próximos 30 dias
-        for (LocalDate data = hoje; !data.isAfter(dataFim); data = data.plusDays(1)) {
-            if (data.getDayOfWeek() == diaSemana.getDayOfWeek()) {
-                LocalDateTime inicioValidacao = data.atTime(restritoInicioComBuffer);
-                LocalDateTime fimValidacao = data.atTime(horaFim);
+        List<HorarioAgendadoProjection> todosAgendamentos = produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(
+                personalId,
+                hoje.atStartOfDay(),
+                dataFim.atTime(23, 59, 59)
+        );
 
-                List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
-                    .findAgendamentoSlotsByPersonalIdAndDataBetween(
-                        personalId,
-                        data.atStartOfDay(),
-                        data.atTime(23, 59, 59)
-                    );
+        DayOfWeek diaSemanaAlvo = diaSemana.getDayOfWeek();
 
-                for (HorarioAgendadoProjection slot : agendamentos) {
-                    LocalDateTime agendamentoStart = slot.getDataInicio();
-                    int duracao = TipoAula.FUNCIONAL == slot.getTipoAula() ? 30 : 60;
-                    LocalDateTime agendamentoEnd = agendamentoStart
-                        .plusMinutes(duracao)
-                        .plusMinutes(bufferPosAtendimento);
+        for (HorarioAgendadoProjection slot : todosAgendamentos){
+            LocalDateTime agendamentoStart = slot.getDataInicio();
 
-                    if (intervalsOverlap(agendamentoStart, agendamentoEnd, inicioValidacao, fimValidacao)) {
-                        throw new SobreposicaoHorarioException();
-                    }
-                }
+            if (agendamentoStart.getDayOfWeek() != diaSemanaAlvo){
+                continue;
+            }
+
+            LocalDate dataAgendamento = agendamentoStart.toLocalDate();
+            LocalDateTime inicioValidacao = dataAgendamento.atTime(restritoInicioComBuffer);
+            LocalDateTime fimValidacao = dataAgendamento.atTime(horaFim);
+
+            int duracao = TipoAula.FUNCIONAL == slot.getTipoAula() ? 30 : 60;
+            LocalDateTime agendamentoEnd = agendamentoStart
+                    .plusMinutes(duracao)
+                    .plusMinutes(bufferPosAtendimento);
+
+            if (intervalsOverlap(agendamentoStart, agendamentoEnd, inicioValidacao, fimValidacao)) {
+                throw new SobreposicaoHorarioException();
             }
         }
     }
@@ -207,8 +212,7 @@ public class DisponibilidadePersonalService {
     @Transactional(readOnly = true)
     public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada, TipoAula tipoAula) {
 
-        Personal personal = personalRepository.findById(personalId)
-                .orElseThrow(PersonalNaoExisteExcepetion::new);
+        Personal personal = personalService.buscarPorId(personalId);
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
         final int duracaoAulaNecessaria = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
@@ -282,7 +286,7 @@ public class DisponibilidadePersonalService {
             // Bloqueia slots insuficientes entre o último slot bloqueado e o próximo intervalo de 15min
             LocalTime ultimoSlotBloqueado = current.toLocalTime();
             LocalTime proximoSlotCompleto = current.plusMinutes(15).toLocalTime();
-            long minutosRestantes = java.time.temporal.ChronoUnit.MINUTES.between(ultimoSlotBloqueado, proximoSlotCompleto);
+            long minutosRestantes = ChronoUnit.MINUTES.between(ultimoSlotBloqueado, proximoSlotCompleto);
 
             if (minutosRestantes < DURACAO_MINIMA_AULA) {
                 horariosBloqueados.add(ultimoSlotBloqueado);
@@ -310,7 +314,7 @@ public class DisponibilidadePersonalService {
                 LocalTime proximoBloqueio = encontrarProximoBloqueio(current, fimBloco, horariosBloqueados);
 
                 // Calcula minutos disponíveis
-                long minutosDisponiveis = java.time.temporal.ChronoUnit.MINUTES.between(current, proximoBloqueio);
+                long minutosDisponiveis = ChronoUnit.MINUTES.between(current, proximoBloqueio);
 
                 // Verifica se há tempo suficiente para a aula completa sem ultrapassar o fim do bloco
                 LocalTime fimAulaPrevisto = current.plusMinutes(duracaoAulaNecessaria);
