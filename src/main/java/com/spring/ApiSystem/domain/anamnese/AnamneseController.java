@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.anamnese;
 
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastroAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,9 +22,9 @@ public class AnamneseController {
 
     @Operation(summary = "Cadastrar uma nova anamnese", description = "Endpoint para cadastrar uma nova anamnese. Recebe os dados da anamnese no corpo da requisição e salva no banco de dados.")
     @PostMapping
-    public ResponseEntity<?> cadastrarAnamnese(@Valid @RequestBody ReqCadastroAnamneseDto anamnese){
-        Anamnese novaAnamnese = anamneseService.cadastrarAnamnese(anamnese);
-        return ResponseEntity.ok(novaAnamnese);
+    public ResponseEntity<Void> cadastrarAnamnese(@Valid @RequestBody ReqCadastrarAnamneseDto anamnese){
+        anamneseService.cadastrarAnamnese(anamnese);
 
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

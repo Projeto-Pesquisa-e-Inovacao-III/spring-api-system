@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 
-public record ResCadastroAnamneseDto(
+public record ResCadastrarAnamneseDto(
                 Double altura,
                 Double peso,
                 String objectivoPrincipal,

@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.anamnese;
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
@@ -32,11 +33,10 @@ public class Anamnese {
 
     private String observacaoSaude;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "usuario_id")
-    private Usuario usuario;
+    @OneToOne(mappedBy = "anamnese")
+    private Aluno aluno;
 
-    public Anamnese(Long id, Double altura, Double peso, String objectivoPrincipal, String rotina, List<String> condicoes, NivelDeAtividadeEnum nivelDeAtividade, String observacaoSaude, Usuario usuario) {
+    public Anamnese(Long id, Double altura, Double peso, String objectivoPrincipal, String rotina, List<String> condicoes, NivelDeAtividadeEnum nivelDeAtividade, String observacaoSaude, Aluno aluno) {
         this.id = id;
         this.altura = altura;
         this.peso = peso;
@@ -45,7 +45,7 @@ public class Anamnese {
         this.condicoes = condicoes;
         this.nivelDeAtividade = nivelDeAtividade;
         this.observacaoSaude = observacaoSaude;
-        this.usuario = usuario;
+        this.aluno = aluno;
     }
 
     public Anamnese() {
@@ -111,11 +111,11 @@ public class Anamnese {
         this.observacaoSaude = observacaoSaude;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public Aluno getAluno() {
+        return aluno;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
     }
 }

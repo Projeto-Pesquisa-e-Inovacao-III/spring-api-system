@@ -1,37 +1,35 @@
 package com.spring.ApiSystem.domain.anamnese;
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.springframework.stereotype.Service;
 
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastroAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.mapper.AnamneseMapper;
-import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
 
 @Service
 public class AnamneseService {
     private final AnamneseRepository anamneseRepository;
-    private final AnamneseMapper anamneseMapper;
-    // private final JpaUserDetailsService jpaUserDetailsService;
+    private final JpaUserDetailsService jpaUserDetailsService;
+    private final AlunoService alunoService;
 
-    public AnamneseService(AnamneseRepository anamneseRepository, AnamneseMapper anamneseMapper) {
+    public AnamneseService(AnamneseRepository anamneseRepository, JpaUserDetailsService jpaUserDetailsService, AlunoService alunoService) {
         this.anamneseRepository = anamneseRepository;
-        this.anamneseMapper = anamneseMapper;
-        // this.jpaUserDetailsService = jpaUserDetailsService;
+        this.jpaUserDetailsService = jpaUserDetailsService;
+        this.alunoService = alunoService;
     }
 
-    public Anamnese cadastrarAnamnese(ReqCadastroAnamneseDto req) {
+    public Anamnese cadastrarAnamnese(ReqCadastrarAnamneseDto req) {
         Anamnese anamnese = new Anamnese();
 
-        // Usuario usuario = jpaUserDetailsService.getCurrentUser();
-
         DtoToEntity(anamnese, req);
-        // anamnese.setUsuario(usuario);
 
-        anamneseRepository.save(anamnese);
-        return anamneseMapper.toEntityFromResponse(anamnese);
+        Aluno aluno = jpaUserDetailsService.getCurrentAluno();
+        Aluno alunoAnamnese = alunoService.registrarAnamnese(aluno, anamnese);
+        return alunoAnamnese.getAnamnese();
     }
 
-    public void DtoToEntity(Anamnese anamnese, ReqCadastroAnamneseDto dto) {
+    public void DtoToEntity(Anamnese anamnese, ReqCadastrarAnamneseDto dto) {
         anamnese.setAltura(dto.altura());
         anamnese.setPeso(dto.peso());
         anamnese.setObjectivoPrincipal(dto.objectivoPrincipal());

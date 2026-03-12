@@ -8,8 +8,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-//cadastro ou cadastrar?
-public record ReqCadastroAnamneseDto(
+public record ReqCadastrarAnamneseDto(
                 @NotNull(message = "A altura é obrigatória")
                 Double altura,
 
