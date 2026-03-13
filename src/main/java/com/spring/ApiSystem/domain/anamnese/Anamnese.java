@@ -2,7 +2,6 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
-import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -25,8 +24,7 @@ public class Anamnese {
 
     @ElementCollection
     @CollectionTable(name = "anamnese_condicoes", joinColumns = @JoinColumn(name = "anamnese_id"))
-    @Column(name = "condicao")
-    private List<String> condicoes;
+    private List<Condicoes> condicoes;
 
     @Enumerated(EnumType.STRING)
     private NivelDeAtividadeEnum nivelDeAtividade;
@@ -36,7 +34,7 @@ public class Anamnese {
     @OneToOne(mappedBy = "anamnese")
     private Aluno aluno;
 
-    public Anamnese(Long id, Double altura, Double peso, String objectivoPrincipal, String rotina, List<String> condicoes, NivelDeAtividadeEnum nivelDeAtividade, String observacaoSaude, Aluno aluno) {
+    public Anamnese(Long id, Double altura, Double peso, String objectivoPrincipal, String rotina, List<Condicoes> condicoes, NivelDeAtividadeEnum nivelDeAtividade, String observacaoSaude, Aluno aluno) {
         this.id = id;
         this.altura = altura;
         this.peso = peso;
@@ -87,11 +85,12 @@ public class Anamnese {
         this.rotina = rotina;
     }
 
-    public List<String> getCondicoes() {
+
+    public List<Condicoes> getCondicoes() {
         return condicoes;
     }
 
-    public void setCondicoes(List<String> condicoes) {
+    public void setCondicoes(List<Condicoes> condicoes) {
         this.condicoes = condicoes;
     }
 

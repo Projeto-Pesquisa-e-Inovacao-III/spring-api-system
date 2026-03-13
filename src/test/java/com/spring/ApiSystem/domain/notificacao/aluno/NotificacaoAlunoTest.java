@@ -55,7 +55,8 @@ class NotificacaoAlunoTest {
                 true,
                 "/path/to/photo.jpg",
                 new ArrayList<>(),
-                new Cpf("12345678900")
+                new Cpf("54451703069"),
+                null
         );
     }
 
@@ -92,7 +93,8 @@ class NotificacaoAlunoTest {
                 true,
                 null,
                 new ArrayList<>(),
-                new Cpf("98765432100")
+                new Cpf("54451703069"),
+                null
         );
 
         // Act

@@ -132,6 +132,7 @@ public class AlunoService {
 
     public Aluno registrarAnamnese(Aluno aluno, Anamnese anamnese) {
         aluno.setAnamnese(anamnese);
+        aluno.setAtivoAnamnese(true);
         return alunoRepository.save(aluno);
     }
 }

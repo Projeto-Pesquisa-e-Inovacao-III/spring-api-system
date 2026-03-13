@@ -202,14 +202,20 @@ public class UsuarioController {
             description = "Endpoint para buscar informação de usuário autenticado")
     @GetMapping("/auth")
     public ResponseEntity<ReqAuthDTO> auth() {
-        Optional<Usuario> usuario = userDetails.isLogged();
+        Optional<Usuario> usuarioOpt = userDetails.isLogged();
 
-        return usuario.map(usuarioAuth ->
-                ResponseEntity.ok(
-                        new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuarioAuth)))
-        ).orElseGet(() ->
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ReqAuthDTO(false, null))
-        );
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ReqAuthDTO(false, null, null));
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        Boolean ativoAnamnese = null;
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            ativoAnamnese = alunoService.buscarPorId(usuario.getId()).getAtivoAnamnese();
+        }
+
+        return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), ativoAnamnese));
     }
 }

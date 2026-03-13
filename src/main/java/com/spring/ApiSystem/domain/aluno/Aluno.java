@@ -22,6 +22,8 @@ public class Aluno extends Usuario {
     @Column(unique = true, nullable = false, length = 11)
     private Cpf cpf;
 
+    private Boolean ativoAnamnese = false;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "anamnese_id")
     private Anamnese anamnese;
@@ -32,6 +34,7 @@ public class Aluno extends Usuario {
     public Aluno(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, Cpf cpf, Anamnese anamnese) {
         super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
         this.cpf = cpf;
+        this.ativoAnamnese = ativoAnamnese;
         this.anamnese = anamnese;
     }
 
@@ -45,6 +48,14 @@ public class Aluno extends Usuario {
 
     public void setCpf(Cpf cpf) {
         this.cpf = cpf;
+    }
+
+    public Boolean getAtivoAnamnese() {
+        return ativoAnamnese;
+    }
+
+    public void setAtivoAnamnese(Boolean ativoAnamnese) {
+        this.ativoAnamnese = ativoAnamnese;
     }
 
     public Anamnese getAnamnese() {
