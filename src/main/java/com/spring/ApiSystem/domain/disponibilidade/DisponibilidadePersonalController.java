@@ -1,24 +1,20 @@
-package com.spring.ApiSystem.domain.horariopersonal;
+package com.spring.ApiSystem.domain.disponibilidade;
 
 
-import com.spring.ApiSystem.domain.horariopersonal.dto.request.ReqHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
-import com.spring.ApiSystem.domain.horariopersonal.mapper.DisponibilidadePersonalMapper;
-import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonalService;
+import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.domain.disponibilidade.mapper.DisponibilidadePersonalMapper;
+import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Disponibilidade Personal",
@@ -27,11 +23,11 @@ description = "Operações para gerenciar os horários e a disponibilidade do Pe
 @RestController
 public class DisponibilidadePersonalController {
 
-    private final DisponibilidadePersonalService disponibilidadeService;
+    private final PersonalService personalService;
     private final DisponibilidadePersonalMapper disponibilidadePersonalMapper;
 
-    public DisponibilidadePersonalController(DisponibilidadePersonalService disponibilidadeService, DisponibilidadePersonalMapper disponibilidadePersonalMapper) {
-        this.disponibilidadeService = disponibilidadeService;
+    public DisponibilidadePersonalController(PersonalService personalService, DisponibilidadePersonalMapper disponibilidadePersonalMapper) {
+        this.personalService = personalService;
         this.disponibilidadePersonalMapper = disponibilidadePersonalMapper;
     }
 
@@ -47,7 +43,7 @@ public class DisponibilidadePersonalController {
             throw new IllegalArgumentException("Não é permitido consultar horários disponíveis para datas passadas.");
         }
 
-        List<ResSlotDisponivelDTO> slots = disponibilidadeService.obterHorariosDisponiveis(personalId, data, tipoAula);
+        List<ResSlotDisponivelDTO> slots = personalService.consultarDisponibilidade(personalId, data, tipoAula);
         return ResponseEntity.ok(slots);
 
     }
@@ -57,7 +53,7 @@ public class DisponibilidadePersonalController {
     @PutMapping("/horarios/{horarioId}")
     public ResponseEntity<ResHorarioDTO> atualizarHorarios(@PathVariable Long horarioId, @Valid @RequestBody ReqHorarioDTO request) {
 
-        ResHorarioDTO horarioAtualizado = disponibilidadeService.atualizarHorarios(horarioId, request);
+        ResHorarioDTO horarioAtualizado = personalService.atualizarHorarioDisponibilidade(horarioId, request);
         return ResponseEntity.ok(horarioAtualizado);
     }
 
@@ -65,7 +61,8 @@ public class DisponibilidadePersonalController {
     description = "Retorna o cronograma do personal logado")
     @GetMapping("/me/cronograma")
     public ResponseEntity<List<ResHorarioDTO>> pegarCronograma(){
-        List<ResHorarioDTO> cronograma = disponibilidadePersonalMapper.toResHorarioDto(disponibilidadeService.pegarCronograma());
+        List<ResHorarioDTO> cronograma = disponibilidadePersonalMapper.toResHorarioDto(personalService.pegarCronogramaDoPersonal());
+
         return ResponseEntity.ok(cronograma);
     }
 }

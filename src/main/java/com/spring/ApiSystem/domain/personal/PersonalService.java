@@ -1,6 +1,10 @@
 package com.spring.ApiSystem.domain.personal;
 
-import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonalService;
+import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonal;
+import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonalService;
+import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
@@ -11,14 +15,17 @@ import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
 import com.spring.ApiSystem.domain.personal.exception.CrefExistenteException;
 import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.domain.personal.mapper.PersonalMapper;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,5 +140,21 @@ public class PersonalService {
         if(crefExiste(cref) && !cref.equals(crefAtual)){
             throw new CrefExistenteException();
         }
+    }
+
+    public List<ResSlotDisponivelDTO> consultarDisponibilidade(Long personalId, LocalDate data, TipoAula tipoAula) {
+        Personal personal = buscarPorId(personalId);
+        return disponibilidadeService.obterHorariosDisponiveis(personal, data, tipoAula);
+    }
+
+    public ResHorarioDTO atualizarHorarioDisponibilidade(Long horarioId, @Valid ReqHorarioDTO request) {
+        Personal personal = detailsService.getCurrentPersonal();
+
+        return disponibilidadeService.atualizarHorarios(personal, horarioId, request);
+    }
+
+    public List<DisponibilidadePersonal> pegarCronogramaDoPersonal() {
+        Personal personal = detailsService.getCurrentPersonal();
+        return disponibilidadeService.pegarCronograma(personal);
     }
 }

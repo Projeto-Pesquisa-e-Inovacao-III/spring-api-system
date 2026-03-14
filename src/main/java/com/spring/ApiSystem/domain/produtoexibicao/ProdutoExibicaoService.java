@@ -103,7 +103,7 @@ public class ProdutoExibicaoService {
     }
 
     public Boolean produtoExibicaoAtivoExiste(Long id){
-        return produtoExibicaoRepository.existsProdutoExibicaoAtivoById(id);
+        return produtoExibicaoRepository.existsByIdAndStatus(id, ProdutoExibicaoStatus.ATIVO);
     }
 
     public ResProdutoExibicaoDto resBuscarPorId(Long id){

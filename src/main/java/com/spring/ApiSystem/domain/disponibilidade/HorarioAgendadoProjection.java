@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.horariopersonal;
+package com.spring.ApiSystem.domain.disponibilidade;
 
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
