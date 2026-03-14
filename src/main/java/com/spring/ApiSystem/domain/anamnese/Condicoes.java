@@ -2,7 +2,6 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.anamnese.enums.TipoCondicoes;
 import jakarta.persistence.Embeddable;
-import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
@@ -13,7 +12,7 @@ public class Condicoes {
     @Enumerated(EnumType.STRING)
     private TipoCondicoes tipo;
 
-    public Condicoes() {}  // <-- obrigatório pro JPA
+    public Condicoes() {}
 
     public Condicoes(String situacao, TipoCondicoes tipo) {
         this.situacao = situacao;

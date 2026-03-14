@@ -2,10 +2,12 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.*;
 
 import java.util.List;
 
+@Tag(name = "Anamnese", description = "API de gerenciamento de anamnese")
 @Entity
 @Table(name = "anamnese")
 public class Anamnese {

@@ -56,6 +56,7 @@ class NotificacaoAlunoTest {
                 "/path/to/photo.jpg",
                 new ArrayList<>(),
                 new Cpf("54451703069"),
+                false,
                 null
         );
     }
@@ -94,6 +95,7 @@ class NotificacaoAlunoTest {
                 null,
                 new ArrayList<>(),
                 new Cpf("54451703069"),
+                false,
                 null
         );
 

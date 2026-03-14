@@ -15,7 +15,6 @@ import com.spring.ApiSystem.domain.aluno.events.AlunoEventPublisher;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.anamnese.Anamnese;
-import com.spring.ApiSystem.domain.anamnese.dto.response.ResCadastrarAnamneseDto;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;

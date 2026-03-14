@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.usuario;
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.personal.PersonalService;
@@ -206,14 +207,14 @@ public class UsuarioController {
 
         if (usuarioOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ReqAuthDTO(false, null, null));
+                    .body(new ReqAuthDTO(false, null, false));
         }
 
         Usuario usuario = usuarioOpt.get();
 
-        Boolean ativoAnamnese = null;
+        boolean ativoAnamnese = false;
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
-            ativoAnamnese = alunoService.buscarPorId(usuario.getId()).getAtivoAnamnese();
+            ativoAnamnese = ((Aluno) usuario).getAtivoAnamnese();
         }
 
         return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), ativoAnamnese));
