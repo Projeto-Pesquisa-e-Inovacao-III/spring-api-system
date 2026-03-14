@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.external.comprar.dto;
+package com.spring.ApiSystem.external.comprar.dto.response;
 
 import jakarta.validation.constraints.NotBlank;
 
