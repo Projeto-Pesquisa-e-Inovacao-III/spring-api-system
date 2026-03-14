@@ -1,9 +1,10 @@
-package com.spring.ApiSystem.external.whatsapp.request;
+package com.spring.ApiSystem.external.whatsapp.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-public record ReqVerifyCode(
+public record ReqResetPassword(
         @NotBlank
         @Pattern(regexp = "\\d{1,3}", message = "pais deve conter apenas dígitos (1-3).")
         String pais,
@@ -17,7 +18,10 @@ public record ReqVerifyCode(
         String numero,
 
         @NotBlank
-        @Pattern(regexp = "\\d{6}", message = "verificationCode deve ser um código de 6 dígitos.")
-        String verificationCode
+        String token,
+
+        @NotBlank
+        @Size(min = 8, max = 100, message = "newPassword deve ter entre 8 e 100 caracteres.")
+        String newPassword
 ) {
 }

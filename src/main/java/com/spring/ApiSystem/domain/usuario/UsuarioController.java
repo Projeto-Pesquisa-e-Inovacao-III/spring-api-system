@@ -7,7 +7,6 @@ import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdD
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAuthDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqLoginUsuarioDTO;
-
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.mapper.UsuarioMapper;
@@ -41,8 +40,14 @@ public class UsuarioController {
     private final PersonalService personalService;
     private final UsuarioMapper usuarioMapper;
 
-    public UsuarioController(UsuarioService usuarioService,
-                             FilterService filterService, JpaUserDetailsService userDetails, AlunoService alunoService, PersonalService personalService, UsuarioMapper usuarioMapper) {
+    public UsuarioController(
+            UsuarioService usuarioService,
+            FilterService filterService,
+            JpaUserDetailsService userDetails,
+            AlunoService alunoService,
+            PersonalService personalService,
+            UsuarioMapper usuarioMapper
+    ) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
         this.userDetails = userDetails;
@@ -53,7 +58,7 @@ public class UsuarioController {
 
     @Operation(summary = "Adiciona imagem ao perfil do usuário", description = "Endpoint para adicionar uma imagem ao perfil do usuário")
     @PostMapping("/me/imagem")
-    public ResponseEntity<?> adicionarImagemPerfil(@RequestParam("imagem") MultipartFile imagem) {
+    public ResponseEntity<String> adicionarImagemPerfil(@RequestParam("imagem") MultipartFile imagem) {
         try {
             Usuario usuario = userDetails.getCurrentUser();
 
@@ -67,7 +72,7 @@ public class UsuarioController {
             usuario.setCaminhoFoto(novoPath);
             usuarioService.salvarUsuario(usuario);
 
-            return ResponseEntity.ok().body("Imagem atualizada com sucesso");
+            return ResponseEntity.ok("Imagem atualizada com sucesso");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (IOException e) {
@@ -75,14 +80,15 @@ public class UsuarioController {
         }
     }
 
-    @Operation(summary = "Realizar login (necessário cadastro)",
-            description = "Endpoint para o login de usuários no sistema")
+    @Operation(summary = "Realizar login (necessário cadastro)", description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
-    public ResponseEntity<String> loginUsuario(@Valid @RequestBody ReqLoginUsuarioDTO dto,
-                                               HttpServletResponse response) {
+    public ResponseEntity<Void> loginUsuario(
+            @Valid @RequestBody ReqLoginUsuarioDTO dto,
+            HttpServletResponse response
+    ) {
         Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
 
-        if(isUsuarioEncontrado){
+        if (isUsuarioEncontrado) {
             filterService.gerarCookie(response, dto.email());
             return ResponseEntity.ok().build();
         }
@@ -90,53 +96,48 @@ public class UsuarioController {
         return ResponseEntity.notFound().build();
     }
 
-    @Operation(summary = "Excluir usuário (necessário login)",
-            description = "Endpoint para a exclusão de usuários no sistema, " +
-                    "onde o atributo 'ativo' define o seus status")
+    @Operation(
+            summary = "Excluir usuário (necessário login)",
+            description = "Endpoint para a exclusão de usuários no sistema, onde o atributo 'ativo' define o seus status"
+    )
     @PatchMapping
-    public ResponseEntity<?> deletarUsuario(@AuthenticationPrincipal UserDetails userDetails,
-                                                  HttpServletResponse response) {
+    public ResponseEntity<Void> deletarUsuario(
+            @AuthenticationPrincipal UserDetails userDetails,
+            HttpServletResponse response
+    ) {
         String email = userDetails.getUsername();
-        Boolean isUsuarioDeletado = usuarioService.removerUsuario(email);
-
-        if(!isUsuarioDeletado){
-            return ResponseEntity.notFound().build();
-        }
+        usuarioService.removerUsuario(email);
 
         filterService.removerCookie(response);
         return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Atualizar senha",
-            description = "Endpoint para atualizar senha do usuário logado")
+    @Operation(summary = "Atualizar senha", description = "Endpoint para atualizar senha do usuário logado")
     @PatchMapping("/me/alterar-senha")
-    public ResponseEntity<?> atualizarSenha(@Valid @RequestBody ReqAtualizarSenhaDto dto){
+    public ResponseEntity<Void> atualizarSenha(@Valid @RequestBody ReqAtualizarSenhaDto dto) {
         Usuario usuario = userDetails.getCurrentUser();
         usuarioService.atualizarSenha(dto, usuario);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Realizar logout",
-            description = "Endpoint para o logout de usuários no sistema")
+    @Operation(summary = "Realizar logout", description = "Endpoint para o logout de usuários no sistema")
     @GetMapping("/logout")
-    public ResponseEntity<?> logoutUsuario(HttpServletResponse response){
+    public ResponseEntity<Void> logoutUsuario(HttpServletResponse response) {
         filterService.removerCookie(response);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Buscar informações de usuario", description = "Endpoint para a busca as informações do usuario")
     @GetMapping("/me")
-    public ResponseEntity<?> buscarEu(HttpServletResponse response){
+    public ResponseEntity<Object> buscarEu() {
         Usuario usuario = userDetails.getCurrentUser();
 
-        if(usuario.getTipo() == TipoUsuario.ALUNO){
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
             ResBuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
-
-            return ResponseEntity.ok().body(resUsuario);
-
-        } else if(usuario.getTipo() == TipoUsuario.PERSONAL){
+            return ResponseEntity.ok(resUsuario);
+        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
             ResBuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
-            return ResponseEntity.ok().body(resUsuario);
+            return ResponseEntity.ok(resUsuario);
         }
 
         throw new UsuarioNaoEncontradoException();
@@ -165,7 +166,7 @@ public class UsuarioController {
 
     @Operation(summary = "Deletar imagem do perfil do usuário", description = "Endpoint para deletar a imagem do perfil do usuário")
     @DeleteMapping("/me/imagem")
-    public ResponseEntity<?> deletarImagemPerfil() {
+    public ResponseEntity<String> deletarImagemPerfil() {
         try {
             Usuario usuario = userDetails.getCurrentUser();
 
@@ -177,7 +178,7 @@ public class UsuarioController {
             usuario.setCaminhoFoto(null);
             usuarioService.salvarUsuario(usuario);
 
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.ok("Imagem deletada com sucesso");
         } catch (IOException e) {
             return ResponseEntity.internalServerError().body("Erro ao deletar imagem");
         }
@@ -187,8 +188,6 @@ public class UsuarioController {
     @GetMapping("/foto/{nomeArquivo}")
     public ResponseEntity<Resource> buscarFotoPorNome(@PathVariable String nomeArquivo) {
         try {
-            Usuario usuario = userDetails.getCurrentUser();
-
             Resource resource = usuarioService.buscarFoto(nomeArquivo);
             return ResponseEntity.ok()
                     .header("Content-Type", "image/*")
@@ -198,18 +197,16 @@ public class UsuarioController {
         }
     }
 
-    @Operation(summary = "Buscar informação de usuário autenticado",
-            description = "Endpoint para buscar informação de usuário autenticado")
+    @Operation(summary = "Buscar informação de usuário autenticado", description = "Endpoint para buscar informação de usuário autenticado")
     @GetMapping("/auth")
     public ResponseEntity<ReqAuthDTO> auth() {
         Optional<Usuario> usuario = userDetails.isLogged();
 
-        return usuario.map(usuarioAuth ->
-                ResponseEntity.ok(
-                        new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuarioAuth)))
-        ).orElseGet(() ->
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ReqAuthDTO(false, null))
-        );
+        return usuario
+                .map(usuarioAuth -> ResponseEntity.ok(
+                        new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuarioAuth))
+                ))
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                        .body(new ReqAuthDTO(false, null)));
     }
 }

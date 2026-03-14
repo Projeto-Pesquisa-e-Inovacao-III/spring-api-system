@@ -8,7 +8,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import java.time.LocalDateTime;
 
 
-public record HorarioAgendadoProjectionDto
+public record HorarioAgendadoProjectionDTO
         (LocalDateTime dataInicio,
          TipoAula tipoAula,
          AgendamentoStatus status)
