@@ -14,7 +14,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.external.comprar.exception.AlunoJaTemProdutoContratado;
+import com.spring.ApiSystem.external.comprar.exception.AlunoAlreadyHaveProdutoContratadoByTipoProdutoException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,17 +43,9 @@ public class ProdutoContratadoService {
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
-    public void checkProdutoContratadoPacoteAtivo(Long idProdutoExibicao, Aluno aluno) {
-        if (temProdutoContratadoAtivo(aluno) &&
-                produtoExibicaoService.buscarPorId(idProdutoExibicao).getTipoProduto() == TipoProduto.PACOTE) {
-            throw new AlunoJaTemProdutoContratado();
-        }
-    }
-
-
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
-        checkProdutoContratadoPacoteAtivo(idProdutoExibicao, aluno);
+        temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
 
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
@@ -184,8 +176,14 @@ public class ProdutoContratadoService {
                         .orElseThrow(SemPlanoAtivoException::new));
     }
 
-    public boolean temProdutoContratadoAtivo(Aluno aluno){
-        return produtoContratadoRepository.temProdutoContratadoPacoteAtivo(aluno);
+    public void temProdutoContratadoTipoProdutoAtivo(Long idProdutoExibicao,
+                                                     Aluno aluno, TipoProduto tipoProduto){
+
+        if(produtoContratadoRepository.temProdutoContratadoTipoProdutoAtivo(aluno, tipoProduto) &&
+                produtoExibicaoService.buscarPorId(idProdutoExibicao).getTipoProduto() == tipoProduto){
+            throw new AlunoAlreadyHaveProdutoContratadoByTipoProdutoException(tipoProduto);
+        }
+
     }
 
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
