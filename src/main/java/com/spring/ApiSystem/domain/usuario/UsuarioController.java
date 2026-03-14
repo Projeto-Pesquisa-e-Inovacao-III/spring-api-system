@@ -213,8 +213,8 @@ public class UsuarioController {
         Usuario usuario = usuarioOpt.get();
 
         boolean ativoAnamnese = false;
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
-            ativoAnamnese = ((Aluno) usuario).getAtivoAnamnese();
+        if (usuario.getTipo() == TipoUsuario.ALUNO && usuario instanceof Aluno aluno) {
+            ativoAnamnese = aluno.getAtivoAnamnese();
         }
 
         return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), ativoAnamnese));
