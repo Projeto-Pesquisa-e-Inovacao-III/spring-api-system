@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.produtoexibicao;
 import com.spring.ApiSystem.domain.horariopersonal.HorarioAgendadoProjection;
 
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,10 @@ import java.util.List;
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
     List<ProdutoExibicao> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
 
-    @Query("SELECT a.data as dataInicio, a.dataFim as dataFim, p.tipoAula as tipoAula, a.status as status " +
+    Integer countByStatusAndTipoProduto(ProdutoExibicaoStatus produtoExibicaoStatus,
+                                        TipoProduto tipoProduto);
+
+    @Query("SELECT a.data as dataInicio, p.tipoAula, a.status " +
             "FROM agendamento a " +
             "JOIN a.produtoContratado pc " +
             "JOIN pc.produtoExibicao p " +
