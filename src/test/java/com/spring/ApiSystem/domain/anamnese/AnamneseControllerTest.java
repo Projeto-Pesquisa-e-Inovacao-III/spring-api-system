@@ -98,7 +98,7 @@ class AnamneseControllerTest {
 
     @Test
     @DisplayName("POST /api/anamnese - Deve propagar exceção do service ao cadastrar")
-    void devePropagaExcecaoDoServiceAoCadastrar() {
+    void devePropagarExcecaoDoServiceAoCadastrar() {
         // Arrange
         doThrow(new RuntimeException("Erro inesperado"))
                 .when(anamneseService).cadastrarAnamnese(reqCadastrar);
