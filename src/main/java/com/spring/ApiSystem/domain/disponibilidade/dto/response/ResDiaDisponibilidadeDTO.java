@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.domain.horariopersonal.dto.response;
+package com.spring.ApiSystem.domain.disponibilidade.dto.response;
 
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
+import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
 
 import java.util.List;
 

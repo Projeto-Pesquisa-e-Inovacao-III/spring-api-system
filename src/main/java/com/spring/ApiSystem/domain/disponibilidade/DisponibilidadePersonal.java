@@ -1,13 +1,12 @@
-package com.spring.ApiSystem.domain.horariopersonal;
+package com.spring.ApiSystem.domain.disponibilidade;
 
 
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
-import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
+import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.personal.Personal;
 import jakarta.persistence.*;
 
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity

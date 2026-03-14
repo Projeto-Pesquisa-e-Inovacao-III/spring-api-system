@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.horariopersonal.dto.response;
+package com.spring.ApiSystem.domain.disponibilidade.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 

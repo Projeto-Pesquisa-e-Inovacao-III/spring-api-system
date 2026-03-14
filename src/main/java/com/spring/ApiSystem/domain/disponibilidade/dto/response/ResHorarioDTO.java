@@ -1,9 +1,9 @@
-package com.spring.ApiSystem.domain.horariopersonal.dto.response;
+package com.spring.ApiSystem.domain.disponibilidade.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonal;
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
-import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
+import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonal;
+import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 
 import java.time.LocalTime;
 

@@ -1,8 +1,7 @@
-package com.spring.ApiSystem.domain.horariopersonal;
+package com.spring.ApiSystem.domain.disponibilidade;
 
 
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
+import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import org.springframework.data.jpa.repository.JpaRepository;

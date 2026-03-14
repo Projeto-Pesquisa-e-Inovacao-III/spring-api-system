@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.domain.horariopersonal.enums;
+package com.spring.ApiSystem.domain.disponibilidade.enums;
 
-import com.spring.ApiSystem.domain.horariopersonal.exception.DiaSemanaNaoExisteExcption;
+import com.spring.ApiSystem.domain.disponibilidade.exception.DiaSemanaNaoExisteExcption;
 
 import java.time.DayOfWeek;
 

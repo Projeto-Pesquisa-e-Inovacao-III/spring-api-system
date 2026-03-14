@@ -1,12 +1,12 @@
-package com.spring.ApiSystem.domain.horariopersonal;
+package com.spring.ApiSystem.domain.disponibilidade;
 
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
-import com.spring.ApiSystem.domain.horariopersonal.enums.TipoHorario;
-import com.spring.ApiSystem.domain.horariopersonal.dto.request.ReqHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
-import com.spring.ApiSystem.domain.horariopersonal.exception.SobreposicaoHorarioException;
-import com.spring.ApiSystem.domain.horariopersonal.exception.HorarioInvalidoException;
+import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
+import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.domain.disponibilidade.exception.SobreposicaoHorarioException;
+import com.spring.ApiSystem.domain.disponibilidade.exception.HorarioInvalidoException;
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalRepository;
@@ -15,6 +15,7 @@ import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetio
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoRepository;
 import java.time.temporal.ChronoUnit;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.usuario.exception.NaoAutorizadoException;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
@@ -43,14 +44,12 @@ public class DisponibilidadePersonalService {
     private final PersonalRepository personalRepository;
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
     private final JpaUserDetailsService detailsService;
-    private final PersonalService personalService;
 
-    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository, JpaUserDetailsService detailsService, PersonalService personalService) {
+    public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository, PersonalRepository personalRepository, ProdutoExibicaoRepository produtoExibicaoRepository, JpaUserDetailsService detailsService) {
         this.disponibilidadeRepository = disponibilidadeRepository;
         this.personalRepository = personalRepository;
         this.produtoExibicaoRepository = produtoExibicaoRepository;
         this.detailsService = detailsService;
-        this.personalService = personalService;
     }
 
     private boolean intervalsOverlap(LocalDateTime aStart, LocalDateTime aEnd, LocalDateTime bStart, LocalDateTime bEnd) {
@@ -62,7 +61,7 @@ public class DisponibilidadePersonalService {
     /**
      * Valida todas as regras de negócio para criação/atualização de horários
      */
-    private void validarHorario(Long personalId, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim,
+    private void validarHorario(Personal personal, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim,
                                 Long horarioId, TipoHorario tipo) {
 
 
@@ -91,23 +90,23 @@ public class DisponibilidadePersonalService {
         }
 
         if (tipo == TipoHorario.RESTRITO) {
-            validarRestricaoDentroDeDisponibilidade(personalId, diaSemana, horaInicio, horaFim, horarioId);
+            validarRestricaoDentroDeDisponibilidade(personal, diaSemana, horaInicio, horaFim, horarioId);
         }
 
-        validarConflito(personalId, diaSemana, horaInicio, horaFim, horarioId, tipo);
+        validarConflito(personal, diaSemana, horaInicio, horaFim, horarioId, tipo);
 
         if (tipo == TipoHorario.RESTRITO) {
-            validarContraAgendamentosFuturos(personalId, diaSemana, horaInicio, horaFim);
+            validarContraAgendamentosFuturos(personal, diaSemana, horaInicio, horaFim);
         }
     }
 
     /**
      * Valida se uma restrição está dentro de um período de disponibilidade
      */
-    private void validarRestricaoDentroDeDisponibilidade(Long personalId, DiaSemana diaSemana,
+    private void validarRestricaoDentroDeDisponibilidade(Personal personal, DiaSemana diaSemana,
                                                          LocalTime horaInicio, LocalTime horaFim, Long horarioId) {
         List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository
-            .findByPersonalIdAndDiaSemana(personalId, diaSemana)
+            .findByPersonalIdAndDiaSemana(personal.getId(), diaSemana)
             .stream()
             .filter(d -> d.getTipo() == TipoHorario.DISPONIVEL)
             .filter(d -> horarioId == null || !d.getId().equals(horarioId))
@@ -126,9 +125,8 @@ public class DisponibilidadePersonalService {
     /**
      * Valida conflitos com agendamentos ativos nos próximos 30 dias
      */
-    private void validarContraAgendamentosFuturos(Long personalId, DiaSemana diaSemana,
+    private void validarContraAgendamentosFuturos(Personal personal, DiaSemana diaSemana,
                                                    LocalTime horaInicio, LocalTime horaFim) {
-        Personal personal = personalService.buscarPorId(personalId);
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
         LocalTime restritoInicioComBuffer = horaInicio.minusMinutes(BUFFER_ANTECEDENCIA_RESTRICAO);
@@ -138,7 +136,7 @@ public class DisponibilidadePersonalService {
 
         // Valida para todas as ocorrências do dia da semana nos próximos 30 dias
         List<HorarioAgendadoProjection> todosAgendamentos = produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(
-                personalId,
+                personal.getId(),
                 hoje.atStartOfDay(),
                 dataFim.atTime(23, 59, 59)
         );
@@ -184,16 +182,18 @@ public class DisponibilidadePersonalService {
 
     // Atualização dos horarios
     @Transactional
-    public ResHorarioDTO atualizarHorarios(Long horarioId, ReqHorarioDTO request) {
+    public ResHorarioDTO atualizarHorarios(Personal personal, Long horarioId, ReqHorarioDTO request) {
 
         DisponibilidadePersonal horarioExistente = disponibilidadeRepository.findById(horarioId)
                 .orElseThrow(() -> new EntityNotFoundException("Horário não encontrado"));
 
-        Long personalId = horarioExistente.getPersonal().getId();
+        if(!horarioExistente.getPersonal().getId().equals(personal.getId())){
+            throw new NaoAutorizadoException();
+        }
 
         // Valida ANTES de atualizar
         validarHorario(
-                personalId,
+                personal,
                 request.diaSemana(),
                 request.horaInicio(),
                 request.horaFim(),
@@ -210,9 +210,8 @@ public class DisponibilidadePersonalService {
     }
 
     @Transactional(readOnly = true)
-    public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Long personalId, LocalDate dataDesejada, TipoAula tipoAula) {
+    public List<ResSlotDisponivelDTO> obterHorariosDisponiveis(Personal personal, LocalDate dataDesejada, TipoAula tipoAula) {
 
-        Personal personal = personalService.buscarPorId(personalId);
 
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
         final int duracaoAulaNecessaria = TipoAula.FUNCIONAL == tipoAula ? 30 : 60;
@@ -236,7 +235,7 @@ public class DisponibilidadePersonalService {
 
         DayOfWeek diaSemana = dataDesejada.getDayOfWeek();
         List<DisponibilidadePersonal> disponibilidade = disponibilidadeRepository
-                .findByPersonalIdAndDiaSemana(personalId, DiaSemana.fromDayOfWeek(diaSemana));
+                .findByPersonalIdAndDiaSemana(personal.getId(), DiaSemana.fromDayOfWeek(diaSemana));
 
         if (disponibilidade.isEmpty()) {
             return Collections.emptyList();
@@ -266,7 +265,7 @@ public class DisponibilidadePersonalService {
         LocalDateTime endOfDay = dataDesejada.atTime(23, 59, 59);
 
         List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
-                .findAgendamentoSlotsByPersonalIdAndDataBetween(personalId, startOfDay, endOfDay);
+                .findAgendamentoSlotsByPersonalIdAndDataBetween(personal.getId(), startOfDay, endOfDay);
 
         for (HorarioAgendadoProjection slot : agendamentos) {
             LocalDateTime inicioAula = slot.getDataInicio();
@@ -350,10 +349,10 @@ public class DisponibilidadePersonalService {
     }
 
 
-    private void validarConflito(Long personalId, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim, Long horarioId, TipoHorario tipo) {
+    private void validarConflito(Personal personal, DiaSemana diaSemana, LocalTime horaInicio, LocalTime horaFim, Long horarioId, TipoHorario tipo) {
 
         List<DisponibilidadePersonal> sobrepostos = disponibilidadeRepository.encontrarConflitos(
-                personalId, diaSemana, horaInicio, horaFim, horarioId
+                personal.getId(), diaSemana, horaInicio, horaFim, horarioId
         );
 
         // Valida conflitos com horários existentes
@@ -373,15 +372,14 @@ public class DisponibilidadePersonalService {
             LocalDateTime novoPeriodoStart = LocalDate.now().atTime(restritoInicioComBuffer);
             LocalDateTime novoPeriodoEnd = LocalDate.now().atTime(horaFim);
 
-            validarContraAgendamentosAtivos(personalId, diaSemana, novoPeriodoStart, novoPeriodoEnd);
+            validarContraAgendamentosAtivos(personal, diaSemana, novoPeriodoStart, novoPeriodoEnd);
         }
     }
 
     /**
      * Valida se o 'novo período' (Restrição) sobrepõe qualquer agendamento ATIVO + INTERVALO PÓS-ATENDIMENTO.
      */
-    private void validarContraAgendamentosAtivos(Long personalId, DiaSemana diaSemana, LocalDateTime novoPeriodoStart, LocalDateTime novoPeriodoEnd) {
-        Personal personal = personalRepository.findById(personalId).orElseThrow(PersonalNaoExisteExcepetion::new);
+    private void validarContraAgendamentosAtivos(Personal personal, DiaSemana diaSemana, LocalDateTime novoPeriodoStart, LocalDateTime novoPeriodoEnd) {
         final int bufferPosAtendimento = Optional.ofNullable(personal.getBufferMinutos()).orElse(15);
 
         // Encontra a próxima ocorrência do dia da semana (para buscar agendamentos)
@@ -395,7 +393,7 @@ public class DisponibilidadePersonalService {
 
 
         List<HorarioAgendadoProjection> agendamentos = produtoExibicaoRepository
-                .findAgendamentoSlotsByPersonalIdAndDataBetween(personalId, start, end);
+                .findAgendamentoSlotsByPersonalIdAndDataBetween(personal.getId(), start, end);
 
         // Ajusta o novo período de restrição para a data de referência
         LocalDateTime novoRestricaoStart = dataRef.atTime(novoPeriodoStart.toLocalTime());
@@ -415,8 +413,7 @@ public class DisponibilidadePersonalService {
         }
     }
 
-    public List<DisponibilidadePersonal> pegarCronograma() {
-        Personal personal = detailsService.getCurrentPersonal();
+    public List<DisponibilidadePersonal> pegarCronograma(Personal personal) {
         return disponibilidadeRepository.findByPersonal(personal);
     }
 }
