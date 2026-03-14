@@ -1,24 +1,26 @@
+package com.spring.ApiSystem.domain.agendamento.dto.response.detalhes;
 
-package com.spring.ApiSystem.domain.agendamento.dto.response;
-
+import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResAgendementoDadosEnderecoAlunoDTO;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 
 import java.time.LocalDateTime;
 
-public record ResDetalhesAgendamentoAlunoDTO(
+public record ResDetalhesAgendamentoPersonalDTO(
         Long id,
         LocalDateTime dataInicio,
         LocalDateTime dataFim,
         int duracaoMinutos,
         AgendamentoStatus status,
-        ResDetalhesAgendamentoPersonal personal,
+        ResDetalhesAgendamentoAluno aluno,
         ResAgendementoDadosEnderecoAlunoDTO endereco,
         TipoAula tipoAula,
+        String local,
         String descricao
-) {
-    public record ResDetalhesAgendamentoPersonal(
+) implements AgendamentoDetalheResponse {
+
+    public record ResDetalhesAgendamentoAluno(
             Long id,
             String nome,
             String idade,
