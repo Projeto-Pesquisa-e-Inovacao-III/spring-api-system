@@ -7,6 +7,8 @@ import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+
+import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -22,6 +24,7 @@ public class Aluno extends Usuario {
     @Column(unique = true, nullable = false, length = 11)
     private Cpf cpf;
 
+    @Column(nullable = false)
     private boolean ativoAnamnese = false;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

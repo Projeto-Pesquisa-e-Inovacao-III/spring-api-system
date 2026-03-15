@@ -213,7 +213,8 @@ public class UsuarioController {
         Usuario usuario = usuarioOpt.get();
 
         boolean ativoAnamnese = false;
-        if (usuario.getTipo() == TipoUsuario.ALUNO && usuario instanceof Aluno aluno) {
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            Aluno aluno = alunoService.buscarPorId(usuario.getId());
             ativoAnamnese = aluno.getAtivoAnamnese();
         }
 

@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.domain.anamnese.dto.request;
 
-import com.spring.ApiSystem.domain.anamnese.Condicoes;
+import com.spring.ApiSystem.domain.anamnese.dto.CondicoesDto;
 import com.spring.ApiSystem.domain.anamnese.dto.AnamneseDto;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 
@@ -11,7 +11,7 @@ public record ReqAtualizarAnamneseDto(
     Double peso,
     String objectivoPrincipal,
     String rotina,
-    List<Condicoes> condicoes,
+    List<CondicoesDto> condicoes,
     NivelDeAtividadeEnum nivelDeAtividade,
     String observacaoSaude
 ) implements AnamneseDto {}

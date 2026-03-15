@@ -92,7 +92,7 @@ class AnamneseServiceTest {
 
     @Test
     @DisplayName("Deve cadastrar anamnese com sucesso quando aluno não tem anamnese")
-    void deveCadastrarAnamnesComSucesso() {
+    void deveCadastrarAnamneseComSucesso() {
         // Arrange
         when(jpaUserDetailsService.getCurrentAluno()).thenReturn(alunoSemAnamnese);
         when(anamneseMapper.toEntityFromRequest(reqCadastrar)).thenReturn(anamnese);

@@ -144,7 +144,7 @@ class AnamneseControllerTest {
 
     @Test
     @DisplayName("PUT /api/anamnese - Deve propagar exceção do service ao atualizar")
-    void devePropagaExcecaoDoServiceAoAtualizar() {
+    void devePropagarExcecaoDoServiceAoAtualizar() {
         // Arrange
         when(anamneseService.atualizarAnamnese(reqAtualizar))
                 .thenThrow(new RuntimeException("Anamnese não encontrada"));
