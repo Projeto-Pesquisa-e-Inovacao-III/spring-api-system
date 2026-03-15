@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.usuario;
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.personal.PersonalService;
@@ -202,14 +203,21 @@ public class UsuarioController {
             description = "Endpoint para buscar informação de usuário autenticado")
     @GetMapping("/auth")
     public ResponseEntity<ReqAuthDTO> auth() {
-        Optional<Usuario> usuario = userDetails.isLogged();
+        Optional<Usuario> usuarioOpt = userDetails.isLogged();
 
-        return usuario.map(usuarioAuth ->
-                ResponseEntity.ok(
-                        new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuarioAuth)))
-        ).orElseGet(() ->
-                ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ReqAuthDTO(false, null))
-        );
+        if (usuarioOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ReqAuthDTO(false, null, false));
+        }
+
+        Usuario usuario = usuarioOpt.get();
+
+        boolean ativoAnamnese = false;
+        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+            Aluno aluno = alunoService.buscarPorId(usuario.getId());
+            ativoAnamnese = aluno.getAtivoAnamnese();
+        }
+
+        return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), ativoAnamnese));
     }
 }

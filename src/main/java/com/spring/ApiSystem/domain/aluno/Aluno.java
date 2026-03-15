@@ -3,9 +3,11 @@ package com.spring.ApiSystem.domain.aluno;
 
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.aluno.vo.CpfConverter;
+import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -21,15 +23,21 @@ public class Aluno extends Usuario {
     @Column(unique = true, nullable = false, length = 11)
     private Cpf cpf;
 
+    @Column(nullable = false)
+    private boolean ativoAnamnese = false;
+
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "anamnese_id")
+    private Anamnese anamnese;
+
     public Aluno() {
     }
 
-    public Aluno(Long id, TipoUsuario tipo, String nome, String sexo,
-                 LocalDate dataNascimento, String email, String salt,
-                 String senha, boolean ativo, String caminhoFoto,
-                 List<Telefone> telefones, Cpf cpf) {
+    public Aluno(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones, Cpf cpf, boolean ativoAnamnese, Anamnese anamnese) {
         super(id, tipo, nome, sexo, dataNascimento, email, salt, senha, ativo, caminhoFoto, telefones);
         this.cpf = cpf;
+        this.ativoAnamnese = ativoAnamnese;
+        this.anamnese = anamnese;
     }
 
     public Integer getIdade() {
@@ -42,5 +50,21 @@ public class Aluno extends Usuario {
 
     public void setCpf(Cpf cpf) {
         this.cpf = cpf;
+    }
+
+    public boolean getAtivoAnamnese() {
+        return ativoAnamnese;
+    }
+
+    public void setAtivoAnamnese(boolean ativoAnamnese) {
+        this.ativoAnamnese = ativoAnamnese;
+    }
+
+    public Anamnese getAnamnese() {
+        return anamnese;
+    }
+
+    public void setAnamnese(Anamnese anamnese) {
+        this.anamnese = anamnese;
     }
 }

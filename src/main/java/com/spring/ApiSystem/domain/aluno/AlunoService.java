@@ -14,6 +14,7 @@ import com.spring.ApiSystem.domain.aluno.mapper.AlunoMapper;
 import com.spring.ApiSystem.domain.aluno.events.AlunoEventPublisher;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
+import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
@@ -126,5 +127,11 @@ public class AlunoService {
     public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
         Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
         return new ResAlunosPagantesDTO(quantidade);
+    }
+
+    public Aluno registrarAnamnese(Aluno aluno, Anamnese anamnese) {
+        aluno.setAnamnese(anamnese);
+        aluno.setAtivoAnamnese(true);
+        return alunoRepository.save(aluno);
     }
 }
