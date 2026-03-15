@@ -8,7 +8,6 @@ import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 
-import io.micrometer.common.lang.Nullable;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
