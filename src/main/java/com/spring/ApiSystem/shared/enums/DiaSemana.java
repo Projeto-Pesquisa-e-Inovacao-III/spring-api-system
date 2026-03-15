@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.disponibilidade.enums;
+package com.spring.ApiSystem.shared.enums;
 
 import com.spring.ApiSystem.domain.disponibilidade.exception.DiaSemanaNaoExisteExcption;
 
