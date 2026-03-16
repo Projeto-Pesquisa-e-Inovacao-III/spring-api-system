@@ -1,8 +1,9 @@
 package com.spring.ApiSystem.domain.produtoexibicao;
 
-import com.spring.ApiSystem.domain.horariopersonal.HorarioAgendadoProjection;
+import com.spring.ApiSystem.domain.disponibilidade.HorarioAgendadoProjection;
 
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,6 +15,9 @@ import java.util.List;
 @Repository
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
     List<ProdutoExibicao> findByStatus(ProdutoExibicaoStatus produtoExibicaoStatus);
+
+    Integer countByStatusAndTipoProduto(ProdutoExibicaoStatus produtoExibicaoStatus,
+                                        TipoProduto tipoProduto);
 
     @Query("SELECT a.data as dataInicio, p.tipoAula, a.status " +
             "FROM agendamento a " +
@@ -28,10 +32,6 @@ public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao
             @Param("end") LocalDateTime end
     );
 
-    @Query("SELECT CASE WHEN COUNT(p) > 0 THEN true ELSE false END " +
-            "FROM produto_exibicao p " +
-            "WHERE p.id = :id " +
-            "AND p.status = ProdutoExibicaoStatus.ATIVO")
-    boolean existsProdutoExibicaoAtivoById(@Param("id") Long id);
+    boolean existsByIdAndStatus(Long id, ProdutoExibicaoStatus status);
 
 }

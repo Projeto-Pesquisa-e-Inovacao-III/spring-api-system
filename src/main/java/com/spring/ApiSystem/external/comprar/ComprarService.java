@@ -46,11 +46,9 @@ public class ComprarService {
         Aluno aluno = userDetailsService.getCurrentAluno();
         Long userId = aluno.getId();
 
-        if(produtoContratadoService.temProdutoContratadoAtivo(aluno) &&
-           produtoExibicaoService.buscarPorId(produtoExibicaoId).getTipoProduto() == TipoProduto.PACOTE
-        ){
-            throw new AlunoJaTemProdutoContratado();
-        }
+        produtoContratadoService.temProdutoContratadoTipoProdutoAtivo(
+                produtoExibicaoId, aluno, TipoProduto.PACOTE
+        );
 
         Map<String, Long> requestBody = new HashMap<>();
         requestBody.put("user_id", userId);
