@@ -160,7 +160,7 @@ public class AgendamentoService {
                 );
                 agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
             }
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.getTipo() == TipoUsuario.PERSONAL && editarAgendamentoDTO.endereco() != null) {
             throw new AgendamentoPersonalNaoPodeAlterarEnderecoException();
         }
 
