@@ -21,7 +21,7 @@ public class OpenApiConfig {
     public GroupedOpenApi usuariosApi() {
         return GroupedOpenApi.builder()
                 .group("Usuários")
-                .pathsToMatch("/usuarios/**")
+                .pathsToMatch("/api/usuarios/**")
                 .build();
     }
 
@@ -29,7 +29,7 @@ public class OpenApiConfig {
     public GroupedOpenApi enderecosApi() {
         return GroupedOpenApi.builder()
                 .group("Endereços")
-                .pathsToMatch("/enderecos/**")
+                .pathsToMatch("/api/enderecos/**")
                 .build();
     }
 
@@ -37,41 +37,47 @@ public class OpenApiConfig {
     public GroupedOpenApi agendamentoApi() {
         return GroupedOpenApi.builder()
                 .group("Agendamento")
-                .pathsToMatch("/agendamentos/**")
+                .pathsToMatch("/api/agendamentos/**")
                 .build();
     }
 
     @Bean
-    public GroupedOpenApi alunoAPi() {
+    public GroupedOpenApi alunoApi() {
         return GroupedOpenApi.builder()
                 .group("Aluno")
-                .pathsToMatch("/alunos/**")
+                .pathsToMatch("/api/alunos/**")
                 .build();
     }
 
     @Bean
-    public GroupedOpenApi personalAPi() {
+    public GroupedOpenApi personalApi() {
         return GroupedOpenApi.builder()
                 .group("Personal")
-                .pathsToMatch("/personais/**")
+                .pathsToMatch("/api/personais/**")
                 .build();
     }
 
     @Bean
-    public GroupedOpenApi produtoContratadoAPi() {
+    public GroupedOpenApi produtoContratadoApi() {
         return GroupedOpenApi.builder()
                 .group("Produto Contratado")
-                .pathsToMatch("/produtos-contratados/**")
+                .pathsToMatch("/api/produtos-contratados/**")
                 .build();
     }
 
     @Bean
-    public GroupedOpenApi produtoExibicaoAPi() {
+    public GroupedOpenApi produtoExibicaoApi() {
         return GroupedOpenApi.builder()
                 .group("Produto Exibição")
-                .pathsToMatch("/produtos-exibicoes/**")
+                .pathsToMatch("/api/produtos-exibicoes/**")
                 .build();
     }
 
-
+    @Bean
+    public GroupedOpenApi allApi() {
+        return GroupedOpenApi.builder()
+                .group("API Completa")
+                .pathsToMatch("/api/**")
+                .build();
+    }
 }
