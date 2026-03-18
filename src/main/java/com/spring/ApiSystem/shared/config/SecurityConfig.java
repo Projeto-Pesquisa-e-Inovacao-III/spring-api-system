@@ -74,6 +74,19 @@ public class SecurityConfig {
                             "/api/usuarios/**"
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
+                    // Aluno (mover para antes das regras genéricas para evitar shadowing)
+                    auth.requestMatchers(HttpMethod.GET,
+                            "/api/produtos-contratados/total-tipo/*",
+                            "/api/personais"
+                    ).hasAuthority("ROLE_ALUNO");
+
+                    auth.requestMatchers(
+                            "/api/alunos/**",
+                            "/api/comprar/**",
+                            "/api/checkouts/**",
+                            "/api/produtos-contratados/**"
+                    ).hasAuthority("ROLE_ALUNO");
+
                     // Personal (regras específicas para ROLE_PERSONAL)
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
@@ -91,19 +104,6 @@ public class SecurityConfig {
                             "/api/personais/**",
                             "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_PERSONAL");
-
-                    // Aluno (mover para depois das regras acima para evitar shadowing por padrões genéricos)
-                    auth.requestMatchers(HttpMethod.GET,
-                            "/api/produtos-contratados/total-tipo/*",
-                            "/api/personais"
-                    ).hasAuthority("ROLE_ALUNO");
-
-                    auth.requestMatchers(
-                            "/api/alunos/**",
-                            "/api/comprar/**",
-                            "/api/checkouts/**",
-                            "/api/produtos-contratados/**"
-                    ).hasAuthority("ROLE_ALUNO");
 
                 })
                 .exceptionHandling(ex -> ex
