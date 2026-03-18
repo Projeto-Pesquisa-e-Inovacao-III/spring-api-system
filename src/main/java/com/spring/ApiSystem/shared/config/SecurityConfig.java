@@ -71,7 +71,8 @@ public class SecurityConfig {
                     auth.requestMatchers(
                             "/api/personais/*/horarios-disponiveis",
                             "/api/agendamentos/**",
-                            "/api/usuarios/**"
+                            "/api/usuarios/**",
+                            "/api/enderecos/**" // exemplo: adiciona endereços aqui se for o caso
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
                     // Aluno (mover para antes das regras genéricas para evitar shadowing)
