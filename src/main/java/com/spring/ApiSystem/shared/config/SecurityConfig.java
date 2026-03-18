@@ -75,7 +75,13 @@ public class SecurityConfig {
                             "/api/enderecos/**"
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
-                    // Personal (mover antes das regras genéricas de ALUNO)
+                    // Aluno - matcher específico para GET /api/personais deve vir antes do matcher PERSONAL genérico
+                    auth.requestMatchers(HttpMethod.GET,
+                            "/api/produtos-contratados/total-tipo/*",
+                            "/api/personais"
+                    ).hasAuthority("ROLE_ALUNO");
+
+                    // Personal (regras mais específicas após a regra acima)
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
                             "/api/alunos/*"
@@ -93,12 +99,7 @@ public class SecurityConfig {
                             "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_PERSONAL");
 
-                    // Aluno
-                    auth.requestMatchers(HttpMethod.GET,
-                            "/api/produtos-contratados/total-tipo/*",
-                            "/api/personais"
-                    ).hasAuthority("ROLE_ALUNO");
-
+                    // Demais regras para aluno/genéricas
                     auth.requestMatchers(
                             "/api/alunos/**",
                             "/api/comprar/**",
