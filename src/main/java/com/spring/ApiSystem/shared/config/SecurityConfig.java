@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.shared.config;
+        package com.spring.ApiSystem.shared.config;
 
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import org.springframework.beans.factory.annotation.Value;
@@ -80,6 +80,13 @@ public class SecurityConfig {
                             "/api/produtos-contratados/**"
                     ).hasAuthority("ROLE_ALUNO");
 
+                    // Compartilhadas (moveram para antes da regra geral "/api/personais/**")
+                    auth.requestMatchers(
+                            "/api/personais/*/horarios-disponiveis",
+                            "/api/agendamentos/**",
+                            "/api/usuarios/**"
+                    ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
+
                     // Personal
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
@@ -97,13 +104,6 @@ public class SecurityConfig {
                             "/api/personais/**",
                             "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_PERSONAL");
-
-                    // Compartilhadas
-                    auth.requestMatchers(
-                            "/api/personais/*/horarios-disponiveis",
-                            "/api/agendamentos/**",
-                            "/api/usuarios/**"
-                    ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
                 })
                 .exceptionHandling(ex -> ex
