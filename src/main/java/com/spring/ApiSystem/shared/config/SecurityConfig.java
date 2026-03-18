@@ -1,4 +1,4 @@
-        package com.spring.ApiSystem.shared.config;
+package com.spring.ApiSystem.shared.config;
 
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,27 +67,14 @@ public class SecurityConfig {
                             "/api/password-reset/**"
                     ).permitAll();
 
-                    // Aluno
-                    auth.requestMatchers(HttpMethod.GET,
-                            "/api/produtos-contratados/total-tipo/*",
-                            "/api/personais"
-                    ).hasAuthority("ROLE_ALUNO");
-
-                    auth.requestMatchers(
-                            "/api/alunos/**",
-                            "/api/comprar/**",
-                            "/api/checkouts/**",
-                            "/api/produtos-contratados/**"
-                    ).hasAuthority("ROLE_ALUNO");
-
-                    // Compartilhadas (moveram para antes da regra geral "/api/personais/**")
+                    // Compartilhadas (precisam vir antes de regras genéricas)
                     auth.requestMatchers(
                             "/api/personais/*/horarios-disponiveis",
                             "/api/agendamentos/**",
                             "/api/usuarios/**"
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
-                    // Personal
+                    // Personal (regras específicas para ROLE_PERSONAL)
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
                             "/api/alunos/*"
@@ -104,6 +91,19 @@ public class SecurityConfig {
                             "/api/personais/**",
                             "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_PERSONAL");
+
+                    // Aluno (mover para depois das regras acima para evitar shadowing por padrões genéricos)
+                    auth.requestMatchers(HttpMethod.GET,
+                            "/api/produtos-contratados/total-tipo/*",
+                            "/api/personais"
+                    ).hasAuthority("ROLE_ALUNO");
+
+                    auth.requestMatchers(
+                            "/api/alunos/**",
+                            "/api/comprar/**",
+                            "/api/checkouts/**",
+                            "/api/produtos-contratados/**"
+                    ).hasAuthority("ROLE_ALUNO");
 
                 })
                 .exceptionHandling(ex -> ex
