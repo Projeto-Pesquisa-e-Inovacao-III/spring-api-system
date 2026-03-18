@@ -45,47 +45,21 @@ public class FilterService extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String cookie = this.recuperarCookie(request);
+        String token = recuperarCookie(request);
 
-        if (cookie == null) {
+        if (token == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String email;
         try {
-            email = tokenService.subjectToken(cookie);
+            String email = tokenService.subjectToken(token);
+            if (email != null) {
+                autenticarUsuario(email);
+            }
         } catch (Exception ex) {
-            // Token mal formado / inválido -> remover cookie e rejeitar
-            this.removerCookie(response);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token inválido");
-            return;
+            removerCookie(response);
         }
-
-        if (email == null) {
-            this.removerCookie(response);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token sem subject");
-            return;
-        }
-
-        UserDetails usuario;
-        try {
-            usuario = jpaUserDetailsService.loadUserByUsername(email);
-        } catch (UsernameNotFoundException ex) {
-            this.removerCookie(response);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuário não encontrado");
-            return;
-        }
-
-        if (usuario == null || !usuario.isEnabled()) {
-            this.removerCookie(response);
-            response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Usuário inválido ou desabilitado");
-            return;
-        }
-        logger.debug("Autenticando usuário: {}. Authorities: {}", usuario.getUsername(), usuario.getAuthorities());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(usuario,
-                null, usuario.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
     }
@@ -106,9 +80,7 @@ public class FilterService extends OncePerRequestFilter {
         response.addCookie(cookie);
     }
 
-    /*
-    Acessa a requisição e procura pelo cookie jwt onde estará o token
-     */
+
     public String recuperarCookie(HttpServletRequest request){
         if(request.getCookies() != null){
             for (Cookie cookie : request.getCookies()) {
@@ -121,6 +93,7 @@ public class FilterService extends OncePerRequestFilter {
         return null;
     }
 
+
     public void removerCookie(HttpServletResponse response){
         Cookie remover = new Cookie("jwt", null);
         remover.setPath("/");
@@ -128,4 +101,29 @@ public class FilterService extends OncePerRequestFilter {
         remover.setHttpOnly(true);
         response.addCookie(remover);
     }
-}
+
+    private void autenticarUsuario(String email) {
+        if (SecurityContextHolder.getContext().getAuthentication() != null) {
+            return;
+        }
+
+        try {
+            UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
+
+            if (usuario == null || !usuario.isEnabled()) {
+                return;
+            }
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(
+                            usuario,
+                            null,
+                            usuario.getAuthorities()
+                    );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            logger.debug("Usuário autenticado: {}", usuario.getUsername());
+
+        } catch (UsernameNotFoundException ex) {
+            logger.debug("Usuário do token não encontrado");
+        }
+    }}

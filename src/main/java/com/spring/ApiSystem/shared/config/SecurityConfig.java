@@ -1,7 +1,6 @@
 package com.spring.ApiSystem.shared.config;
 
 import com.spring.ApiSystem.shared.config.filter.FilterService;
-import com.spring.ApiSystem.shared.config.helper.SecurityAuthorizationHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,9 +14,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.filter.CorsFilter;
 
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
-
-
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -25,22 +21,17 @@ public class SecurityConfig {
 
     private final FilterService filterService;
     private final CorsConfig corsConfig;
-    private final SecurityAuthorizationHelper securityAuthorizationHelper;
 
     @Value("${spring.profiles.active:}")
     private String perfilAtivo;
 
-    public SecurityConfig(FilterService filterService, CorsConfig corsConfig, SecurityAuthorizationHelper securityAuthorizationHelper) {
+    public SecurityConfig(FilterService filterService, CorsConfig corsConfig) {
         this.filterService = filterService;
         this.corsConfig = corsConfig;
-        this.securityAuthorizationHelper = securityAuthorizationHelper;
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(
-            HttpSecurity httpSecurity,
-            HandlerMappingIntrospector introspector
-    ) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 
         return httpSecurity
                 .securityMatcher("/api/**")
@@ -55,14 +46,17 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/doc"
                         ).permitAll();
+
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
 
-                    // 1) ROTAS PÚBLICAS
+                    // Públicas
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
                     auth.requestMatchers(HttpMethod.GET,
-                            "/api/produtos-exibicoes/ativos"
+                            "/api/produtos-exibicoes/ativos",
+                            "/api/produtos-exibicoes",
+                            "/api/usuarios/auth"
                     ).permitAll();
 
                     auth.requestMatchers(HttpMethod.POST,
@@ -73,22 +67,24 @@ public class SecurityConfig {
                             "/api/password-reset/**"
                     ).permitAll();
 
-                    auth.requestMatchers(HttpMethod.GET,
-                            "/api/produtos-exibicoes",
-                            "/api/usuarios/auth"
-                    ).permitAll();
-
-                    // 2) ESPECÍFICAS DO ALUNO
+                    // Aluno
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-contratados/total-tipo/*",
                             "/api/personais"
-                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_ALUNO"));
+                    ).hasAuthority("ROLE_ALUNO");
 
-                    // 3) ESPECÍFICAS DO PERSONAL
+                    auth.requestMatchers(
+                            "/api/alunos/**",
+                            "/api/comprar/**",
+                            "/api/checkouts/**",
+                            "/api/produtos-contratados/**"
+                    ).hasAuthority("ROLE_ALUNO");
+
+                    // Personal
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
                             "/api/alunos/*"
-                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
+                    ).hasAuthority("ROLE_PERSONAL");
 
                     auth.requestMatchers(
                             "/api/agendamentos/*/confirmar-conclusao",
@@ -97,36 +93,31 @@ public class SecurityConfig {
                             "/api/agendamentos/contagem-status-data",
                             "/api/produtos-contratados/ganhos-mes/*",
                             "/api/produtos-contratados/planos-vendidos/*",
-                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados"
-                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
+                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados",
+                            "/api/personais/**",
+                            "/api/produtos-exibicoes/**"
+                    ).hasAuthority("ROLE_PERSONAL");
 
-                    // 4) COMPARTILHADAS
+                    // Compartilhadas
                     auth.requestMatchers(
                             "/api/personais/*/horarios-disponiveis",
                             "/api/agendamentos/**",
                             "/api/usuarios/**"
-                    ).access(securityAuthorizationHelper.anyRoleIfExists(introspector, "ROLE_PERSONAL", "ROLE_ALUNO"));
+                    ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
-                    // 5) GENÉRICAS DO PERSONAL
-                    auth.requestMatchers(
-                            "/api/personais/**",
-                            "/api/produtos-exibicoes/**"
-                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_PERSONAL"));
-
-                    // 6) GENÉRICAS DO ALUNO
-                    auth.requestMatchers(
-                            "/api/alunos/**",
-                            "/api/comprar/**",
-                            "/api/checkouts/**",
-                            "/api/produtos-contratados/**"
-                    ).access(securityAuthorizationHelper.roleIfExists(introspector, "ROLE_ALUNO"));
-
-                    auth.anyRequest().access(securityAuthorizationHelper.authenticatedIfExists(introspector));
                 })
+                .exceptionHandling(ex -> ex
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(403);
+                            response.setContentType("application/json");
+                            response.getWriter().write("""
+                                {"status":403,"error":"Forbidden","message":"Acesso negado"}
+                            """);
+                        })
+                )
                 .addFilterBefore(new CorsFilter(corsConfig.corsConfigurationSource()),
                         UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(filterService, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
-
 }
