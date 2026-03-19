@@ -1,10 +1,9 @@
-package com.spring.ApiSystem.external.whatsapp.request;
+package com.spring.ApiSystem.external.whatsapp.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
-public record ReqSendResetCode(
+public record ReqVerifyCode(
         @NotBlank
         @Pattern(regexp = "\\d{1,3}", message = "pais deve conter apenas dígitos (1-3).")
         String pais,
@@ -15,6 +14,10 @@ public record ReqSendResetCode(
 
         @NotBlank
         @Pattern(regexp = "\\d{7,11}", message = "numero deve conter apenas dígitos (7-11).")
-        @Size(min = 7, max = 11)
-        String numero
-) {}
+        String numero,
+
+        @NotBlank
+        @Pattern(regexp = "\\d{6}", message = "verificationCode deve ser um código de 6 dígitos.")
+        String verificationCode
+) {
+}

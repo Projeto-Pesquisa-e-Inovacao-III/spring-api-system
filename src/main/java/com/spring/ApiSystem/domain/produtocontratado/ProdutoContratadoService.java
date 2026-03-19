@@ -14,7 +14,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.external.comprar.exception.AlunoAlreadyHaveProdutoContratadoByTipoProdutoException;
+import com.spring.ApiSystem.external.comprar.exception.AlunoJaPossuiProdutoContratadoDoTipoException;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -181,7 +181,7 @@ public class ProdutoContratadoService {
 
         if(produtoContratadoRepository.temProdutoContratadoTipoProdutoAtivo(aluno, tipoProduto) &&
                 produtoExibicaoService.buscarPorId(idProdutoExibicao).getTipoProduto() == tipoProduto){
-            throw new AlunoAlreadyHaveProdutoContratadoByTipoProdutoException(tipoProduto);
+            throw new AlunoJaPossuiProdutoContratadoDoTipoException(tipoProduto);
         }
 
     }

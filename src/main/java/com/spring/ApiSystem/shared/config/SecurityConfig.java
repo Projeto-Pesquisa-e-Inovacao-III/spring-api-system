@@ -67,20 +67,21 @@ public class SecurityConfig {
                             "/api/password-reset/**"
                     ).permitAll();
 
-                    // Aluno
+                    // Compartilhadas
+                    auth.requestMatchers(
+                            "/api/personais/*/horarios-disponiveis",
+                            "/api/agendamentos/**",
+                            "/api/usuarios/**",
+                            "/api/enderecos/**"
+                    ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
+
+                    // Aluno - matcher específico para GET /api/personais deve vir antes do matcher PERSONAL genérico
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-contratados/total-tipo/*",
                             "/api/personais"
                     ).hasAuthority("ROLE_ALUNO");
 
-                    auth.requestMatchers(
-                            "/api/alunos/**",
-                            "/api/comprar/**",
-                            "/api/checkouts/**",
-                            "/api/produtos-contratados/**"
-                    ).hasAuthority("ROLE_ALUNO");
-
-                    // Personal
+                    // Personal (regras mais específicas após a regra acima)
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/alunos",
                             "/api/alunos/*"
@@ -98,12 +99,13 @@ public class SecurityConfig {
                             "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_PERSONAL");
 
-                    // Compartilhadas
+                    // Demais regras para aluno/genéricas
                     auth.requestMatchers(
-                            "/api/personais/*/horarios-disponiveis",
-                            "/api/agendamentos/**",
-                            "/api/usuarios/**"
-                    ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
+                            "/api/alunos/**",
+                            "/api/comprar/**",
+                            "/api/checkouts/**",
+                            "/api/produtos-contratados/**"
+                    ).hasAuthority("ROLE_ALUNO");
 
                 })
                 .exceptionHandling(ex -> ex

@@ -1,7 +1,6 @@
 package com.spring.ApiSystem.domain.agendamento.dto.response;
 
-
-
+import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResEnderecoAgendamentoDTO;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
@@ -18,4 +17,4 @@ public record ResAgendamentoAlunoOverviewDTO(
         String caminhoFoto,
         TipoAula tipoAula,
         ResEnderecoAgendamentoDTO endereco
-) {}
+) implements AgendamentoOverviewResponse {}

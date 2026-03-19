@@ -1,18 +1,13 @@
 package com.spring.ApiSystem.domain.personal;
 
-
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
-import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarBufferDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
-import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.dto.request.ReqCadastroUsuarioDTO;
-import com.spring.ApiSystem.domain.usuario.dto.response.ResCadastrarUsuarioDTO;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +28,11 @@ public class PersonalController {
     private final JpaUserDetailsService userDetails;
     private final FilterService filterService;
 
-    public PersonalController(PersonalService personalService, JpaUserDetailsService userDetails, FilterService filterService) {
+    public PersonalController(
+            PersonalService personalService,
+            JpaUserDetailsService userDetails,
+            FilterService filterService
+    ) {
         this.personalService = personalService;
         this.userDetails = userDetails;
         this.filterService = filterService;
@@ -41,62 +40,65 @@ public class PersonalController {
 
     @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
     @PostMapping("/cadastro")
-    public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO) {
+    public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(
+            @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
+    ) {
         return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
     @PutMapping("/me/buffer")
     public ResponseEntity<Void> atualizarBufferMinutos(
-            @Valid @RequestBody ReqAtualizarBufferDTO request) {
-
+            @Valid @RequestBody ReqAtualizarBufferDTO request
+    ) {
         Personal personal = userDetails.getCurrentPersonal();
         personalService.atualizarBufferMinutos(personal.getId(), request.bufferMinutos());
-        System.out.println("Buffer atualizado para personalId " + personal.getId() + " com valor " + request.bufferMinutos());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Buscar buffer do personal (necessário login)",
-            description = "Endpoint para buscar o buffer de minutos de um personal específico")
+    @Operation(
+            summary = "Buscar buffer do personal (necessário login)",
+            description = "Endpoint para buscar o buffer de minutos de um personal específico"
+    )
     @GetMapping("/me/buffer")
     public ResponseEntity<ResBuscarBufferDTO> buscarBuffer() {
-        ResBuscarBufferDTO buffer = personalService.buscarBuffer();
-        return ResponseEntity.ok(buffer);
+        return ResponseEntity.ok(personalService.buscarBuffer());
     }
 
-    @Operation(summary = "Listar alunos (necessário login)",
-            description = "Endpoint para listar alunos no sistema")
+    @Operation(
+            summary = "Listar alunos (necessário login)",
+            description = "Endpoint para listar alunos no sistema"
+    )
     @GetMapping
-    public ResponseEntity<List<ResListarPersonaisDTO>> listarPersonais(@PageableDefault(sort = "nome")
-                                                                 Pageable pageable) {
+    public ResponseEntity<List<ResListarPersonaisDTO>> listarPersonais(
+            @PageableDefault(sort = "nome") Pageable pageable
+    ) {
         return ResponseEntity.ok(personalService.listarPersonais(pageable));
     }
 
-    @Operation (summary = "Buscar personal por ID (necessário login)",
-            description = "Endpoint para buscar um personal específico pelo ID no sistema")
+    @Operation(
+            summary = "Buscar personal por ID (necessário login)",
+            description = "Endpoint para buscar um personal específico pelo ID no sistema"
+    )
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscarPersonalPorId( @PathVariable  Long id) {
-        ResBuscarPersonalPorIdDTO personal = personalService.buscarPersonalPorId(id);
-        if(personal == null){
-            return ResponseEntity.notFound().build();
-        }
-            return ResponseEntity.ok(personal);
+    public ResponseEntity<ResBuscarPersonalPorIdDTO> buscarPersonalPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(personalService.buscarPersonalPorId(id));
     }
 
-
-    @Operation(summary = "Editar personal (necessário login)",
-            description = "Endpoint para a edição de dados de personal no sistema")
+    @Operation(
+            summary = "Editar personal (necessário login)",
+            description = "Endpoint para a edição de dados de personal no sistema"
+    )
     @PutMapping("/me")
-    public ResponseEntity<ResAtualizarPersonalDTO> atualizarPersonal(@Valid @RequestBody ReqAtualizarPersonalDTO dto,
-                                                                     HttpServletResponse response) {
-        Personal usuario = userDetails.getCurrentPersonal();
-        ResAtualizarPersonalDTO usuarioEditado = personalService.atualizarUsuario(dto, usuario);
-
-        if(usuarioEditado == null){
-            return ResponseEntity.notFound().build();
-        }
+    public ResponseEntity<ResAtualizarPersonalDTO> atualizarPersonal(
+            @Valid @RequestBody ReqAtualizarPersonalDTO dto,
+            HttpServletResponse response
+    ) {
+        Personal personal = userDetails.getCurrentPersonal();
+        ResAtualizarPersonalDTO usuarioEditado = personalService.atualizarUsuario(dto, personal);
 
         filterService.removerCookie(response);
         filterService.gerarCookie(response, usuarioEditado.email());
+
         return ResponseEntity.ok(usuarioEditado);
     }
 }

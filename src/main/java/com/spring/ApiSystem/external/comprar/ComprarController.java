@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.external.comprar;
 
 
+import com.spring.ApiSystem.external.comprar.dto.response.LinkDto;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +21,7 @@ public class ComprarController {
 
 
     @PostMapping("/{produtoExibicaoId}")
-    public ResponseEntity<?> pagar(@PathVariable Long produtoExibicaoId){
+    public ResponseEntity<LinkDto> pagar(@PathVariable Long produtoExibicaoId){
         return new ResponseEntity<>(comprarService.comprar(produtoExibicaoId), HttpStatus.OK);
     }
 }

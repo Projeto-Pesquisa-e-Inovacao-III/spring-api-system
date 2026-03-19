@@ -17,75 +17,76 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/enderecos")
 public class EnderecoController {
+
     private final EnderecoService enderecoService;
 
     public EnderecoController(EnderecoService enderecoService) {
         this.enderecoService = enderecoService;
     }
 
-
-    @Operation(summary = "Criar endereço (necessário login)",
-               description = "Endpoint para cadastro de endereços no sistema")
+    @Operation(
+            summary = "Criar endereço (necessário login)",
+            description = "Endpoint para cadastro de endereços no sistema"
+    )
     @PostMapping
-    public ResponseEntity<ResCadastrarEnderecoDTO>
-        cadastrarEndereco(@Valid @RequestBody ReqCadastrarEnderecoDTO endereco,
-                      @AuthenticationPrincipal UserDetails userDetails){
-
+    public ResponseEntity<ResCadastrarEnderecoDTO> cadastrarEndereco(
+            @Valid @RequestBody ReqCadastrarEnderecoDTO endereco,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         String emailUsuario = userDetails.getUsername();
-        ResCadastrarEnderecoDTO enderecoCadastrado = enderecoService.cadastrarEndereco(endereco, emailUsuario);
+        ResCadastrarEnderecoDTO enderecoCadastrado =
+                enderecoService.cadastrarEndereco(endereco, emailUsuario);
 
-        if(enderecoCadastrado == null){
-            return ResponseEntity.badRequest().build();
-        }
         return ResponseEntity.ok(enderecoCadastrado);
     }
 
-
-    @Operation(summary = "Editar endereço (necessário login)",
-               description = "Endpoint para edição de endereços no sistema")
+    @Operation(
+            summary = "Editar endereço (necessário login)",
+            description = "Endpoint para edição de endereços no sistema"
+    )
     @PutMapping("/{id}")
-    public ResponseEntity<ResAtualizarEnderecoDTO>
-    atualizarEndereco(@PathVariable Long id,
-                      @Valid @RequestBody ReqAtualizarEnderecoDTO endereco,
-                      @AuthenticationPrincipal UserDetails userDetails){
-
+    public ResponseEntity<ResAtualizarEnderecoDTO> atualizarEndereco(
+            @PathVariable Long id,
+            @Valid @RequestBody ReqAtualizarEnderecoDTO endereco,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         String emailUsuario = userDetails.getUsername();
-        ResAtualizarEnderecoDTO enderecoEditado = enderecoService.atualizarEndereco(id, endereco, emailUsuario);
+        ResAtualizarEnderecoDTO enderecoEditado =
+                enderecoService.atualizarEndereco(id, endereco, emailUsuario);
 
-        if(enderecoEditado == null){
-            return ResponseEntity.notFound().build();
-        }
         return ResponseEntity.ok(enderecoEditado);
     }
 
-
-    @Operation(summary = "Excluir endereço (necessário login)",
-               description = "Endpoint para exclusão de endereços no sistema")
+    @Operation(
+            summary = "Excluir endereço (necessário login)",
+            description = "Endpoint para exclusão de endereços no sistema"
+    )
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> removerEndereco(@PathVariable Long id,
-                                             @AuthenticationPrincipal UserDetails userDetails){
+    public ResponseEntity<Void> removerEndereco(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         String emailUsuario = userDetails.getUsername();
-        Boolean isEnderecoDeletado = enderecoService.removerEndereco(id, emailUsuario);
-
-        if(!isEnderecoDeletado){
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok().build();
+        enderecoService.removerEndereco(id, emailUsuario);
+        return ResponseEntity.noContent().build();
     }
 
-    @Operation(summary = "Buscar endereço por ID (necessário login)",
-               description = "Endpoint para buscar um endereço específico pelo ID no sistema")
+    @Operation(
+            summary = "Buscar endereço por ID (necessário login)",
+            description = "Endpoint para buscar um endereço específico pelo ID no sistema"
+    )
     @GetMapping("/{id}")
-    public ResponseEntity<ResBuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id){
+    public ResponseEntity<ResBuscarEnderecoPorIdDTO> buscarProdutosContratadosPorId(@PathVariable Long id) {
         ResBuscarEnderecoPorIdDTO enderecoEncontrado = enderecoService.buscarPorIdDto(id);
         return ResponseEntity.ok(enderecoEncontrado);
     }
 
-    @Operation(summary = "Listar endereços (necessário login)",
-               description = "Endpoint para listagem de endereços no sistema")
+    @Operation(
+            summary = "Listar endereços (necessário login)",
+            description = "Endpoint para listagem de endereços no sistema"
+    )
     @GetMapping
-    public ResponseEntity<List<ResListarEnderecoDTO>> listarEnderecos(){
+    public ResponseEntity<List<ResListarEnderecoDTO>> listarEnderecos() {
         return ResponseEntity.ok(enderecoService.listarEnderecos());
     }
-
 }
