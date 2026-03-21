@@ -104,7 +104,8 @@ public class SecurityConfig {
                             "/api/alunos/**",
                             "/api/comprar/**",
                             "/api/checkouts/**",
-                            "/api/produtos-contratados/**"
+                            "/api/produtos-contratados/**",
+                            "/api/anamnese/**"
                     ).hasAuthority("ROLE_ALUNO");
 
                 })

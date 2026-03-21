@@ -2,6 +2,8 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
 import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDto;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +37,11 @@ public class AnamneseController {
 
         return ResponseEntity.noContent().build();
     }
-
     
+    @GetMapping
+    public ResponseEntity<ResBuscarAnamneseDto> buscarAnamnese() {
+        ResBuscarAnamneseDto anamnese = anamneseService.buscarAnamnese();
+
+        return ResponseEntity.ok(anamnese);
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
 import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDto;
 
 @Service
 public class AnamneseService {
@@ -18,7 +19,8 @@ public class AnamneseService {
     private final AlunoService alunoService;
     private final AnamneseMapper anamneseMapper;
 
-    public AnamneseService(AnamneseRepository anamneseRepository, JpaUserDetailsService jpaUserDetailsService, AlunoService alunoService, AnamneseMapper anamneseMapper) {
+    public AnamneseService(AnamneseRepository anamneseRepository, JpaUserDetailsService jpaUserDetailsService,
+            AlunoService alunoService, AnamneseMapper anamneseMapper) {
         this.anamneseRepository = anamneseRepository;
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.alunoService = alunoService;
@@ -27,13 +29,12 @@ public class AnamneseService {
 
     public Anamnese cadastrarAnamnese(ReqCadastrarAnamneseDto req) {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
-        
-        if(aluno.getAtivoAnamnese()){
+
+        if (aluno.getAtivoAnamnese()) {
             throw new AnamneseJaExisteException();
         }
 
         Anamnese anamnese = anamneseMapper.toEntityFromRequest(req);
-
 
         Aluno alunoAnamnese = alunoService.registrarAnamnese(aluno, anamnese);
         return alunoAnamnese.getAnamnese();
@@ -43,12 +44,23 @@ public class AnamneseService {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
         Anamnese anamnese = aluno.getAnamnese();
 
-        if(anamnese == null){
+        if (anamnese == null) {
             throw new AnamneseNaoEncontradaException();
         }
 
         anamneseMapper.updateEntityFromRequest(req, anamnese);
 
         return anamneseRepository.save(anamnese);
+    }
+
+    public ResBuscarAnamneseDto buscarAnamnese() {
+        Aluno aluno = jpaUserDetailsService.getCurrentAluno();
+        Anamnese anamnese = aluno.getAnamnese();
+
+        if (anamnese == null) {
+            throw new AnamneseNaoEncontradaException();
+        }
+
+        return anamneseMapper.toEntityFromRequest(anamnese);
     }
 }
