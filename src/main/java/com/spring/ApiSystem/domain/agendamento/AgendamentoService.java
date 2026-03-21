@@ -266,6 +266,7 @@ public class AgendamentoService {
             agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
         } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
             if (reqAgendamento.descricaoCancelamento() != null) {
+                agendamento.ausenciaCliente();
                 agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
                 produtoContratadoService.incrementar(agendamento.getId());
                 agendamentoEventPublisher.AusenciaRegistradaAlunoJustificadoEvent(agendamento);
