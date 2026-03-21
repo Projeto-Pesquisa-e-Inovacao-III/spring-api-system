@@ -2,8 +2,8 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseJaExisteException;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseNaoEncontradaException;
@@ -44,8 +44,8 @@ class AnamneseServiceTest {
     private Aluno alunoSemAnamnese;
     private Aluno alunoComAnamnese;
     private Anamnese anamnese;
-    private ReqCadastrarAnamneseDto reqCadastrar;
-    private ReqAtualizarAnamneseDto reqAtualizar;
+    private ReqCadastrarAnamneseDTO reqCadastrar;
+    private ReqAtualizarAnamneseDTO reqAtualizar;
 
     @BeforeEach
     void setUp() {
@@ -65,7 +65,7 @@ class AnamneseServiceTest {
         alunoComAnamnese.setAtivoAnamnese(true);
         alunoComAnamnese.setAnamnese(anamnese);
 
-        reqCadastrar = new ReqCadastrarAnamneseDto(
+        reqCadastrar = new ReqCadastrarAnamneseDTO(
                 1.75,
                 70.0,
                 "Hipertrofia",
@@ -75,7 +75,7 @@ class AnamneseServiceTest {
                 "Nenhuma"
         );
 
-        reqAtualizar = new ReqAtualizarAnamneseDto(
+        reqAtualizar = new ReqAtualizarAnamneseDTO(
                 1.80,
                 75.0,
                 "Emagrecimento",

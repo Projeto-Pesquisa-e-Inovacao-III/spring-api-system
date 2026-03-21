@@ -2,16 +2,16 @@ package com.spring.ApiSystem.domain.anamnese.dto.response;
 
 import java.util.List;
 
-import com.spring.ApiSystem.domain.anamnese.dto.CondicoesDto;
-import com.spring.ApiSystem.domain.anamnese.dto.AnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.CondicoesDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.AnamneseDTO;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 
-public record ResBuscarAnamneseDto(
+public record ResBuscarAnamneseDTO(
                 Double altura,
                 Double peso,
                 String objectivoPrincipal,
                 String rotina,
-                List<CondicoesDto> condicoes,
+                List<CondicoesDTO> condicoes,
                 NivelDeAtividadeEnum nivelDeAtividade,
                 String observacaoSaude
-) implements AnamneseDto {}
+) implements AnamneseDTO {}

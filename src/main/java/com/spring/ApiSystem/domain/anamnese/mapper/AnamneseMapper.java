@@ -1,18 +1,18 @@
 package com.spring.ApiSystem.domain.anamnese.mapper;
 
 import com.spring.ApiSystem.domain.anamnese.Anamnese;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface AnamneseMapper {
 
-    Anamnese toEntityFromRequest(ReqCadastrarAnamneseDto dto);
+    Anamnese toEntityFromRequest(ReqCadastrarAnamneseDTO dto);
 
-    ResBuscarAnamneseDto toEntityFromRequest(Anamnese dto);
+    ResBuscarAnamneseDTO buscarAnamnese(Anamnese dto);
 
-    void updateEntityFromRequest(ReqAtualizarAnamneseDto dto, @MappingTarget Anamnese anamnese);
+    void updateEntityFromRequest(ReqAtualizarAnamneseDTO dto, @MappingTarget Anamnese anamnese);
 }

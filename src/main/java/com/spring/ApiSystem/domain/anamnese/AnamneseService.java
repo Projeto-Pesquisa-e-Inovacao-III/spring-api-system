@@ -2,15 +2,15 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseJaExisteException;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseNaoEncontradaException;
 import com.spring.ApiSystem.domain.anamnese.mapper.AnamneseMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import org.springframework.stereotype.Service;
 
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDTO;
 
 @Service
 public class AnamneseService {
@@ -27,7 +27,7 @@ public class AnamneseService {
         this.anamneseMapper = anamneseMapper;
     }
 
-    public Anamnese cadastrarAnamnese(ReqCadastrarAnamneseDto req) {
+    public Anamnese cadastrarAnamnese(ReqCadastrarAnamneseDTO req) {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
 
         if (aluno.getAtivoAnamnese()) {
@@ -40,7 +40,7 @@ public class AnamneseService {
         return alunoAnamnese.getAnamnese();
     }
 
-    public Anamnese atualizarAnamnese(ReqAtualizarAnamneseDto req) {
+    public Anamnese atualizarAnamnese(ReqAtualizarAnamneseDTO req) {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
         Anamnese anamnese = aluno.getAnamnese();
 
@@ -53,7 +53,7 @@ public class AnamneseService {
         return anamneseRepository.save(anamnese);
     }
 
-    public ResBuscarAnamneseDto buscarAnamnese() {
+    public ResBuscarAnamneseDTO buscarAnamnese() {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
         Anamnese anamnese = aluno.getAnamnese();
 
@@ -61,6 +61,6 @@ public class AnamneseService {
             throw new AnamneseNaoEncontradaException();
         }
 
-        return anamneseMapper.toEntityFromRequest(anamnese);
+        return anamneseMapper.buscarAnamnese(anamnese);
     }
 }
