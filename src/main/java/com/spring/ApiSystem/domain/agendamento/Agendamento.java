@@ -6,6 +6,7 @@ import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.endereco.Endereco;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -22,6 +23,10 @@ public class Agendamento {
 
     @Column(nullable = false)
     private LocalDateTime dataFim;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia_semana", nullable = false)
+    private DiaSemana diaSemana;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false,name = "status")
@@ -127,6 +132,14 @@ public class Agendamento {
 
     public ProdutoContratado getProdutoContratado() {return produtoContratado;}
     public void setProdutoContratado(ProdutoContratado produtoContratado) {this.produtoContratado = produtoContratado;}
+
+    public DiaSemana getDiaSemana() {
+        return diaSemana;
+    }
+
+    public void setDiaSemana(DiaSemana diaSemana) {
+        this.diaSemana = diaSemana;
+    }
 
     public AgendamentoState getAgendamentoState() {return agendamentoState;}
 

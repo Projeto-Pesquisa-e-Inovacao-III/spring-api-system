@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
 
-import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.personal.Personal;
 import jakarta.persistence.*;

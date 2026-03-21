@@ -24,6 +24,8 @@ import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasExcepti
 import com.spring.ApiSystem.domain.usuario.exception.PersonalTemAcessoApenasException;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
+import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import org.springframework.data.domain.Page;
@@ -108,8 +110,10 @@ public class AgendamentoService {
         agendamento.setProdutoContratado(produtoContratadoService.buscarPorId(produtoContratadoId));
         agendamento.setDataFim(dataFim);
 
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+        DiaSemana dayOfWeek = DiaSemana.fromDayOfWeek(agendamento.getData().getDayOfWeek());
+        agendamento.setDiaSemana(dayOfWeek);
 
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
         historicoAgendamentoService.cadastrar(
                 agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                 agendamentoSalvo

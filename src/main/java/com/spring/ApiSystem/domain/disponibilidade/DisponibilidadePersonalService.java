@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
-import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
@@ -10,7 +10,6 @@ import com.spring.ApiSystem.domain.disponibilidade.exception.HorarioInvalidoExce
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalRepository;
-import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoRepository;
 import java.time.temporal.ChronoUnit;

@@ -4,7 +4,7 @@ import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
-import com.spring.ApiSystem.domain.disponibilidade.enums.DiaSemana;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.disponibilidade.exception.SobreposicaoHorarioException;
 import com.spring.ApiSystem.domain.personal.Personal;
