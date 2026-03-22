@@ -202,12 +202,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             )
             AND YEAR(a.data) = YEAR(CURRENT_DATE)
             AND MONTH(a.data) = MONTH(CURRENT_DATE)
-            THEN 1 ELSE 0 END), 0) as totalCanceladoPorMesAtual,
-    
-            COALESCE(SUM(CASE WHEN a.status =
-                PENDENTE_PERSONAL_APROVACAO
-                AND CAST(a.data AS DATE) = CURRENT_DATE
-            THEN 1 ELSE 0 END), 0) as totalAgendamentosHoje
+            THEN 1 ELSE 0 END), 0) as totalCanceladoPorMesAtual
         FROM agendamento a
         WHERE a.personal.id = :personalId
     """)

@@ -4,5 +4,4 @@ public interface ResTotalAgendamentoByStatusProjection {
     Integer getTotalPendente();
     Integer getTotalRespondido();
     Integer getTotalCanceladoPorMesAtual();
-    Integer getTotalAgendamentosHoje();
 }

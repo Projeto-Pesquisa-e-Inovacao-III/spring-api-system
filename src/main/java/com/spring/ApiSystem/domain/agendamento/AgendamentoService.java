@@ -442,8 +442,7 @@ public class AgendamentoService {
         return new ResTotalAgendamentoByStatusDto(
                 projection.getTotalPendente(),
                 projection.getTotalRespondido(),
-                projection.getTotalCanceladoPorMesAtual(),
-                projection.getTotalAgendamentosHoje()
+                projection.getTotalCanceladoPorMesAtual()
         );
     }
 
