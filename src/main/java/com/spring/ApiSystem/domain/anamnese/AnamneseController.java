@@ -1,7 +1,9 @@
 package com.spring.ApiSystem.domain.anamnese;
 
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDTO;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +22,7 @@ public class AnamneseController {
 
     @Operation(summary = "Cadastrar uma nova anamnese", description = "Endpoint para cadastrar uma nova anamnese. Recebe os dados da anamnese no corpo da requisição e salva no banco de dados.")
     @PostMapping
-    public ResponseEntity<Void> cadastrarAnamnese(@Valid @RequestBody ReqCadastrarAnamneseDto anamnese){
+    public ResponseEntity<Void> cadastrarAnamnese(@Valid @RequestBody ReqCadastrarAnamneseDTO anamnese){
         
 
         anamneseService.cadastrarAnamnese(anamnese);
@@ -30,11 +32,16 @@ public class AnamneseController {
 
     @Operation(summary = "Atualizar anamnese existente", description = "Endpoint para atualizar uma anamnese existente. Recebe os dados atualizados da anamnese no corpo da requisição e salva as alterações no banco de dados.")
     @PutMapping
-    public ResponseEntity<Void> atualizarAnamnese(@Valid @RequestBody ReqAtualizarAnamneseDto anamnese){
+    public ResponseEntity<Void> atualizarAnamnese(@Valid @RequestBody ReqAtualizarAnamneseDTO anamnese){
         anamneseService.atualizarAnamnese(anamnese);
 
         return ResponseEntity.noContent().build();
     }
-
     
+    @GetMapping
+    public ResponseEntity<ResBuscarAnamneseDTO> buscarAnamnese() {
+        ResBuscarAnamneseDTO anamnese = anamneseService.buscarAnamnese();
+
+        return ResponseEntity.ok(anamnese);
+    }
 }

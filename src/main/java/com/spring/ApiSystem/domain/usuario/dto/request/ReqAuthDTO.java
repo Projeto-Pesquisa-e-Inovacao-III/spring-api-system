@@ -6,5 +6,6 @@ public record ReqAuthDTO(
         Boolean autentificado,
         @JsonInclude(JsonInclude.Include.NON_NULL)
         ReqAuthUserDTO user,
-        boolean ativoAnamnese
+        @JsonInclude(JsonInclude.Include.NON_NULL)
+        Boolean ativoAnamnese
 ) { }

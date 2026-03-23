@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.anamnese;
 
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDto;
-import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDto;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqAtualizarAnamneseDTO;
+import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -28,8 +28,8 @@ class AnamneseControllerTest {
     @InjectMocks
     private AnamneseController anamneseController;
 
-    private ReqCadastrarAnamneseDto reqCadastrar;
-    private ReqAtualizarAnamneseDto reqAtualizar;
+    private ReqCadastrarAnamneseDTO reqCadastrar;
+    private ReqAtualizarAnamneseDTO reqAtualizar;
 
     private Anamnese anamnese;
 
@@ -41,7 +41,7 @@ class AnamneseControllerTest {
         anamnese.setObjectivoPrincipal("Hipertrofia");
         anamnese.setNivelDeAtividade(NivelDeAtividadeEnum.ATIVO);
 
-        reqCadastrar = new ReqCadastrarAnamneseDto(
+        reqCadastrar = new ReqCadastrarAnamneseDTO(
                 1.75,
                 70.0,
                 "Hipertrofia",
@@ -51,7 +51,7 @@ class AnamneseControllerTest {
                 "Nenhuma"
         );
 
-        reqAtualizar = new ReqAtualizarAnamneseDto(
+        reqAtualizar = new ReqAtualizarAnamneseDTO(
                 1.80,
                 75.0,
                 "Emagrecimento",

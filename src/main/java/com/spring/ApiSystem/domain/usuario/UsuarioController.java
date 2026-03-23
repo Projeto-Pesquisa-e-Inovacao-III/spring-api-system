@@ -210,12 +210,13 @@ public class UsuarioController {
 
         Usuario usuario = usuarioOpt.get();
 
-        boolean ativoAnamnese = false;
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             Aluno aluno = alunoService.buscarPorId(usuario.getId());
-            ativoAnamnese = aluno.getAtivoAnamnese();
+            return ResponseEntity.ok(
+                new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), aluno.getAtivoAnamnese())
+            );
         }
 
-        return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), ativoAnamnese));
+        return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), null));
     }
 }

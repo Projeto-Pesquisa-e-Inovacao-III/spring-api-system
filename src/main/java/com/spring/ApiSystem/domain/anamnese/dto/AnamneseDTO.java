@@ -3,12 +3,12 @@ import java.util.List;
 
 import com.spring.ApiSystem.domain.anamnese.enums.NivelDeAtividadeEnum;
 
-public interface AnamneseDto {
+public interface AnamneseDTO {
     Double altura();
     Double peso();
     String objectivoPrincipal();
     String rotina();
-    List<CondicoesDto> condicoes();
+    List<CondicoesDTO> condicoes();
     NivelDeAtividadeEnum nivelDeAtividade();
     String observacaoSaude();
 }
