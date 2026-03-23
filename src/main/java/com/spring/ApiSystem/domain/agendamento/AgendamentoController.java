@@ -1,7 +1,6 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;

@@ -7,7 +7,6 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.Agendamen
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
@@ -30,7 +29,6 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
-import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
