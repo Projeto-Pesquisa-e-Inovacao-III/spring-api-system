@@ -20,6 +20,7 @@ import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -156,5 +157,13 @@ public class PersonalService {
     public List<DisponibilidadePersonal> pegarCronogramaDoPersonal() {
         Personal personal = detailsService.getCurrentPersonal();
         return disponibilidadeService.pegarCronograma(personal);
+    }
+
+    public List<DisponibilidadePersonal> findByPersonalIdAndDiaSemana(Long id, DiaSemana diaSemana){
+        return disponibilidadeService.findByPersonalIdAndDiaSemana(id, diaSemana);
+    }
+
+    public void validateDisponibilidade(Long idPersonal, DiaSemana diaSemana){
+        disponibilidadeService.validateDisponibilidade(idPersonal, diaSemana);
     }
 }

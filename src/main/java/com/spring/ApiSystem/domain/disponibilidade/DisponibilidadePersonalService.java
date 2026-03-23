@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
+import com.spring.ApiSystem.domain.disponibilidade.exception.DisponibilidadeInactiveException;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
@@ -450,6 +451,23 @@ public class DisponibilidadePersonalService {
 
     public List<DisponibilidadePersonal> pegarCronograma(Personal personal) {
         return disponibilidadeRepository.findByPersonal(personal);
+    }
+
+    public List<DisponibilidadePersonal> findByPersonalIdAndDiaSemana(Long id, DiaSemana diaSemana){
+        return disponibilidadeRepository.findByPersonalIdAndDiaSemana(id, diaSemana);
+    }
+
+    public void validateDisponibilidade(Long personalId, DiaSemana diaSemana){
+        DiaSemana chosedDiaSemana = DiaSemana.fromDayOfWeek(diaSemana.getDayOfWeek());
+
+        List<DisponibilidadePersonal> disponibilidadePersonal = disponibilidadeRepository.findByPersonalIdAndDiaSemana(
+                personalId,
+                chosedDiaSemana
+        );
+
+        if(!disponibilidadePersonal.getFirst().isAtivo()){
+            throw new DisponibilidadeInactiveException(chosedDiaSemana);
+        }
     }
 }
 
