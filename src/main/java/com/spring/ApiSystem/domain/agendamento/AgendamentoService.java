@@ -7,7 +7,6 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.Agendamen
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
@@ -30,7 +29,6 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
-import com.spring.ApiSystem.shared.service.HtmlSanitizer;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -54,7 +52,6 @@ public class AgendamentoService {
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
-    private final HtmlSanitizer htmlSanitizer;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -65,8 +62,7 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
-            AgendamentoEventPublisher agendamentoEventPublisher,
-            HtmlSanitizer htmlSanitizer
+            AgendamentoEventPublisher agendamentoEventPublisher
     ) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
@@ -77,7 +73,6 @@ public class AgendamentoService {
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.agendamentoEventPublisher = agendamentoEventPublisher;
-        this.htmlSanitizer = htmlSanitizer;
     }
 
     @Transactional
@@ -113,10 +108,6 @@ public class AgendamentoService {
         agendamento.setAluno(alunoService.buscarPorId(usuario.getId()));
         agendamento.setPersonal(personalService.buscarPorId(criarAgendamentoDTO.personalId()));
         agendamento.setDescricao(criarAgendamentoDTO.descricao());
-
-        // Sanitizar campo de descrição
-        sanitizeAgendamento(agendamento);
-
         agendamento.setProdutoContratado(produtoContratadoService.buscarPorId(produtoContratadoId));
         agendamento.setDataFim(dataFim);
 
@@ -159,9 +150,6 @@ public class AgendamentoService {
         agendamento.setData(editarAgendamentoDTO.data());
         agendamento.setDataFim(dataFim);
         agendamento.setDescricao(editarAgendamentoDTO.descricao());
-
-        // Sanitizar campo de descrição
-        sanitizeAgendamento(agendamento);
 
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             agendamento.pendentePersonalAprovacao();
@@ -285,8 +273,6 @@ public class AgendamentoService {
             if (reqAgendamento.descricaoCancelamento() != null) {
                 agendamento.ausenciaCliente();
                 agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
-                // Sanitizar campo de descrição
-                sanitizeAgendamento(agendamento);
                 produtoContratadoService.incrementar(agendamento.getId());
                 agendamentoEventPublisher.AusenciaRegistradaAlunoJustificadoEvent(agendamento);
             } else {
@@ -561,17 +547,5 @@ public class AgendamentoService {
                 ((Number) row[1]).intValue(),
                 ((Number) row[2]).intValue()
         );
-    }
-
-    /**
-     * Sanitiza os campos de texto livre de um agendamento.
-     * Remove qualquer conteúdo HTML potencialmente perigoso.
-     *
-     * @param agendamento O agendamento a ser sanitizado
-     */
-    private void sanitizeAgendamento(Agendamento agendamento) {
-        if (agendamento.getDescricao() != null) {
-            agendamento.setDescricao(htmlSanitizer.sanitizeNullable(agendamento.getDescricao()));
-        }
     }
 }
