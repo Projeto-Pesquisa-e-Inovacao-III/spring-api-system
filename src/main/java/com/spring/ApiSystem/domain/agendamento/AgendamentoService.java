@@ -14,6 +14,8 @@ import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
 import com.spring.ApiSystem.domain.agendamento.exception.*;
 import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonal;
+import com.spring.ApiSystem.domain.disponibilidade.exception.DisponibilidadeInactiveException;
 import com.spring.ApiSystem.domain.endereco.EnderecoService;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResCadastrarEnderecoDTO;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
@@ -77,6 +79,11 @@ public class AgendamentoService {
 
     @Transactional
     public ResCriarAgendamentoDTO criarAgendamento(ReqCadastrarAgendamentoDTO criarAgendamentoDTO) {
+        personalService.validateDisponibilidade(
+                criarAgendamentoDTO.personalId(),
+                DiaSemana.fromDayOfWeek(criarAgendamentoDTO.data().getDayOfWeek())
+        );
+
         validarAntecedenciaDeHorarioMarcado(criarAgendamentoDTO.data());
         LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(
                 criarAgendamentoDTO.data(),
@@ -125,6 +132,8 @@ public class AgendamentoService {
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
 
+
+
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {
         Usuario usuario = obterUsuarioAutenticado();
@@ -133,6 +142,11 @@ public class AgendamentoService {
         validarAntecedenciaDeHorarioMarcado(editarAgendamentoDTO.data());
 
         Agendamento agendamento = buscarAgendamentoPorId(editarAgendamentoDTO.idAgendamento());
+
+        personalService.validateDisponibilidade(
+                agendamento.getPersonal().getId(),
+                DiaSemana.fromDayOfWeek(agendamento.getDiaSemana().getDayOfWeek())
+        );
 
         LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(
                 editarAgendamentoDTO.data(),
@@ -150,6 +164,8 @@ public class AgendamentoService {
         agendamento.setData(editarAgendamentoDTO.data());
         agendamento.setDataFim(dataFim);
         agendamento.setDescricao(editarAgendamentoDTO.descricao());
+        DiaSemana dayOfWeek = DiaSemana.fromDayOfWeek(agendamento.getData().getDayOfWeek());
+        agendamento.setDiaSemana(dayOfWeek);
 
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             agendamento.pendentePersonalAprovacao();

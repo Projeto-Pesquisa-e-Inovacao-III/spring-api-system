@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.shared.enums;
 
-import com.spring.ApiSystem.domain.disponibilidade.exception.DiaSemanaNaoExisteExcption;
+import com.spring.ApiSystem.domain.disponibilidade.exception.DiaSemanaNaoExisteException;
 
 import java.time.DayOfWeek;
 
@@ -35,7 +35,7 @@ public enum DiaSemana {
                 return d;
             }
         }
-        throw new DiaSemanaNaoExisteExcption();
+        throw new DiaSemanaNaoExisteException();
     }
 
 }
