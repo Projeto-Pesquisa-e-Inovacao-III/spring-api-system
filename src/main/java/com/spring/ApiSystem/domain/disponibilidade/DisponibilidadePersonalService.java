@@ -203,7 +203,7 @@ public class DisponibilidadePersonalService {
         disponibilidadeRepository.saveAll(defaults);
     }
 
-    public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
+    public void changeActivation(DiaSemana diaSemana){
         Personal currentPersonal = detailsService.getCurrentPersonal();
         List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository.findByPersonalIdAndDiaSemana(
                 currentPersonal.getId(), diaSemana);
@@ -224,8 +224,6 @@ public class DisponibilidadePersonalService {
 
             disponibilidadeRepository.save(disponibilidade);
         }
-
-        return disponibilidades;
     }
 
 
