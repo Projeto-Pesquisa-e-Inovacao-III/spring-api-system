@@ -7,13 +7,7 @@ import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponive
 import com.spring.ApiSystem.domain.disponibilidade.mapper.DisponibilidadePersonalMapper;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.domain.horariopersonal.dto.request.ReqHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResDiaDisponibilidadeDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResHorarioDTO;
-import com.spring.ApiSystem.domain.horariopersonal.dto.response.ResSlotDisponivelDTO;
-import com.spring.ApiSystem.domain.horariopersonal.enums.DiaSemana;
-import com.spring.ApiSystem.domain.horariopersonal.mapper.DisponibilidadePersonalMapper;
-import com.spring.ApiSystem.domain.horariopersonal.DisponibilidadePersonalService;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -31,11 +25,15 @@ description = "Operações para gerenciar os horários e a disponibilidade do Pe
 public class DisponibilidadePersonalController {
 
     private final PersonalService personalService;
+    private final DisponibilidadePersonalService disponibilidadePersonalService;
     private final DisponibilidadePersonalMapper disponibilidadePersonalMapper;
 
-    public DisponibilidadePersonalController(PersonalService personalService, DisponibilidadePersonalMapper disponibilidadePersonalMapper) {
+    public DisponibilidadePersonalController(PersonalService personalService,
+                                             DisponibilidadePersonalMapper disponibilidadePersonalMapper,
+                                             DisponibilidadePersonalService disponibilidadePersonalService) {
         this.personalService = personalService;
         this.disponibilidadePersonalMapper = disponibilidadePersonalMapper;
+        this.disponibilidadePersonalService = disponibilidadePersonalService;
     }
 
 
@@ -76,7 +74,7 @@ public class DisponibilidadePersonalController {
     @GetMapping("/change-activation/{diaSemana}")
     public ResponseEntity<List<ResHorarioDTO>> changeActivation(@PathVariable DiaSemana diaSemana) {
         return ResponseEntity.ok(disponibilidadePersonalMapper.toResHorarioDto(
-                disponibilidadeService.changeActivation(diaSemana)
+                disponibilidadePersonalService.changeActivation(diaSemana)
         ));
     }
 }

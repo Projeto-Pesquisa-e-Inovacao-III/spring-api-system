@@ -172,8 +172,6 @@ public class DisponibilidadePersonalService {
 
         List<DisponibilidadePersonal> defaults = new ArrayList<>();
         for (DiaSemana dia : DiaSemana.values()) {
-            defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.DISPONIVEL, LocalTime.of(8, 0), LocalTime.of(18, 0)));
-            defaults.add(new DisponibilidadePersonal(personal, dia, TipoHorario.RESTRITO, LocalTime.of(12, 0), LocalTime.of(13, 0)));
             // DISPONIVEL 08:00-18:00
             defaults.add(new DisponibilidadePersonal(
                     personal, dia, TipoHorario.DISPONIVEL,
@@ -269,9 +267,8 @@ public class DisponibilidadePersonalService {
 
         DayOfWeek diaSemana = dataDesejada.getDayOfWeek();
         List<DisponibilidadePersonal> disponibilidade = disponibilidadeRepository
-                .findByPersonalIdAndDiaSemana(personal.getId(), DiaSemana.fromDayOfWeek(diaSemana));
                 .findByPersonalIdAndDiaSemanaAndAtivo(
-                        personalId,
+                        personal.getId(),
                         DiaSemana.fromDayOfWeek(diaSemana),
                         true);
 
