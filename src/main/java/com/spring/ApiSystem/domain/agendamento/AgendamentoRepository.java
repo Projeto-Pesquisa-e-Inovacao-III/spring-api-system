@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.agendamento;
 import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,8 @@ import java.util.Optional;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
     /* -------------------- Buscas simples -------------------- */
+
+    List<Agendamento> findByPersonalIdAndDiaSemana(Long idPersonal, DiaSemana diaSemana);
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
 

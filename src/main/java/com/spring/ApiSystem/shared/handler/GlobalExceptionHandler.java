@@ -2,6 +2,7 @@ package com.spring.ApiSystem.shared.handler;
 
 
 
+import com.spring.ApiSystem.domain.disponibilidade.exception.CantDeactivateDisponibildadeException;
 import com.spring.ApiSystem.shared.exception.CustomApiException;
 import com.spring.ApiSystem.shared.handler.reponse.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 @ControllerAdvice
@@ -41,6 +43,14 @@ public class GlobalExceptionHandler {
                 LocalDateTime.now()
         );
         return ResponseEntity.status(e.getStatus()).body(errorResponse);
+    }
+
+    @ExceptionHandler(CantDeactivateDisponibildadeException.class)
+    public ResponseEntity<Map<String, Object>> handleCantDeactivateDisponibildadeException(CantDeactivateDisponibildadeException ex) {
+        Map<String, Object> error = new LinkedHashMap<>();
+        error.put("Exception", ex.getMessage());
+        error.put("Agendamentos", ex.getAgendamentoList());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
 }

@@ -25,7 +25,6 @@ description = "Operações para gerenciar os horários e a disponibilidade do Pe
 public class DisponibilidadePersonalController {
 
     private final PersonalService personalService;
-    private final DisponibilidadePersonalService disponibilidadePersonalService;
     private final DisponibilidadePersonalMapper disponibilidadePersonalMapper;
 
     public DisponibilidadePersonalController(PersonalService personalService,
@@ -33,7 +32,6 @@ public class DisponibilidadePersonalController {
                                              DisponibilidadePersonalService disponibilidadePersonalService) {
         this.personalService = personalService;
         this.disponibilidadePersonalMapper = disponibilidadePersonalMapper;
-        this.disponibilidadePersonalService = disponibilidadePersonalService;
     }
 
 
@@ -74,7 +72,7 @@ public class DisponibilidadePersonalController {
     @GetMapping("/change-activation/{diaSemana}")
     public ResponseEntity<List<ResHorarioDTO>> changeActivation(@PathVariable DiaSemana diaSemana) {
         return ResponseEntity.ok(disponibilidadePersonalMapper.toResHorarioDto(
-                disponibilidadePersonalService.changeActivation(diaSemana)
+                personalService.changeActivation(diaSemana)
         ));
     }
 }

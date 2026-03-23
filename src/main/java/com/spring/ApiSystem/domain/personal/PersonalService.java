@@ -167,4 +167,8 @@ public class PersonalService {
     public void validateDisponibilidade(Long idPersonal, DiaSemana diaSemana){
         disponibilidadeService.validateDisponibilidade(idPersonal, diaSemana);
     }
+
+    public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
+        return disponibilidadeService.changeActivation(diaSemana);
+    }
 }
