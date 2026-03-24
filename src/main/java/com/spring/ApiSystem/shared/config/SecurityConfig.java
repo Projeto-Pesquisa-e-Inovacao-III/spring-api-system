@@ -96,7 +96,8 @@ public class SecurityConfig {
                             "/api/produtos-contratados/planos-vendidos/*",
                             "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados",
                             "/api/personais/**",
-                            "/api/produtos-exibicoes/**"
+                            "/api/produtos-exibicoes/**",
+                            "/api/anamnese/aluno/**"
                     ).hasAuthority("ROLE_PERSONAL");
 
                     // Demais regras para aluno/genéricas
