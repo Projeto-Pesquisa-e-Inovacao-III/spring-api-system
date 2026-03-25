@@ -9,6 +9,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoOutOfLimitsException;
 import com.spring.ApiSystem.domain.produtoexibicao.mapper.ProdutoExibicaoMapper;
+import com.spring.ApiSystem.shared.service.HtmlSanitizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,11 +20,14 @@ import java.util.List;
 public class ProdutoExibicaoService {
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
     private final ProdutoExibicaoMapper produtoExibicaoMapper;
+    private final HtmlSanitizer htmlSanitizer;
 
     public ProdutoExibicaoService(ProdutoExibicaoRepository produtoExibicaoRepository,
-                                  ProdutoExibicaoMapper produtoExibicaoMapper) {
+                                  ProdutoExibicaoMapper produtoExibicaoMapper,
+                                  HtmlSanitizer htmlSanitizer) {
         this.produtoExibicaoRepository = produtoExibicaoRepository;
         this.produtoExibicaoMapper = produtoExibicaoMapper;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     private final Integer LIMIT_PRODUTO_PACOTE = 6;
@@ -70,6 +74,10 @@ public class ProdutoExibicaoService {
         }
 
         ProdutoExibicao produtoEntity = produtoExibicaoMapper.toEntity(produto);
+
+        // Sanitizar campos de texto livre
+        sanitizeProdutoExibicao(produtoEntity);
+
         produtoEntity.setDataCriacao(LocalDateTime.now());
         produtoExibicaoRepository.save(produtoEntity);
 
@@ -114,6 +122,31 @@ public class ProdutoExibicaoService {
         ProdutoExibicao produto = buscarPorId(id);
         produto.setStatus(ProdutoExibicaoStatus.INATIVO);
         produtoExibicaoRepository.save(produto);
+    }
+
+    /**
+     * Sanitiza os campos de texto livre de um produto de exibição.
+     * Remove qualquer conteúdo HTML potencialmente perigoso.
+     *
+     * @param produtoExibicao O produto a ser sanitizado
+     */
+    private void sanitizeProdutoExibicao(ProdutoExibicao produtoExibicao) {
+        if (produtoExibicao.getTitulo() != null) {
+            produtoExibicao.setTitulo(htmlSanitizer.sanitize(produtoExibicao.getTitulo()));
+        }
+        if (produtoExibicao.getSubtitulo() != null) {
+            produtoExibicao.setSubtitulo(htmlSanitizer.sanitizeNullable(produtoExibicao.getSubtitulo()));
+        }
+        if (produtoExibicao.getDescricao() != null) {
+            produtoExibicao.setDescricao(htmlSanitizer.sanitizeNullable(produtoExibicao.getDescricao()));
+        }
+        if (produtoExibicao.getBeneficios() != null && !produtoExibicao.getBeneficios().isEmpty()) {
+            produtoExibicao.getBeneficios().forEach(beneficio -> {
+                if (beneficio.getValor() != null) {
+                    beneficio.setValor(htmlSanitizer.sanitize(beneficio.getValor()));
+                }
+            });
+        }
     }
 
 }

@@ -20,6 +20,7 @@ import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.service.HtmlSanitizer;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
@@ -37,21 +38,28 @@ public class PersonalService {
     private final PersonalMapper personalMapper;
     private final JpaUserDetailsService detailsService;
     private final DisponibilidadePersonalService disponibilidadeService;
+    private final HtmlSanitizer htmlSanitizer;
 
-    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, JpaUserDetailsService detailsService, DisponibilidadePersonalService disponibilidadeService) {
+    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, JpaUserDetailsService detailsService, DisponibilidadePersonalService disponibilidadeService, HtmlSanitizer htmlSanitizer) {
         this.personalRepository = personalRepository;
         this.usuarioService = usuarioService;
         this.personalMapper = personalMapper;
         this.detailsService = detailsService;
         this.disponibilidadeService = disponibilidadeService;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     public ResCadastrarPersonalDTO cadastrarUsuario(ReqCadastroPersonalDTO usuarioDTO) {
         cadastrarCrefExistente(usuarioDTO.cref());
 
         usuarioService.validarEmailExistente(usuarioDTO.email());
+        usuarioService.validarComplexidadeSenha(usuarioDTO.senha());
 
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
+
+        // Sanitizar campos de texto livre
+        usuarioService.sanitizeUsuario(usuarioEntity);
+
         usuarioService.aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
 
         Integer bufferFinal = Optional.ofNullable(usuarioDTO.bufferMinutos()).orElse(15);
@@ -80,6 +88,9 @@ public class PersonalService {
         usuarioService.validarEmailNaoEmUso(dto.email(), personal.getEmail());
 
         personalMapper.atualizarPersonalParaAtualizarPersonalDto(dto, personal);
+
+        // Sanitizar campos de texto livre
+        usuarioService.sanitizeUsuario(personal);
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
             usuarioService.atualizarTelefones(personal, dto.telefones());

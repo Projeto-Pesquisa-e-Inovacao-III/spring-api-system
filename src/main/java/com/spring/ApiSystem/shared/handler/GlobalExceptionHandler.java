@@ -2,6 +2,7 @@ package com.spring.ApiSystem.shared.handler;
 
 
 
+import com.spring.ApiSystem.domain.usuario.exception.SenhaInvalidaException;
 import com.spring.ApiSystem.shared.exception.CustomApiException;
 import com.spring.ApiSystem.shared.handler.reponse.ErrorResponse;
 import org.springframework.http.HttpStatus;
@@ -24,6 +25,16 @@ public class GlobalExceptionHandler {
                 error -> errors.put(error.getField(), error.getDefaultMessage())
         );
         return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(SenhaInvalidaException.class)
+    public ResponseEntity<ErrorResponse> handleSenhaInvalidaException(SenhaInvalidaException e) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                e.getMessage(),
+                LocalDateTime.now()
+        );
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
     }
 
     @ExceptionHandler(RuntimeException.class)

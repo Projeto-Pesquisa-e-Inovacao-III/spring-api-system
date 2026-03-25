@@ -19,6 +19,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import com.spring.ApiSystem.shared.service.HtmlSanitizer;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -34,21 +35,28 @@ public class AlunoService {
     private final AlunoMapper alunoMapper;
     private final AlunoEventPublisher alunoEventPublisher;
     private final CpfMapper cpfMapper;
+    private final HtmlSanitizer htmlSanitizer;
 
-    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper) {
+    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper, HtmlSanitizer htmlSanitizer) {
         this.alunoRepository = alunoRepository;
         this.usuarioService = usuarioService;
         this.alunoMapper = alunoMapper;
         this.alunoEventPublisher = alunoEventPublisher;
         this.cpfMapper = cpfMapper;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
         cadastrarCpfExistente(cpfMapper.toCpf(usuarioDTO.cpf()));
 
         usuarioService.validarEmailExistente(usuarioDTO.email());
+        usuarioService.validarComplexidadeSenha(usuarioDTO.senha());
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
+
+        // Sanitizar campos de texto livre
+        usuarioService.sanitizeUsuario(usuarioEntity);
+
         usuarioService.aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
 
         ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
@@ -110,10 +118,12 @@ public class AlunoService {
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
 
-
         Aluno aluno = buscarPorId(usuario.getId());
 
         alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
+
+        // Sanitizar campos de texto livre
+        usuarioService.sanitizeUsuario(aluno);
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
             usuarioService.atualizarTelefones(aluno, dto.telefones());

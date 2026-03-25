@@ -14,6 +14,7 @@ import com.spring.ApiSystem.domain.cep.CEP;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.cep.ViaCepService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.service.HtmlSanitizer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,15 +30,17 @@ public class EnderecoService {
     private final ViaCepService viaCepService;
     private final CepRepository cepRepository;
     private final JpaUserDetailsService jpaUserDetailsService;
+    private final HtmlSanitizer htmlSanitizer;
 
     public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ViaCepService viaCepService,
-                           CepRepository cepRepository, JpaUserDetailsService jpaUserDetailsService) {
+                           CepRepository cepRepository, JpaUserDetailsService jpaUserDetailsService, HtmlSanitizer htmlSanitizer) {
         this.enderecoRepository = enderecoRepository;
         this.usuarioService = usuarioService;
         this.enderecoMapper = enderecoMapper;
         this.viaCepService = viaCepService;
         this.cepRepository = cepRepository;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.htmlSanitizer = htmlSanitizer;
     }
 
     @Transactional
@@ -60,6 +63,9 @@ public class EnderecoService {
             endereco.setUsuario(usuarioEncontrado);
             endereco.setDataCriacao(LocalDateTime.now());
 
+            // Sanitizar campos de texto livre
+            sanitizeEndereco(endereco);
+
             enderecoRepository.save(endereco);
             return enderecoMapper.toResCadastrarEnderecoDTO(endereco);
     }
@@ -77,6 +83,9 @@ public class EnderecoService {
             enderecoMapper.partialUpdate(enderecoDTO, enderecoEncontrado);
             enderecoEncontrado.setDataAtualizacao(LocalDateTime.now());
             enderecoEncontrado.setCep(cepRepository.getReferenceById(cep.getId()));
+
+            // Sanitizar campos de texto livre
+            sanitizeEndereco(enderecoEncontrado);
 
             enderecoRepository.save(enderecoEncontrado);
             return enderecoMapper.toResAtualizarEnderecoDTO(enderecoEncontrado);
@@ -152,5 +161,26 @@ public class EnderecoService {
         return enderecoRepository
                 .findByIdAndUsuario(id, usuario)
                 .orElseThrow(EnderecoNaoExistePorId::new);
+    }
+
+    /**
+     * Sanitiza os campos de texto livre de um endereço.
+     * Remove qualquer conteúdo HTML potencialmente perigoso.
+     *
+     * @param endereco O endereço a ser sanitizado
+     */
+    private void sanitizeEndereco(Endereco endereco) {
+        if (endereco.getComplemento() != null) {
+            endereco.setComplemento(htmlSanitizer.sanitizeNullable(endereco.getComplemento()));
+        }
+        if (endereco.getUnidade() != null) {
+            endereco.setUnidade(htmlSanitizer.sanitizeNullable(endereco.getUnidade()));
+        }
+        if (endereco.getTipo() != null) {
+            endereco.setTipo(htmlSanitizer.sanitize(endereco.getTipo()));
+        }
+        if (endereco.getNumero() != null) {
+            endereco.setNumero(htmlSanitizer.sanitize(endereco.getNumero()));
+        }
     }
 }

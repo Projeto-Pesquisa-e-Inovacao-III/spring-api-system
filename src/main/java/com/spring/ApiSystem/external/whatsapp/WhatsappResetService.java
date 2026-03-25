@@ -158,6 +158,8 @@ public class WhatsappResetService {
         if (user == null)
             throw new RuntimeException("Usuário não encontrado.");
 
+        usuarioService.validarComplexidadeSenha(req.newPassword());
+
         String lowerNova = req.newPassword() == null ? "" : req.newPassword().toLowerCase();
         if ((user.getEmail() != null && lowerNova.contains(user.getEmail().toLowerCase()))
                 || (user.getNome() != null && lowerNova.contains(user.getNome().toLowerCase()))) {

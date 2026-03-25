@@ -2,7 +2,6 @@ package com.spring.ApiSystem.external.whatsapp.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
 
 public record ReqResetPassword(
         @NotBlank
@@ -21,7 +20,6 @@ public record ReqResetPassword(
         String token,
 
         @NotBlank
-        @Size(min = 8, max = 100, message = "newPassword deve ter entre 8 e 100 caracteres.")
         String newPassword
 ) {
 }

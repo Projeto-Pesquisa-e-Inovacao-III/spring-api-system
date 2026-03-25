@@ -47,6 +47,8 @@ public class SecurityConfig {
                                 "/doc"
                         ).permitAll();
 
+                        auth.requestMatchers("/api/produtos-contratados/pagamento").permitAll();
+
                         auth.requestMatchers("/h2-console/**").permitAll();
                     }
 
@@ -63,7 +65,6 @@ public class SecurityConfig {
                             "/api/alunos/cadastro",
                             "/api/personais/cadastro",
                             "/api/usuarios/login",
-                            "/api/produtos-contratados/pagamento",
                             "/api/password-reset/**"
                     ).permitAll();
 
