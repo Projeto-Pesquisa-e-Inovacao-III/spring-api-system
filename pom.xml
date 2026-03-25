@@ -42,6 +42,11 @@
                     <artifactId>h2</artifactId>
                     <scope>runtime</scope>
                 </dependency>
+				<!-- não remover!!! -->
+				<dependency>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-h2console</artifactId>
+				</dependency>
             </dependencies>
         </profile>
         <profile>
