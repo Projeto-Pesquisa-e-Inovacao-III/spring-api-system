@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.agendamento;
 
+import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import jakarta.transaction.Transactional;
@@ -171,4 +172,40 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("status") AgendamentoStatus status,
             @Param("data") LocalDate data
     );
+
+    @Query("""
+        SELECT COUNT(a)
+        FROM agendamento a
+        WHERE a.personal.id = :personalId
+          AND a.status IN (:status1, :status2)
+    """)
+    Integer somarValorPorPersonalEStatus(
+            @Param("personalId") Long personalId,
+            @Param("status") AgendamentoStatus status
+    );
+
+    @Query("""
+        SELECT
+            COALESCE(SUM(CASE WHEN a.status IN (
+                PENDENTE_PERSONAL_APROVACAO,
+                PENDENTE_PERSONAL_CONCLUIR
+            ) THEN 1 ELSE 0 END), 0) as totalPendente,
+    
+            COALESCE(SUM(CASE WHEN a.status IN (
+                PENDENTE_CLIENTE_APROVACAO,
+                APROVADO
+            ) THEN 1 ELSE 0 END), 0) as totalRespondido,
+    
+            COALESCE(SUM(CASE WHEN a.status IN (
+                CANCELADO_CLIENTE,
+                CANCELADO_PERSONAL
+            )
+            AND YEAR(a.data) = YEAR(CURRENT_DATE)
+            AND MONTH(a.data) = MONTH(CURRENT_DATE)
+            THEN 1 ELSE 0 END), 0) as totalCanceladoPorMesAtual
+        FROM agendamento a
+        WHERE a.personal.id = :personalId
+    """)
+    ResTotalAgendamentoByStatusProjection countTotalStatusAgendamentoByPersonal(@Param("personalId") Long personalId);
+
 }

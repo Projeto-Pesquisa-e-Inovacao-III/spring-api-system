@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
@@ -144,5 +145,10 @@ public class AgendamentoController {
             @PathVariable Integer quantidadeMeses
     ) {
         return ResponseEntity.ok(agendamentoService.listarConsultoriasRealizadasMes(quantidadeMeses));
+    }
+
+    @GetMapping("/total-status")
+    public ResponseEntity<ResTotalAgendamentoByStatusDto> countTotalByStatus(){
+        return ResponseEntity.ok(agendamentoService.countTotalStatusAgendamentoByPersonal());
     }
 }
