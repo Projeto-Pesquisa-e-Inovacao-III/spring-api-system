@@ -22,8 +22,7 @@ public class AnamneseController {
 
     @Operation(summary = "Cadastrar uma nova anamnese", description = "Endpoint para cadastrar uma nova anamnese. Recebe os dados da anamnese no corpo da requisição e salva no banco de dados.")
     @PostMapping
-    public ResponseEntity<Void> cadastrarAnamnese(@Valid @RequestBody ReqCadastrarAnamneseDTO anamnese){
-        
+    public ResponseEntity<Void> cadastrarAnamnese(@Valid @RequestBody ReqCadastrarAnamneseDTO anamnese) {
 
         anamneseService.cadastrarAnamnese(anamnese);
 
@@ -32,16 +31,24 @@ public class AnamneseController {
 
     @Operation(summary = "Atualizar anamnese existente", description = "Endpoint para atualizar uma anamnese existente. Recebe os dados atualizados da anamnese no corpo da requisição e salva as alterações no banco de dados.")
     @PutMapping
-    public ResponseEntity<Void> atualizarAnamnese(@Valid @RequestBody ReqAtualizarAnamneseDTO anamnese){
+    public ResponseEntity<Void> atualizarAnamnese(@Valid @RequestBody ReqAtualizarAnamneseDTO anamnese) {
         anamneseService.atualizarAnamnese(anamnese);
 
         return ResponseEntity.noContent().build();
     }
-    
+
     @GetMapping
     public ResponseEntity<ResBuscarAnamneseDTO> buscarAnamnese() {
         ResBuscarAnamneseDTO anamnese = anamneseService.buscarAnamnese();
 
         return ResponseEntity.ok(anamnese);
     }
+
+    @GetMapping("/aluno/{id}")
+    public ResponseEntity<ResBuscarAnamneseDTO> buscarAnamneseDoAluno(@PathVariable Long id) {
+        ResBuscarAnamneseDTO anamnese = anamneseService.buscarAnamneseDoAluno(id);
+
+        return ResponseEntity.ok(anamnese);
+    }
+
 }

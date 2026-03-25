@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.anamnese;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.anamnese.dto.request.ReqCadastrarAnamneseDTO;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseJaExisteException;
 import com.spring.ApiSystem.domain.anamnese.exception.AnamneseNaoEncontradaException;
@@ -55,6 +56,17 @@ public class AnamneseService {
 
     public ResBuscarAnamneseDTO buscarAnamnese() {
         Aluno aluno = jpaUserDetailsService.getCurrentAluno();
+        Anamnese anamnese = aluno.getAnamnese();
+
+        if (anamnese == null) {
+            throw new AnamneseNaoEncontradaException();
+        }
+
+        return anamneseMapper.buscarAnamnese(anamnese);
+    }
+
+    public ResBuscarAnamneseDTO buscarAnamneseDoAluno(Long id) {
+        Aluno aluno = alunoService.buscarPorId(id);
         Anamnese anamnese = aluno.getAnamnese();
 
         if (anamnese == null) {
