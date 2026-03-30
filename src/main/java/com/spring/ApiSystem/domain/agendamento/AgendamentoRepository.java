@@ -23,11 +23,24 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     /* -------------------- Buscas simples -------------------- */
 
-    List<Agendamento> findByPersonalIdAndDiaSemana(Long idPersonal, DiaSemana diaSemana);
 
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
 
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
+
+    @Query("""
+        SELECT a FROM agendamento a
+        WHERE a.personal.id = :personalId
+          AND a.data < :fimDia
+          AND a.dataFim >= :inicioDia
+        ORDER BY a.data ASC
+    """)
+    List<Agendamento> findByPersonalIdAndData(
+        @Param("personalId") Long personalId,
+        @Param("inicioDia") LocalDateTime inicioDia,
+        @Param("fimDia") LocalDateTime fimDia
+    );
+
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.personal.id = :personalId " +
