@@ -168,7 +168,7 @@ public class PersonalService {
         disponibilidadeService.validateDisponibilidade(idPersonal, diaSemana);
     }
 
-    public void changeActivation(DiaSemana diaSemana){
-        disponibilidadeService.changeActivation(diaSemana);
+    public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
+        return disponibilidadeService.changeActivation(diaSemana);
     }
 }

@@ -2,12 +2,14 @@ package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoDataAndNameDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
+import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -150,5 +152,15 @@ public class AgendamentoController {
     @GetMapping("/total-status")
     public ResponseEntity<ResTotalAgendamentoByStatusDto> countTotalByStatus(){
         return ResponseEntity.ok(agendamentoService.countTotalStatusAgendamentoByPersonal());
+    }
+
+
+    @GetMapping("/dia-semana/{diaSemana}")
+    public ResponseEntity<List<ResAgendamentoDataAndNameDto>> checkDiaSemanaAgendamentos(@PathVariable DiaSemana diaSemana){
+        List<ResAgendamentoDataAndNameDto> agendamentos = agendamentoService.checkDiaSemanaAgendamentos(diaSemana);
+        if(agendamentos.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+        return ResponseEntity.ok(agendamentos);
     }
 }

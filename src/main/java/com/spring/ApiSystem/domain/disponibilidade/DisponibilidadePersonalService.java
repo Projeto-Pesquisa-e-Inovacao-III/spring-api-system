@@ -1,8 +1,6 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
-import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.AgendamentoRepository;
-import com.spring.ApiSystem.domain.disponibilidade.exception.CantDeactivateDisponibildadeException;
 import com.spring.ApiSystem.domain.disponibilidade.exception.DisponibilidadeInactiveException;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
@@ -46,7 +44,6 @@ public class DisponibilidadePersonalService {
     private final DisponibilidadePersonalRepository disponibilidadeRepository;
     private final PersonalRepository personalRepository;
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
-    private final AgendamentoRepository agendamentoRepository;
     private final JpaUserDetailsService detailsService;
 
     public DisponibilidadePersonalService(DisponibilidadePersonalRepository disponibilidadeRepository,
@@ -58,7 +55,6 @@ public class DisponibilidadePersonalService {
         this.personalRepository = personalRepository;
         this.produtoExibicaoRepository = produtoExibicaoRepository;
         this.detailsService = detailsService;
-        this.agendamentoRepository = agendamentoRepository;
     }
 
     private boolean intervalsOverlap(LocalDateTime aStart, LocalDateTime aEnd, LocalDateTime bStart, LocalDateTime bEnd) {
@@ -203,20 +199,13 @@ public class DisponibilidadePersonalService {
         disponibilidadeRepository.saveAll(defaults);
     }
 
-    public void changeActivation(DiaSemana diaSemana){
+    public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
         Personal currentPersonal = detailsService.getCurrentPersonal();
         List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository.findByPersonalIdAndDiaSemana(
                 currentPersonal.getId(), diaSemana);
 
         for (DisponibilidadePersonal disponibilidade : disponibilidades) {
             if(disponibilidade.isAtivo()){
-                List<Agendamento> agendamentos = agendamentoRepository.findByPersonalIdAndDiaSemana(
-                        currentPersonal.getId(),
-                        diaSemana
-                );
-                if(!agendamentos.isEmpty()){
-                    throw new CantDeactivateDisponibildadeException(agendamentos);
-                }
                 disponibilidade.setAtivo(false);
             } else {
                 disponibilidade.setAtivo(true);
@@ -224,6 +213,8 @@ public class DisponibilidadePersonalService {
 
             disponibilidadeRepository.save(disponibilidade);
         }
+
+        return disponibilidades;
     }
 
 

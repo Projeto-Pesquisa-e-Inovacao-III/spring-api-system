@@ -70,8 +70,10 @@ public class DisponibilidadePersonalController {
     }
 
     @GetMapping("/change-activation/{diaSemana}")
-    public ResponseEntity<Void> changeActivation(@PathVariable DiaSemana diaSemana) {
-        personalService.changeActivation(diaSemana);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<ResHorarioDTO>> changeActivation(@PathVariable DiaSemana diaSemana) {
+        List<ResHorarioDTO> disponibilidade =  disponibilidadePersonalMapper.toResHorarioDto(
+                personalService.changeActivation(diaSemana)
+        );
+        return ResponseEntity.ok(disponibilidade);
     }
 }
