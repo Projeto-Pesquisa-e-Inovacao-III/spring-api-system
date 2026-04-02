@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -107,16 +108,20 @@ public class ProdutoContratadoController {
             summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que tiverem o idAluno correspondente"
     )
-    @GetMapping("/aluno")
-    public ResponseEntity<List<ResProdutoContratadoDto>> listarProdutosContratadosPorIdAluno(
+    @GetMapping
+    public ResponseEntity<Page<ResProdutoContratadoDto>> listarProdutosContratadosPorIdAluno(
             @RequestParam(required = false) String nomeProduto,
             @RequestParam(required = false) LocalDate dataInicio,
             @RequestParam(required = false) LocalDate dataFim,
             @ParameterObject
             @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC) Pageable pageable
     ) {
-        List<ResProdutoContratadoDto> produtosContratados =
+        Page<ResProdutoContratadoDto> produtosContratados =
                 produtoContratadoService.listarPorAluno(pageable, nomeProduto, dataInicio, dataFim);
+
+        if(produtosContratados.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
 
         return ResponseEntity.ok(produtosContratados);
     }

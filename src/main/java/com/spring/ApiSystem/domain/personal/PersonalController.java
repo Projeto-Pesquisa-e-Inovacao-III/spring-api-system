@@ -13,6 +13,7 @@ import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -69,10 +70,16 @@ public class PersonalController {
             description = "Endpoint para listar alunos no sistema"
     )
     @GetMapping
-    public ResponseEntity<List<ResListarPersonaisDTO>> listarPersonais(
+    public ResponseEntity<Page<ResListarPersonaisDTO>> listarPersonais(
             @PageableDefault(sort = "nome") Pageable pageable
     ) {
-        return ResponseEntity.ok(personalService.listarPersonais(pageable));
+        Page<ResListarPersonaisDTO> personals = personalService.listarPersonais(pageable);
+
+        if(personals.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(personals);
     }
 
     @Operation(

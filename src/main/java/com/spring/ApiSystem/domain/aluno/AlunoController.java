@@ -15,6 +15,7 @@ import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -48,9 +49,15 @@ public class AlunoController {
     @Operation(summary = "Listar alunos (necessário login)",
                description = "Endpoint para listar alunos no sistema")
     @GetMapping
-    public ResponseEntity<List<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
+    public ResponseEntity<Page<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
                                                                  Pageable pageable) {
-        return ResponseEntity.ok(alunoService.listarAlunos(pageable));
+        Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable);
+
+        if(alunos.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(alunos);
     }
 
     @Operation (summary = "Buscar aluno por ID (necessário login)",
