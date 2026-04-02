@@ -194,6 +194,7 @@ public abstract class AgendamentoMapper {
     }
 
     @Mapping(target = "alunoName", source = "aluno.nome")
+    @Mapping(target = "pathImage", source = "aluno.caminhoFoto")
     public abstract ResAgendamentoDataAndNameDto toResAgendamentoDataAndNameDto(Agendamento agendamento);
 
     public abstract List<ResAgendamentoDataAndNameDto> toResAgendamentoDataAndNameDtoList(List<Agendamento> agendamentos);
