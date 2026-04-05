@@ -93,7 +93,7 @@ public class UsuarioController {
             return ResponseEntity.ok().build();
         }
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     @Operation(
