@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoDataAndNameDto;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
@@ -464,20 +464,16 @@ public class AgendamentoService {
                 .toList();
     }
 
-    public List<ResAgendamentoDataAndNameDto> checkDiaSemanaAgendamentos(DiaSemana diaSemana){
+    public Page<ResAgendamentoByDayOfWeekDto> checkDiaSemanaAgendamentos(Pageable pageable, DiaSemana diaSemana){
         Personal personal = jpaUserDetailsService.getCurrentPersonal();
-        DayOfWeek alvo = diaSemana.getDayOfWeek();
-        LocalDate hoje = LocalDate.now();
 
-        LocalDate proximaOcorrencia = hoje.with(TemporalAdjusters.nextOrSame(alvo));
-
-        return agendamentoMapper.toResAgendamentoDataAndNameDtoList(
-                agendamentoRepository.findByPersonalIdAndData(
-                        personal.getId(),
-                        proximaOcorrencia.atStartOfDay(),
-                        proximaOcorrencia.plusDays(1).atStartOfDay()
-                )
+        Page<Agendamento> agendamentos = agendamentoRepository.findByPersonalIdAndDiaSemana(
+                pageable,
+                personal.getId(),
+                diaSemana
         );
+
+        return agendamentos.map(agendamentoMapper::toResAgendamentoByDayOfWeekDto);
     }
 
     private Usuario obterUsuarioAutenticado() {

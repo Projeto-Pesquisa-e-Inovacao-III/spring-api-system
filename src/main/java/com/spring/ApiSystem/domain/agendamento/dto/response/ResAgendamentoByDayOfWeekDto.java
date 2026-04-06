@@ -2,7 +2,7 @@ package com.spring.ApiSystem.domain.agendamento.dto.response;
 
 import java.time.LocalDate;
 
-public record ResAgendamentoDataAndNameDto (
+public record ResAgendamentoByDayOfWeekDto(
         Long id,
         LocalDate data,
         String alunoName,
