@@ -53,6 +53,24 @@ public class UsuarioService {
         return true;
     }
 
+    public long getStartTime(){
+        return System.nanoTime();
+    }
+
+    public void setEndTime(long startTime, int milliseconds, int millisecondsToAdd){
+        long timeTarget = TimeUnit.MILLISECONDS.toNanos(milliseconds);
+
+        long timeSpent = System.nanoTime() - startTime;
+        while(timeTarget < timeSpent){
+            timeTarget += TimeUnit.MILLISECONDS.toNanos(millisecondsToAdd);
+        }
+
+        long timeLeft = timeTarget - timeSpent;
+        if (timeLeft > 0) {
+            LockSupport.parkNanos(timeLeft);
+        }
+    }
+
     public Boolean loginUsuario(String email, String senha) {
         Usuario userOpt = buscarUsuarioPorEmail(email);
 
