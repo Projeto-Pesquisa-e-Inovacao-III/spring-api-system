@@ -4,7 +4,7 @@ import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoAlunoOverviewDTO;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoDataAndNameDto;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.ResBuscarAgendamentoCalendarioAlunoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.ResBuscarAgendamentoCalendarioPersonalDTO;
@@ -195,8 +195,6 @@ public abstract class AgendamentoMapper {
 
     @Mapping(target = "alunoName", source = "aluno.nome")
     @Mapping(target = "pathImage", source = "aluno.caminhoFoto")
-    public abstract ResAgendamentoDataAndNameDto toResAgendamentoDataAndNameDto(Agendamento agendamento);
-
-    public abstract List<ResAgendamentoDataAndNameDto> toResAgendamentoDataAndNameDtoList(List<Agendamento> agendamentos);
+    public abstract ResAgendamentoByDayOfWeekDto toResAgendamentoByDayOfWeekDto(Agendamento agendamento);
 
 }

@@ -2,7 +2,7 @@ package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoDataAndNameDto;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -156,8 +157,13 @@ public class AgendamentoController {
 
 
     @GetMapping("/dia-semana/{diaSemana}")
-    public ResponseEntity<List<ResAgendamentoDataAndNameDto>> checkDiaSemanaAgendamentos(@PathVariable DiaSemana diaSemana){
-        List<ResAgendamentoDataAndNameDto> agendamentos = agendamentoService.checkDiaSemanaAgendamentos(diaSemana);
+    public ResponseEntity<Page<ResAgendamentoByDayOfWeekDto>>
+    checkDiaSemanaAgendamentos(@PageableDefault(sort = "data") Pageable pageable,
+                               @PathVariable DiaSemana diaSemana){
+        Page<ResAgendamentoByDayOfWeekDto> agendamentos = agendamentoService.checkDiaSemanaAgendamentos(
+                pageable,
+                diaSemana
+        );
         if(agendamentos.isEmpty()){
             return ResponseEntity.noContent().build();
         }
