@@ -79,9 +79,12 @@ public class DisponibilidadePersonalController {
         return ResponseEntity.ok(disponibilidade);
     }
 
-    @GetMapping("/dias-semana")
-    public ResponseEntity<List<ResDiaSemanaAndAtivoDTO>> getDiasSemana() {
-        List<DisponibilidadePersonal> disponibilidades = personalService.findDiaSemanaByPersonalAndTipo(TipoHorario.DISPONIVEL);
+    @GetMapping("/dias-semana/{personalId}")
+    public ResponseEntity<List<ResDiaSemanaAndAtivoDTO>> getDiasSemana(@PathVariable Long personalId) {
+        List<DisponibilidadePersonal> disponibilidades = personalService.findDiaSemanaByPersonalIdAndTipo(
+                personalId,
+                TipoHorario.DISPONIVEL
+        );
 
         return ResponseEntity.ok(disponibilidadePersonalMapper.toResDiaSemanaAndAtivoDTO(disponibilidades));
     }

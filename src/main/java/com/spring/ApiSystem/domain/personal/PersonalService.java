@@ -25,6 +25,7 @@ import com.spring.ApiSystem.shared.enums.DiaSemana;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -172,9 +173,9 @@ public class PersonalService {
         return disponibilidadeService.changeActivation(diaSemana);
     }
 
-    public List<DisponibilidadePersonal> findDiaSemanaByPersonalAndTipo(TipoHorario tipoHorario){
-        Personal personal = detailsService.getCurrentPersonal();
+    public List<DisponibilidadePersonal> findDiaSemanaByPersonalIdAndTipo(Long personalId, TipoHorario tipoHorario){
+        buscarPersonalPorId(personalId);
 
-        return disponibilidadeService.findByPersonalAndTipo(personal.getId(), tipoHorario);
+        return disponibilidadeService.findByPersonalIdAndTipo(personalId, tipoHorario);
     }
 }
