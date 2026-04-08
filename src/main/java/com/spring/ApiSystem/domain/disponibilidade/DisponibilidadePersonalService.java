@@ -477,12 +477,10 @@ public class DisponibilidadePersonalService {
     }
 
     public List<DisponibilidadePersonal> findByPersonalAndTipo(Long personalId, TipoHorario tipoHorario){
-        List<DisponibilidadePersonal> disponibilidades = disponibilidadeRepository.findByPersonalIdAndTipo(
+        return disponibilidadeRepository.findByPersonalIdAndTipo(
                 personalId,
                 tipoHorario
         );
-
-        return disponibilidades;
     }
 }
 
