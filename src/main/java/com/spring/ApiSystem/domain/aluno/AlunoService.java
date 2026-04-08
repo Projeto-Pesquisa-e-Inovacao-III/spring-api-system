@@ -19,6 +19,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -75,9 +76,9 @@ public class AlunoService {
         }
     }
 
-    public List<ResListarAlunosDto> listarAlunos(Pageable pageable) {
-        List<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
-        return alunoMapper.toResListarAlunosDto(alunos);
+    public Page<ResListarAlunosDto> listarAlunos(Pageable pageable) {
+        Page<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
+        return alunos.map(alunoMapper::toResListarAlunosDto);
     }
 
     public ResBuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {

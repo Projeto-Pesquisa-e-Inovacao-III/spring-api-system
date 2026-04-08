@@ -15,6 +15,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.external.comprar.exception.AlunoJaPossuiProdutoContratadoDoTipoException;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -160,14 +161,14 @@ public class ProdutoContratadoService {
     }
 
 
-    public List<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDate dataInicio, LocalDate dataFim){
-        List<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
+    public Page<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDate dataInicio, LocalDate dataFim){
+        Page<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
                 jpaUserDetailsService.getCurrentAluno(),
                 nomeProduto,
                 dataInicio,
                 dataFim,
                 pageable);
-        return produtoContratadoMapper.toListDto(produtosContratados);
+        return produtosContratados.map(produtoContratadoMapper::toDto);
     }
 
     public ResProdutoContratadoAtivoDto buscarProdutoContratadoAtivo(String email){

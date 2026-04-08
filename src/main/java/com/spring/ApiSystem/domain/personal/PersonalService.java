@@ -22,6 +22,7 @@ import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -105,9 +106,9 @@ public class PersonalService {
     }
 
 
-    public List<ResListarPersonaisDTO> listarPersonais(Pageable pageable) {
-        List<Personal> personals = personalRepository.findAllAtivos(pageable);
-        return personalMapper.toDtoListarPersonaisDTO(personals);
+    public Page<ResListarPersonaisDTO> listarPersonais(Pageable pageable) {
+        Page<Personal> personals = personalRepository.findAllAtivos(pageable);
+        return personals.map(personalMapper::toResListarPersonaisDTO);
     }
 
     public ResBuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {

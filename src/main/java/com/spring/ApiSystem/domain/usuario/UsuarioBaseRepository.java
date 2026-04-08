@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.usuario;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -16,7 +17,7 @@ public interface UsuarioBaseRepository<T extends Usuario> extends JpaRepository<
     Optional<T> findByEmail(@Param("email") String email);
 
     @Query("SELECT u FROM #{#entityName} u WHERE u.ativo = true")
-    List<T> findAllAtivos(Pageable pageable);
+    Page<T> findAllAtivos(Pageable pageable);
 
     @Query("SELECT u FROM #{#entityName} u WHERE u.nome LIKE %:nome%")
     List<T> findByNomeContaining(@Param("nome") String nome);

@@ -48,5 +48,6 @@ public interface AlunoMapper {
     void atualizarAlunoParaAtualizarAlunoDto(ReqAtualizarAlunoDTO dto,
                                              @MappingTarget Aluno aluno);
 
-    List<ResListarAlunosDto> toResListarAlunosDto(List<Aluno> alunos);
+
+    ResListarAlunosDto toResListarAlunosDto(Aluno alunos);
 }

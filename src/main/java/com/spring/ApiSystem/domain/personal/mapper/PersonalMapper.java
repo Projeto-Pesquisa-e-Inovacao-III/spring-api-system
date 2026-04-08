@@ -41,4 +41,7 @@ public interface PersonalMapper {
     void atualizarPersonalParaAtualizarPersonalDto(ReqAtualizarPersonalDTO dto,
                                               @MappingTarget Personal personal);
 
+
+    ResListarPersonaisDTO toResListarPersonaisDTO(Personal personal);
+
 }

@@ -5,6 +5,7 @@ import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import jakarta.persistence.LockModeType;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
@@ -46,7 +47,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     AND (:dataInicio IS NULL OR pc.dataCompra >= :dataInicio)
     AND (:dataFim IS NULL OR pc.dataExpiracao <= :dataFim)
     """)
-    List<ProdutoContratado> findByAlunoIdWithFilters(
+    Page<ProdutoContratado> findByAlunoIdWithFilters(
             @Param("aluno") Aluno aluno,
             @Param("nomeProduto") String nomeProduto,
             @Param("dataInicio") LocalDate dataInicio,
