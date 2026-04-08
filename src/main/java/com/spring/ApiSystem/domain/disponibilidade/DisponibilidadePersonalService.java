@@ -476,7 +476,7 @@ public class DisponibilidadePersonalService {
         }
     }
 
-    public List<DisponibilidadePersonal> findByPersonalAndTipo(Long personalId, TipoHorario tipoHorario){
+    public List<DisponibilidadePersonal> findByPersonalIdAndTipo(Long personalId, TipoHorario tipoHorario){
         return disponibilidadeRepository.findByPersonalIdAndTipo(
                 personalId,
                 tipoHorario

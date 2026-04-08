@@ -72,7 +72,8 @@ public class SecurityConfig {
                             "/api/personais/*/horarios-disponiveis",
                             "/api/agendamentos/**",
                             "/api/usuarios/**",
-                            "/api/enderecos/**"
+                            "/api/enderecos/**",
+                            "/api/personais/dias-semana/**"
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
                     // Aluno - matcher específico para GET /api/personais deve vir antes do matcher PERSONAL genérico
