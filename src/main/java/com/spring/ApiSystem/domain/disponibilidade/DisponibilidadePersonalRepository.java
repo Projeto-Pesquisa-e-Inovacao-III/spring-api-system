@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
 
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 
 import com.spring.ApiSystem.domain.personal.Personal;
@@ -34,4 +35,6 @@ public interface DisponibilidadePersonalRepository extends JpaRepository<Disponi
     );
 
     List<DisponibilidadePersonal> findByPersonal(Personal personal);
+
+    List<DisponibilidadePersonal> findByPersonalIdAndTipo(Long personalId, TipoHorario tipoHorario);
 }

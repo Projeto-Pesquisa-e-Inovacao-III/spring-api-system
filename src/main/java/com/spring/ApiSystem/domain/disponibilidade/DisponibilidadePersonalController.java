@@ -2,8 +2,10 @@ package com.spring.ApiSystem.domain.disponibilidade;
 
 
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
+import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResDiaSemanaAndAtivoDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.disponibilidade.mapper.DisponibilidadePersonalMapper;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
@@ -75,5 +77,12 @@ public class DisponibilidadePersonalController {
                 personalService.changeActivation(diaSemana)
         );
         return ResponseEntity.ok(disponibilidade);
+    }
+
+    @GetMapping("/dias-semana")
+    public ResponseEntity<List<ResDiaSemanaAndAtivoDTO>> getDiasSemana() {
+        List<DisponibilidadePersonal> disponibilidades = personalService.findDiaSemanaByPersonalAndTipo(TipoHorario.DISPONIVEL);
+
+        return ResponseEntity.ok(disponibilidadePersonalMapper.toResDiaSemanaAndAtivoDTO(disponibilidades));
     }
 }
