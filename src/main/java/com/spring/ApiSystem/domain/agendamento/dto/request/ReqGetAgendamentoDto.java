@@ -6,7 +6,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import java.time.LocalDateTime;
 
 public record ReqGetAgendamentoDto(
-        String nomeDoAluno,
+        String nome,
         String status,
         String tipoAgendamento,
         LocalDateTime dataInic,

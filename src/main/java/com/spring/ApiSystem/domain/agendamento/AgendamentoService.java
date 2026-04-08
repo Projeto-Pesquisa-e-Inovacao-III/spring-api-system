@@ -323,7 +323,15 @@ public class AgendamentoService {
 
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             Page<Agendamento> agendamentosPage =
-                    agendamentoRepository.findByAlunoIdOrderByDataAsc(usuario.getId(), pageable);
+                    agendamentoRepository.findByAlunoIdOrderByDataAsc(
+                                    usuario.getId(),
+                                    dto.nome(),
+                                    dto.getStatusEnum(),
+                                    dto.getTipoAgendamentoEnum(),
+                                    dto.dataInic(),
+                                    dto.dataFim(),
+                                    pageable
+                            );
 
             return agendamentosPage.map(
                     agendamento -> (AgendamentoSolicitacaoResponse)
@@ -338,7 +346,7 @@ public class AgendamentoService {
             Page<Agendamento> agendamentosPage =
                     agendamentoRepository.findByPersonalIdOrderByDataAsc(
                             usuario.getId(),
-                            dto.nomeDoAluno(),
+                            dto.nome(),
                             dto.getStatusEnum(),
                             dto.getTipoAgendamentoEnum(),
                             dto.dataInic(),
@@ -350,7 +358,9 @@ public class AgendamentoService {
                     agendamento -> (AgendamentoSolicitacaoResponse)
                             agendamentoMapper.toResBuscarSolicitacaoPorPersonal(
                                     agendamento,
-                                    agendamento.getAluno().getTelefones().getFirst()
+                                    agendamento.getAluno()
+                                            .getTelefones()
+                                            .getFirst()
                             )
             );
         }
