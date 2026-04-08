@@ -5,6 +5,7 @@ import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonalServic
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
+import com.spring.ApiSystem.domain.disponibilidade.enums.TipoHorario;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
@@ -170,5 +171,11 @@ public class PersonalService {
 
     public List<DisponibilidadePersonal> changeActivation(DiaSemana diaSemana){
         return disponibilidadeService.changeActivation(diaSemana);
+    }
+
+    public List<DisponibilidadePersonal> findDiaSemanaByPersonalAndTipo(TipoHorario tipoHorario){
+        Personal personal = detailsService.getCurrentPersonal();
+
+        return disponibilidadeService.findByPersonalAndTipo(personal.getId(), tipoHorario);
     }
 }
