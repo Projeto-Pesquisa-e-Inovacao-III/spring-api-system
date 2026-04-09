@@ -44,6 +44,7 @@ public class AlunoController {
     @PostMapping("/cadastro")
     public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO) {
         return ResponseEntity.ok(alunoService.cadastrarUsuario(cadastroUsuarioDTO));
+
     }
 
     @Operation(summary = "Listar alunos (necessário login)",

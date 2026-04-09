@@ -19,6 +19,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
+import com.spring.ApiSystem.shared.config.filter.FilterService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,13 +36,16 @@ public class AlunoService {
     private final AlunoMapper alunoMapper;
     private final AlunoEventPublisher alunoEventPublisher;
     private final CpfMapper cpfMapper;
+    private final FilterService filterService;
 
-    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper) {
+
+    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper, FilterService filterService) {
         this.alunoRepository = alunoRepository;
         this.usuarioService = usuarioService;
         this.alunoMapper = alunoMapper;
         this.alunoEventPublisher = alunoEventPublisher;
         this.cpfMapper = cpfMapper;
+        this.filterService = filterService;
     }
 
     public ResCadastrarAlunoDTO cadastrarUsuario(ReqCadastroAlunoDTO usuarioDTO) {
@@ -68,7 +72,15 @@ public class AlunoService {
             }
 
             alunoEventPublisher.publishAlunoCreatedEvent(alunoSalvo);
-            return alunoMapper.toDtoCadastrarAluno(alunoSalvo);
+          Boolean usuarioEncontrado =  usuarioService
+                  .loginUsuario(
+                          alunoSalvo.getEmail(),
+                          alunoSalvo.getSenha()
+                  );
+          if (usuarioEncontrado){
+
+          }
+         return alunoMapper.toDtoCadastrarAluno(alunoSalvo);
         } catch (DataIntegrityViolationException e) {
             throw new AlunoPersistenciaException("Violação de integridade ao salvar aluno.", e);
         } catch (DataAccessException e) {
