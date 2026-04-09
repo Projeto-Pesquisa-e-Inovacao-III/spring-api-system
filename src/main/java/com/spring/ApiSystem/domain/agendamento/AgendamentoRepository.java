@@ -45,7 +45,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
-            "  AND (:nomeDoPersonal IS NULL OR a.aluno.nome LIKE %:nomeDoPersonal%) " +
+            "  AND (:nomeDoPersonal IS NULL OR a.personal.nome LIKE %:nomeDoPersonal%) " +
             "  AND (:status IS NULL OR a.status = :status) " +
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
