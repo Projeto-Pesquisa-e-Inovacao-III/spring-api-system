@@ -16,10 +16,7 @@ public interface UsuarioBaseRepository<T extends Usuario> extends JpaRepository<
     @Query("SELECT a FROM #{#entityName} a WHERE a.email = :email")
     Optional<T> findByEmail(@Param("email") String email);
 
-    @Query("SELECT u FROM #{#entityName} u WHERE u.ativo = true")
-    Page<T> findAllAtivos(Pageable pageable);
-
-    @Query("SELECT u FROM #{#entityName} u WHERE u.nome LIKE %:nome%")
-    List<T> findByNomeContaining(@Param("nome") String nome);
-
+    @Query("SELECT u FROM #{#entityName} u WHERE u.ativo = true AND " +
+            "(:nome IS NULL OR LOWER(u.nome) LIKE LOWER(CONCAT('%', :nome, '%')))")
+    Page<T> findAllAtivosContainingNome(Pageable pageable, @Param("nome") String nome);
 }

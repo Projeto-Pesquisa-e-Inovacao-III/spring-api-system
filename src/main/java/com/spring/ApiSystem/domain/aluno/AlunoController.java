@@ -6,10 +6,7 @@ import com.spring.ApiSystem.domain.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResAlunosPagantesDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResCadastrarAlunoDTO;
-import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
-import com.spring.ApiSystem.domain.usuario.UsuarioService;
-import com.spring.ApiSystem.domain.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +50,9 @@ public class AlunoController {
                description = "Endpoint para listar alunos no sistema")
     @GetMapping
     public ResponseEntity<Page<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
-                                                                 Pageable pageable) {
-        Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable);
+                                                                 Pageable pageable,
+                                                                 @RequestParam(required = false) String nome) {
+        Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable, nome);
 
         if(alunos.isEmpty()){
             return ResponseEntity.noContent().build();

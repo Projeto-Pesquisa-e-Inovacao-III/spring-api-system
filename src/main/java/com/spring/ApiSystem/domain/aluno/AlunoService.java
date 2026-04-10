@@ -106,8 +106,8 @@ public class AlunoService {
         return alunoMapper.toDtoAtualizarAluno(aluno);
     }
 
-    public Page<ResListarAlunosDto> listarAlunos(Pageable pageable) {
-        Page<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
+    public Page<ResListarAlunosDto> listarAlunos(Pageable pageable, String nome) {
+        Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(pageable, nome);
         return alunos.map(alunoMapper::toResListarAlunosDto);
     }
 
