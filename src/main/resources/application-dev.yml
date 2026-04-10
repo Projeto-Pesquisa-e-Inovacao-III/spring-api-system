@@ -5,7 +5,13 @@ spring:
     username: app_user
     password: app_password_123
     virtual-host: /app
-    connection-timeout: 60000
+    connection-timeout: 5000
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2000ms
+        max-attempts: 3
+        multiplier: 2.0
   h2:
     console:
       enabled: true
