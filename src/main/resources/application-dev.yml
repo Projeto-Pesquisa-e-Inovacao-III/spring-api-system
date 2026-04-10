@@ -1,11 +1,17 @@
 spring:
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:app_user}
-    password: ${RABBITMQ_PASSWORD:app_password_123}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/app}
-    connection-timeout: 60000
+    host: localhost
+    port: 5672
+    username: app_user
+    password: app_password_123
+    virtual-host: /app
+    connection-timeout: 5000
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2000ms
+        max-attempts: 3
+        multiplier: 2.0
   h2:
     console:
       enabled: true
@@ -20,7 +26,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
-        format_sql: false
+        format_sql: true
         dialect: org.hibernate.dialect.H2Dialect
     hibernate:
       ddl-auto: create-drop
@@ -41,28 +47,24 @@ spring:
             enable: true
 
 pag:
-  url: ${PAG_URL:http://localhost:8081}
-
-messaging:
-  rabbitmq:
-    enabled: ${MESSAGING_RABBITMQ_ENABLED:false}
+  url: http://localhost:8081
 
 infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
   api:
-    key: ${INFOBIP_API_KEY:a}
+    key: a
   whatsapp:
-    sender: ${INFOBIP_WHATSAPP_SENDER:a}
+    sender: a
     template:
-      name: ${INFOBIP_WHATSAPP_TEMPLATE_NAME:a}
+      name: a
 
 discord:
   webhook:
-    url: ${DISCORD_WEBHOOK_URL:a}
+    url: a
 
 storage:
-  local-dir: ${STORAGE_LOCAL_DIR:imagens}
+  local-dir: imagens
 logging:
   level:
     com.spring.ApiSystem: DEBUG
