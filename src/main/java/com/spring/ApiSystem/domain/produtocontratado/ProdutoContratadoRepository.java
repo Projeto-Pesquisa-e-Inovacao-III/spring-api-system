@@ -43,7 +43,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     @Query("""
     SELECT pc FROM produto_contratado pc
     WHERE pc.aluno = :aluno
-    AND (:nomeProduto IS NULL OR pc.produtoExibicao.titulo LIKE %:nomeProduto%)
+    AND (:nomeProduto IS NULL OR LOWER(pc.produtoExibicao.titulo) LIKE LOWER(CONCAT('%', :nomeProduto, '%')))
     AND (:dataInicio IS NULL OR pc.dataCompra >= :dataInicio)
     AND (:dataFim IS NULL OR pc.dataExpiracao <= :dataFim)
     """)

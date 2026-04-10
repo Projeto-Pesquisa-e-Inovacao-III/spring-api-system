@@ -65,22 +65,23 @@ public class PersonalController {
         return ResponseEntity.ok(personalService.buscarBuffer());
     }
 
-//    @Operation(
-//            summary = "Listar personais (necessário login)",
-//            description = "Endpoint para listar personais no sistema"
-//    )
-//    @GetMapping
-//    public ResponseEntity<Page<ResListarPersonaisDTO>> listarPersonais(
-//            @PageableDefault(sort = "nome") Pageable pageable
-//    ) {
-//        Page<ResListarPersonaisDTO> personals = personalService.listarPersonais(pageable);
-//
-//        if(personals.isEmpty()){
-//            return ResponseEntity.noContent().build();
-//        }
-//
-//        return ResponseEntity.ok(personals);
-//    }
+    @Operation(
+            summary = "Listar personais (necessário login)",
+            description = "Endpoint para listar personais no sistema"
+    )
+    @GetMapping
+    public ResponseEntity<Page<ResListarPersonaisDTO>> listarPersonais(
+            @PageableDefault(sort = "nome") Pageable pageable,
+            @RequestParam(required = false) String nome
+    ) {
+        Page<ResListarPersonaisDTO> personals = personalService.listarPersonais(pageable, nome);
+
+        if(personals.isEmpty()){
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(personals);
+    }
 
     @Operation(
             summary = "Buscar personal por ID (necessário login)",

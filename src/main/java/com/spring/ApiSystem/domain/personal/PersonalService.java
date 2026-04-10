@@ -109,10 +109,10 @@ public class PersonalService {
     }
 
 
-//    public Page<ResListarPersonaisDTO> listarPersonais(Pageable pageable) {
-//        Page<Personal> personals = personalRepository.findAllAtivos(pageable);
-//        return personals.map(personalMapper::toResListarPersonaisDTO);
-//    }
+    public Page<ResListarPersonaisDTO> listarPersonais(Pageable pageable, String nome) {
+        Page<Personal> personals = personalRepository.findAllAtivosContainingNome(pageable, nome);
+        return personals.map(personalMapper::toResListarPersonaisDTO);
+    }
 
     public ResBuscarPersonalPorIdDTO buscarPersonalPorId(Long id) {
         Personal personal = buscarPorId(id);
