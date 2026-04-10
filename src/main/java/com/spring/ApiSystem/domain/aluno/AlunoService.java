@@ -108,12 +108,7 @@ public class AlunoService {
     }
 
     public Page<ResListarAlunosDto> listarAlunos(Pageable pageable, String nome) {
-        if(nome != null){
-            Pageable firstPage = PageRequest.of(0, pageable.getPageSize());
-        }
-
         Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(pageable, nome);
-
         return alunos.map(alunoMapper::toResListarAlunosDto);
     }
 
