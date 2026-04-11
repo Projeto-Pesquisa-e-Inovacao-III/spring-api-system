@@ -61,7 +61,9 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  servlet:
+    multipart:
+      max-file-size: 4MB
 pag:
   url: http://localhost:8081
 

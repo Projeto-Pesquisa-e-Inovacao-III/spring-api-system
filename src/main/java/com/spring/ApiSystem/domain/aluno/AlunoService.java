@@ -22,6 +22,7 @@ import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -107,7 +108,12 @@ public class AlunoService {
     }
 
     public Page<ResListarAlunosDto> listarAlunos(Pageable pageable, String nome) {
+        if(nome != null){
+            Pageable firstPage = PageRequest.of(0, pageable.getPageSize());
+        }
+
         Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(pageable, nome);
+
         return alunos.map(alunoMapper::toResListarAlunosDto);
     }
 

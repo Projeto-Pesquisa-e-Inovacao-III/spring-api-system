@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.FileNotFoundException;
@@ -14,7 +15,9 @@ import java.nio.file.Paths;
 
 @Service
 public class LocalImageStorageService {
-    private static final long MAX_IMAGE_SIZE = 5L * 1024 * 1024;
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private DataSize MAX_IMAGE_SIZE;
 
     @Value("${storage.local-dir:}")
     private String localDir;
@@ -72,8 +75,8 @@ public class LocalImageStorageService {
             throw new IllegalArgumentException("Arquivo não é uma imagem");
         }
 
-        if (imagem.getSize() > MAX_IMAGE_SIZE) {
-            throw new IllegalArgumentException("Imagem muito grande (máx 5MB)");
+        if (imagem.getSize() > (MAX_IMAGE_SIZE.toBytes() - DataSize.ofMegabytes(1L).toBytes())) {
+            throw new IllegalArgumentException("Imagem muito grande (máx " + MAX_IMAGE_SIZE.toMegabytes() + "MB)");
         }
     }
 }
