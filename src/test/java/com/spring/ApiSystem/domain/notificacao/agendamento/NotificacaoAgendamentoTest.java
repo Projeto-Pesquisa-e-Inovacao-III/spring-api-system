@@ -10,6 +10,7 @@ import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -23,8 +24,7 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@ExtendWith(MockitoExtension.class)
 public class NotificacaoAgendamentoTest {
 
     @Mock

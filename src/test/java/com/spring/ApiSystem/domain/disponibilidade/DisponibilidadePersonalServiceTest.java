@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.domain.disponibilidade;
 
-import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResHorarioDTO;
 import com.spring.ApiSystem.domain.disponibilidade.dto.response.ResSlotDisponivelDTO;
@@ -17,12 +16,12 @@ import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,8 +35,7 @@ import static org.mockito.Mockito.*;
 
 
 @DisplayName("Testes do DisponibilidadePersonalService")
-@ActiveProfiles("test")
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class DisponibilidadePersonalServiceTest {
 
     @Mock
@@ -300,8 +298,8 @@ class DisponibilidadePersonalServiceTest {
     void deveRetornarListaVaziaQuandoNaoHaDisponibilidade() {
         // Arrange
         LocalDate dataFutura = LocalDate.now().plusDays(1);
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(anyLong(), any()))
+        DiaSemana diaFuturo = DiaSemana.fromDayOfWeek(dataFutura.getDayOfWeek());
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(Collections.emptyList());
 
         // Act
@@ -326,8 +324,7 @@ class DisponibilidadePersonalServiceTest {
         dispManha.setHoraInicio(LocalTime.of(8, 0));
         dispManha.setHoraFim(LocalTime.of(12, 0));
 
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaFuturo))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(List.of(dispManha));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(Collections.emptyList());
@@ -364,8 +361,7 @@ class DisponibilidadePersonalServiceTest {
         dispDia.setHoraInicio(LocalTime.of(8, 0));
         dispDia.setHoraFim(LocalTime.of(18, 0)); // Janela completa do dia
 
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaAtual))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaAtual, true))
                 .thenReturn(List.of(dispDia));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(Collections.emptyList());
@@ -413,8 +409,7 @@ class DisponibilidadePersonalServiceTest {
         restricao.setHoraInicio(LocalTime.of(12, 0));
         restricao.setHoraFim(LocalTime.of(13, 0));
 
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaFuturo))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(List.of(dispDia, restricao));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(Collections.emptyList());
@@ -455,10 +450,8 @@ class DisponibilidadePersonalServiceTest {
         HorarioAgendadoProjection agendamento = mock(HorarioAgendadoProjection.class);
         when(agendamento.getDataInicio()).thenReturn(dataFutura.atTime(10, 0));
         when(agendamento.getTipoAula()).thenReturn(TipoAula.FUNCIONAL);
-        when(agendamento.getStatus()).thenReturn(AgendamentoStatus.APROVADO);
 
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaFuturo))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(List.of(dispDia));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(List.of(agendamento));
@@ -494,7 +487,7 @@ class DisponibilidadePersonalServiceTest {
         dispCurta.setHoraInicio(LocalTime.of(10, 0));
         dispCurta.setHoraFim(LocalTime.of(10, 30));
 
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaFuturo))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(List.of(dispCurta));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(Collections.emptyList());
@@ -531,8 +524,7 @@ class DisponibilidadePersonalServiceTest {
         restricao.setHoraInicio(LocalTime.of(10, 15));
         restricao.setHoraFim(LocalTime.of(11, 0));
 
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
-        when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, diaFuturo))
+        when(disponibilidadeRepository.findByPersonalIdAndDiaSemanaAndAtivo(1L, diaFuturo, true))
                 .thenReturn(List.of(dispDia, restricao));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(Collections.emptyList());
@@ -649,7 +641,6 @@ class DisponibilidadePersonalServiceTest {
         HorarioAgendadoProjection agendamento = mock(HorarioAgendadoProjection.class);
         when(agendamento.getDataInicio()).thenReturn(proximaSegunda.atTime(10, 0));
         when(agendamento.getTipoAula()).thenReturn(TipoAula.FUNCIONAL);
-        when(agendamento.getStatus()).thenReturn(AgendamentoStatus.APROVADO);
 
         // Tentando criar restrição de 10:30 às 11:00 (sobrepõe o buffer do agendamento)
         ReqHorarioDTO novaRestricao = new ReqHorarioDTO(
@@ -664,7 +655,6 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
         when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, DiaSemana.SEGUNDA))
                 .thenReturn(List.of(criarDisponivelBaseSegunda()));
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(List.of(agendamento));
 
@@ -685,7 +675,6 @@ class DisponibilidadePersonalServiceTest {
         HorarioAgendadoProjection agendamento = mock(HorarioAgendadoProjection.class);
         when(agendamento.getDataInicio()).thenReturn(proximaSegunda.atTime(10, 0));
         when(agendamento.getTipoAula()).thenReturn(TipoAula.FUNCIONAL);
-        when(agendamento.getStatus()).thenReturn(AgendamentoStatus.APROVADO);
 
         // Restrição de 10:00 às 11:00, mas com buffer de 15 min antes, começa em 9:45
         // Isso NÃO deveria conflitar com agendamento às 10:00
@@ -701,7 +690,6 @@ class DisponibilidadePersonalServiceTest {
                 .thenReturn(Collections.emptyList());
         when(disponibilidadeRepository.findByPersonalIdAndDiaSemana(1L, DiaSemana.SEGUNDA))
                 .thenReturn(List.of(criarDisponivelBaseSegunda()));
-        when(personalRepository.findById(1L)).thenReturn(Optional.of(personal));
         when(produtoExibicaoRepository.findAgendamentoSlotsByPersonalIdAndDataBetween(anyLong(), any(), any()))
                 .thenReturn(List.of(agendamento));
 
