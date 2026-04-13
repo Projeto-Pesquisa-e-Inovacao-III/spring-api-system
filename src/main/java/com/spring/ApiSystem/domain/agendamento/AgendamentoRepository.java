@@ -58,7 +58,22 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
 
-    Page<Agendamento> findByAlunoIdOrderByDataAsc(Long alunoId, Pageable pageable);
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.aluno.id = :alunoId " +
+            "  AND (:nomeDoPersonal IS NULL OR a.personal.nome LIKE %:nomeDoPersonal%) " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
+            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
+            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
+            "ORDER BY a.data ASC")
+    Page<Agendamento> findByAlunoIdOrderByDataAsc(
+            @Param("alunoId") Long alunoId,
+            @Param("nomeDoPersonal") String nomeDoPersonal,
+            @Param("status") AgendamentoStatus status,
+            @Param("tipoAgendamento") TipoAula tipoAgendamento,
+            @Param("dataInic") LocalDateTime dataInic,
+            @Param("dataFim") LocalDateTime dataFim,
+            Pageable pageable);
 
     /* -------------------- Consultas com filtros/custom -------------------- */
 
