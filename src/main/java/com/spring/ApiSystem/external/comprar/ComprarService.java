@@ -1,12 +1,14 @@
 package com.spring.ApiSystem.external.comprar;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
-
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.external.comprar.dto.response.LinkDto;
+import com.spring.ApiSystem.external.comprar.dto.request.ReqCheckoutDto;
+import com.spring.ApiSystem.external.comprar.dto.response.ResCheckoutCreatedDto;
 import com.spring.ApiSystem.external.comprar.exception.CompraDeProdutoExibicaoInexistente;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -15,8 +17,10 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.List;
+import java.util.UUID;
 
 @Service
 public class ComprarService {
@@ -37,27 +41,69 @@ public class ComprarService {
     }
 
 
-    public LinkDto comprar(Long produtoExibicaoId){
+    public String comprar(Long produtoExibicaoId){
         if(!produtoExibicaoService.produtoExibicaoAtivoExiste(produtoExibicaoId)){
             throw new CompraDeProdutoExibicaoInexistente(produtoExibicaoId);
         }
 
         Aluno aluno = userDetailsService.getCurrentAluno();
-        Long userId = aluno.getId();
+        ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(produtoExibicaoId);
 
         produtoContratadoService.temProdutoContratadoTipoProdutoAtivo(
                 produtoExibicaoId, aluno, TipoProduto.PACOTE
         );
 
-        Map<String, Long> requestBody = new HashMap<>();
-        requestBody.put("user_id", userId);
-        requestBody.put("produto_exibicao_id", produtoExibicaoId);
+        Telefone telefone = aluno.getTelefones().stream().findFirst().orElse(null);
+
+        ReqCheckoutDto requestBody = new ReqCheckoutDto(
+                new ReqCheckoutDto.CustomerDto(
+                        String.valueOf(aluno.getId()),
+                        aluno.getNome(),
+                        aluno.getEmail(),
+                        new ReqCheckoutDto.TaxDocumentDto(aluno.getCpf().formatted(), "CPF"),
+                        new ReqCheckoutDto.PhoneDto(
+                                formatCountry(telefone),
+                                telefone != null ? telefone.getDdd() : "",
+                                telefone != null ? telefone.getNumero() : ""
+                        )
+                ),
+                List.of(
+                        new ReqCheckoutDto.ItemDto(
+                                produtoExibicao.getId(),
+                                UUID.randomUUID().toString(),
+                                produtoExibicao.getTitulo(),
+                                1,
+                                toCents(produtoExibicao.getPreco())
+                        )
+                ),
+                0,
+                0
+        );
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
 
-        HttpEntity<Map<String, Long>> requestEntity = new HttpEntity<>(requestBody, headers);
+        HttpEntity<ReqCheckoutDto> requestEntity = new HttpEntity<>(requestBody, headers);
 
-        return restTemplate.postForEntity(url+"/checkouts/simple", requestEntity, LinkDto.class).getBody();
+        ResCheckoutCreatedDto response = restTemplate
+                .postForEntity(url + "/api/v1/checkouts", requestEntity, ResCheckoutCreatedDto.class)
+                .getBody();
+
+        return response != null ? response.payLink() : null;
+    }
+
+    private String formatCountry(Telefone telefone) {
+        if (telefone == null || telefone.getPais() == null || telefone.getPais().isBlank()) {
+            return "";
+        }
+
+        return telefone.getPais().startsWith("+") ? telefone.getPais() : "+" + telefone.getPais();
+    }
+
+    private Integer toCents(Double value) {
+        return BigDecimal.valueOf(value)
+                .multiply(BigDecimal.valueOf(100))
+                .setScale(0, RoundingMode.HALF_UP)
+                .intValue();
     }
 }
