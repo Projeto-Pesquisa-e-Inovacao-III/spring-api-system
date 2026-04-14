@@ -20,9 +20,10 @@ public class OrderEventConsumer {
 
     @RabbitListener(queues = "api_system.orders.queue")
     public void consumeOrderPaidEvent(OrderPaidMessage message) {
+        System.out.println("Recebi a msg");
         produtoContratadoService.criarProdutoContratadoPeloIdAluno(
-                Long.parseLong(message.customerId()),
-                Long.parseLong((String) message.itensId().getFirst())
+                Long.parseLong(message.itensId().getFirst()),
+                Long.parseLong(message.customerId())
         );
     }
 }
