@@ -55,8 +55,6 @@ public class RabbitMqConfig {
         factory.setConcurrentConsumers(2);
         factory.setMaxConcurrentConsumers(5);
 
-        factory.setAutoStartup(false);
-
 
         factory.setErrorHandler(t -> {
             log.error("ERRO RABBITMQ: Falha ao processar mensagem. Tentando novamente...", t);
