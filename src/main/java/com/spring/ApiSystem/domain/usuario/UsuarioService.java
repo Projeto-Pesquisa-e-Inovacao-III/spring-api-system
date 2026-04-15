@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
 import java.util.Optional;
@@ -36,12 +35,19 @@ public class UsuarioService {
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
+    private final String DUMMY_SALT;
+    private final String DUMMY_HASH;
+
     public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
         this.argonService = argonService;
         this.imageStorageService = imageStorageService;
         this.telefoneService = telefoneService;
         this.usuarioEventPublisher = usuarioEventPublisher;
+
+        List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
+        this.DUMMY_SALT  = dummyArgon.get(0);
+        this.DUMMY_HASH = dummyArgon.get(1);
     }
 
     public Boolean removerUsuario(String email) {
