@@ -56,7 +56,9 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-exibicoes/ativos",
                             "/api/produtos-exibicoes",
-                            "/api/usuarios/auth"
+                            "/api/usuarios/auth",
+                            "/api/no-code",
+                            "/api/no-code/**"
                     ).permitAll();
 
                     auth.requestMatchers(HttpMethod.POST,
@@ -64,7 +66,16 @@ public class SecurityConfig {
                             "/api/personais/cadastro",
                             "/api/usuarios/login",
                             "/api/produtos-contratados/pagamento",
-                            "/api/password-reset/**"
+                            "/api/password-reset/**",
+                            "/api/no-code",
+                            "/api/no-code/",
+                            "/api/no-code/**"
+                    ).permitAll();
+
+                    auth.requestMatchers(HttpMethod.PUT,
+                            "/api/no-code",
+                            "/api/no-code/",
+                            "/api/no-code/**"
                     ).permitAll();
 
                     // Compartilhadas

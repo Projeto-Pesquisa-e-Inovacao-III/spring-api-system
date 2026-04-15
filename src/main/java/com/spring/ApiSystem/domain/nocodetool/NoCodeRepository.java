@@ -7,4 +7,5 @@ import java.util.UUID;
 
 @Repository
 public interface NoCodeRepository extends JpaRepository<NoCode, UUID> {
+    NoCode findByUserId(Long userId);
 }
