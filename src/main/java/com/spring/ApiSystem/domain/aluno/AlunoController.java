@@ -14,7 +14,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,9 +51,12 @@ public class AlunoController {
     @Operation(summary = "Listar alunos (necessário login)",
                description = "Endpoint para listar alunos no sistema")
     @GetMapping
-    public ResponseEntity<Page<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
-                                                                 Pageable pageable,
-                                                                 @RequestParam(required = false) String nome) {
+    public ResponseEntity<Page<ResListarAlunosDto>>
+    listarAlunos(@SortDefault.SortDefaults({
+                     @SortDefault(sort = "nome", direction = Sort.Direction.ASC),
+                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)
+                 }) Pageable pageable,
+                 @RequestParam(required = false) String nome) {
         Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable, nome);
 
         if(alunos.isEmpty()){

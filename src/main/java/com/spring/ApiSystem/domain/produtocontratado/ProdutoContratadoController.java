@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.produtocontratado;
 
 import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqCriarProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqCriarProdutoContratadoPagamentoDTO;
+import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -110,14 +112,15 @@ public class ProdutoContratadoController {
     )
     @GetMapping
     public ResponseEntity<Page<ResProdutoContratadoDto>> listarProdutosContratadosPorIdAluno(
-            @RequestParam(required = false) String nomeProduto,
-            @RequestParam(required = false) LocalDate dataInicio,
-            @RequestParam(required = false) LocalDate dataFim,
-            @ParameterObject
-            @PageableDefault(sort = "dataCompra", direction = Sort.Direction.DESC) Pageable pageable
+            @ModelAttribute ReqProdutoContratadoDto dto,
+            @SortDefault.SortDefaults({
+                    @SortDefault(sort = "dataCompra", direction = Sort.Direction.DESC),
+                    @SortDefault(sort = "id", direction = Sort.Direction.ASC)
+            }) Pageable pageable
+
     ) {
         Page<ResProdutoContratadoDto> produtosContratados =
-                produtoContratadoService.listarPorAluno(pageable, nomeProduto, dataInicio, dataFim);
+                produtoContratadoService.listarPorAluno(pageable, dto);
 
         if(produtosContratados.isEmpty()){
             return ResponseEntity.noContent().build();

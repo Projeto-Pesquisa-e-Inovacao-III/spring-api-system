@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.personal;
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonal;
 import com.spring.ApiSystem.domain.disponibilidade.DisponibilidadePersonalService;
 import com.spring.ApiSystem.domain.disponibilidade.dto.request.ReqHorarioDTO;
@@ -25,6 +26,7 @@ import com.spring.ApiSystem.shared.enums.DiaSemana;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -110,7 +112,12 @@ public class PersonalService {
 
 
     public Page<ResListarPersonaisDTO> listarPersonais(Pageable pageable, String nome) {
+        if(nome != null && !nome.isBlank()){
+            pageable = PageRequest.of(0, pageable.getPageSize());
+        }
+
         Page<Personal> personals = personalRepository.findAllAtivosContainingNome(pageable, nome);
+
         return personals.map(personalMapper::toResListarPersonaisDTO);
     }
 

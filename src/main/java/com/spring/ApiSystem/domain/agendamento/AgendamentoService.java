@@ -31,7 +31,9 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
+import com.spring.ApiSystem.shared.service.UtilsService;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -56,6 +58,7 @@ public class AgendamentoService {
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
+    private final UtilsService utilsService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -66,7 +69,8 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
-            AgendamentoEventPublisher agendamentoEventPublisher
+            AgendamentoEventPublisher agendamentoEventPublisher,
+            UtilsService utilsService
     ) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
@@ -77,6 +81,7 @@ public class AgendamentoService {
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.agendamentoEventPublisher = agendamentoEventPublisher;
+        this.utilsService = utilsService;
     }
 
     @Transactional
@@ -338,6 +343,10 @@ public class AgendamentoService {
             Pageable pageable
     ) {
         Usuario usuario = obterUsuarioAutenticado();
+
+        if(utilsService.hasAnyFilter(dto)){
+            pageable = PageRequest.of(0, pageable.getPageSize());
+        }
 
         if (usuario.getTipo() == TipoUsuario.ALUNO) {
             Page<Agendamento> agendamentosPage =

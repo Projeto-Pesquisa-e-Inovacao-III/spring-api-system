@@ -42,13 +42,15 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
 
     @Query("""
     SELECT pc FROM produto_contratado pc
-    WHERE pc.aluno = :aluno
-    AND (:nomeProduto IS NULL OR LOWER(pc.produtoExibicao.titulo) LIKE LOWER(CONCAT('%', :nomeProduto, '%')))
+    WHERE pc.aluno.id = :alunoId
+    AND (:nomeProduto IS NULL OR 
+        TRANSLATE(LOWER(pc.produtoExibicao.titulo), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') 
+        LIKE CONCAT('%', TRANSLATE(LOWER(:nomeProduto), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '%'))
     AND (:dataInicio IS NULL OR pc.dataCompra >= :dataInicio)
-    AND (:dataFim IS NULL OR pc.dataExpiracao <= :dataFim)
+    AND (:dataFim IS NULL OR pc.dataCompra <= :dataFim)
     """)
     Page<ProdutoContratado> findByAlunoIdWithFilters(
-            @Param("aluno") Aluno aluno,
+            @Param("alunoId") Long alunoId,
             @Param("nomeProduto") String nomeProduto,
             @Param("dataInicio") LocalDate dataInicio,
             @Param("dataFim") LocalDate dataFim,

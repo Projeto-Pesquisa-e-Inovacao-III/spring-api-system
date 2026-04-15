@@ -43,7 +43,9 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.personal.id = :personalId " +
-            "  AND (:nomeDoAluno IS NULL OR LOWER(a.aluno.nome) LIKE LOWER(CONCAT('%', :nomeDoAluno, '%'))) " +
+            "  AND (:nomeDoAluno IS NULL OR " +
+            "TRANSLATE(LOWER(a.aluno.nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') " +
+            "LIKE LOWER(CONCAT('%', TRANSLATE(LOWER(:nomeDoAluno), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '%'))) " +
             "  AND (:status IS NULL OR a.status = :status) " +
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
@@ -60,7 +62,9 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
-            "  AND (:nomeDoPersonal IS NULL OR a.personal.nome LIKE %:nomeDoPersonal%) " +
+            "  AND (:nomeDoPersonal IS NULL OR " +
+            "TRANSLATE(LOWER(a.personal.nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') " +
+            "LIKE LOWER(CONCAT('%', TRANSLATE(LOWER(:nomeDoPersonal), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '%')))" +
             "  AND (:status IS NULL OR a.status = :status) " +
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
