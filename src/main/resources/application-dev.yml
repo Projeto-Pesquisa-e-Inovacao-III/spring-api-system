@@ -1,4 +1,8 @@
 spring:
+  application:
+    name: spring-api-system
+  profiles:
+    active: dev
   rabbitmq:
     host: localhost
     port: 5672
@@ -6,12 +10,24 @@ spring:
     password: app_password_123
     virtual-host: /app
     connection-timeout: 5000
+    # 1. Configura o envio de mensagens (Producer)
     template:
       retry:
         enabled: true
         initial-interval: 2000ms
         multiplier: 2.0
         max-retries: 3
+    # 2. Configura o consumo de mensagens (Consumer/Listener)
+    # Isso impede que o Spring "martele" o log a cada 5 segundos
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 10s    # Primeira tentativa após 10s
+          multiplier: 3.0          # Triplica o tempo a cada falha (10s, 30s, 90s...)
+          max-interval: 600s       # No máximo tenta a cada 10 minutos
+          max-retries: 5
+
   h2:
     console:
       enabled: true
@@ -65,6 +81,24 @@ discord:
 
 storage:
   local-dir: imagens
+
+resilience4j:
+  retry:
+    instances:
+      rabbitInit:
+        maxAttempts: 3
+        waitDuration: 5s
+        retryExceptions:
+          - org.springframework.amqp.AmqpConnectException
+          - java.net.ConnectException
+  circuitbreaker:
+    instances:
+      rabbitConnection:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 300s # 5 minutos de silêncio se o circuito abrir
+        permittedNumberOfCallsInHalfOpenState: 3
+
 logging:
   level:
     com.spring.ApiSystem: DEBUG
