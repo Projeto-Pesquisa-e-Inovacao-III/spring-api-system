@@ -30,6 +30,8 @@ public class NoCodeService {
         Personal currentPersonal = detailsService.getCurrentPersonal();
 
         content.setContent(req.content());
+        content.setModificationName(req.modificationName());
+        content.setDescription(req.description());
         content.setUser(currentPersonal);
 
         content = noCodeRepository.save(content);
@@ -44,6 +46,8 @@ public class NoCodeService {
         NoCode content = noCodeRepository.findByUserId(currentPersonal.getId());
 
         content.setContent(req.content());
+        content.setModificationName(req.modificationName());
+        content.setDescription(req.description());
 
         content = noCodeRepository.save(content);
 

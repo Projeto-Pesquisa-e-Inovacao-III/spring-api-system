@@ -20,8 +20,14 @@ public class NoCode {
     private UUID id;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false, unique = true)
+    @JoinColumn(name = "user_id", nullable = false, unique = false)
     private Usuario user;
+
+    @Column(nullable = false)
+    private String modificationName;
+
+    @Column(nullable = true)
+    private String description;
 
     @Lob
     @Column(nullable = false, columnDefinition = "TEXT")
@@ -38,9 +44,11 @@ public class NoCode {
     public NoCode() {
     }
 
-    public NoCode(UUID id, Usuario user, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public NoCode(UUID id, Usuario user, String modificationName, String description, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.user = user;
+        this.modificationName = modificationName;
+        this.description = description;
         this.content = content;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
@@ -49,6 +57,8 @@ public class NoCode {
     public NoCode(ReqCriarNoCodeDTO req) {
         this.id = req.id();
         this.content = req.content();
+        this.modificationName = req.modificationName();
+        this.description = req.description();
         this.createdAt = req.createdAt();
         this.updatedAt = req.updatedAt();
     }
@@ -67,6 +77,22 @@ public class NoCode {
 
     public void setUser(Usuario user) {
         this.user = user;
+    }
+
+    public String getModificationName() {
+        return modificationName;
+    }
+
+    public void setModificationName(String modificationName) {
+        this.modificationName = modificationName;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getContent() {
