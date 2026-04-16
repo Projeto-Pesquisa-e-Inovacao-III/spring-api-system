@@ -5,11 +5,15 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -33,10 +37,32 @@ public class NoCodeService {
         content.setModificationName(req.modificationName());
         content.setDescription(req.description());
         content.setUser(currentPersonal);
+        content.setRestoredAt(LocalDateTime.now());
 
         content = noCodeRepository.save(content);
 
         return new ReqCriarNoCodeDTO(content);
+    }
+
+    @Transactional
+    public ReqCriarNoCodeDTO restoreContent(UUID id) {
+        NoCode original = noCodeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
+        Personal currentPersonal = detailsService.getCurrentPersonal();
+
+        NoCode restored = new NoCode();
+
+        restored.setContent(original.getContent());
+        restored.setModificationName(original.getModificationName());
+        restored.setDescription(original.getDescription());
+        restored.setUser(currentPersonal);
+
+        restored.setRestoredAt(LocalDateTime.now());
+        restored.setRestoredFromId(original.getId());
+
+        restored = noCodeRepository.save(restored);
+
+        return new ReqCriarNoCodeDTO(restored);
     }
 
     @Transactional
@@ -65,5 +91,18 @@ public class NoCodeService {
         }
         
         return new ResBuscarNoCodeDTO(content);
+    }
+
+    @Transactional
+    public Page<ResBuscarNoCodeDTO> getContentHistory(Pageable pageable) {
+        Personal currentPersonal = detailsService.getCurrentPersonal();
+
+        Page<NoCode> contentPage = noCodeRepository.findAllByUserIdOrderByCreatedAtDesc(currentPersonal.getId(), pageable);
+        
+        if (contentPage == null) {
+            return null;
+        }
+
+        return contentPage.map(ResBuscarNoCodeDTO::new);
     }
 }

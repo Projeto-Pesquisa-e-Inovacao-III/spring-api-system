@@ -9,11 +9,9 @@ public record ReqAtualizarNoCodeDTO(
         UUID id,
         String modificationName,
         String description,
-        String content,
-        LocalDateTime updatedAt
-
+        String content
 ) {
     public ReqAtualizarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent(), content.getUpdatedAt());
+        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent());
     }
 }

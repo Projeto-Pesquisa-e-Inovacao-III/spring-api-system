@@ -37,21 +37,25 @@ public class NoCode {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @LastModifiedDate
     @Column(nullable = false)
-    private LocalDateTime updatedAt;
+    private LocalDateTime restoredAt;
+
+    @Column(nullable = true)
+    private UUID restoredFromId;
+
 
     public NoCode() {
     }
 
-    public NoCode(UUID id, Usuario user, String modificationName, String description, String content, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    public NoCode(UUID id, Usuario user, String modificationName, String description, String content, LocalDateTime createdAt, LocalDateTime restoredAt, UUID restoredFromId) {
         this.id = id;
         this.user = user;
         this.modificationName = modificationName;
         this.description = description;
         this.content = content;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
+        this.restoredAt = restoredAt;
+        this.restoredFromId = restoredFromId;
     }
 
     public NoCode(ReqCriarNoCodeDTO req) {
@@ -60,7 +64,7 @@ public class NoCode {
         this.modificationName = req.modificationName();
         this.description = req.description();
         this.createdAt = req.createdAt();
-        this.updatedAt = req.updatedAt();
+        this.restoredAt = req.restoredAt();
     }
 
     public UUID getId() {
@@ -111,12 +115,19 @@ public class NoCode {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getRestoredAt() {
+        return restoredAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setRestoredAt(LocalDateTime restoredAt) {
+        this.restoredAt = restoredAt;
     }
 
+    public UUID getRestoredFromId() {
+        return restoredFromId;
+    }
+
+    public void setRestoredFromId(UUID restoredFromId) {
+        this.restoredFromId = restoredFromId;
+    }
 }

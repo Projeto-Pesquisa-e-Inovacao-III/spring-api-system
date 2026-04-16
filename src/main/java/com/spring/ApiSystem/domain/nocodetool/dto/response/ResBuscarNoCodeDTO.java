@@ -8,11 +8,12 @@ import java.util.UUID;
 public record ResBuscarNoCodeDTO(
         UUID id,
         String content,
+        String modificationName,
+        String description,
         LocalDateTime createdAt,
-        LocalDateTime updatedAt
-
+        LocalDateTime restoredAt
 ) {
     public ResBuscarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getContent(), content.getCreatedAt(), content.getUpdatedAt());
+        this(content.getId(), content.getContent(), content.getModificationName(), content.getDescription(), content.getCreatedAt(), content.getRestoredAt());
     }
 }

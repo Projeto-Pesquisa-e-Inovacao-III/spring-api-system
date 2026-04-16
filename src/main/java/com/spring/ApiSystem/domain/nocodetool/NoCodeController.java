@@ -2,6 +2,8 @@ package com.spring.ApiSystem.domain.nocodetool;
 
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -9,6 +11,7 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqAtualizarNoCodeDTO;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/no-code")
@@ -22,6 +25,13 @@ public class NoCodeController {
     @PostMapping
     public ResponseEntity<ReqCriarNoCodeDTO> createContent(@RequestBody ReqCriarNoCodeDTO req) {
         req = noCodeService.createContent(req);
+        URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(req.id()).toUri();
+        return ResponseEntity.created(uri).body(req);
+    }
+
+    @PostMapping("/restore/{id}")
+    public ResponseEntity<ReqCriarNoCodeDTO> restoreContent(@PathVariable UUID id) {
+        ReqCriarNoCodeDTO req = noCodeService.restoreContent(id);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(req.id()).toUri();
         return ResponseEntity.created(uri).body(req);
     }
@@ -41,4 +51,16 @@ public class NoCodeController {
         }
         return ResponseEntity.ok(req);
     }
+
+    @GetMapping("/history")
+    public ResponseEntity<Page<ResBuscarNoCodeDTO>> getContentHistory(Pageable pageable) {
+        Page<ResBuscarNoCodeDTO> page = noCodeService.getContentHistory(pageable);
+
+        if (page.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(page);
+    }
+
 }
