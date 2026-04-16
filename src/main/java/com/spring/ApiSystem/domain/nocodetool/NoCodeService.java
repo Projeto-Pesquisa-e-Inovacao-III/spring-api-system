@@ -43,7 +43,7 @@ public class NoCodeService {
     public ReqAtualizarNoCodeDTO updateContent(ReqAtualizarNoCodeDTO req) {
         Personal currentPersonal = detailsService.getCurrentPersonal();
 
-        NoCode content = noCodeRepository.findByUserId(currentPersonal.getId());
+        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
 
         content.setContent(req.content());
         content.setModificationName(req.modificationName());
@@ -58,7 +58,7 @@ public class NoCodeService {
     public ResBuscarNoCodeDTO getContent() {
         Personal currentPersonal = detailsService.getCurrentPersonal();
 
-        NoCode content = noCodeRepository.findByUserId(currentPersonal.getId());
+        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
         
         if (content == null) {
             return null;
