@@ -21,6 +21,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -42,8 +43,10 @@ public class AlunoController {
     @Operation(summary = "Criar aluno",
                description = "Endpoint para cadastro de alunos no sistema")
     @PostMapping("/cadastro")
-    public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO) {
-        return ResponseEntity.ok(alunoService.cadastrarUsuario(cadastroUsuarioDTO));
+    public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO,
+                                                                 HttpServletResponse response) {
+        return ResponseEntity.ok(alunoService
+                .cadastrarAluno(cadastroUsuarioDTO,response));
     }
 
     @Operation(summary = "Listar alunos (necessário login)",
