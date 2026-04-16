@@ -37,7 +37,6 @@ public class NoCodeService {
         content.setModificationName(req.modificationName());
         content.setDescription(req.description());
         content.setUser(currentPersonal);
-        content.setRestoredAt(LocalDateTime.now());
 
         content = noCodeRepository.save(content);
 

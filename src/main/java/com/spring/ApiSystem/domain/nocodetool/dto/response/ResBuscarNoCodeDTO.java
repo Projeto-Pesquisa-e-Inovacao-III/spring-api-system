@@ -11,9 +11,10 @@ public record ResBuscarNoCodeDTO(
         String modificationName,
         String description,
         LocalDateTime createdAt,
-        LocalDateTime restoredAt
+        LocalDateTime restoredAt,
+        UUID restoredFromId
 ) {
     public ResBuscarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getContent(), content.getModificationName(), content.getDescription(), content.getCreatedAt(), content.getRestoredAt());
+        this(content.getId(), content.getContent(), content.getModificationName(), content.getDescription(), content.getCreatedAt(), content.getRestoredAt(), content.getRestoredFromId());
     }
 }

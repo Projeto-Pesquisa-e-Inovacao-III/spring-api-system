@@ -34,7 +34,7 @@ class NoCodeServiceTest {
 
     @Test
     void createContent_ShouldSaveNewRecord() {
-        ReqCriarNoCodeDTO req = new ReqCriarNoCodeDTO(null, "Name", "Desc", "{}", null, null);
+        ReqCriarNoCodeDTO req = new ReqCriarNoCodeDTO(null, "Name", "Desc", "{}", null);
         
         when(noCodeRepository.save(any(NoCode.class))).thenAnswer(invocation -> invocation.getArgument(0));
 

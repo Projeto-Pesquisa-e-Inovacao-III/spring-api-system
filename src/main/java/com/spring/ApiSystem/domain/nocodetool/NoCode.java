@@ -37,7 +37,7 @@ public class NoCode {
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
+    @Column(nullable = true)
     private LocalDateTime restoredAt;
 
     @Column(nullable = true)
@@ -64,7 +64,6 @@ public class NoCode {
         this.modificationName = req.modificationName();
         this.description = req.description();
         this.createdAt = req.createdAt();
-        this.restoredAt = req.restoredAt();
     }
 
     public UUID getId() {

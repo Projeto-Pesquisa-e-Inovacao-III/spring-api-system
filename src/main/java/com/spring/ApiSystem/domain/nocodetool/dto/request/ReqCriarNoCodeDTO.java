@@ -10,11 +10,9 @@ public record ReqCriarNoCodeDTO(
         String modificationName,
         String description,
         String content,
-        LocalDateTime createdAt,
-        LocalDateTime restoredAt
-
+        LocalDateTime createdAt
 ) {
     public ReqCriarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent(), content.getCreatedAt(), content.getRestoredAt());
+        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent(), content.getCreatedAt());
     }
 }
