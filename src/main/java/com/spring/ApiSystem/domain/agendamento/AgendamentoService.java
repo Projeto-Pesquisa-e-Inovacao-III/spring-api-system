@@ -22,8 +22,8 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
 import com.spring.ApiSystem.domain.usuario.exception.PersonalTemAcessoApenasException;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
@@ -32,14 +32,13 @@ import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.TemporalAdjusters;
 import java.util.List;
 
 @Service
@@ -169,13 +168,13 @@ public class AgendamentoService {
         DiaSemana dayOfWeek = DiaSemana.fromDayOfWeek(agendamento.getData().getDayOfWeek());
         agendamento.setDiaSemana(dayOfWeek);
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             agendamento.pendentePersonalAprovacao();
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             agendamento.pendenteClienteAprovacao();
         }
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             if (editarAgendamentoDTO.endereco() != null) {
                 ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                         editarAgendamentoDTO.endereco(),
@@ -183,7 +182,7 @@ public class AgendamentoService {
                 );
                 agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
             }
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL && editarAgendamentoDTO.endereco() != null) {
+        } else if (usuario.isPersonal() && editarAgendamentoDTO.endereco() != null) {
             throw new AgendamentoPersonalNaoPodeAlterarEnderecoException();
         }
 
@@ -226,9 +225,9 @@ public class AgendamentoService {
             throw new AgendamentoCanceladoComAtencedenciaExeception();
         }
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             agendamento.canceladoCliente();
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             agendamento.canceladoPersonal();
         }
 
@@ -253,7 +252,7 @@ public class AgendamentoService {
             throw new AgendamentoNaoPodeSerConcluidoException();
         }
 
-        if (usuario.getTipo() != TipoUsuario.PERSONAL) {
+        if (usuario.isNotRole(Role.PERSONAL)) {
             throw new PersonalTemAcessoApenasException();
         }
 
@@ -279,15 +278,15 @@ public class AgendamentoService {
             throw new AgendamentoNaoPodeRegistrarAusenciaException();
         }
 
-        if (usuario.getTipo() != TipoUsuario.PERSONAL) {
+        if (usuario.isNotRole(Role.PERSONAL)) {
             throw new PersonalTemAcessoApenasException();
         }
 
-        if (reqAgendamento.tipoUsuario() == TipoUsuario.PERSONAL) {
+        if (reqAgendamento.tipoUsuario().equals(Role.PERSONAL)) {
             produtoContratadoService.incrementar(agendamento.getId());
             agendamento.ausenciaPersonal();
             agendamentoEventPublisher.AusenciaRegistradaPersonalEvent(agendamento);
-        } else if (reqAgendamento.tipoUsuario() == TipoUsuario.ALUNO) {
+        } else if (reqAgendamento.tipoUsuario().equals(Role.ALUNO)) {
             if (reqAgendamento.descricaoCancelamento() != null) {
                 agendamento.ausenciaCliente();
                 agendamento.setDescricao(reqAgendamento.descricaoCancelamento());
@@ -311,7 +310,7 @@ public class AgendamentoService {
     public List<AgendamentoOverviewResponse> buscarAgendamentosPorUsuario() {
         Usuario usuario = obterUsuarioAutenticado();
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             List<Agendamento> agendamentos =
                     agendamentoRepository.buscarAgendamentosMaisProximosPorAluno(usuario.getId());
 
@@ -319,7 +318,7 @@ public class AgendamentoService {
                     .stream()
                     .map(dto -> (AgendamentoOverviewResponse) dto)
                     .toList();
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             List<Agendamento> agendamentos =
                     agendamentoRepository.buscarAgendamentosMaisProximosPorPersonal(usuario.getId());
 
@@ -339,7 +338,7 @@ public class AgendamentoService {
     ) {
         Usuario usuario = obterUsuarioAutenticado();
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             Page<Agendamento> agendamentosPage =
                     agendamentoRepository.findByAlunoIdOrderByDataAsc(
                                     usuario.getId(),
@@ -358,7 +357,7 @@ public class AgendamentoService {
                                     agendamento.getPersonal().getTelefones().getFirst()
                             )
             );
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             validateDateInicAndEnd(dto.dataInic(), dto.dataFim());
 
             Page<Agendamento> agendamentosPage =
@@ -402,7 +401,7 @@ public class AgendamentoService {
     public List<AgendamentoCalendarioResponse> buscarAgendamentosParaCalendario() {
         Usuario usuario = obterUsuarioAutenticado();
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             List<Agendamento> agendamentos =
                     agendamentoRepository.findAgendamentoByAluno_Id(usuario.getId());
 
@@ -410,7 +409,7 @@ public class AgendamentoService {
                     .stream()
                     .map(dto -> (AgendamentoCalendarioResponse) dto)
                     .toList();
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             List<Agendamento> agendamentos =
                     agendamentoRepository.findAgendamentoByPersonal_Id(usuario.getId());
 
@@ -428,9 +427,9 @@ public class AgendamentoService {
         Usuario usuario = obterUsuarioAutenticado();
         Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, usuario.getEmail());
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             return agendamentoMapper.toResDetalhesAgendamentoAlunoDTO(agendamento);
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             return agendamentoMapper.toResDetalhesAgendamentoPersonalDTO(agendamento);
         }
 
@@ -465,9 +464,9 @@ public class AgendamentoService {
         validarSeUsuarioDoTipoPersonal(usuario);
 
         return agendamentoRepository.listarConsultoriasRealizadasMes(
+                        PageRequest.of(0, quantidadeMeses),
                         usuario.getId(),
-                        AgendamentoStatus.CONCLUIDO,
-                        quantidadeMeses
+                        AgendamentoStatus.CONCLUIDO
                 )
                 .stream()
                 .map(this::converterResListarConsultoriasRealizadas)
@@ -486,9 +485,7 @@ public class AgendamentoService {
         return agendamentos.map(agendamentoMapper::toResAgendamentoByDayOfWeekDto);
     }
 
-    private Usuario obterUsuarioAutenticado() {
-        return jpaUserDetailsService.getCurrentUser();
-    }
+    private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
         return agendamentoRepository.findById(agendamentoId)
@@ -496,15 +493,15 @@ public class AgendamentoService {
     }
 
     private void validarStatusParaAprovacao(Agendamento agendamento, Usuario usuario) {
-        boolean situacaoPersonalAprovando = usuario.getTipo() == TipoUsuario.PERSONAL &&
+        boolean situacaoPersonalAprovando = usuario.isPersonal() &&
                 agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_APROVACAO;
-        boolean situacaoAlunoAprovando = usuario.getTipo() == TipoUsuario.ALUNO &&
+        boolean situacaoAlunoAprovando = usuario.isAluno() &&
                 agendamento.getStatus() == AgendamentoStatus.PENDENTE_CLIENTE_APROVACAO;
 
-        if (usuario.getTipo() == TipoUsuario.PERSONAL &&
+        if (usuario.isAdmin() &&
                 agendamento.getStatus() == AgendamentoStatus.PENDENTE_CLIENTE_APROVACAO) {
             throw new AgendamentoPersonalNaoPodeConfirmaOAgendamento();
-        } else if (usuario.getTipo() == TipoUsuario.ALUNO &&
+        } else if (usuario.isAluno() &&
                 agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_APROVACAO) {
             throw new AgendamentoAlunoNaoPodeConfirmaOAgendamento();
         } else if (!situacaoAlunoAprovando && !situacaoPersonalAprovando) {
@@ -518,13 +515,13 @@ public class AgendamentoService {
     }
 
     private void validarSeUsuarioDoTipoAluno(Usuario usuario) {
-        if (!usuario.getTipo().equals(TipoUsuario.ALUNO)) {
+        if (usuario.isNotRole(Role.ALUNO)) {
             throw new AlunoTemAcessoApenasException();
         }
     }
 
     private void validarSeUsuarioDoTipoPersonal(Usuario usuario) {
-        if (!usuario.getTipo().equals(TipoUsuario.PERSONAL)) {
+        if (usuario.isNotRole(Role.PERSONAL)) {
             throw new PersonalTemAcessoApenasException();
         }
     }

@@ -6,12 +6,16 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.security.keys.PemService;
 import org.springframework.security.oauth2.jwt.*;
 import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 public class TokenService {
@@ -34,11 +38,12 @@ public class TokenService {
         return NimbusJwtDecoder.withPublicKey(pemService.getPublicKey()).build();
     }
 
-    public String gerarToken(String email){
+    public String gerarToken(String email, Set<Role> roles){
         try{
             JwtClaimsSet token = JwtClaimsSet.builder()
                     .issuer("spring-api")
                     .subject(email)
+                    .claim("roles", roles)
                     .issuedAt(Instant.now())
                     .expiresAt(gerarDataExpiracao())
                     .build();
@@ -69,5 +74,15 @@ public class TokenService {
         return LocalDateTime.now()
                 .plusHours(1)
                 .toInstant(ZoneOffset.of("-03:00"));
+    }
+
+    public Set<String> getRolesFromToken(String token){
+        try{
+            Jwt jwt = jwtDecoder().decode(token);
+            Collection<String> roles = jwt.getClaimAsStringList("roles");
+            return roles != null ? new HashSet<>(roles) : new HashSet<>();
+        }catch (Exception exception){
+            throw new RuntimeException("Token inválido: ", exception);
+        }
     }
 }

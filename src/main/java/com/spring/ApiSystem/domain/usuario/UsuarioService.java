@@ -4,6 +4,7 @@ package com.spring.ApiSystem.domain.usuario;
 import com.spring.ApiSystem.domain.telefone.TelefoneService;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.events.UsuarioEventPublisher;
 import com.spring.ApiSystem.domain.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.domain.usuario.exception.SenhaNaoCorrespondeAtual;
@@ -11,6 +12,7 @@ import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoExcepti
 
 
 import com.spring.ApiSystem.shared.security.ArgonService;
+import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UsuarioService {
@@ -48,9 +51,7 @@ public class UsuarioService {
     public Boolean loginUsuario(String email, String senha) {
         Usuario userOpt = buscarUsuarioPorEmail(email);
 
-        return
-                userOpt.isAtivo() &&
-                        argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
+        return userOpt.isAtivo() && argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -59,7 +60,12 @@ public class UsuarioService {
                 .orElseThrow(UsuarioNaoEncontradoException::new);
     }
 
-    public Usuario buscarUsuarioPorId(Integer id) {
+    public Optional<Usuario> getOpitionalUsuarioByEmailWithRoles(String email) {
+        return usuarioRepository.findByEmailWithRoles(email);
+
+    }
+
+    public Usuario buscarUsuarioPorId(Long id) {
         return usuarioRepository
                 .findById(id)
                 .orElseThrow(UsuarioNaoEncontradoException::new);
@@ -110,8 +116,8 @@ public class UsuarioService {
         imageStorageService.deletarImagem(java.nio.file.Paths.get(path));
     }
 
-    public void salvarUsuario(Usuario usuario) {
-        usuarioRepository.save(usuario);
+    public Usuario salvarUsuario(Usuario usuario) {
+        return usuarioRepository.save(usuario);
     }
 
     public void atualizarTelefones(Usuario usuario, List<ReqAtualizarTelefoneDTO> telefonesDTO) {
@@ -134,6 +140,30 @@ public class UsuarioService {
 
     public Usuario buscarUsuarioPorPaisDddNumero(String pais, String ddd, String numero) {
         return telefoneService.buscarUsuarioPorPaisDddNumero(pais, ddd, numero);
+    }
+
+    @Transactional
+    public Usuario addRoleToUsuario(Usuario usuario, Role role){
+        usuario.addRole(role);
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario addRoleToUsuarioById(Long id, Role role) {
+        Usuario usuario = buscarUsuarioPorId(id);
+        return addRoleToUsuario(usuario, role);
+    }
+
+    @Transactional
+    public Usuario removeRoleFromUsuario(Usuario usuario, Role role){
+        usuario.removeRole(role);
+        return usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public Usuario removeRoleFromUsuarioById(Long id, Role role) {
+        Usuario usuario = buscarUsuarioPorId(id);
+        return removeRoleFromUsuario(usuario, role);
     }
 
 }

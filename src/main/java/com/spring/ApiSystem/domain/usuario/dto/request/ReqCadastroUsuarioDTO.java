@@ -1,6 +1,6 @@
 package com.spring.ApiSystem.domain.usuario.dto.request;
 
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import jakarta.validation.constraints.*;
 
 import java.util.Date;
@@ -26,5 +26,5 @@ public record ReqCadastroUsuarioDTO(
     String cpf,
 
     @NotBlank(message = "O tipo de usuário é obrigatório")
-    TipoUsuario tipo
+    Role tipo
 ) {}

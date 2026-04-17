@@ -48,6 +48,10 @@ public class SecurityConfig {
                         ).permitAll();
 
                         auth.requestMatchers("/h2-console/**").permitAll();
+
+                        auth.requestMatchers(HttpMethod.POST,
+                                "/api/controle/admin/dev/criar-dono"
+                        ).permitAll();
                     }
 
                     // Públicas
@@ -109,6 +113,9 @@ public class SecurityConfig {
                             "/api/produtos-contratados/**",
                             "/api/anamnese/**"
                     ).hasAuthority("ROLE_ALUNO");
+
+
+                    auth.requestMatchers("/api/controle/admin/**").hasAuthority("ROLE_ADMIN");
 
                 })
                 .exceptionHandling(ex -> ex
