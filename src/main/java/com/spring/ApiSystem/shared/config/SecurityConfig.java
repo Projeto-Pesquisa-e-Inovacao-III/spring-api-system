@@ -118,6 +118,9 @@ public class SecurityConfig {
                             "/api/anamnese/**"
                     ).hasAuthority("ROLE_ALUNO");
 
+
+                    auth.requestMatchers("/api/controle/admin/**").hasAuthority("ROLE_ADMIN");
+
                 })
                 .exceptionHandling(ex -> ex
                         .accessDeniedHandler((request, response, accessDeniedException) -> {
