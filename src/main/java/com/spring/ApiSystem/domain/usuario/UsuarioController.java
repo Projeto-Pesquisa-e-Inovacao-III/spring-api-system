@@ -8,7 +8,6 @@ import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdD
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAuthDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqLoginUsuarioDTO;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.mapper.UsuarioMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
@@ -133,10 +132,10 @@ public class UsuarioController {
     public ResponseEntity<Object> buscarEu() {
         Usuario usuario = userDetails.getCurrentUser();
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             ResBuscarAlunoPorIdDTO resUsuario = alunoService.buscarAlunoPorId(usuario.getId());
             return ResponseEntity.ok(resUsuario);
-        } else if (usuario.getTipo() == TipoUsuario.PERSONAL) {
+        } else if (usuario.isPersonal()) {
             ResBuscarPersonalPorIdDTO resUsuario = personalService.buscarPersonalPorId(usuario.getId());
             return ResponseEntity.ok(resUsuario);
         }
@@ -210,10 +209,10 @@ public class UsuarioController {
 
         Usuario usuario = usuarioOpt.get();
 
-        if (usuario.getTipo() == TipoUsuario.ALUNO) {
+        if (usuario.isAluno()) {
             Aluno aluno = alunoService.buscarPorId(usuario.getId());
             return ResponseEntity.ok(
-                new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), aluno.getAtivoAnamnese())
+                    new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), aluno.getAtivoAnamnese())
             );
         }
 

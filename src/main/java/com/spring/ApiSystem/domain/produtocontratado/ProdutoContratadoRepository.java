@@ -59,7 +59,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
        SELECT pc
          FROM produto_contratado pc
         WHERE pc.situacao = true
-          AND pc.aluno.email = :email
+          AND pc.aluno.usuario.email = :email
           AND pc.produtoExibicao.tipoProduto = TipoProduto.PACOTE
        """)
     Optional<ProdutoContratado> buscarProdutoContratadoAtivo(@Param("email") String email);
@@ -102,7 +102,7 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
                                  AND pc.situacao = true
                                  AND pc.produtoExibicao.tipoProduto = :tipoProduto
                                  AND pc.dataExpiracao >= now()
-    WHERE a.ativo = true
+    WHERE a.usuario.ativo = true
         AND pc.id IS NULL
     """)
     Integer countAlunosComPlanosExpirados(@Param("tipoProduto") TipoProduto tipoProduto);

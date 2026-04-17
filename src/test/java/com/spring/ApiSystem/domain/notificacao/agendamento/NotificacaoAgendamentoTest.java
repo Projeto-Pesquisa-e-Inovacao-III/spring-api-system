@@ -4,22 +4,22 @@ import com.spring.ApiSystem.domain.agendamento.events.NotificacaoAgendamentoList
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -47,13 +47,13 @@ public class NotificacaoAgendamentoTest {
         aluno = new Aluno();
         aluno.setNome("João Silva");
         aluno.setEmail("joao.silva@email.com");
-        aluno.setTipo(TipoUsuario.ALUNO);
+        aluno.getUsuario().addRole(Role.ALUNO);
 
         // Criando personal mock
         personal = new Personal();
         personal.setNome("Carlos Personal");
         personal.setEmail("carlos.personal@email.com");
-        personal.setTipo(TipoUsuario.PERSONAL);
+        personal.getUsuario().addRole(Role.PERSONAL);
 
         // Criando agendamento mock
         agendamento = new Agendamento();
@@ -69,7 +69,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, aluno);
+        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, aluno.getUsuario());
 
         // Assert
         verify(emailService, times(2)).enviarEmail(emailCaptor.capture());
@@ -104,7 +104,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, personal);
+        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, personal.getUsuario());
 
         // Assert
         verify(emailService, times(2)).enviarEmail(emailCaptor.capture());
@@ -137,7 +137,7 @@ public class NotificacaoAgendamentoTest {
     void deveLancarExcecaoQuandoTipoUsuarioInvalido() {
         // Arrange
         Usuario usuarioInvalido = mock(Usuario.class);
-        when(usuarioInvalido.getTipo()).thenReturn(null);
+        when(usuarioInvalido.getRoles()).thenReturn(Set.of());
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
@@ -159,7 +159,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, aluno);
+        notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, aluno.getUsuario());
 
         // Assert
         verify(emailService, times(2)).enviarEmail(emailCaptor.capture());
@@ -180,7 +180,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onAprovacaoAgendamento(agendamento, personal);
+        notificacaoAgendamentoListener.onAprovacaoAgendamento(agendamento, personal.getUsuario());
 
         // Assert
         verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
@@ -204,7 +204,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onAprovacaoAgendamento(agendamento, aluno);
+        notificacaoAgendamentoListener.onAprovacaoAgendamento(agendamento, aluno.getUsuario());
 
         // Assert
         verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
@@ -226,7 +226,7 @@ public class NotificacaoAgendamentoTest {
     void deveLancarExcecaoAoAprovarComTipoUsuarioInvalido() {
         // Arrange
         Usuario usuarioInvalido = mock(Usuario.class);
-        when(usuarioInvalido.getTipo()).thenReturn(null);
+        when(usuarioInvalido.getRoles()).thenReturn(null);
 
         // Act & Assert
         IllegalArgumentException exception = assertThrows(
@@ -343,7 +343,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, aluno);
+        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, aluno.getUsuario());
 
         // Assert
         verify(emailService, times(1)).enviarEmail(emailCaptor.capture());
@@ -367,7 +367,7 @@ public class NotificacaoAgendamentoTest {
         ArgumentCaptor<Email> emailCaptor = ArgumentCaptor.forClass(Email.class);
 
         // Act
-        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, personal);
+        notificacaoAgendamentoListener.onCancelamentoAgendamento(agendamento, personal.getUsuario());
 
         // Assert
         verify(emailService, times(1)).enviarEmail(emailCaptor.capture());

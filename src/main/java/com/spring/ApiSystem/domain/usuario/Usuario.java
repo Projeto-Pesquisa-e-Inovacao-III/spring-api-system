@@ -1,23 +1,30 @@
 package com.spring.ApiSystem.domain.usuario;
 
+import com.spring.ApiSystem.domain.admin.Admin;
+import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.telefone.Telefone;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "usuario")
-@Inheritance(strategy = InheritanceType.JOINED)
+//TODO: Composição invés de hierarquia
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ElementCollection(targetClass = Role.class)
+    @CollectionTable(name = "usuario_roles", joinColumns = @JoinColumn(name = "usuario_id"))
+    @Column(name = "role")
     @Enumerated(EnumType.STRING)
-    @Column(name = "tipo", updatable = false)
-    private TipoUsuario tipo;
+    private Set<Role> roles = new HashSet<>();
 
     @Column(nullable = false)
     private String nome;
@@ -45,12 +52,21 @@ public class Usuario {
     @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Telefone> telefones = new ArrayList<>();
 
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Personal personal;
+
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private Aluno aluno;
+
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Admin admin;
+
     public Usuario() {}
 
-    public Usuario(Long id, TipoUsuario tipo, String nome, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
+    public Usuario(Long id, String nome, Set<Role> roles, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
-        this.tipo = tipo;
         this.nome = nome;
+        this.roles = roles;
         this.sexo = sexo;
         this.dataNascimento = dataNascimento;
         this.email = email;
@@ -75,14 +91,6 @@ public class Usuario {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public TipoUsuario getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoUsuario tipo) {
-        this.tipo = tipo;
     }
 
     public String getNome() {
@@ -144,4 +152,97 @@ public class Usuario {
     public List<Telefone> getTelefones() {return telefones;}
 
     public void setTelefones(List<Telefone> telefones) {this.telefones = telefones;}
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
+    public boolean isPersonal(){
+        return roles.contains(Role.PERSONAL);
+    }
+
+    public boolean isAluno(){
+        return roles.contains(Role.ALUNO);
+    }
+
+    public boolean isAdmin(){
+        return roles.contains(Role.ADMIN);
+    }
+
+    public boolean isDono() { return roles.contains(Role.DONO); }
+
+    public boolean isNotRole(Role role){
+        return !roles.contains(role);
+    }
+
+    public boolean isRole(Role role){
+        return roles.contains(role);
+    }
+
+    public boolean hasOnlyRole(Role role){
+        return roles.size() == 1 && roles.contains(role);
+    }
+
+    public void addRole(Role role) {
+        if(isAluno() && role == Role.PERSONAL){
+            throw new IllegalArgumentException("Um usuário do tipo ALUNO não pode ter a role PERSONAL.");
+        }
+        if(isPersonal() && role == Role.ALUNO){
+            throw new IllegalArgumentException("Um usuário do tipo PERSONAL não pode ter a role ALUNO.");
+        }
+        if((isDono() || isAdmin()) && role == Role.ALUNO){
+            throw new IllegalArgumentException("Um usuário do tipo ADMIN ou DONO não pode ter a role ALUNO.");
+        }
+        if(isRole(role)){
+            throw new IllegalArgumentException("O usuário já possui a role: " + role);
+        }
+        this.roles.add(role);
+    }
+
+    public void removeRole(Role role) {
+        if(hasOnlyRole(role)){
+            throw new IllegalArgumentException("O usuário deve ter pelo menos uma role. Não é permitido remover a última role: " + role);
+        }
+        if(isDono() && (role.equals(Role.DONO) || role.equals(Role.ADMIN))){
+            throw new IllegalArgumentException("Um usuário do tipo DONO não pode ter a role DONO ou ADMIN removida.");
+        }
+        this.roles.remove(role);
+    }
+
+    public void setPersonal(Personal p) {
+        this.personal = p;
+        if (personal != null && personal.getUsuario() != this) {
+            personal.setUsuario(this);
+        }
+    }
+
+    public void setAluno(Aluno aluno) {
+        this.aluno = aluno;
+        if(aluno != null && aluno.getUsuario() != this) {
+            aluno.setUsuario(this);
+        }
+    }
+
+    public void setAdmin(Admin admin) {
+        this.admin = admin;
+        if (admin != null && admin.getUsuario() != this) {
+            admin.setUsuario(this);
+        }
+    }
+
+    public Personal getPersonal() {
+        return personal;
+    }
+
+    public Aluno getAluno() {
+        return aluno;
+    }
+
+    public Admin getAdmin() {
+        return admin;
+    }
 }

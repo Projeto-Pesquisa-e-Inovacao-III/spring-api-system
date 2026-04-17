@@ -85,7 +85,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
-    @Mapping(target = "caminhoFoto", source = "personal.caminhoFoto")
+    @Mapping(target = "caminhoFoto", source = "personal.usuario.caminhoFoto")
     public abstract ResAgendamentoAlunoOverviewDTO toResAgendamentoAlunoOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoAlunoOverviewDTO> toResAgendamentoAlunoOverviewDTOList(List<Agendamento> agendamentos);
@@ -96,7 +96,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoNome", source = "aluno.nome")
     @Mapping(target = "personalNome", source = "personal.nome")
     @Mapping(target = "tipoAula", source = "produtoContratado.produtoExibicao.tipoAula")
-    @Mapping(target = "caminhoFoto", source = "aluno.caminhoFoto")
+    @Mapping(target = "caminhoFoto", source = "aluno.usuario.caminhoFoto")
     public abstract ResAgendamentoPersonalOverviewDTO toResAgendamentoPersonalOverviewDTO(Agendamento agendamento);
 
     public abstract List<ResAgendamentoPersonalOverviewDTO> toResAgendamentoPersonalOverviewDTOList(List<Agendamento> agendamentos);
@@ -106,7 +106,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "nome", source = "aluno.nome")
     @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorPersonalTelefone(telefone))")
     @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
-    @Mapping(target = "foto", source = "aluno.caminhoFoto")
+    @Mapping(target = "foto", source = "aluno.usuario.caminhoFoto")
     @Mapping(target = "dataInicio", source = "data")
     @Mapping(target = "dataFim", source = "dataFim")
     @Mapping(target = "endereco", source = "endereco")
@@ -121,7 +121,7 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "nome", source = "personal.nome")
     @Mapping(target = "telefone", expression = "java(telefoneMapper.buscarSolicitacoesPorAlunoTelefone(telefone))")
     @Mapping(target = "idade", expression = "java(calcularIdade(agendamento.getAluno().getDataNascimento()))")
-    @Mapping(target = "foto", source = "personal.caminhoFoto")
+    @Mapping(target = "foto", source = "personal.usuario.caminhoFoto")
     @Mapping(target = "dataInicio", source = "data")
     @Mapping(target = "dataFim", source = "dataFim")
     @Mapping(target = "endereco", source = "endereco")
@@ -194,7 +194,7 @@ public abstract class AgendamentoMapper {
     }
 
     @Mapping(target = "alunoName", source = "aluno.nome")
-    @Mapping(target = "pathImage", source = "aluno.caminhoFoto")
+    @Mapping(target = "pathImage", source = "aluno.usuario.caminhoFoto")
     public abstract ResAgendamentoByDayOfWeekDto toResAgendamentoByDayOfWeekDto(Agendamento agendamento);
 
 }

@@ -4,23 +4,24 @@ package com.spring.ApiSystem.domain.notificacao.aluno;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.events.NotificacaoAlunoListener;
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
+
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -39,14 +40,15 @@ class NotificacaoAlunoTest {
     @Captor
     private ArgumentCaptor<Email> emailCaptor;
 
+    private Usuario usuario;
     private Aluno aluno;
 
     @BeforeEach
     void setUp() {
-        aluno = new Aluno(
+        usuario = new Usuario(
                 1L,
-                TipoUsuario.ALUNO,
                 "João Silva",
+                Set.of(Role.ALUNO),
                 "M",
                 LocalDate.of(2000, 1, 15),
                 "joao.silva@example.com",
@@ -54,10 +56,15 @@ class NotificacaoAlunoTest {
                 "senhaHash123",
                 true,
                 "/path/to/photo.jpg",
-                new ArrayList<>(),
+                new ArrayList<>()
+        );
+        aluno = new Aluno(
+                1L,
+                usuario,
                 new Cpf("54451703069"),
                 false,
-                null
+                null,
+                true
         );
     }
 
@@ -82,10 +89,10 @@ class NotificacaoAlunoTest {
     @DisplayName("Deve enviar email para o endereço correto do aluno")
     void deveEnviarEmailParaEnderecoCorretoAluno() {
         // Arrange
-        aluno = new Aluno(
+        usuario = new Usuario(
                 2L,
-                TipoUsuario.ALUNO,
                 "Maria Oliveira",
+                Set.of(Role.ALUNO),
                 "F",
                 LocalDate.of(1995, 5, 20),
                 "maria.oliveira@test.com",
@@ -93,18 +100,20 @@ class NotificacaoAlunoTest {
                 "senhaHash456",
                 true,
                 null,
-                new ArrayList<>(),
+                new ArrayList<>()
+        );
+        aluno = new Aluno(
+                2L,
+                usuario,
                 new Cpf("54451703069"),
                 false,
-                null
+                null,
+                true
         );
-
         // Act
         notificacaoAlunoListener.onAlunoCreated(aluno);
-
         // Assert
         verify(emailService).enviarEmail(emailCaptor.capture());
-
         Email emailEnviado = emailCaptor.getValue();
         assertThat(emailEnviado.destinatario()).isEqualTo("maria.oliveira@test.com");
         assertThat(emailEnviado.corpo()).contains("Maria Oliveira");

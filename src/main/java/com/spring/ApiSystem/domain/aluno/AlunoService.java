@@ -18,14 +18,14 @@ import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
-
-import java.util.List;
 
 @Service
 public class AlunoService {
@@ -50,7 +50,8 @@ public class AlunoService {
         usuarioService.validarEmailExistente(usuarioDTO.email());
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
-        usuarioService.aplicarSenhaCriptografada(usuarioEntity, usuarioEntity.getSenha());
+        usuarioEntity.getUsuario().addRole(Role.ALUNO);
+        usuarioService.aplicarSenhaCriptografada(usuarioEntity.getUsuario(), usuarioEntity.getSenha());
 
         ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
 
@@ -58,7 +59,7 @@ public class AlunoService {
         telefone.setPais(telefoneDTO.pais());
         telefone.setDdd(telefoneDTO.ddd());
         telefone.setNumero(telefoneDTO.numero());
-        telefone.setUsuario(usuarioEntity);
+        telefone.setUsuario(usuarioEntity.getUsuario());
 
         usuarioEntity.getTelefones().add(telefone);
         try {
@@ -117,7 +118,7 @@ public class AlunoService {
         alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
-            usuarioService.atualizarTelefones(aluno, dto.telefones());
+            usuarioService.atualizarTelefones(aluno.getUsuario(), dto.telefones());
         }
 
         alunoRepository.save(aluno);
@@ -134,5 +135,22 @@ public class AlunoService {
         aluno.setAnamnese(anamnese);
         aluno.setAtivoAnamnese(true);
         return alunoRepository.save(aluno);
+    }
+
+    public Aluno enableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(false);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno disableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(true);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno createProfile(Usuario usuario, Cpf cpf){
+        cadastrarCpfExistente(cpf);
+        return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
 }
