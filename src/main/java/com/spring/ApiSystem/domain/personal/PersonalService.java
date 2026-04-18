@@ -65,6 +65,8 @@ public class PersonalService {
         //TODO: Deixar generico
         log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
 
+        log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
+
         usuarioEntity.setSenha(randomSenha);
 
         ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
