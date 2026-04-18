@@ -31,22 +31,25 @@ public class AdminDevController {
 
         @PostMapping("/criar-dono")
         public HashMap<String, String> criarDono() {
-            Usuario admin = new Usuario();
-            usuarioService.aplicarSenhaCriptografada(admin, "admin123");
-            admin.setEmail("fabio.admin@email.com");
-            admin.setNome("Fábio");
-            admin.setSexo("Masculino");
-            admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
-            admin.setDataNascimento(LocalDate.parse("1990-01-01"));
+            String email = "fabio.admin@email.com";
+            String senha = "admin123";
+            if(!usuarioService.emailExiste(email)) {
+                Usuario admin = new Usuario();
+                usuarioService.aplicarSenhaCriptografada(admin, "admin123");
+                admin.setEmail(email);
+                admin.setNome("Fábio");
+                admin.setSexo("Masculino");
+                admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
+                admin.setDataNascimento(LocalDate.parse("1990-01-01"));
 
-            admin = usuarioService.salvarUsuario(admin);
-            admin = adminService.createProfile(admin).getUsuario();
-            personalService.createProfile(admin, "CREF12345");
+                admin = usuarioService.salvarUsuario(admin);
+                admin = adminService.createProfile(admin).getUsuario();
+                personalService.createProfile(admin, "CREF12345");
 
-            Usuario finalAdmin = admin;
+            };
             return new HashMap<>(){{
-                put("senha", "admin123");
-                put("email", finalAdmin.getEmail());
+                put("senha", senha);
+                put("email", email);
             }};
         }
 }

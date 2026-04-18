@@ -115,7 +115,7 @@ public class SecurityConfig {
                     ).hasAuthority("ROLE_ALUNO");
 
 
-                    auth.requestMatchers("/api/controle/admin/**").hasAuthority("ROLE_ADMIN");
+                    auth.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 
                 })
                 .exceptionHandling(ex -> ex

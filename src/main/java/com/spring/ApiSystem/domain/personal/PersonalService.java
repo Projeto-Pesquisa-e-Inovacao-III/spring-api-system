@@ -27,6 +27,8 @@ import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.security.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,7 @@ import java.util.Optional;
 @Service
 public class PersonalService {
 
+    private static final Logger log = LogManager.getLogger(PersonalService.class);
     private final PersonalRepository personalRepository;
     private final UsuarioService usuarioService;
     private final PersonalMapper personalMapper;
@@ -57,6 +60,8 @@ public class PersonalService {
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
 
         String randomSenha = PasswordGenerator.generate(10);
+
+        log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
 
         usuarioEntity.setSenha(randomSenha);
 

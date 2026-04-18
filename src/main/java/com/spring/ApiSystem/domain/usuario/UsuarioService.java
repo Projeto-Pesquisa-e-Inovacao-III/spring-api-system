@@ -14,6 +14,8 @@ import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoExcepti
 import com.spring.ApiSystem.shared.security.ArgonService;
 import jakarta.transaction.Transactional;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,7 +53,9 @@ public class UsuarioService {
     public Boolean loginUsuario(String email, String senha) {
         Usuario userOpt = buscarUsuarioPorEmail(email);
 
-        return userOpt.isAtivo() && argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
+        boolean argon = argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
+        boolean isValido = userOpt.isAtivo();
+        return  isValido && argon;
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -166,4 +170,15 @@ public class UsuarioService {
         return removeRoleFromUsuario(usuario, role);
     }
 
+    public Page<Usuario> findAllUsersPagedWithRoles(Pageable pageable) {
+        return usuarioRepository.findAllWithRoles(pageable);
+    }
+
+    public Page<Usuario> findAllUsersPagedWithRolesAndFilters(Pageable pageable, String nome, String email) {
+        return usuarioRepository.findAllWithRolesAndFilters(pageable, nome, email);
+    }
+
+    public Page<Usuario> findAllUsersPagedWithRolesAndRoleAndFilters(Pageable pageable, Role role, String nome, String email) {
+        return usuarioRepository.findAllWithRolesAndRoleAndFilters(pageable, role, nome, email);
+    }
 }

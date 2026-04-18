@@ -2,8 +2,10 @@ package com.spring.ApiSystem.domain.admin;
 
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqRemoverRoleDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
+import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
 import com.spring.ApiSystem.domain.admin.exception.AdminNaoExisteException;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
@@ -12,34 +14,41 @@ import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.config.filter.FilterService;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.Set;
 
 @Service
 public class AdminService {
-
+    private static final Logger log = LogManager.getLogger(AdminService.class);
     private final AdminRepository adminRepository;
     private final UsuarioService usuarioService;
     private final PersonalService personalService;
     private final JpaUserDetailsService userDetailsService;
     private final AlunoService alunoService;
     private final CpfMapper cpfMapper;
+    private final FilterService filterService;
 
-    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper) {
+    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper, FilterService filterService) {
         this.adminRepository = adminRepository;
         this.usuarioService = usuarioService;
         this.personalService = personalService;
         this.userDetailsService = userDetailsService;
         this.alunoService = alunoService;
         this.cpfMapper = cpfMapper;
+        this.filterService = filterService;
     }
 
     @Transactional
-    public Usuario adicionarRole(ReqAdicionarRoleDTO dto){
-        Long userId = dto.userId();
-        Role role = dto.role();
+    public Usuario addRoleToUser(Role role, Long userId, ReqAdicionarRoleDTO dto){
         if(role.equals(Role.DONO)) throw new IllegalArgumentException("Não é permitido adicionar a role DONO a um usuário.");
         Admin admin = userDetailsService.getCurrentAdmin();
 
@@ -49,9 +58,12 @@ public class AdminService {
             throw new IllegalArgumentException("O usuário já possui a role: " + role);
         }
 
+        log.info("O Usuario id {} está adicionando role {} ao usuário de id {}", admin.getId(), role, userId);
+
         usuarioService.addRoleToUsuario(usuario, role);
 
         if(hasProfileFromThisRole(userId, role)){
+            log.info("O Usuario id {} tem o profile daquela role, ativando profile.", userId);
             switch (role) {
                 case ALUNO -> alunoService.enableProfile(userId);
                 case PERSONAL -> personalService.enableProfile(userId);
@@ -61,10 +73,20 @@ public class AdminService {
         }
 
         // criar profile se não tiver um existente
-
+        log.info("O Usuario id {} não tem o profile daquela role, criando profile.", userId);
         switch (role) {
-            case ALUNO -> alunoService.createProfile(usuario, cpfMapper.toCpf(dto.cpf()));
-            case PERSONAL -> personalService.createProfile(usuario, dto.cref());
+            case ALUNO -> {
+                if(dto.cpf() == null || dto.cpf().isBlank()){
+                    throw new IllegalArgumentException("CPF é obrigatório para criar profile de aluno.");
+                }
+                alunoService.createProfile(usuario, cpfMapper.toCpf(dto.cpf()));
+            }
+            case PERSONAL -> {
+                if(dto.cref() == null || dto.cref().isBlank()){
+                    throw new IllegalArgumentException("CREF é obrigatório para criar profile de personal.");
+                }
+                personalService.createProfile(usuario, dto.cref());
+            }
             case ADMIN -> createProfile(usuario);
         }
 
@@ -72,7 +94,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void softDelete(Long userId){
+    public void softDelete(Long userId, HttpServletResponse response){
         Admin admin = userDetailsService.getCurrentAdmin();
 
         Usuario usuario = usuarioService.buscarUsuarioPorId(userId);
@@ -85,12 +107,14 @@ public class AdminService {
             throw new IllegalArgumentException("Um administrador não pode se auto-remover.");
         }
 
+        filterService.removerCookie(response);
         usuario.setAtivo(false);
+        usuario.setRoles(Set.of(Role.USUARIO));
         usuarioService.salvarUsuario(usuario);
     }
 
     @Transactional
-    public Usuario retirarRole(Long userId, Role role){
+    public Usuario retirarRole(Role role, Long userId){
         Admin admin = userDetailsService.getCurrentAdmin();
 
         Usuario usuario = usuarioService.buscarUsuarioPorId(userId);
@@ -108,17 +132,12 @@ public class AdminService {
         return usuario;
     }
 
+    @Transactional
     public ResCadastrarPersonalDTO criarPersonal(ReqCadastroPersonalDTO personalDTO){
         Admin admin = userDetailsService.getCurrentAdmin();
 
         return personalService.cadastrarPersonalDto(personalDTO);
     }
-
-    //public List<Usuario> listarUsuariosPaginado(Pageable pageable){
-    //    userDetailsService.getCurrentAdmin();
-
-     //   return usuarioService.findAllUsersPagedWithRoles(pageable);
-    //}
 
 
     private boolean isTargetSelfAdmin(Usuario target, Admin admin){
@@ -179,4 +198,45 @@ public class AdminService {
     public Admin createProfile(Usuario usuario){
         return adminRepository.save(new Admin(null, usuario));
     }
+
+    @Transactional
+    public Page<ResUsuarioWithRolesResponseDTO> listarUsuariosComFiltros(String nome, String email, Role role, Pageable pageable) {
+        userDetailsService.getCurrentAdmin();
+        Page<Usuario> usuarios;
+        if (role != null) {
+            usuarios = usuarioService.findAllUsersPagedWithRolesAndRoleAndFilters(pageable, role, nome, email);
+        } else {
+            usuarios = usuarioService.findAllUsersPagedWithRolesAndFilters(pageable, nome, email);
+        }
+        return usuarios.map(usuario -> {
+            String cpf = null;
+            String anamnese = null;
+            String cref = null;
+            if (usuario.isAluno() && usuario.getAluno() != null) {
+                var aluno = usuario.getAluno();
+                if (aluno.getCpf() != null) {
+                    cpf = aluno.getCpf().toString();
+                }
+                if (aluno.getAnamnese() != null) {
+                    anamnese = String.valueOf(aluno.getAnamnese().getId());
+                }
+            }
+            if (usuario.isPersonal() && usuario.getPersonal() != null) {
+                var personal = usuario.getPersonal();
+                if (personal.getCref() != null) {
+                    cref = personal.getCref();
+                }
+            }
+            return new ResUsuarioWithRolesResponseDTO(
+                    usuario.getId(),
+                    usuario.getNome(),
+                    usuario.getEmail(),
+                    usuario.getRoles().stream().map(Enum::name).toList(),
+                    cpf,
+                    anamnese,
+                    cref
+            );
+        });
+    }
+
 }
