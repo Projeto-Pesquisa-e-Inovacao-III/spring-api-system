@@ -41,16 +41,16 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     );
     
 
-    @Query("SELECT a FROM agendamento a " +
-            "WHERE a.personal.id = :personalId " +
-            "  AND (:nomeDoAluno IS NULL OR " +
-            "TRANSLATE(LOWER(a.aluno.nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') " +
-            "LIKE LOWER(CONCAT('%', TRANSLATE(LOWER(:nomeDoAluno), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '%'))) " +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
-            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
-            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
-            "ORDER BY a.data ASC")
+    @Query("""
+        SELECT a FROM agendamento a
+        WHERE a.personal.id = :personalId
+        AND (:nomeDoAluno IS NULL OR a.aluno.nome LIKE CONCAT('%', :nomeDoAluno, '%'))
+        AND (:status IS NULL OR a.status = :status)
+        AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento)
+        AND (:dataInic IS NULL OR a.data >= :dataInic)
+        AND (:dataFim IS NULL OR a.data <= :dataFim)
+        ORDER BY a.data ASC
+    """)
     Page<Agendamento> findByPersonalIdOrderByDataAsc(
             @Param("personalId") Long personalId,
             @Param("nomeDoAluno") String nomeDoAluno,
@@ -60,16 +60,16 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
 
-    @Query("SELECT a FROM agendamento a " +
-            "WHERE a.aluno.id = :alunoId " +
-            "  AND (:nomeDoPersonal IS NULL OR " +
-            "TRANSLATE(LOWER(a.personal.nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc') " +
-            "LIKE LOWER(CONCAT('%', TRANSLATE(LOWER(:nomeDoPersonal), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'), '%')))" +
-            "  AND (:status IS NULL OR a.status = :status) " +
-            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
-            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
-            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
-            "ORDER BY a.data ASC")
+    @Query("""
+        SELECT a FROM agendamento a
+        WHERE a.aluno.id = :alunoId
+        AND (:nomeDoPersonal IS NULL OR a.personal.nome LIKE CONCAT('%', :nomeDoPersonal, '%'))
+        AND (:status IS NULL OR a.status = :status)
+        AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento)
+        AND (:dataInic IS NULL OR a.data >= :dataInic)
+        AND (:dataFim IS NULL OR a.data <= :dataFim)
+        ORDER BY a.data ASC
+    """)
     Page<Agendamento> findByAlunoIdOrderByDataAsc(
             @Param("alunoId") Long alunoId,
             @Param("nomeDoPersonal") String nomeDoPersonal,

@@ -21,10 +21,7 @@ public interface UsuarioBaseRepository<T extends Usuario> extends JpaRepository<
     WHERE u.ativo = true
     AND (
       :nome IS NULL OR
-      TRANSLATE(LOWER(u.nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc')
-      LIKE CONCAT('%',
-          TRANSLATE(LOWER(:nome), 'áàâãäéèêëíìîïóòôõöúùûüç', 'aaaaaeeeeiiiiooooouuuuc'),
-          '%')
+      u.nome LIKE CONCAT('%', :nome, '%')
     )
     """)
     Page<T> findAllAtivosContainingNome(Pageable pageable, @Param("nome") String nome);
