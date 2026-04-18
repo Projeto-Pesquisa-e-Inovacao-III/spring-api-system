@@ -65,4 +65,5 @@ storage:
   local-dir: ${STORAGE_LOCAL_DIR:imagens}
 logging:
   level:
+    com.spring.ApiSystem: DEBUG
     org.springframework.amqp: DEBUG

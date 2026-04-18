@@ -19,8 +19,6 @@ import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -94,22 +92,6 @@ public class UsuarioController {
         }
 
         return ResponseEntity.notFound().build();
-    }
-
-    @Operation(
-            summary = "Excluir usuário (necessário login)",
-            description = "Endpoint para a exclusão de usuários no sistema, onde o atributo 'ativo' define o seus status"
-    )
-    @PatchMapping
-    public ResponseEntity<Void> deletarUsuario(
-            @AuthenticationPrincipal UserDetails userDetails,
-            HttpServletResponse response
-    ) {
-        String email = userDetails.getUsername();
-        usuarioService.removerUsuario(email);
-
-        filterService.removerCookie(response);
-        return ResponseEntity.noContent().build();
     }
 
     @Operation(summary = "Atualizar senha", description = "Endpoint para atualizar senha do usuário logado")
