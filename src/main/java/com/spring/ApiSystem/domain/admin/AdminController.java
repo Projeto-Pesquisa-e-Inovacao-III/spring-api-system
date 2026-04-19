@@ -31,7 +31,7 @@ public class AdminController {
     }
 
     @Operation(summary = "Adicionar role a usuário", description = "Endpoint para adicionar uma role a um usuário existente no sistema")
-    @PostMapping("/usuarios/{id}/roles")
+    @PutMapping("/usuarios/{id}/roles")
     public ResponseEntity<Void> adicionarRoleAUsuario(
             @Valid @RequestBody(required = false) ReqAdicionarRoleDTO reqAdicionarRoleDTO,
             @RequestParam Role role,
@@ -53,6 +53,7 @@ public class AdminController {
 
 
     @Operation(summary = "Verificar dados adicioais para a role.", description = "Endpoint para verificar se um usuário precisa fornecer dados adicionais para receber uma role específica, como por exemplo, a role de PERSONAL, que exige o fornecimento do número do CREF.")
+    @GetMapping("/usuarios/{id}/roles/perfil")
     public ResponseEntity<ResRoleNeedDataDTO> verificarDadosAdicionaisParaRole(
             @PathVariable Long id,
             @RequestParam Role role
@@ -66,18 +67,17 @@ public class AdminController {
     )
     @PatchMapping("/usuarios/{id}/deletar")
     public ResponseEntity<Void> deletarUsuario(
-            @PathVariable Long id,
-            HttpServletResponse response
+            @PathVariable Long id
     ) {
-        adminService.softDelete(id, response);
+        adminService.softDelete(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/usuarios")
     @Operation(
             summary = "Listar usuários com roles",
             description = "Endpoint para listar os usuários do sistema com suas respectivas roles, com paginação e filtros opcionais por nome e email."
     )
+    @GetMapping("/usuarios")
     public ResponseEntity<Page<ResUsuarioWithRolesResponseDTO>> listarUsuariosComRoles(
             @RequestParam(required = false) String nome,
             @RequestParam(required = false) String email,

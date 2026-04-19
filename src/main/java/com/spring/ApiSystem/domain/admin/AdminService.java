@@ -93,7 +93,7 @@ public class AdminService {
     }
 
     @Transactional
-    public void softDelete(Long userId, HttpServletResponse response){
+    public void softDelete(Long userId){
         Admin admin = userDetailsService.getCurrentAdmin();
 
         Usuario usuario = usuarioService.buscarUsuarioPorId(userId);
@@ -106,10 +106,7 @@ public class AdminService {
             throw new IllegalArgumentException("Um administrador não pode se auto-remover.");
         }
 
-        filterService.removerCookie(response);
-        usuario.setAtivo(false);
-        usuario.setRoles(Set.of(Role.USUARIO));
-        usuarioService.salvarUsuario(usuario);
+        usuarioService.removerUsuario(usuario.getEmail());
     }
 
     @Transactional

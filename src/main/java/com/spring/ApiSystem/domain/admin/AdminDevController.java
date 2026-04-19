@@ -45,8 +45,7 @@ public class AdminDevController {
                 admin = usuarioService.salvarUsuario(admin);
                 admin = adminService.createProfile(admin).getUsuario();
                 personalService.createProfile(admin, "CREF12345");
-
-            };
+            }
             return new HashMap<>(){{
                 put("senha", senha);
                 put("email", email);

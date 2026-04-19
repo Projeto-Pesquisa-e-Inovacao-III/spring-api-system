@@ -207,6 +207,9 @@ public class Usuario {
         if(hasOnlyRole(role)){
             throw new IllegalArgumentException("O usuário deve ter pelo menos uma role. Não é permitido remover a última role: " + role);
         }
+        if(!isRole(role)){
+            throw new IllegalArgumentException("O usuário não possui a role: " + role);
+        }
         if(isDono() && (role.equals(Role.DONO) || role.equals(Role.ADMIN))){
             throw new IllegalArgumentException("Um usuário do tipo DONO não pode ter a role DONO ou ADMIN removida.");
         }
