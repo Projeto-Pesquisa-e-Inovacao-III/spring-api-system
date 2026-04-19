@@ -7,6 +7,8 @@ on:
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-api-system
 
     steps:
       - uses: actions/checkout@v4
@@ -25,14 +27,54 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-api-system:latest .
-          docker build -t ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }} .
+          docker build -t ${IMAGE_NAME}:latest .
+          docker build -t ${IMAGE_NAME}:${{ github.sha }} .
+
+      - name: Create CI Docker network
+        run: docker network create ci-net
+
+      - name: Start MySQL for smoke test
+        run: |
+          docker run -d --name mysql-ci --network ci-net \
+            -e MYSQL_ROOT_PASSWORD=root \
+            -e MYSQL_DATABASE=spring_api_system \
+            mysql:8.0
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..40}; do
+            if docker exec mysql-ci mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "MySQL did not become ready in time"
+          docker logs mysql-ci || true
+          exit 1
 
       - name: Run container and smoke test
         run: |
-          docker run -d --name spring-api-system -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/spring-api-system:latest
-          for i in {1..20}; do
-            if curl -fsS http://localhost:8080/ > /dev/null; then
+          docker run -d --name spring-api-system --network ci-net -p 8080:8080 \
+            -e SPRING_PROFILES_ACTIVE="docker" \
+            -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-ci:3306/spring_api_system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
+            -e SPRING_DATASOURCE_USERNAME="root" \
+            -e SPRING_DATASOURCE_PASSWORD="root" \
+            -e DDL_AUTO="update" \
+            -e MAIL_HOST="sandbox.smtp.mailtrap.io" \
+            -e MAIL_PORT="2525" \
+            -e MAIL_USERNAME="ci" \
+            -e MAIL_PASSWORD="ci" \
+            -e PAG_API_URL="http://localhost:8081" \
+            -e INFOBIP_BASE_URL="https://xk4qx3.api.infobip.com" \
+            -e INFOBIP_API_KEY="ci" \
+            -e INFOBIP_WHATSAPP_SENDER="ci" \
+            -e INFOBIP_TEMPLATE_NAME="authentication" \
+            -e DISCORD_WEBHOOK_URL="https://example.com/webhook" \
+            ${IMAGE_NAME}:latest
+          for i in {1..30}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
+            if [ "$code" != "000" ]; then
               echo "Smoke test passed"
               exit 0
             fi
@@ -52,7 +94,10 @@ jobs:
 
       - name: Cleanup container
         if: always()
-        run: docker rm -f spring-api-system || true
+        run: |
+          docker rm -f spring-api-system || true
+          docker rm -f mysql-ci || true
+          docker network rm ci-net || true
       
       - name: login to Docker Hub
         uses: docker/login-action@v2
@@ -62,8 +107,8 @@ jobs:
       
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_USERNAME }}/spring-api-system:latest
-          docker push ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
+          docker push ${IMAGE_NAME}:latest
+          docker push ${IMAGE_NAME}:${{ github.sha }}
 
 #  deploy-aws:
 #    runs-on: ubuntu-latest
