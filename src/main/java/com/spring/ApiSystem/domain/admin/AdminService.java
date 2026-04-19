@@ -14,7 +14,6 @@ import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,7 +33,6 @@ public class AdminService {
     private final JpaUserDetailsService userDetailsService;
     private final AlunoService alunoService;
     private final CpfMapper cpfMapper;
-    private final FilterService filterService;
 
     public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper, FilterService filterService) {
         this.adminRepository = adminRepository;
@@ -43,7 +41,6 @@ public class AdminService {
         this.userDetailsService = userDetailsService;
         this.alunoService = alunoService;
         this.cpfMapper = cpfMapper;
-        this.filterService = filterService;
     }
 
     @Transactional
