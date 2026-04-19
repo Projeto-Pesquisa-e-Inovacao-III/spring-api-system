@@ -116,7 +116,7 @@ jobs:
 
   deploy-aws-vm-1:
     needs: continuous-integration
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     runs-on: [self-hosted, backend-1]
 
     steps:
