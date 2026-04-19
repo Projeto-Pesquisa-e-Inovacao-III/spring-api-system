@@ -6,6 +6,7 @@ public record ResUsuarioWithRolesResponseDTO(
     Long id,
     String nome,
     String email,
+    boolean ativo,
     List<String> roles,
     String cpf,
     String anamnese,
