@@ -77,6 +77,7 @@ public class ProdutoExibicaoService {
 
     }
 
+    @Transactional
     public ResProdutoExibicaoDto editarProduto(Long id, ReqEdicaoProdutoExibicaoDto produto){
         produto =  produto.withTipoProduto(buscarPorId(id).getTipoProduto());
         desativarProduto(id);
