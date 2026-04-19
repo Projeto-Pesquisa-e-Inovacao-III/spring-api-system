@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.personal;
 
+import com.spring.ApiSystem.domain.usuario.Usuario;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

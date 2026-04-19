@@ -61,7 +61,7 @@ public class PersonalController {
     )
     @GetMapping
     public ResponseEntity<Page<ResListarPersonaisDTO>> listarPersonais(
-            @PageableDefault(sort = "nome") Pageable pageable
+            @PageableDefault(sort = "usuario.nome") Pageable pageable
     ) {
         Page<ResListarPersonaisDTO> personals = personalService.listarPersonais(pageable);
 
