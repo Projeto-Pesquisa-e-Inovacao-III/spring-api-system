@@ -59,8 +59,10 @@ public class PersonalService {
     public ResCadastrarPersonalDTO cadastrarPersonalDto(ReqCadastroPersonalDTO usuarioDTO) {
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
 
-        String randomSenha = PasswordGenerator.generate(10);
 
+
+        String randomSenha = PasswordGenerator.generate(10);
+        //TODO: Deixar generico
         log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
 
         usuarioEntity.setSenha(randomSenha);

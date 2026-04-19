@@ -98,7 +98,6 @@ public class SecurityConfig {
                             "/api/agendamentos/consultoria-realizadas/*",
                             "/api/agendamentos/contagem-status-data",
                             "/api/personais/**",
-                            "/api/produtos-exibicoes/**",
                             "/api/anamnese/aluno/**"
                     ).hasAuthority("ROLE_PERSONAL");
 
@@ -116,7 +115,8 @@ public class SecurityConfig {
                             "/api/admin/**",
                             "/api/produtos-contratados/ganhos-mes/*",
                             "/api/produtos-contratados/planos-vendidos/*",
-                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados"
+                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados",
+                            "/api/produtos-exibicoes/**"
                     ).hasAuthority("ROLE_ADMIN");
 
                 })
