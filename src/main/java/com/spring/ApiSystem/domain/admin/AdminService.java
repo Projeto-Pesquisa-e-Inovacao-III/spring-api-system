@@ -106,7 +106,9 @@ public class AdminService {
             throw new IllegalArgumentException("Um administrador não pode se auto-remover.");
         }
 
-        usuarioService.removerUsuario(usuario.getEmail());
+        usuario.setAtivo(false);
+        usuario.setRoles(Set.of(Role.DELETADO));
+        usuarioService.salvarUsuario(usuario);
     }
 
     @Transactional
@@ -227,6 +229,7 @@ public class AdminService {
                     usuario.getId(),
                     usuario.getNome(),
                     usuario.getEmail(),
+                    usuario.isAtivo(),
                     usuario.getRoles().stream().map(Enum::name).toList(),
                     cpf,
                     anamnese,

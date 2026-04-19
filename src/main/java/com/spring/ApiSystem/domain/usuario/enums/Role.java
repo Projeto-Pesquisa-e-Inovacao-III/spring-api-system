@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.usuario.enums;
 
 public enum Role {
-    USUARIO,
+    DELETADO,
     PERSONAL,
     ALUNO,
     ADMIN,
