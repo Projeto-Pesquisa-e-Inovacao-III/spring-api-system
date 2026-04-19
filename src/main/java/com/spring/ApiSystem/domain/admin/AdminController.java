@@ -7,7 +7,6 @@ import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import io.swagger.v3.oas.annotations.Operation;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
