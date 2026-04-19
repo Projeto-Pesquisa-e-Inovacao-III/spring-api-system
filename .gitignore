@@ -44,6 +44,7 @@ imagens/*
 
 ### Environment Variables ###
 .env
+.env.docker
 src/main/resources/.env
 .env.local
 .env.*.local

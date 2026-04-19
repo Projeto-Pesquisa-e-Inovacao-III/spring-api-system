@@ -64,9 +64,9 @@ Configure as seguintes variáveis de ambiente no sistema ou no servidor:
 SERVER_PORT=8080
 
 # Database (MySQL)
-DB_URL=jdbc:mysql://localhost:3306/spring_api_system?useSSL=false&serverTimezone=UTC
-DB_USERNAME=your_db_username
-DB_PASSWORD=your_db_password
+SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3306/spring_api_system?useSSL=false&serverTimezone=UTC
+SPRING_DATASOURCE_USERNAME=your_db_username
+SPRING_DATASOURCE_PASSWORD=your_db_password
 DDL_AUTO=update
 
 # Mail (Production SMTP)
@@ -89,6 +89,17 @@ STORAGE_DIR=imagens
 #### Para o ambiente **Docker** (profile: docker):
 
 Use o arquivo `.env.docker.example` como referência para configurar suas variáveis.
+
+```bash
+cp .env.docker.example .env.docker
+docker compose --env-file .env.docker up --build -d
+```
+
+Para encerrar:
+
+```bash
+docker compose down
+```
 
 ---
 
