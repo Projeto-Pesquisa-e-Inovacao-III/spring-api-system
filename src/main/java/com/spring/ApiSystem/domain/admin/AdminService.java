@@ -2,7 +2,6 @@ package com.spring.ApiSystem.domain.admin;
 
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.domain.admin.dto.request.ReqRemoverRoleDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
