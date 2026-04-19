@@ -122,6 +122,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Docker preflight
+        run: |
+          whoami
+          id
+          groups
+          ls -l /var/run/docker.sock || true
+          docker version
+          docker ps
+
       - name: Update machine
         run: sudo apt-get update -y
 
