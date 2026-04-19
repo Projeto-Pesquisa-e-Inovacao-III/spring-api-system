@@ -24,7 +24,7 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
        """)
     Integer countAlunosComPlanosAtivos(@Param("tipoProduto") TipoProduto tipoProduto);
 
-    @Query("SELECT a FROM Aluno a JOIN FETCH a.usuario u WHERE u.ativo = true")
+    @Query("SELECT u.aluno FROM Usuario u WHERE u.ativo = true")
     Page<Aluno> findAllAtivos(Pageable pageable);
 
     @Query("SELECT a FROM Aluno a JOIN FETCH a.usuario u WHERE u.email = :email")
