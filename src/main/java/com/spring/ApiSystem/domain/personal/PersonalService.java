@@ -217,6 +217,8 @@ public class PersonalService {
     }
 
     public Personal createProfile(Usuario usuario, String cref) {
-        return personalRepository.save(new Personal(null, usuario, cref, 15));
+        Personal personal = personalRepository.save(new Personal(null, usuario, cref, 15));
+        disponibilidadeService.criarDisponibilidadePadrao(personal.getId());
+        return personal;
     }
 }
