@@ -6,6 +6,10 @@ CONTAINER_NAME="${CONTAINER_NAME:-spring-api-system}"
 HOST_PORT="${HOST_PORT:-8080}"
 CONTAINER_PORT="${CONTAINER_PORT:-8080}"
 HEALTHCHECK_URL="${HEALTHCHECK_URL:-http://localhost:${HOST_PORT}/}"
+JWT_KEYS_HOST_DIR="${JWT_KEYS_HOST_DIR:-/opt/spring-api-system/keys}"
+JWT_KEYS_CONTAINER_DIR="${JWT_KEYS_CONTAINER_DIR:-/run/keys}"
+JWT_PUBLIC_KEY="${JWT_PUBLIC_KEY:-file:${JWT_KEYS_CONTAINER_DIR}/public.pem}"
+JWT_PRIVATE_KEY="${JWT_PRIVATE_KEY:-file:${JWT_KEYS_CONTAINER_DIR}/private.pem}"
 
 REQUIRED_RUNTIME_VARS=(
   SPRING_PROFILES_ACTIVE
@@ -22,12 +26,20 @@ REQUIRED_RUNTIME_VARS=(
   INFOBIP_WHATSAPP_SENDER
   INFOBIP_TEMPLATE_NAME
   DISCORD_WEBHOOK_URL
+  JWT_PUBLIC_KEY
+  JWT_PRIVATE_KEY
 )
 
 DOCKER_ENV_ARGS=()
+DOCKER_VOLUME_ARGS=()
 
 if [ -z "$APP_IMAGE" ]; then
   echo "[ERRO] APP_IMAGE nao foi definido"
+  exit 1
+fi
+
+if [ ! -f "${JWT_KEYS_HOST_DIR}/private.pem" ] || [ ! -f "${JWT_KEYS_HOST_DIR}/public.pem" ]; then
+  echo "[ERRO] Chaves JWT nao encontradas em ${JWT_KEYS_HOST_DIR}"
   exit 1
 fi
 
@@ -47,6 +59,8 @@ for var_name in "${REQUIRED_RUNTIME_VARS[@]}"; do
   DOCKER_ENV_ARGS+=("-e" "$var_name")
 done
 
+DOCKER_VOLUME_ARGS+=("-v" "${JWT_KEYS_HOST_DIR}:${JWT_KEYS_CONTAINER_DIR}:ro")
+
 echo "[INFO] Iniciando deploy do backend..."
 echo "[INFO] Nova imagem: $APP_IMAGE"
 
@@ -58,7 +72,7 @@ rollback() {
   docker rm -f "$CONTAINER_NAME" >/dev/null 2>&1 || true
 
   if [ -n "$PREV_IMAGE_ID" ]; then
-    docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${CONTAINER_PORT}" "${DOCKER_ENV_ARGS[@]}" "$PREV_IMAGE_ID"
+    docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${CONTAINER_PORT}" "${DOCKER_VOLUME_ARGS[@]}" "${DOCKER_ENV_ARGS[@]}" "$PREV_IMAGE_ID"
   else
     echo "[ERRO] Sem imagem para rollback"
   fi
@@ -75,7 +89,7 @@ if docker inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
   docker rm "$CONTAINER_NAME"
 fi
 
-if ! docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${CONTAINER_PORT}" "${DOCKER_ENV_ARGS[@]}" "$APP_IMAGE"; then
+if ! docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${CONTAINER_PORT}" "${DOCKER_VOLUME_ARGS[@]}" "${DOCKER_ENV_ARGS[@]}" "$APP_IMAGE"; then
   rollback
   exit 1
 fi

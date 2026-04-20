@@ -135,6 +135,20 @@ jobs:
         timeout-minutes: 5
         run: sudo apt-get update -y
 
+      - name: Ensure JWT PEM keys
+        timeout-minutes: 5
+        run: |
+          sudo mkdir -p /opt/spring-api-system/keys
+          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
+            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
+            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
+            sudo chmod 600 /opt/spring-api-system/keys/private.pem
+            sudo chmod 644 /opt/spring-api-system/keys/public.pem
+            echo "[INFO] Chaves JWT geradas"
+          else
+            echo "[INFO] Chaves JWT ja existentes, reutilizando"
+          fi
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -149,6 +163,10 @@ jobs:
           HOST_PORT: "8080"
           CONTAINER_PORT: "8080"
           HEALTHCHECK_URL: http://localhost:8080/health
+          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
+          JWT_KEYS_CONTAINER_DIR: /run/keys
+          JWT_PUBLIC_KEY: file:/run/keys/public.pem
+          JWT_PRIVATE_KEY: file:/run/keys/private.pem
           SPRING_PROFILES_ACTIVE: prod
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
@@ -186,6 +204,20 @@ jobs:
         timeout-minutes: 5
         run: sudo apt-get update -y
 
+      - name: Ensure JWT PEM keys
+        timeout-minutes: 5
+        run: |
+          sudo mkdir -p /opt/spring-api-system/keys
+          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
+            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
+            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
+            sudo chmod 600 /opt/spring-api-system/keys/private.pem
+            sudo chmod 644 /opt/spring-api-system/keys/public.pem
+            echo "[INFO] Chaves JWT geradas"
+          else
+            echo "[INFO] Chaves JWT ja existentes, reutilizando"
+          fi
+
       - name: Login to Docker Hub
         uses: docker/login-action@v2
         with:
@@ -200,6 +232,10 @@ jobs:
           HOST_PORT: "8080"
           CONTAINER_PORT: "8080"
           HEALTHCHECK_URL: http://localhost:8080/health
+          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
+          JWT_KEYS_CONTAINER_DIR: /run/keys
+          JWT_PUBLIC_KEY: file:/run/keys/public.pem
+          JWT_PRIVATE_KEY: file:/run/keys/private.pem
           SPRING_PROFILES_ACTIVE: prod
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
