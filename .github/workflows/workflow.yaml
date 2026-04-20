@@ -146,7 +146,7 @@ jobs:
           CONTAINER_NAME: spring-api-system
           HOST_PORT: "8080"
           CONTAINER_PORT: "8080"
-          HEALTHCHECK_URL: http://localhost:8080/
+          HEALTHCHECK_URL: http://localhost:8080/health
           SPRING_PROFILES_ACTIVE: prod
           SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
           SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
