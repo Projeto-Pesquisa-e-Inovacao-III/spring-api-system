@@ -228,6 +228,8 @@ public class AdminService {
                     usuario.getEmail(),
                     usuario.isAtivo(),
                     usuario.getRoles().stream().map(Enum::name).toList(),
+                    usuario.getCaminhoFoto(),
+                    usuario.getDataNascimento(),
                     cpf,
                     anamnese,
                     cref
