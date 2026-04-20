@@ -73,7 +73,7 @@ public class FilterService extends OncePerRequestFilter {
         Cookie cookie = new Cookie("jwt", token);
 
         cookie.setHttpOnly(true); // protege contra acesso via JavaScript
-        cookie.setSecure(perfilAtivo.equals("prod")); // envia apenas em conexões HTTPS
+        cookie.setSecure(false); // envia apenas em conexões HTTPS
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
 
