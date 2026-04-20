@@ -22,6 +22,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -104,7 +106,7 @@ public class AdminService {
         }
 
         usuario.setAtivo(false);
-        usuario.setRoles(Set.of(Role.DELETADO));
+        usuario.setRoles(new HashSet<>(List.of(Role.DELETADO)));
         usuarioService.salvarUsuario(usuario);
     }
 
