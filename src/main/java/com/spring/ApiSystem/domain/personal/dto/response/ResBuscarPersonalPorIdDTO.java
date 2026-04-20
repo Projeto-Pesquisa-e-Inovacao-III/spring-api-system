@@ -2,10 +2,12 @@ package com.spring.ApiSystem.domain.personal.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 public record ResBuscarPersonalPorIdDTO(
         Long id,
@@ -17,6 +19,7 @@ public record ResBuscarPersonalPorIdDTO(
         String cref,
         boolean ativo,
         String caminhoFoto,
+        Set<Role> role,
         List<ResListarTelefonesPorIdDoUsuario> telefones
 ) {}
 
