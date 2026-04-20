@@ -132,6 +132,7 @@ jobs:
           docker ps
 
       - name: Update machine
+        timeout-minutes: 5
         run: sudo apt-get update -y
 
       - name: Login to Docker Hub
@@ -141,6 +142,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Deploy on instance
+        timeout-minutes: 5
         env:
           APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
           CONTAINER_NAME: spring-api-system
