@@ -37,6 +37,7 @@ public class UsuarioService {
 
     private final String DUMMY_SALT;
     private final String DUMMY_HASH;
+    private final Usuario DUMMY_USUARIO;
 
     public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
@@ -48,6 +49,7 @@ public class UsuarioService {
         List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
         this.DUMMY_SALT  = dummyArgon.get(0);
         this.DUMMY_HASH = dummyArgon.get(1);
+        this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, true);
     }
 
     public Boolean removerUsuario(String email) {
@@ -65,10 +67,13 @@ public class UsuarioService {
 
     public void setEndTime(long startTime, int milliseconds, int millisecondsToAdd){
         long timeTarget = TimeUnit.MILLISECONDS.toNanos(milliseconds);
-
+        long stepNanos = TimeUnit.MILLISECONDS.toNanos(millisecondsToAdd);
         long timeSpent = System.nanoTime() - startTime;
-        while(timeTarget < timeSpent){
-            timeTarget += TimeUnit.MILLISECONDS.toNanos(millisecondsToAdd);
+
+        if (timeSpent > timeTarget) {
+            long excess = timeSpent - timeTarget;
+            long steps = (excess + stepNanos - 1) / stepNanos;
+            timeTarget += steps * stepNanos;
         }
 
         long timeLeft = timeTarget - timeSpent;
@@ -78,11 +83,12 @@ public class UsuarioService {
     }
 
     public Boolean loginUsuario(String email, String senha) {
-        Usuario userOpt = buscarUsuarioPorEmail(email);
+        Usuario userOpt = usuarioRepository.findByEmail(email)
+                .orElse(DUMMY_USUARIO);
 
-        boolean argon = argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
-        boolean isValido = userOpt.isAtivo();
-        return  isValido && argon;
+        return
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha()) &&
+                userOpt.isAtivo();
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
