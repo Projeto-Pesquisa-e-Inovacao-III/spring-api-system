@@ -106,7 +106,11 @@ public class AdminService {
         }
 
         usuario.setAtivo(false);
-        usuario.setRoles(new HashSet<>(List.of(Role.DELETADO)));
+        if(usuario.isAdmin()){
+            usuario.removeRole(Role.ADMIN);
+            disableProfile(userId);
+        }
+
         usuarioService.salvarUsuario(usuario);
     }
 
