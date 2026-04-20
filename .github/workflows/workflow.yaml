@@ -168,7 +168,7 @@ jobs:
   deploy-aws-vm-2:
     needs: deploy-aws-vm-1
 #    if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, backend-1]
+    runs-on: [self-hosted, backend-2]
 
     steps:
       - uses: actions/checkout@v4
