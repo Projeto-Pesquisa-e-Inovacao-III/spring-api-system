@@ -19,7 +19,7 @@ public record ResBuscarPersonalPorIdDTO(
         String cref,
         boolean ativo,
         String caminhoFoto,
-        Set<Role> role,
+        Set<Role> roles,
         List<ResListarTelefonesPorIdDoUsuario> telefones
 ) {}
 
