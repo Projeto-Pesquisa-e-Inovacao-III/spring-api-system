@@ -165,45 +165,56 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
 
-#  deploy-aws-vm-2:
-#    needs: deploy-aws-vm-1
+  deploy-aws-vm-2:
+    needs: deploy-aws-vm-1
 #    if: github.ref == 'refs/heads/main'
-#    runs-on: [self-hosted, backend, vm-2]
-#
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      - name: Update machine
-#        run: sudo apt-get update -y
-#
-#      - name: Login to Docker Hub
-#        uses: docker/login-action@v2
-#        with:
-#          username: ${{ secrets.DOCKER_USERNAME }}
-#          password: ${{ secrets.DOCKER_PASSWORD }}
-#
-#      - name: Deploy on instance
-#        env:
-#          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
-#          CONTAINER_NAME: spring-api-system
-#          HOST_PORT: "8080"
-#          CONTAINER_PORT: "8080"
-#          HEALTHCHECK_URL: http://localhost:8080/
-#          SPRING_PROFILES_ACTIVE: prod
-#          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-#          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-#          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-#          MAIL_HOST: ${{ secrets.MAIL_HOST }}
-#          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-#          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-#          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-#          PAG_API_URL: ${{ secrets.PAG_API_URL }}
-#          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
-#          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
-#          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
-#          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
-#          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-#        run: bash .github/scripts/deploy_backend_via_ssm.sh
+    runs-on: [self-hosted, backend-1]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker preflight
+        run: |
+          whoami
+          id
+          groups
+          ls -l /var/run/docker.sock || true
+          docker version
+          docker ps
+
+      - name: Update machine
+        timeout-minutes: 5
+        run: sudo apt-get update -y
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Deploy on instance
+        timeout-minutes: 5
+        env:
+          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
+          CONTAINER_NAME: spring-api-system
+          HOST_PORT: "8080"
+          CONTAINER_PORT: "8080"
+          HEALTHCHECK_URL: http://localhost:8080/health
+          SPRING_PROFILES_ACTIVE: prod
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          PAG_API_URL: ${{ secrets.PAG_API_URL }}
+          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
+          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
+          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
+          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: bash .github/scripts/deploy_backend_via_ssm.sh
           
 
           
