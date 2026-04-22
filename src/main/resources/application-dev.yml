@@ -101,5 +101,9 @@ resilience4j:
 
 logging:
   level:
-    org.example: INFO
-    org.springframework.amqp: ERROR
+    com.spring.ApiSystem: DEBUG
+    org.springframework.amqp: DEBUG
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

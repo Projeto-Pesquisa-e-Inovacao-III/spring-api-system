@@ -54,30 +54,6 @@ public class AdminDevController {
         this.filterService = filterService;
         this.personalMapper = personalMapper;
     }
-
-        @PostMapping("/criar-dono")
-        public HashMap<String, String> criarDono() {
-            String email = "fabio.admin@email.com";
-            String senha = "admin123";
-            if(!usuarioService.emailExiste(email)) {
-                Usuario admin = new Usuario();
-                usuarioService.aplicarSenhaCriptografada(admin, "admin123");
-                admin.setEmail(email);
-                admin.setNome("Fábio");
-                admin.setSexo("Masculino");
-                admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
-                admin.setDataNascimento(LocalDate.parse("1990-01-01"));
-
-                admin = usuarioService.salvarUsuario(admin);
-                admin = adminService.createProfile(admin).getUsuario();
-                personalService.createProfile(admin, "CREF12345");
-            }
-            return new HashMap<>(){{
-                put("senha", senha);
-                put("email", email);
-            }};
-        }
-
         @Operation(summary = "Criar Personal Retornando a senha", description = "Endpoint para cadastro de usuários no sistema")
         @PostMapping("/usuarios/personal")
         public ResponseEntity<HashMap<String, Object>> cadastrarUsuario(

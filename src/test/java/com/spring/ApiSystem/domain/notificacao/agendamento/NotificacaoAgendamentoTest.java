@@ -146,7 +146,7 @@ public class NotificacaoAgendamentoTest {
             () -> notificacaoAgendamentoListener.onReagendamentoCreated(agendamento, usuarioInvalido)
         );
 
-        assertEquals("Tipo de usuário não pode ser nulo.", exception.getMessage());
+        assertEquals("Tipo de usuário não pode ser vazio ou nulo.", exception.getMessage());
         verify(emailService, never()).enviarEmail(any());
     }
 
@@ -235,7 +235,7 @@ public class NotificacaoAgendamentoTest {
             () -> notificacaoAgendamentoListener.onAprovacaoAgendamento(agendamento, usuarioInvalido)
         );
 
-        assertEquals("Tipo de usuário não pode ser nulo.", exception.getMessage());
+        assertEquals("Tipo de usuário não pode ser vazio ou nulo.", exception.getMessage());
         verify(emailService, never()).enviarEmail(any());
     }
 
