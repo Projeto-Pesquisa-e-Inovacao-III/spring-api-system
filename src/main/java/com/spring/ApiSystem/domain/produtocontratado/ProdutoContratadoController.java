@@ -110,7 +110,7 @@ public class ProdutoContratadoController {
             summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que tiverem o idAluno correspondente"
     )
-    @GetMapping
+    @GetMapping("/aluno")
     public ResponseEntity<Page<ResProdutoContratadoDto>> listarProdutosContratadosPorIdAluno(
             @ModelAttribute ReqProdutoContratadoDto dto,
             @SortDefault.SortDefaults({

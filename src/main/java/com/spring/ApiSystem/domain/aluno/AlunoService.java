@@ -18,6 +18,8 @@ import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,6 +31,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 public class AlunoService {
@@ -57,7 +60,11 @@ public class AlunoService {
         String rawPassword = usuarioDTO.senha();
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
-        usuarioService.aplicarSenhaCriptografada(usuarioEntity, rawPassword);
+        usuarioEntity.getUsuario().addRole(Role.ALUNO);
+        usuarioService.aplicarSenhaCriptografada(usuarioEntity.getUsuario(), rawPassword);
+
+        ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
+
 
         Telefone telefone = criarTelefone(usuarioDTO.telefone(), usuarioEntity);
         usuarioEntity.getTelefones().add(telefone);
@@ -153,8 +160,25 @@ public class AlunoService {
         telefone.setPais(telefoneDTO.pais());
         telefone.setDdd(telefoneDTO.ddd());
         telefone.setNumero(telefoneDTO.numero());
-        telefone.setUsuario(usuario);
+        telefone.setUsuario(usuario.getUsuario());
         return telefone;
+    }
+
+    public Aluno enableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(false);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno disableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(true);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno createProfile(Usuario usuario, Cpf cpf){
+        cadastrarCpfExistente(cpf);
+        return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
 
 }

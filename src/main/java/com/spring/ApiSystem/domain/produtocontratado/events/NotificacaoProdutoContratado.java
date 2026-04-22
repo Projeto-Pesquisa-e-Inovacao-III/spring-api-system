@@ -17,7 +17,7 @@ public class NotificacaoProdutoContratado {
 
     public void onProdutoContratadoCreated(ProdutoContratado produtoContratado) {
 
-        Usuario usuario =produtoContratado.getAluno();
+        Usuario usuario = produtoContratado.getAluno().getUsuario();
         String produtoNome= produtoContratado.getProdutoExibicao().getTitulo();
 
         Email email = new Email(

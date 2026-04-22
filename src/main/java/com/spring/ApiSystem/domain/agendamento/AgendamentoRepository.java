@@ -41,16 +41,14 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
     );
     
 
-    @Query("""
-        SELECT a FROM agendamento a
-        WHERE a.personal.id = :personalId
-        AND (:nomeDoAluno IS NULL OR a.aluno.nome LIKE CONCAT('%', :nomeDoAluno, '%'))
-        AND (:status IS NULL OR a.status = :status)
-        AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento)
-        AND (:dataInic IS NULL OR a.data >= :dataInic)
-        AND (:dataFim IS NULL OR a.data <= :dataFim)
-        ORDER BY a.data ASC
-    """)
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.personal.id = :personalId " +
+            "  AND (:nomeDoAluno IS NULL OR a.aluno.usuario.nome LIKE CONCAT('%', :nomeDoAluno, '%')) " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
+            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
+            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
+            "ORDER BY a.data ASC")
     Page<Agendamento> findByPersonalIdOrderByDataAsc(
             @Param("personalId") Long personalId,
             @Param("nomeDoAluno") String nomeDoAluno,
@@ -60,16 +58,14 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("dataFim") LocalDateTime dataFim,
             Pageable pageable);
 
-    @Query("""
-        SELECT a FROM agendamento a
-        WHERE a.aluno.id = :alunoId
-        AND (:nomeDoPersonal IS NULL OR a.personal.nome LIKE CONCAT('%', :nomeDoPersonal, '%'))
-        AND (:status IS NULL OR a.status = :status)
-        AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento)
-        AND (:dataInic IS NULL OR a.data >= :dataInic)
-        AND (:dataFim IS NULL OR a.data <= :dataFim)
-        ORDER BY a.data ASC
-    """)
+    @Query("SELECT a FROM agendamento a " +
+            "WHERE a.aluno.id = :alunoId " +
+            "  AND (:nomeDoPersonal IS NULL OR a.personal.usuario.nome LIKE CONCAT('%', :nomeDoPersonal, '%')) " +
+            "  AND (:status IS NULL OR a.status = :status) " +
+            "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
+            "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
+            "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
+            "ORDER BY a.data ASC")
     Page<Agendamento> findByAlunoIdOrderByDataAsc(
             @Param("alunoId") Long alunoId,
             @Param("nomeDoPersonal") String nomeDoPersonal,
@@ -112,8 +108,8 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             "LEFT JOIN FETCH a.aluno al " +
             "LEFT JOIN FETCH a.endereco e " +
             "WHERE a.id = :agendamentoId " +
-            "  AND (al.email = :email " +
-            "       OR p.email = :email)")
+            "  AND (al.usuario.email = :email " +
+            "       OR p.usuario.email = :email)")
     Optional<Agendamento> buscarPorIdEEmailDoUsuario(
             @Param("agendamentoId") Long agendamentoId,
             @Param("email") String email
@@ -181,18 +177,14 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     /* -------------------- Relatórios / Agregações -------------------- */
 
-    @Query("SELECT MONTH(a.data) as mes," +
-            "YEAR(a.data) as ano," +
-            "COUNT(a) FROM agendamento a" +
-            " WHERE a.personal.id = :personalId AND" +
-            " a.status = :status" +
-            " GROUP BY ano, mes" +
-            " ORDER BY ano DESC, mes DESC" +
-            " LIMIT :quantidadeMeses")
+    @Query("SELECT MONTH(a.data), YEAR(a.data), COUNT(a) FROM agendamento a " +
+            "WHERE a.personal.id = :personalId AND a.status = :status " +
+            "GROUP BY YEAR(a.data), MONTH(a.data) " +
+            "ORDER BY YEAR(a.data) DESC, MONTH(a.data) DESC")
     List<Object[]> listarConsultoriasRealizadasMes(
+            Pageable pageable,
             @Param("personalId") Long personalId,
-            @Param("status") AgendamentoStatus status,
-            @Param("quantidadeMeses") Integer quantidadeMeses
+            @Param("status") AgendamentoStatus status
     );
 
     @Query("""

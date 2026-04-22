@@ -22,7 +22,6 @@ import java.util.List;
 public interface AlunoMapper {
 
     @Mapping(source = "cpf", target = "cpf", qualifiedByName = "toCpf")
-    @Mapping(target = "tipo", constant = "ALUNO")
     Aluno toEntityAluno(ReqCadastroAlunoDTO usuarioDTO);
 
     ResCadastrarAlunoDTO toDtoCadastrarAluno(Aluno aluno);
@@ -43,8 +42,8 @@ public interface AlunoMapper {
     @Mapping(target = "id", ignore = true)
     Usuario toEntity(ReqAtualizarAlunoDTO alunoDTO);
 
-    @Mapping(target = "senha", ignore = true)
-    @Mapping(target = "telefones", ignore = true)
+    @Mapping(target = "usuario.senha", ignore = true)
+    @Mapping(target = "usuario.telefones", ignore = true)
     void atualizarAlunoParaAtualizarAlunoDto(ReqAtualizarAlunoDTO dto,
                                              @MappingTarget Aluno aluno);
 

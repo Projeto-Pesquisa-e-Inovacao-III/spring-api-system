@@ -2,10 +2,6 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
-
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -32,7 +28,13 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
+    connection-timeout: 60000
 
 pag:
   url: ${PAG_API_URL}
@@ -62,4 +64,8 @@ logging:
   level:
     root: INFO
     com.spring: INFO
+
+init:
+  email: ${INIT_EMAIL}
+  password: ${INIT_PASSWORD}
 

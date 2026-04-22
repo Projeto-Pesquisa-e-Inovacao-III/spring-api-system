@@ -2,11 +2,11 @@ package com.spring.ApiSystem.domain.personal;
 
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarBufferDTO;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
-import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarBufferDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdDTO;
-import com.spring.ApiSystem.domain.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
@@ -20,8 +20,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/personais")
@@ -39,14 +37,6 @@ public class PersonalController {
         this.personalService = personalService;
         this.userDetails = userDetails;
         this.filterService = filterService;
-    }
-
-    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
-    @PostMapping("/cadastro")
-    public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(
-            @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
-    ) {
-        return ResponseEntity.ok(personalService.cadastrarUsuario(cadastroUsuarioDTO));
     }
 
     @PutMapping("/me/buffer")
@@ -74,7 +64,7 @@ public class PersonalController {
     @GetMapping
     public ResponseEntity<Page<ResListarPersonaisDTO>> listarPersonais(
             @SortDefault.SortDefaults({
-                    @SortDefault(sort = "nome", direction = Sort.Direction.ASC),
+                    @SortDefault(sort = "usuario.nome", direction = Sort.Direction.ASC),
                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             }) Pageable pageable,
             @RequestParam(required = false) String nome

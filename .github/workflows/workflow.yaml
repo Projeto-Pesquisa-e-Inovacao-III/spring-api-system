@@ -75,6 +75,9 @@ jobs:
             -e INFOBIP_WHATSAPP_SENDER="ci" \
             -e INFOBIP_TEMPLATE_NAME="authentication" \
             -e DISCORD_WEBHOOK_URL="https://example.com/webhook" \
+            -e RABBITMQ_AUTO_STARTUP="false" \
+            -e INIT_EMAIL="test@email.com" \
+            -e INIT_PASSWORD="test" \
             ${IMAGE_NAME}:latest
           for i in {1..30}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
@@ -137,17 +140,16 @@ jobs:
 
       - name: Ensure JWT PEM keys
         timeout-minutes: 5
+        env:
+          JWT_PRIVATE_KEY_B64: ${{ secrets.JWT_PRIVATE_KEY_B64 }}
+          JWT_PUBLIC_KEY_B64: ${{ secrets.JWT_PUBLIC_KEY_B64 }}
         run: |
           sudo mkdir -p /opt/spring-api-system/keys
-          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
-            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
-            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
-            sudo chmod 600 /opt/spring-api-system/keys/private.pem
-            sudo chmod 644 /opt/spring-api-system/keys/public.pem
-            echo "[INFO] Chaves JWT geradas"
-          else
-            echo "[INFO] Chaves JWT ja existentes, reutilizando"
-          fi
+          echo "${JWT_PRIVATE_KEY_B64}" | base64 -d | sudo tee /opt/spring-api-system/keys/private.pem > /dev/null
+          echo "${JWT_PUBLIC_KEY_B64}"  | base64 -d | sudo tee /opt/spring-api-system/keys/public.pem  > /dev/null
+          sudo chmod 600 /opt/spring-api-system/keys/private.pem
+          sudo chmod 644 /opt/spring-api-system/keys/public.pem
+          echo "[INFO] Chaves JWT escritas a partir dos secrets"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -181,6 +183,13 @@ jobs:
           INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
           INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
 
   deploy-aws-vm-2:
@@ -206,17 +215,16 @@ jobs:
 
       - name: Ensure JWT PEM keys
         timeout-minutes: 5
+        env:
+          JWT_PRIVATE_KEY_B64: ${{ secrets.JWT_PRIVATE_KEY_B64 }}
+          JWT_PUBLIC_KEY_B64: ${{ secrets.JWT_PUBLIC_KEY_B64 }}
         run: |
           sudo mkdir -p /opt/spring-api-system/keys
-          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
-            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
-            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
-            sudo chmod 600 /opt/spring-api-system/keys/private.pem
-            sudo chmod 644 /opt/spring-api-system/keys/public.pem
-            echo "[INFO] Chaves JWT geradas"
-          else
-            echo "[INFO] Chaves JWT ja existentes, reutilizando"
-          fi
+          echo "${JWT_PRIVATE_KEY_B64}" | base64 -d | sudo tee /opt/spring-api-system/keys/private.pem > /dev/null
+          echo "${JWT_PUBLIC_KEY_B64}"  | base64 -d | sudo tee /opt/spring-api-system/keys/public.pem  > /dev/null
+          sudo chmod 600 /opt/spring-api-system/keys/private.pem
+          sudo chmod 644 /opt/spring-api-system/keys/public.pem
+          echo "[INFO] Chaves JWT escritas a partir dos secrets"
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -250,6 +258,13 @@ jobs:
           INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
           INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
           
 
