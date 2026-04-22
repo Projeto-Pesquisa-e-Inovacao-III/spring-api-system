@@ -3,6 +3,10 @@ server:
 
 spring:
 
+  servlet:
+    multipart:
+      max-file-size: 4MB
+
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -17,6 +21,7 @@ spring:
     properties:
       hibernate:
         format_sql: false
+
 
   rabbitmq:
     listener:
