@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.produtocontratado;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoRepository;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
+import com.spring.ApiSystem.domain.produtocontratado.dto.request.ReqProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.*;
 import com.spring.ApiSystem.domain.produtocontratado.events.ProdutoContratadoEventPublisher;
 import com.spring.ApiSystem.domain.produtocontratado.exception.*;
@@ -163,12 +164,12 @@ public class ProdutoContratadoService {
     }
 
 
-    public Page<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, String nomeProduto, LocalDate dataInicio, LocalDate dataFim){
+    public Page<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, ReqProdutoContratadoDto dto){
         Page<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
-                jpaUserDetailsService.getCurrentAluno(),
-                nomeProduto,
-                dataInicio,
-                dataFim,
+                jpaUserDetailsService.getCurrentAluno().getId(),
+                dto.nomeProduto(),
+                dto.dataInicio(),
+                dto.dataFim(),
                 pageable);
         return produtosContratados.map(produtoContratadoMapper::toDto);
     }
