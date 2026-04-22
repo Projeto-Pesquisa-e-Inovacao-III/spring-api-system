@@ -21,7 +21,7 @@ spring:
   rabbitmq:
     listener:
       simple:
-        auto-startup: ${{RABBITMQ_AUTO_STARTUP:true}}
+        auto-startup: ${RABBITMQ_AUTO_STARTUP:true}
 
   mail:
     host: ${MAIL_HOST}
