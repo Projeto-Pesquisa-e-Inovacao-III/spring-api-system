@@ -2,12 +2,10 @@ package com.spring.ApiSystem.domain.agendamento.events;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
-import com.spring.ApiSystem.domain.agendamento.events.AgendamentoListener;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.Usuario;
-import com.spring.ApiSystem.domain.usuario.enums.TipoUsuario;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -200,14 +198,14 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
      * @throws IllegalArgumentException se o tipo de usuário for nulo ou inválido
      */
     private Usuario obterDestinatario(Agendamento agendamento, Usuario usuario) {
-        if(usuario.getTipo() == null){
-            throw new IllegalArgumentException("Tipo de usuário não pode ser nulo.");
+        if(usuario.getRoles() == null || usuario.getRoles().isEmpty()){
+            throw new IllegalArgumentException("Tipo de usuário não pode ser vazio ou nulo.");
         }
 
-        if(usuario.getTipo().equals(TipoUsuario.ALUNO)){
-            return agendamento.getPersonal();
-        } else if (usuario.getTipo().equals(TipoUsuario.PERSONAL)){
-            return agendamento.getAluno();
+        if(usuario.isAluno()){
+            return agendamento.getPersonal().getUsuario();
+        } else if (usuario.isPersonal()){
+            return agendamento.getAluno().getUsuario();
         } else {
             throw new IllegalArgumentException("Tipo de usuário inválido para reagendamento.");
         }

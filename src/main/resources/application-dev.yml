@@ -4,11 +4,11 @@ spring:
   profiles:
     active: dev
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: app_user
-    password: app_password_123
-    virtual-host: /app
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:app_user}
+    password: ${RABBITMQ_PASSWORD:app_password_123}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/app}
     connection-timeout: 5000
     # 1. Configura o envio de mensagens (Producer)
     template:
@@ -69,15 +69,15 @@ infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
   api:
-    key: a
+    key: ${INFOBIP_API_KEY:a}
   whatsapp:
-    sender: a
+    sender: ${INFOBIP_WHATSAPP_SENDER:a}
     template:
-      name: a
+      name: ${INFOBIP_WHATSAPP_TEMPLATE_NAME:a}
 
 discord:
   webhook:
-    url: a
+    url: ${DISCORD_WEBHOOK_URL:a}
 
 storage:
   local-dir: imagens
@@ -101,5 +101,9 @@ resilience4j:
 
 logging:
   level:
-    org.example: INFO
-    org.springframework.amqp: ERROR
+    com.spring.ApiSystem: DEBUG
+    org.springframework.amqp: DEBUG
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

@@ -3,10 +3,10 @@ package com.spring.ApiSystem.domain.personal.mapper;
 
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.dto.request.ReqAtualizarPersonalDTO;
-import com.spring.ApiSystem.domain.personal.dto.request.ReqCadastroPersonalDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResAtualizarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdDTO;
-import com.spring.ApiSystem.domain.personal.dto.response.ResCadastrarPersonalDTO;
+import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.personal.dto.response.ResListarPersonaisDTO;
 
 import com.spring.ApiSystem.domain.telefone.Telefone;
@@ -20,10 +20,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PersonalMapper {
 
-    @Mapping(target = "tipo", constant = "PERSONAL")
     Personal toEntity(ReqCadastroPersonalDTO reqCadastroPersonalDTO);
 
     ResCadastrarPersonalDTO toDtoCadastrarPersonal(Personal personal);
+
     ResAtualizarPersonalDTO toDtoAtualizarPersonal(Personal personal);
     List<ResListarPersonaisDTO> toDtoListarPersonaisDTO(List<Personal> personal);
     ResBuscarPersonalPorIdDTO toDtoBuscarPersonalPorIdDTO(Personal personal);
@@ -36,8 +36,8 @@ public interface PersonalMapper {
         );
     }
 
-    @Mapping(target = "senha", ignore = true)
-    @Mapping(target = "telefones", ignore = true)
+    @Mapping(target = "usuario.senha", ignore = true)
+    @Mapping(target = "usuario.telefones", ignore = true)
     void atualizarPersonalParaAtualizarPersonalDto(ReqAtualizarPersonalDTO dto,
                                               @MappingTarget Personal personal);
 

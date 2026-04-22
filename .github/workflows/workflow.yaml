@@ -75,6 +75,7 @@ jobs:
             -e INFOBIP_WHATSAPP_SENDER="ci" \
             -e INFOBIP_TEMPLATE_NAME="authentication" \
             -e DISCORD_WEBHOOK_URL="https://example.com/webhook" \
+            -e RABBITMQ_AUTO_STARTUP="false" \
             ${IMAGE_NAME}:latest
           for i in {1..30}; do
             code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
@@ -181,6 +182,13 @@ jobs:
           INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
           INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_USERNAME: ${{ secrets.INIT_USERNAME }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
 
   deploy-aws-vm-2:
@@ -250,6 +258,13 @@ jobs:
           INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
           INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
           
 

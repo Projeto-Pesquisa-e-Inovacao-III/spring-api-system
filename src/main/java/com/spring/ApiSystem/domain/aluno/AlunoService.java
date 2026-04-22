@@ -18,6 +18,8 @@ import com.spring.ApiSystem.domain.anamnese.Anamnese;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,6 +30,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 
 @Service
 public class AlunoService {
@@ -56,7 +59,11 @@ public class AlunoService {
         String rawPassword = usuarioDTO.senha();
 
         Aluno usuarioEntity = alunoMapper.toEntityAluno(usuarioDTO);
-        usuarioService.aplicarSenhaCriptografada(usuarioEntity, rawPassword);
+        usuarioEntity.getUsuario().addRole(Role.ALUNO);
+        usuarioService.aplicarSenhaCriptografada(usuarioEntity.getUsuario(), rawPassword);
+
+        ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
+
 
         Telefone telefone = criarTelefone(usuarioDTO.telefone(), usuarioEntity);
         usuarioEntity.getTelefones().add(telefone);
@@ -88,24 +95,6 @@ public class AlunoService {
         return alunoRepository.save(aluno);
     }
 
-    public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
-
-        usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
-
-
-        Aluno aluno = buscarPorId(usuario.getId());
-
-        alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
-
-        if (dto.telefones() != null && !dto.telefones().isEmpty()) {
-            usuarioService.atualizarTelefones(aluno, dto.telefones());
-        }
-
-        alunoRepository.save(aluno);
-
-        return alunoMapper.toDtoAtualizarAluno(aluno);
-    }
-
     public Page<ResListarAlunosDto> listarAlunos(Pageable pageable) {
         Page<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
         return alunos.map(alunoMapper::toResListarAlunosDto);
@@ -127,19 +116,42 @@ public class AlunoService {
                 .orElseThrow(AlunoNaoExisteException::new);
     }
 
-    public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
-        Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
-        return new ResAlunosPagantesDTO(quantidade);
-    }
-
-    private void validarCpfUnico(Cpf cpf){
+    public void cadastrarCpfExistente(Cpf cpf){
         if (cpfExiste(cpf)) {
             throw new CpfExistenteException();
         }
     }
 
-    private boolean cpfExiste(Cpf cpf){
+    public boolean cpfExiste(Cpf cpf){
         return alunoRepository.existsByCpf(cpf);
+    }
+
+    public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
+
+        usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
+
+
+        Aluno aluno = buscarPorId(usuario.getId());
+
+        alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
+
+        if (dto.telefones() != null && !dto.telefones().isEmpty()) {
+            usuarioService.atualizarTelefones(aluno.getUsuario(), dto.telefones());
+        }
+
+        alunoRepository.save(aluno);
+
+        return alunoMapper.toDtoAtualizarAluno(aluno);
+    }
+
+    public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
+        Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
+        return new ResAlunosPagantesDTO(quantidade);
+    }
+    private void validarCpfUnico(Cpf cpf){
+        if (cpfExiste(cpf)) {
+            throw new CpfExistenteException();
+        }
     }
 
     private Telefone criarTelefone(ReqCadastrarTelefoneDTO telefoneDTO, Aluno usuario) {
@@ -147,8 +159,25 @@ public class AlunoService {
         telefone.setPais(telefoneDTO.pais());
         telefone.setDdd(telefoneDTO.ddd());
         telefone.setNumero(telefoneDTO.numero());
-        telefone.setUsuario(usuario);
+        telefone.setUsuario(usuario.getUsuario());
         return telefone;
+    }
+
+    public Aluno enableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(false);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno disableProfile(Long usuarioId){
+        Aluno aluno = buscarPorId(usuarioId);
+        aluno.setProfileAtivo(true);
+        return alunoRepository.save(aluno);
+    }
+
+    public Aluno createProfile(Usuario usuario, Cpf cpf){
+        cadastrarCpfExistente(cpf);
+        return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
 
 }
