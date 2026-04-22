@@ -57,6 +57,8 @@ public class SecurityConfig {
                     // Públicas
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
+                    auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
+
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-exibicoes/ativos",
                             "/api/produtos-exibicoes",
