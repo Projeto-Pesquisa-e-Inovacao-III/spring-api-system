@@ -10,6 +10,8 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.external.comprar.dto.request.ReqCheckoutDto;
 import com.spring.ApiSystem.external.comprar.dto.response.ResCheckoutCreatedDto;
 import com.spring.ApiSystem.external.comprar.exception.CompraDeProdutoExibicaoInexistente;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -25,6 +27,7 @@ import java.util.UUID;
 @Service
 public class ComprarService {
 
+    private static final Logger log = LoggerFactory.getLogger(ComprarService.class);
     private final JpaUserDetailsService userDetailsService;
     private final RestTemplate restTemplate;
     private final ProdutoExibicaoService produtoExibicaoService;
@@ -46,12 +49,16 @@ public class ComprarService {
             throw new CompraDeProdutoExibicaoInexistente(produtoExibicaoId);
         }
 
+        log.info("Iniciando processo de compra | produtoExibicaoId: {} | url: {}", produtoExibicaoId, url);
+
         Aluno aluno = userDetailsService.getCurrentAluno();
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(produtoExibicaoId);
 
         produtoContratadoService.temProdutoContratadoTipoProdutoAtivo(
                 produtoExibicaoId, aluno, TipoProduto.PACOTE
         );
+
+        log.info("ProdutoExibicao encontrado e verificado para compra | produtoExibicaoId: {} | alunoId: {}", produtoExibicaoId, aluno.getId());
 
         Telefone telefone = aluno.getTelefones().stream().findFirst().orElse(null);
 
@@ -85,9 +92,13 @@ public class ComprarService {
 
         HttpEntity<ReqCheckoutDto> requestEntity = new HttpEntity<>(requestBody, headers);
 
+        log.info("Enviando requisição de checkout para gateway | produtoExibicaoId: {} | alunoId: {} | payload: {}", produtoExibicaoId, aluno.getId(), requestBody);
+
         ResCheckoutCreatedDto response = restTemplate
                 .postForEntity(url + "/api/v1/checkouts", requestEntity, ResCheckoutCreatedDto.class)
                 .getBody();
+
+        log.info("Resposta recebida do gateway | produtoExibicaoId: {} | alunoId: {} | response: {}", produtoExibicaoId, aluno.getId(), response);
 
         return response != null ? response.payLink() : null;
     }
