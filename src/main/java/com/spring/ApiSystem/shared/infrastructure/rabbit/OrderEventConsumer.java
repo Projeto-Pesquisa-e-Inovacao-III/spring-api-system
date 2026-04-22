@@ -23,8 +23,8 @@ public class OrderEventConsumer {
     public void consumeOrderPaidEvent(OrderPaidMessage message) {
         log.info("Processando pedido do cliente: {}", message.customerId());
         produtoContratadoService.criarProdutoContratadoPeloIdAluno(
-                Long.parseLong(message.customerId().replaceAll("\\D", "")),
-               Long.parseLong(message.itensId().getFirst().replaceAll("\\D", ""))
+               Long.parseLong(message.itensId().getFirst().replaceAll("\\D", "")),
+                Long.parseLong(message.customerId().replaceAll("\\D", ""))
         );
     }
 
