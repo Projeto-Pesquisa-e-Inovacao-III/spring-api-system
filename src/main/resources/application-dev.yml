@@ -103,3 +103,7 @@ logging:
   level:
     com.spring.ApiSystem: DEBUG
     org.springframework.amqp: DEBUG
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

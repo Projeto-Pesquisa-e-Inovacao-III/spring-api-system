@@ -13,7 +13,6 @@ import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.shared.config.filter.FilterService;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,9 +20,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -36,7 +34,7 @@ public class AdminService {
     private final AlunoService alunoService;
     private final CpfMapper cpfMapper;
 
-    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper, FilterService filterService) {
+    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper) {
         this.adminRepository = adminRepository;
         this.usuarioService = usuarioService;
         this.personalService = personalService;
@@ -120,12 +118,12 @@ public class AdminService {
 
         Usuario usuario = usuarioService.buscarUsuarioPorId(userId);
 
-        if(usuario.isDono()){
-            throw new IllegalArgumentException("Não é permitido remover um usuário com a role DONO.");
+        if(usuario.isDono() && (role.equals(Role.DONO) || role.equals(Role.ADMIN))){
+            throw new IllegalArgumentException("Não é permitido remover a role admnistradora de um usuário com a role DONO.");
         }
 
-        if(isTargetSelfAdmin(usuario, admin)){
-            throw new IllegalArgumentException("Um administrador não pode se auto-remover.");
+        if(isTargetSelfAdmin(usuario, admin) && role.equals(Role.ADMIN)){
+            throw new IllegalArgumentException("Um administrador não pode remover sua propria role.");
         }
 
         usuario = usuarioService.removeRoleFromUsuario(usuario, role);
@@ -136,10 +134,10 @@ public class AdminService {
     @Transactional
     public ResCadastrarPersonalDTO criarPersonal(ReqCadastroPersonalDTO personalDTO){
         Admin admin = userDetailsService.getCurrentAdmin();
-
-        return personalService.cadastrarPersonalDto(personalDTO);
+        ResCadastrarPersonalDTO personalCreated = personalService.cadastrarPersonalDto(personalDTO);
+        log.info("O Usuario id {} criou o personal de id {}", admin.getId(), personalCreated.id());
+        return personalCreated;
     }
-
 
     private boolean isTargetSelfAdmin(Usuario target, Admin admin){
         return target.getId().equals(admin.getId());
@@ -243,4 +241,23 @@ public class AdminService {
         });
     }
 
+    public boolean existsByEmail(String email){
+        return usuarioService.emailExiste(email);
+    }
+
+    @Transactional
+    public void createAdminUser(String email, String password) {
+        Usuario admin = new Usuario();
+        usuarioService.aplicarSenhaCriptografada(admin, password);
+        admin.setEmail(email);
+        admin.setNome("Fábio");
+        admin.setSexo("M");
+        admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
+        admin.setDataNascimento(LocalDate.parse("1990-01-01"));
+
+        admin = usuarioService.salvarUsuario(admin);
+        admin = createProfile(admin).getUsuario();
+        personalService.createProfile(admin, "CREF12345");
+        log.info("Usuario admin inicial criado.");
+    }
 }

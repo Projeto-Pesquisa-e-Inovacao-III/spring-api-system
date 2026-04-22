@@ -24,6 +24,8 @@ import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
 import com.spring.ApiSystem.shared.security.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -46,26 +48,22 @@ public class PersonalService {
     private final PersonalMapper personalMapper;
     private final JpaUserDetailsService detailsService;
     private final DisponibilidadePersonalService disponibilidadeService;
+    private final EmailService emailService;
 
-    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, JpaUserDetailsService detailsService, DisponibilidadePersonalService disponibilidadeService) {
+    public PersonalService(PersonalRepository personalRepository, UsuarioService usuarioService, PersonalMapper personalMapper, JpaUserDetailsService detailsService, DisponibilidadePersonalService disponibilidadeService, EmailService emailService) {
         this.personalRepository = personalRepository;
         this.usuarioService = usuarioService;
         this.personalMapper = personalMapper;
         this.detailsService = detailsService;
         this.disponibilidadeService = disponibilidadeService;
+        this.emailService = emailService;
     }
 
     @Transactional
     public ResCadastrarPersonalDTO cadastrarPersonalDto(ReqCadastroPersonalDTO usuarioDTO) {
         Personal usuarioEntity = personalMapper.toEntity(usuarioDTO);
 
-
-
         String randomSenha = PasswordGenerator.generate(10);
-        //TODO: Deixar generico
-        log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
-
-        log.debug("Gerando senha aleatória para o personal: {}", randomSenha);
 
         usuarioEntity.setSenha(randomSenha);
 
@@ -81,7 +79,17 @@ public class PersonalService {
 
         Personal personalSalvo = cadastrarPersonal(usuarioEntity);
 
-        // TODO: CHAMAR EMAIl SERVICE
+        String corpoEmail = String.format(
+                "Olá %s,<br>Seu perfil de Personal foi criado com sucesso!<br><br>Sua senha temporária é: <strong>%s</strong>",
+                personalSalvo.getNome(),
+                randomSenha
+        );
+
+        emailService.enviarEmail(new Email(
+                personalSalvo.getEmail(),
+                "Bem-vindo ao sistema de academia",
+                corpoEmail
+        ));
 
         return personalMapper.toDtoCadastrarPersonal(personalSalvo);
     }

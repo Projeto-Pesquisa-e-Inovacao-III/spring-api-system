@@ -95,24 +95,6 @@ public class AlunoService {
         return alunoRepository.save(aluno);
     }
 
-    public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
-
-        usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
-
-
-        Aluno aluno = buscarPorId(usuario.getId());
-
-        alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
-
-        if (dto.telefones() != null && !dto.telefones().isEmpty()) {
-            usuarioService.atualizarTelefones(aluno, dto.telefones());
-        }
-
-        alunoRepository.save(aluno);
-
-        return alunoMapper.toDtoAtualizarAluno(aluno);
-    }
-
     public Page<ResListarAlunosDto> listarAlunos(Pageable pageable) {
         Page<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
         return alunos.map(alunoMapper::toResListarAlunosDto);
@@ -166,20 +148,10 @@ public class AlunoService {
         Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
         return new ResAlunosPagantesDTO(quantidade);
     }
-
-    public Aluno registrarAnamnese(Aluno aluno, Anamnese anamnese) {
-        aluno.setAnamnese(anamnese);
-        aluno.setAtivoAnamnese(true);
-        return alunoRepository.save(aluno);
-    }
     private void validarCpfUnico(Cpf cpf){
         if (cpfExiste(cpf)) {
             throw new CpfExistenteException();
         }
-    }
-
-    private boolean cpfExiste(Cpf cpf){
-        return alunoRepository.existsByCpf(cpf);
     }
 
     private Telefone criarTelefone(ReqCadastrarTelefoneDTO telefoneDTO, Aluno usuario) {
@@ -187,7 +159,7 @@ public class AlunoService {
         telefone.setPais(telefoneDTO.pais());
         telefone.setDdd(telefoneDTO.ddd());
         telefone.setNumero(telefoneDTO.numero());
-        telefone.setUsuario(usuario);
+        telefone.setUsuario(usuario.getUsuario());
         return telefone;
     }
 
