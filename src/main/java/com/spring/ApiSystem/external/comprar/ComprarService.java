@@ -45,11 +45,12 @@ public class ComprarService {
 
 
     public String comprar(Long produtoExibicaoId){
+
+        log.info("Iniciando processo de compra | produtoExibicaoId: {} | url: {}", produtoExibicaoId, url);
+
         if(!produtoExibicaoService.produtoExibicaoAtivoExiste(produtoExibicaoId)){
             throw new CompraDeProdutoExibicaoInexistente(produtoExibicaoId);
         }
-
-        log.info("Iniciando processo de compra | produtoExibicaoId: {} | url: {}", produtoExibicaoId, url);
 
         Aluno aluno = userDetailsService.getCurrentAluno();
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(produtoExibicaoId);
