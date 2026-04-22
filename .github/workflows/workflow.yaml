@@ -263,7 +263,7 @@ jobs:
           RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
-          INIT_USERNAME: ${{ secrets.INIT_USERNAME }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
           
