@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.aluno;
 
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
+import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -40,4 +41,25 @@ public interface AlunoRepository extends JpaRepository<Aluno, Long> {
     """)
     Optional<Aluno> findByEmailWithRoles(@Param("email") String email);
 
+    @Query("""
+        SELECT a FROM Aluno a
+        JOIN FETCH a.usuario u
+        LEFT JOIN FETCH u.roles
+        WHERE u.ativo = true
+          AND (
+            :nome IS NULL OR
+            u.nome LIKE CONCAT('%', :nome, '%')
+          )
+    """)
+    Page<Aluno> findAllAtivosContainingNome(String nome, Pageable pageable);
+
+    @Query("""
+        SELECT a
+        FROM Aluno a
+        JOIN FETCH a.usuario u
+        LEFT JOIN FETCH u.roles
+        WHERE u.id = :id
+          AND u.ativo = true
+    """)
+    Optional<Aluno> findByIdRole(Long id);
 }

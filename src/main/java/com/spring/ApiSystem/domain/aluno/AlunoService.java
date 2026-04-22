@@ -63,9 +63,6 @@ public class AlunoService {
         usuarioEntity.getUsuario().addRole(Role.ALUNO);
         usuarioService.aplicarSenhaCriptografada(usuarioEntity.getUsuario(), rawPassword);
 
-        ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
-
-
         Telefone telefone = criarTelefone(usuarioDTO.telefone(), usuarioEntity);
         usuarioEntity.getTelefones().add(telefone);
 
@@ -106,7 +103,7 @@ public class AlunoService {
         alunoMapper.atualizarAlunoParaAtualizarAlunoDto(dto, aluno);
 
         if (dto.telefones() != null && !dto.telefones().isEmpty()) {
-            usuarioService.atualizarTelefones(aluno, dto.telefones());
+            usuarioService.atualizarTelefones(aluno.getUsuario(), dto.telefones());
         }
 
         alunoRepository.save(aluno);
@@ -119,7 +116,7 @@ public class AlunoService {
             pageable = PageRequest.of(0, pageable.getPageSize());
         }
 
-        Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(pageable, nome);
+        Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(nome, pageable);
 
         return alunos.map(alunoMapper::toResListarAlunosDto);
     }
@@ -129,9 +126,20 @@ public class AlunoService {
         return alunoMapper.toDtoBuscarAlunoPorId(aluno);
     }
 
+    public ResBuscarAlunoPorIdDTO buscarAlunoPorIdComRole(Long id){
+        Aluno aluno = buscarPorIdWithRole(id);
+        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
+    }
+
     public Aluno buscarPorId(Long id) {
         return alunoRepository
                 .findById(id)
+                .orElseThrow(AlunoNaoExisteException::new);
+    }
+
+    public Aluno buscarPorIdWithRole(Long id) {
+        return alunoRepository
+                .findByIdRole(id)
                 .orElseThrow(AlunoNaoExisteException::new);
     }
 
@@ -177,7 +185,7 @@ public class AlunoService {
     }
 
     public Aluno createProfile(Usuario usuario, Cpf cpf){
-        cadastrarCpfExistente(cpf);
+        validarCpfUnico(cpf);
         return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
 

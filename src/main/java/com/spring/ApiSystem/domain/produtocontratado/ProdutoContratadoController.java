@@ -110,14 +110,13 @@ public class ProdutoContratadoController {
             summary = "Lista todos os produtos contratados do usuário (necessário login)",
             description = "Endpoint para listar todos os produtos contratados em sistema que tiverem o idAluno correspondente"
     )
-    @GetMapping("/aluno")
+    @GetMapping
     public ResponseEntity<Page<ResProdutoContratadoDto>> listarProdutosContratadosPorIdAluno(
             @ModelAttribute ReqProdutoContratadoDto dto,
             @SortDefault.SortDefaults({
                     @SortDefault(sort = "dataCompra", direction = Sort.Direction.DESC),
                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)
             }) Pageable pageable
-
     ) {
         Page<ResProdutoContratadoDto> produtosContratados =
                 produtoContratadoService.listarPorAluno(pageable, dto);

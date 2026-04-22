@@ -53,7 +53,7 @@ public class AlunoController {
     @GetMapping
     public ResponseEntity<Page<ResListarAlunosDto>>
     listarAlunos(@SortDefault.SortDefaults({
-                     @SortDefault(sort = "nome", direction = Sort.Direction.ASC),
+                     @SortDefault(sort = "usuario.nome", direction = Sort.Direction.ASC),
                      @SortDefault(sort = "id", direction = Sort.Direction.ASC)
                  }) Pageable pageable,
                  @RequestParam(required = false) String nome) {
@@ -70,7 +70,7 @@ public class AlunoController {
                 description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
-        ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
+        ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorIdComRole(id);
         if(aluno == null){
             return ResponseEntity.notFound().build();
         }

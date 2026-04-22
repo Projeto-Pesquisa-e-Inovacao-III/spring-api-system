@@ -150,7 +150,7 @@ public class PersonalService {
             pageable = PageRequest.of(0, pageable.getPageSize());
         }
 
-        Page<Personal> personals = personalRepository.findAllAtivosContainingNome(pageable, nome);
+        Page<Personal> personals = personalRepository.findAllAtivosContainingNome(nome, pageable);
 
         return personals.map(personalMapper::toResListarPersonaisDTO);
     }
