@@ -33,5 +33,5 @@ pag:
   url: http://localhost:8081
 
 init:
-  email: "fabio.admin@email"
+  email: "fabio.admin@email.com"
   password: "admin123"
