@@ -18,8 +18,17 @@ public interface PersonalRepository extends JpaRepository<Personal, Long> {
     @Query("SELECT p FROM Personal p JOIN FETCH p.usuario u WHERE u.ativo = true")
     Page<Personal> findAllAtivos(Pageable pageable);
 
-    @Query("SELECT p FROM Personal p JOIN FETCH p.usuario u WHERE u.email = :email")
+    @Query("SELECT p FROM Personal p JOIN FETCH p.usuario u WHERE u.email = :email ")
     Optional<Personal> findByEmail(@Param("email") String email);
+
+    @Query("SELECT p FROM Personal p " +
+            "JOIN FETCH p.usuario u " +
+            "WHERE u.ativo = true " +
+            "AND (" +
+            "  :nome IS NULL OR " +
+            "  u.nome LIKE CONCAT('%', :nome, '%')" +
+            ")")
+    Page<Personal> findAllAtivosContainingNome(String nome, Pageable pageable);
 
     @Query("""
         SELECT p

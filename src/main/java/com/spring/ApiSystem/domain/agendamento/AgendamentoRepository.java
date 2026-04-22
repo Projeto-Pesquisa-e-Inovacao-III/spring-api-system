@@ -43,7 +43,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.personal.id = :personalId " +
-            "  AND (:nomeDoAluno IS NULL OR a.aluno.usuario.nome LIKE %:nomeDoAluno%) " +
+            "  AND (:nomeDoAluno IS NULL OR a.aluno.usuario.nome LIKE CONCAT('%', :nomeDoAluno, '%')) " +
             "  AND (:status IS NULL OR a.status = :status) " +
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
@@ -60,7 +60,7 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
 
     @Query("SELECT a FROM agendamento a " +
             "WHERE a.aluno.id = :alunoId " +
-            "  AND (:nomeDoPersonal IS NULL OR a.personal.usuario.nome LIKE %:nomeDoPersonal%) " +
+            "  AND (:nomeDoPersonal IS NULL OR a.personal.usuario.nome LIKE CONCAT('%', :nomeDoPersonal, '%')) " +
             "  AND (:status IS NULL OR a.status = :status) " +
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +

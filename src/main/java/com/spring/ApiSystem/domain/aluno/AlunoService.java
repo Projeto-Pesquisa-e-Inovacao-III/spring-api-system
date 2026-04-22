@@ -24,6 +24,7 @@ import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.dao.DataAccessException;
@@ -62,9 +63,6 @@ public class AlunoService {
         usuarioEntity.getUsuario().addRole(Role.ALUNO);
         usuarioService.aplicarSenhaCriptografada(usuarioEntity.getUsuario(), rawPassword);
 
-        ReqCadastrarTelefoneDTO telefoneDTO = usuarioDTO.telefone();
-
-
         Telefone telefone = criarTelefone(usuarioDTO.telefone(), usuarioEntity);
         usuarioEntity.getTelefones().add(telefone);
 
@@ -95,37 +93,6 @@ public class AlunoService {
         return alunoRepository.save(aluno);
     }
 
-    public Page<ResListarAlunosDto> listarAlunos(Pageable pageable) {
-        Page<Aluno> alunos = alunoRepository.findAllAtivos(pageable);
-        return alunos.map(alunoMapper::toResListarAlunosDto);
-    }
-
-    public ResBuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
-        Aluno aluno = buscarPorId(id);
-        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
-    }
-
-    public Aluno buscarPorId(Long id) {
-        return alunoRepository
-                .findById(id)
-                .orElseThrow(AlunoNaoExisteException::new);
-    }
-
-    public Aluno buscarPorEmail(String email){
-        return alunoRepository.findByEmail(email)
-                .orElseThrow(AlunoNaoExisteException::new);
-    }
-
-    public void cadastrarCpfExistente(Cpf cpf){
-        if (cpfExiste(cpf)) {
-            throw new CpfExistenteException();
-        }
-    }
-
-    public boolean cpfExiste(Cpf cpf){
-        return alunoRepository.existsByCpf(cpf);
-    }
-
     public ResAtualizarAlunoDTO atualizarUsuario(ReqAtualizarAlunoDTO dto, Aluno usuario) {
 
         usuarioService.validarEmailNaoEmUso(dto.email(), usuario.getEmail());
@@ -144,14 +111,56 @@ public class AlunoService {
         return alunoMapper.toDtoAtualizarAluno(aluno);
     }
 
+    public Page<ResListarAlunosDto> listarAlunos(Pageable pageable, String nome) {
+        if(nome != null && !nome.isBlank()){
+            pageable = PageRequest.of(0, pageable.getPageSize());
+        }
+
+        Page<Aluno> alunos = alunoRepository.findAllAtivosContainingNome(nome, pageable);
+
+        return alunos.map(alunoMapper::toResListarAlunosDto);
+    }
+
+    public ResBuscarAlunoPorIdDTO buscarAlunoPorId(Long id) {
+        Aluno aluno = buscarPorId(id);
+        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
+    }
+
+    public ResBuscarAlunoPorIdDTO buscarAlunoPorIdComRole(Long id){
+        Aluno aluno = buscarPorIdWithRole(id);
+        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
+    }
+
+    public Aluno buscarPorId(Long id) {
+        return alunoRepository
+                .findById(id)
+                .orElseThrow(AlunoNaoExisteException::new);
+    }
+
+    public Aluno buscarPorIdWithRole(Long id) {
+        return alunoRepository
+                .findByIdRole(id)
+                .orElseThrow(AlunoNaoExisteException::new);
+    }
+
+    public Aluno buscarPorEmail(String email){
+        return alunoRepository.findByEmail(email)
+                .orElseThrow(AlunoNaoExisteException::new);
+    }
+
     public ResAlunosPagantesDTO contarAlunosComPlanosAtivos() {
         Integer quantidade = alunoRepository.countAlunosComPlanosAtivos(TipoProduto.PACOTE);
         return new ResAlunosPagantesDTO(quantidade);
     }
+
     private void validarCpfUnico(Cpf cpf){
         if (cpfExiste(cpf)) {
             throw new CpfExistenteException();
         }
+    }
+
+    private boolean cpfExiste(Cpf cpf){
+        return alunoRepository.existsByCpf(cpf);
     }
 
     private Telefone criarTelefone(ReqCadastrarTelefoneDTO telefoneDTO, Aluno usuario) {
@@ -176,7 +185,7 @@ public class AlunoService {
     }
 
     public Aluno createProfile(Usuario usuario, Cpf cpf){
-        cadastrarCpfExistente(cpf);
+        validarCpfUnico(cpf);
         return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
 
