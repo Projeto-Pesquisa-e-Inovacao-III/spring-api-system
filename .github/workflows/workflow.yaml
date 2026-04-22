@@ -76,7 +76,7 @@ jobs:
             -e INFOBIP_TEMPLATE_NAME="authentication" \
             -e DISCORD_WEBHOOK_URL="https://example.com/webhook" \
             -e RABBITMQ_AUTO_STARTUP="false" \
-            -e INIT_EMAIL="test@email.com"
+            -e INIT_EMAIL="test@email.com" \
             -e INIT_PASSWORD="test" \
             ${IMAGE_NAME}:latest
           for i in {1..30}; do
