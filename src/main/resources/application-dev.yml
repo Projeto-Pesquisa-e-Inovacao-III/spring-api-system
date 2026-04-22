@@ -1,0 +1,109 @@
+spring:
+  application:
+    name: spring-api-system
+  profiles:
+    active: dev
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:app_user}
+    password: ${RABBITMQ_PASSWORD:app_password_123}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/app}
+    connection-timeout: 5000
+    # 1. Configura o envio de mensagens (Producer)
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2000ms
+        multiplier: 2.0
+        max-retries: 3
+    # 2. Configura o consumo de mensagens (Consumer/Listener)
+    # Isso impede que o Spring "martele" o log a cada 5 segundos
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 10s    # Primeira tentativa após 10s
+          multiplier: 3.0          # Triplica o tempo a cada falha (10s, 30s, 90s...)
+          max-interval: 600s       # No máximo tenta a cada 10 minutos
+          max-retries: 5
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    defer-datasource-initialization: true
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+  sql:
+    init:
+      mode: always
+      encoding: UTF-8
+  mail:
+    host: ${MAIL_HOST:sandbox.smtp.mailtrap.io}
+    port: ${MAIL_PORT:2525}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+pag:
+  url: http://localhost:8081
+
+infobip:
+  base:
+    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+  api:
+    key: ${INFOBIP_API_KEY:a}
+  whatsapp:
+    sender: ${INFOBIP_WHATSAPP_SENDER:a}
+    template:
+      name: ${INFOBIP_WHATSAPP_TEMPLATE_NAME:a}
+
+discord:
+  webhook:
+    url: ${DISCORD_WEBHOOK_URL:a}
+
+storage:
+  local-dir: imagens
+
+resilience4j:
+  retry:
+    instances:
+      rabbitInit:
+        maxAttempts: 3
+        waitDuration: 5s
+        retryExceptions:
+          - org.springframework.amqp.AmqpConnectException
+          - java.net.ConnectException
+  circuitbreaker:
+    instances:
+      rabbitConnection:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 300s # 5 minutos de silêncio se o circuito abrir
+        permittedNumberOfCallsInHalfOpenState: 3
+
+logging:
+  level:
+    com.spring.ApiSystem: DEBUG
+    org.springframework.amqp: DEBUG
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

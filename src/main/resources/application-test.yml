@@ -1,0 +1,37 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  mail:
+    host: localhost
+    port: 3025
+
+infobip:
+  base:
+    url: test
+  api:
+    key: test
+  whatsapp:
+    sender: test
+    template:
+      name: test
+
+discord:
+  webhook:
+    url: a
+
+pag:
+  url: http://localhost:8081
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

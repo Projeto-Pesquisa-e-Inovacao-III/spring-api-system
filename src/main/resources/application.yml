@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: spring-api-system
+  web:
+    resources:
+      add-mappings: false
+  devtools:
+    livereload:
+      enabled: true
+  profiles:
+    active: dev
+
+  config:
+    import: "optional:classpath:application-${spring.profiles.active}.yml"
+
+jwt:
+  public:
+    key: classpath:keys/public.pem
+  private:
+    key: classpath:keys/private.pem
+
+springdoc:
+  swagger-ui:
+    path: /doc
+
+argon:
+  algoritmo: argon2id
+  versao: 19
+  saltLength: 32
+  hashLength: 32
+  parallelism: 1
+  memory: 65536
+  iterations: 3
+
+logging:
+  level:
+    org.example: INFO

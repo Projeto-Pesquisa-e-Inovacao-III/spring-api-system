@@ -1,0 +1,275 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches: [main, develop]
+
+concurrency:
+  group: deploy-backend-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+    env:
+      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-api-system
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up java
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Give permission to mvnw
+        run: chmod +x mvnw
+
+      - name: Build and test
+        run: ./mvnw clean verify
+
+      - name: Build Docker image
+        run: |
+          docker build -t ${IMAGE_NAME}:latest .
+          docker build -t ${IMAGE_NAME}:${{ github.sha }} .
+
+      - name: Create CI Docker network
+        run: docker network create ci-net
+
+      - name: Start MySQL for smoke test
+        run: |
+          docker run -d --name mysql-ci --network ci-net \
+            -e MYSQL_ROOT_PASSWORD=root \
+            -e MYSQL_DATABASE=spring_api_system \
+            mysql:8.0
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..40}; do
+            if docker exec mysql-ci mysqladmin ping -h 127.0.0.1 -uroot -proot --silent; then
+              echo "MySQL is ready"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "MySQL did not become ready in time"
+          docker logs mysql-ci || true
+          exit 1
+
+      - name: Run container and smoke test
+        run: |
+          docker run -d --name spring-api-system --network ci-net -p 8080:8080 \
+            -e SPRING_PROFILES_ACTIVE="docker" \
+            -e SPRING_DATASOURCE_URL="jdbc:mysql://mysql-ci:3306/spring_api_system?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true" \
+            -e SPRING_DATASOURCE_USERNAME="root" \
+            -e SPRING_DATASOURCE_PASSWORD="root" \
+            -e DDL_AUTO="update" \
+            -e MAIL_HOST="sandbox.smtp.mailtrap.io" \
+            -e MAIL_PORT="2525" \
+            -e MAIL_USERNAME="ci" \
+            -e MAIL_PASSWORD="ci" \
+            -e PAG_API_URL="http://localhost:8081" \
+            -e INFOBIP_BASE_URL="https://xk4qx3.api.infobip.com" \
+            -e INFOBIP_API_KEY="ci" \
+            -e INFOBIP_WHATSAPP_SENDER="ci" \
+            -e INFOBIP_TEMPLATE_NAME="authentication" \
+            -e DISCORD_WEBHOOK_URL="https://example.com/webhook" \
+            -e RABBITMQ_AUTO_STARTUP="false" \
+            -e INIT_EMAIL="test@email.com" \
+            -e INIT_PASSWORD="test" \
+            ${IMAGE_NAME}:latest
+          for i in {1..30}; do
+            code=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:8080/ || true)
+            if [ "$code" != "000" ]; then
+              echo "Smoke test passed"
+              exit 0
+            fi
+
+            if [ -z "$(docker ps -q -f name=spring-api-system -f status=running)" ]; then
+              echo "Container stopped unexpectedly. Logs:"
+              docker logs spring-api-system || true
+              exit 1
+            fi
+
+            sleep 2
+          done
+
+          echo "Smoke test timed out. Logs:"
+          docker logs spring-api-system || true
+          exit 1
+
+      - name: Cleanup container
+        if: always()
+        run: |
+          docker rm -f spring-api-system || true
+          docker rm -f mysql-ci || true
+          docker network rm ci-net || true
+
+      - name: login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Push Docker image to Docker Hub
+        run: |
+          docker push ${IMAGE_NAME}:latest
+          docker push ${IMAGE_NAME}:${{ github.sha }}
+
+  deploy-aws-vm-1:
+    needs: continuous-integration
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, backend-1]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker preflight
+        run: |
+          whoami
+          id
+          groups
+          ls -l /var/run/docker.sock || true
+          docker version
+          docker ps
+
+      - name: Update machine
+        timeout-minutes: 5
+        run: sudo apt-get update -y
+
+      - name: Ensure JWT PEM keys
+        timeout-minutes: 5
+        run: |
+          sudo mkdir -p /opt/spring-api-system/keys
+          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
+            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
+            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
+            sudo chmod 600 /opt/spring-api-system/keys/private.pem
+            sudo chmod 644 /opt/spring-api-system/keys/public.pem
+            echo "[INFO] Chaves JWT geradas"
+          else
+            echo "[INFO] Chaves JWT ja existentes, reutilizando"
+          fi
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Deploy on instance
+        timeout-minutes: 5
+        env:
+          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
+          CONTAINER_NAME: spring-api-system
+          HOST_PORT: "8080"
+          CONTAINER_PORT: "8080"
+          HEALTHCHECK_URL: http://localhost:8080/health
+          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
+          JWT_KEYS_CONTAINER_DIR: /run/keys
+          JWT_PUBLIC_KEY: file:/run/keys/public.pem
+          JWT_PRIVATE_KEY: file:/run/keys/private.pem
+          SPRING_PROFILES_ACTIVE: prod
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          PAG_API_URL: ${{ secrets.PAG_API_URL }}
+          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
+          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
+          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
+          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
+        run: bash .github/scripts/deploy_backend_via_ssm.sh
+
+  deploy-aws-vm-2:
+    needs: deploy-aws-vm-1
+    if: github.ref == 'refs/heads/main'
+    runs-on: [self-hosted, backend-2]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Docker preflight
+        run: |
+          whoami
+          id
+          groups
+          ls -l /var/run/docker.sock || true
+          docker version
+          docker ps
+
+      - name: Update machine
+        timeout-minutes: 5
+        run: sudo apt-get update -y
+
+      - name: Ensure JWT PEM keys
+        timeout-minutes: 5
+        run: |
+          sudo mkdir -p /opt/spring-api-system/keys
+          if [ ! -f /opt/spring-api-system/keys/private.pem ] || [ ! -f /opt/spring-api-system/keys/public.pem ]; then
+            sudo openssl genpkey -algorithm RSA -out /opt/spring-api-system/keys/private.pem -pkeyopt rsa_keygen_bits:2048
+            sudo openssl rsa -pubout -in /opt/spring-api-system/keys/private.pem -out /opt/spring-api-system/keys/public.pem
+            sudo chmod 600 /opt/spring-api-system/keys/private.pem
+            sudo chmod 644 /opt/spring-api-system/keys/public.pem
+            echo "[INFO] Chaves JWT geradas"
+          else
+            echo "[INFO] Chaves JWT ja existentes, reutilizando"
+          fi
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Deploy on instance
+        timeout-minutes: 5
+        env:
+          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
+          CONTAINER_NAME: spring-api-system
+          HOST_PORT: "8080"
+          CONTAINER_PORT: "8080"
+          HEALTHCHECK_URL: http://localhost:8080/health
+          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
+          JWT_KEYS_CONTAINER_DIR: /run/keys
+          JWT_PUBLIC_KEY: file:/run/keys/public.pem
+          JWT_PRIVATE_KEY: file:/run/keys/private.pem
+          SPRING_PROFILES_ACTIVE: prod
+          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
+          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
+          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
+          MAIL_HOST: ${{ secrets.MAIL_HOST }}
+          MAIL_PORT: ${{ secrets.MAIL_PORT }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          PAG_API_URL: ${{ secrets.PAG_API_URL }}
+          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
+          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
+          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
+          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
+          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
+          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
+          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
+          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
+          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
+        run: bash .github/scripts/deploy_backend_via_ssm.sh
+          
+
+          
+
+  
