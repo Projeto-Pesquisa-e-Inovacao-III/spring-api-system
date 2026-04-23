@@ -1,5 +1,7 @@
 package com.spring.ApiSystem.shared.config.filter;
 
+import com.spring.ApiSystem.domain.usuario.Usuario;
+import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.security.token.TokenService;
 import jakarta.servlet.FilterChain;
@@ -19,18 +21,21 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
 
 @Service
 public class FilterService extends OncePerRequestFilter {
     private static final Logger logger = LoggerFactory.getLogger(FilterService.class);
     private final TokenService tokenService;
     private final JpaUserDetailsService jpaUserDetailsService;
+    private final UsuarioService usuarioService;
 
 
     public FilterService(TokenService tokenService,
-                         JpaUserDetailsService jpaUserDetailsService) {
+                         JpaUserDetailsService jpaUserDetailsService, UsuarioService usuarioService) {
         this.tokenService = tokenService;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.usuarioService = usuarioService;
     }
 
     @Value("${spring.profiles.active}")
@@ -54,10 +59,12 @@ public class FilterService extends OncePerRequestFilter {
 
         try {
             String email = tokenService.subjectToken(token);
+            Set<String> roles = tokenService.getRolesFromToken(token);
             if (email != null) {
-                autenticarUsuario(email);
+                autenticarUsuario(email, roles);
             }
         } catch (Exception ex) {
+            logger.debug("Token inválido ou expirado: {}", ex.getMessage());
             removerCookie(response);
         }
 
@@ -68,12 +75,15 @@ public class FilterService extends OncePerRequestFilter {
     Gera um cookie com o token gerado
      */
     public void gerarCookie(HttpServletResponse response, String email){
-        String token = tokenService.gerarToken(email);
+        Usuario usuario = usuarioService.getOpitionalUsuarioByEmailWithRoles(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+
+        String token = tokenService.gerarToken(email, usuario.getRoles());
 
         Cookie cookie = new Cookie("jwt", token);
 
         cookie.setHttpOnly(true); // protege contra acesso via JavaScript
-        cookie.setSecure(perfilAtivo.equals("prod")); // envia apenas em conexões HTTPS
+        cookie.setSecure(false); // envia apenas em conexões HTTPS
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
 
@@ -102,13 +112,13 @@ public class FilterService extends OncePerRequestFilter {
         response.addCookie(remover);
     }
 
-    private void autenticarUsuario(String email) {
+    private void autenticarUsuario(String email, Set<String> roles) {
         if (SecurityContextHolder.getContext().getAuthentication() != null) {
             return;
         }
 
         try {
-            UserDetails usuario = jpaUserDetailsService.loadUserByUsername(email);
+            UserDetails usuario = jpaUserDetailsService.loadUserByUsernameAndRoles(email, roles);
 
             if (usuario == null || !usuario.isEnabled()) {
                 return;
@@ -126,4 +136,7 @@ public class FilterService extends OncePerRequestFilter {
         } catch (UsernameNotFoundException ex) {
             logger.debug("Usuário do token não encontrado");
         }
-    }}
+    }
+}
+
+

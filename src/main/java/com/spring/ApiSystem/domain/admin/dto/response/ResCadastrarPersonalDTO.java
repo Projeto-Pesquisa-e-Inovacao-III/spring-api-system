@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.personal.dto.response;
+package com.spring.ApiSystem.domain.admin.dto.response;
 
 import java.time.LocalDate;
 
@@ -8,7 +8,5 @@ public record ResCadastrarPersonalDTO(
     String sexo,
     LocalDate dataNascimento,
     String email,
-    boolean ativo,
-    Integer bufferMinutos
-
+    boolean ativo
 ) {}

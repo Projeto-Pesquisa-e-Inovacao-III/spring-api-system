@@ -1,17 +1,39 @@
 spring:
+  application:
+    name: spring-api-system
+  profiles:
+    active: dev
   rabbitmq:
-    host: localhost
-    port: 5672
-    username: app_user
-    password: app_password_123
-    virtual-host: /app
-    connection-timeout: 60000
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:app_user}
+    password: ${RABBITMQ_PASSWORD:app_password_123}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/app}
+    connection-timeout: 5000
+    # 1. Configura o envio de mensagens (Producer)
+    template:
+      retry:
+        enabled: true
+        initial-interval: 2000ms
+        multiplier: 2.0
+        max-retries: 3
+    # 2. Configura o consumo de mensagens (Consumer/Listener)
+    # Isso impede que o Spring "martele" o log a cada 5 segundos
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 10s    # Primeira tentativa após 10s
+          multiplier: 3.0          # Triplica o tempo a cada falha (10s, 30s, 90s...)
+          max-interval: 600s       # No máximo tenta a cada 10 minutos
+          max-retries: 5
+
   h2:
     console:
       enabled: true
       path: /h2-console
   datasource:
-    url: jdbc:h2:mem:testdb
+    url: jdbc:h2:mem:testdb;MODE=MySQL;INIT=SET COLLATION PORTUGUESE STRENGTH PRIMARY
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -39,7 +61,9 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  servlet:
+    multipart:
+      max-file-size: 4MB
 pag:
   url: http://localhost:8081
 
@@ -47,18 +71,41 @@ infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
   api:
-    key: a
+    key: ${INFOBIP_API_KEY:a}
   whatsapp:
-    sender: a
+    sender: ${INFOBIP_WHATSAPP_SENDER:a}
     template:
-      name: a
+      name: ${INFOBIP_WHATSAPP_TEMPLATE_NAME:a}
 
 discord:
   webhook:
-    url: a
+    url: ${DISCORD_WEBHOOK_URL:a}
 
 storage:
   local-dir: imagens
+
+resilience4j:
+  retry:
+    instances:
+      rabbitInit:
+        maxAttempts: 3
+        waitDuration: 5s
+        retryExceptions:
+          - org.springframework.amqp.AmqpConnectException
+          - java.net.ConnectException
+  circuitbreaker:
+    instances:
+      rabbitConnection:
+        slidingWindowSize: 5
+        failureRateThreshold: 50
+        waitDurationInOpenState: 300s # 5 minutos de silêncio se o circuito abrir
+        permittedNumberOfCallsInHalfOpenState: 3
+
 logging:
   level:
+    com.spring.ApiSystem: DEBUG
     org.springframework.amqp: DEBUG
+
+init:
+  email: "fabio.admin@email.com"
+  password: "admin123"

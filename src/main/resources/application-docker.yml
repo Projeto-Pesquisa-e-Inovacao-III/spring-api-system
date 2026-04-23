@@ -2,9 +2,10 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
+
+  servlet:
+    multipart:
+      max-file-size: 4MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -20,6 +21,12 @@ spring:
     properties:
       hibernate:
         format_sql: false
+
+
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: ${RABBITMQ_AUTO_STARTUP:true}
 
   mail:
     host: ${MAIL_HOST}
@@ -38,7 +45,7 @@ pag:
 
 infobip:
   base:
-    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+    url: ${INFOBIP_BASE_URL}
   api:
     key: ${INFOBIP_API_KEY}
   whatsapp:
@@ -63,4 +70,8 @@ logging:
   level:
     root: INFO
     com.spring: INFO
+
+init:
+  email: ${INIT_EMAIL}
+  password: ${INIT_PASSWORD}
 

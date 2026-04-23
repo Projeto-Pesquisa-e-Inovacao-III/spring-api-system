@@ -2,9 +2,10 @@ server:
   port: ${SERVER_PORT:8080}
 
 spring:
-  autoconfigure:
-    exclude:
-      - org.springframework.boot.autoconfigure.h2.H2ConsoleAutoConfiguration
+
+  servlet:
+    multipart:
+      max-file-size: 4MB
 
   datasource:
     url: ${SPRING_DATASOURCE_URL}
@@ -15,7 +16,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     show-sql: false
     properties:
       hibernate:
@@ -32,7 +33,13 @@ spring:
           auth: true
           starttls:
             enable: true
-
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
+    connection-timeout: 60000
 
 pag:
   url: ${PAG_API_URL}
@@ -62,4 +69,8 @@ logging:
   level:
     root: INFO
     com.spring: INFO
+
+init:
+  email: ${INIT_EMAIL}
+  password: ${INIT_PASSWORD}
 

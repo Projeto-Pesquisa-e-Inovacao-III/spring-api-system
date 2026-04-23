@@ -6,10 +6,7 @@ import com.spring.ApiSystem.domain.aluno.dto.response.ResAtualizarAlunoDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResAlunosPagantesDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResBuscarAlunoPorIdDTO;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResCadastrarAlunoDTO;
-import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
-import com.spring.ApiSystem.domain.usuario.UsuarioService;
-import com.spring.ApiSystem.domain.usuario.dto.response.ResAtualizarUsuarioDTO;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,10 +14,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.data.web.SortDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.http.HttpResponse;
 import java.util.List;
 
 @RestController
@@ -42,16 +42,22 @@ public class AlunoController {
     @Operation(summary = "Criar aluno",
                description = "Endpoint para cadastro de alunos no sistema")
     @PostMapping("/cadastro")
-    public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO) {
-        return ResponseEntity.ok(alunoService.cadastrarUsuario(cadastroUsuarioDTO));
+    public ResponseEntity<ResCadastrarAlunoDTO> cadastrarUsuario(@Valid @RequestBody ReqCadastroAlunoDTO cadastroUsuarioDTO,
+                                                                 HttpServletResponse response) {
+        return ResponseEntity.ok(alunoService
+                .cadastrarAluno(cadastroUsuarioDTO,response));
     }
 
     @Operation(summary = "Listar alunos (necessário login)",
                description = "Endpoint para listar alunos no sistema")
     @GetMapping
-    public ResponseEntity<Page<ResListarAlunosDto>> listarAlunos(@PageableDefault(sort = "nome")
-                                                                 Pageable pageable) {
-        Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable);
+    public ResponseEntity<Page<ResListarAlunosDto>>
+    listarAlunos(@SortDefault.SortDefaults({
+                     @SortDefault(sort = "usuario.nome", direction = Sort.Direction.ASC),
+                     @SortDefault(sort = "id", direction = Sort.Direction.ASC)
+                 }) Pageable pageable,
+                 @RequestParam(required = false) String nome) {
+        Page<ResListarAlunosDto> alunos = alunoService.listarAlunos(pageable, nome);
 
         if(alunos.isEmpty()){
             return ResponseEntity.noContent().build();
@@ -64,7 +70,7 @@ public class AlunoController {
                 description = "Endpoint para buscar um aluno específico pelo ID no sistema")
     @GetMapping("/{id}")
     public ResponseEntity<?> buscarAlunoPorId( @PathVariable Long id) {
-        ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorId(id);
+        ResBuscarAlunoPorIdDTO aluno = alunoService.buscarAlunoPorIdComRole(id);
         if(aluno == null){
             return ResponseEntity.notFound().build();
         }

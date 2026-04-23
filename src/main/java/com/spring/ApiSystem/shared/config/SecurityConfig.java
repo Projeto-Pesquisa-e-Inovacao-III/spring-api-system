@@ -48,10 +48,16 @@ public class SecurityConfig {
                         ).permitAll();
 
                         auth.requestMatchers("/h2-console/**").permitAll();
+
+                        auth.requestMatchers(
+                                "/api/controle/admin/dev/**"
+                        ).permitAll();
                     }
 
                     // Públicas
                     auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+
+                    auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
 
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-exibicoes/ativos",
@@ -87,6 +93,14 @@ public class SecurityConfig {
                             "/api/personais/dias-semana/**"
                     ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
+                    auth.requestMatchers(
+                            "/api/admin/**",
+                            "/api/produtos-exibicoes/**",
+                            "/api/produtos-contratados/ganhos-mes/*",
+                            "/api/produtos-contratados/planos-vendidos/*",
+                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados"
+                    ).hasAuthority("ROLE_ADMIN");
+
                     // Aluno - matcher específico para GET /api/personais deve vir antes do matcher PERSONAL genérico
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-contratados/total-tipo/*",
@@ -104,11 +118,7 @@ public class SecurityConfig {
                             "/api/agendamentos/ausencia",
                             "/api/agendamentos/consultoria-realizadas/*",
                             "/api/agendamentos/contagem-status-data",
-                            "/api/produtos-contratados/ganhos-mes/*",
-                            "/api/produtos-contratados/planos-vendidos/*",
-                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados",
                             "/api/personais/**",
-                            "/api/produtos-exibicoes/**",
                             "/api/anamnese/aluno/**"
                     ).hasAuthority("ROLE_PERSONAL");
 
@@ -120,6 +130,9 @@ public class SecurityConfig {
                             "/api/produtos-contratados/**",
                             "/api/anamnese/**"
                     ).hasAuthority("ROLE_ALUNO");
+
+
+                    auth.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 
                 })
                 .exceptionHandling(ex -> ex

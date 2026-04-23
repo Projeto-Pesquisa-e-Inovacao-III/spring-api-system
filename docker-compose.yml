@@ -1,0 +1,56 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: spring-api-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-spring_api_system}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-uroot", "-p${MYSQL_ROOT_PASSWORD:-root}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-net
+
+  app:
+    build:
+      context: .
+    container_name: spring-api-system
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE:-prod}
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${MYSQL_DATABASE:-spring_api_system}?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-root}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-root}
+      DDL_AUTO: ${DDL_AUTO:-update}
+      MAIL_HOST: ${MAIL_HOST:-sandbox.smtp.mailtrap.io}
+      MAIL_PORT: ${MAIL_PORT:-2525}
+      MAIL_USERNAME: ${MAIL_USERNAME:-ci}
+      MAIL_PASSWORD: ${MAIL_PASSWORD:-ci}
+      PAG_API_URL: ${PAG_API_URL:-http://localhost:8081}
+      INFOBIP_BASE_URL: ${INFOBIP_BASE_URL:-https://xk4qx3.api.infobip.com}
+      INFOBIP_API_KEY: ${INFOBIP_API_KEY:-ci}
+      INFOBIP_WHATSAPP_SENDER: ${INFOBIP_WHATSAPP_SENDER:-ci}
+      INFOBIP_TEMPLATE_NAME: ${INFOBIP_TEMPLATE_NAME:-authentication}
+      DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-https://example.com/webhook}
+    networks:
+      - app-net
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
+
