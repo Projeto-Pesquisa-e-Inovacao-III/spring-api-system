@@ -130,6 +130,7 @@ public class UsuarioService {
                     .filter(t -> t.getId().equals(telefoneDTO.id()))
                     .findFirst()
                     .ifPresent(telefone -> {
+                        telefone.setPais("55+");
                         telefone.setDdd(telefoneDTO.ddd());
                         telefone.setNumero(telefoneDTO.numero());
                     });
