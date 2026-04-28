@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.nocodetool;
 
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqAtualizarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
+import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
@@ -103,5 +104,23 @@ public class NoCodeService {
         }
 
         return contentPage.map(ResBuscarNoCodeDTO::new);
+    }
+
+    @Transactional
+    public void deleteContent(UUID id) {
+        NoCode content = noCodeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
+        noCodeRepository.delete(content);
+    }
+
+    @Transactional
+    public ResBuscarNoCodeDTO renameContent(UUID id, ReqRenomearNoCodeDTO req) {
+        NoCode content = noCodeRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
+
+        content.setModificationName(req.modificationName());
+        content = noCodeRepository.save(content);
+
+        return new ResBuscarNoCodeDTO(content);
     }
 }

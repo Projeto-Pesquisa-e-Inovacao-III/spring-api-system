@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqAtualizarNoCodeDTO;
+import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -63,4 +64,15 @@ public class NoCodeController {
         return ResponseEntity.ok(page);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteContent(@PathVariable UUID id) {
+        noCodeService.deleteContent(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/{id}")
+    public ResponseEntity<ResBuscarNoCodeDTO> renameContent(@PathVariable UUID id, @RequestBody ReqRenomearNoCodeDTO req) {
+        ResBuscarNoCodeDTO res = noCodeService.renameContent(id, req);
+        return ResponseEntity.ok(res);
+    }
 }

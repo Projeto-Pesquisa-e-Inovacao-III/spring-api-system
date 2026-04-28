@@ -62,9 +62,7 @@ public class SecurityConfig {
                     auth.requestMatchers(HttpMethod.GET,
                             "/api/produtos-exibicoes/ativos",
                             "/api/produtos-exibicoes",
-                            "/api/usuarios/auth",
-                            "/api/no-code",
-                            "/api/no-code/**"
+                            "/api/usuarios/auth"
                     ).permitAll();
 
                     auth.requestMatchers(HttpMethod.POST,
@@ -72,16 +70,7 @@ public class SecurityConfig {
                             "/api/personais/cadastro",
                             "/api/usuarios/login",
                             "/api/produtos-contratados/pagamento",
-                            "/api/password-reset/**",
-                            "/api/no-code",
-                            "/api/no-code/",
-                            "/api/no-code/**"
-                    ).permitAll();
-
-                    auth.requestMatchers(HttpMethod.PUT,
-                            "/api/no-code",
-                            "/api/no-code/",
-                            "/api/no-code/**"
+                            "/api/password-reset/**"
                     ).permitAll();
 
                     // Compartilhadas
@@ -98,7 +87,10 @@ public class SecurityConfig {
                             "/api/produtos-exibicoes/**",
                             "/api/produtos-contratados/ganhos-mes/*",
                             "/api/produtos-contratados/planos-vendidos/*",
-                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados"
+                            "/api/produtos-contratados/quantidade-e-percentual-alunos-expirados",
+                            "/api/no-code",
+                            "/api/no-code/",
+                            "/api/no-code/**"
                     ).hasAuthority("ROLE_ADMIN");
 
                     // Aluno - matcher específico para GET /api/personais deve vir antes do matcher PERSONAL genérico
