@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.cep;
 
+import com.spring.ApiSystem.domain.cep.dto.response.CEPDto;
 import com.spring.ApiSystem.domain.cep.dto.response.ViaCepDTO;
 import com.spring.ApiSystem.domain.cep.exception.CepNaoEncontradoException;
 import org.springframework.http.ResponseEntity;
@@ -16,16 +17,20 @@ public class ViaCepService {
         this.cepRepository = cepRepository;
     }
 
-    public CEP cadastrarCEP(String cep){
+    public CEP cadastrarCEP(CEPDto cep){
         RestTemplate rest = new RestTemplate();
-        String url = "https://viacep.com.br/ws/" + cep + "/json/";
+        String url = "https://viacep.com.br/ws/" + cep.id() + "/json/";
 
         ResponseEntity<ViaCepDTO> resposta;
         try {
             resposta = rest.getForEntity(url, ViaCepDTO.class);
         } catch (RestClientException e) {
             CEP fallback = new CEP();
-            fallback.setId(cep);
+            fallback.setId(cep.id());
+            fallback.setLogradouro(cep.logradouro());
+            fallback.setBairro(cep.bairro());
+            fallback.setLocalidade(cep.localidade());
+            fallback.setUf(cep.uf());
             cepRepository.save(fallback);
             return fallback;
         }
@@ -36,7 +41,7 @@ public class ViaCepService {
         }
 
         CEP entidade = new CEP();
-        entidade.setId(cep);
+        entidade.setId(cep.id());
         entidade.setLogradouro(respostaCorpo.logradouro());
         entidade.setBairro(respostaCorpo.bairro());
         entidade.setLocalidade(respostaCorpo.localidade());
@@ -46,8 +51,8 @@ public class ViaCepService {
         return entidade;
     }
 
-    public CEP procurarCEP(String cep){
-        Optional<CEP> cepBanco = cepRepository.findById(cep);
+    public CEP procurarCEP(CEPDto cep){
+        Optional<CEP> cepBanco = cepRepository.findById(cep.id());
         return cepBanco.orElseGet(() -> cadastrarCEP(cep));
     }
 }
