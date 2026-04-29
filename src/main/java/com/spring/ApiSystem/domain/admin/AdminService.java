@@ -9,6 +9,7 @@ import com.spring.ApiSystem.domain.admin.exception.AdminNaoExisteException;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
 import com.spring.ApiSystem.domain.personal.PersonalService;
+import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @Service
@@ -254,6 +256,7 @@ public class AdminService {
         admin.setSexo("M");
         admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
         admin.setDataNascimento(LocalDate.parse("1990-01-01"));
+        admin.setTelefones(List.of(new Telefone(null, "55", "11", "999999999", admin)));
 
         admin = usuarioService.salvarUsuario(admin);
         admin = createProfile(admin).getUsuario();
