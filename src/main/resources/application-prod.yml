@@ -63,7 +63,16 @@ springdoc:
     enabled: false
 
 storage:
-  local-dir: /app/imagens
+  type: s3
+  s3:
+    bucket: ${AWS_S3_BUCKET:meu-bucket}
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  s3:
+    bucket: ${AWS_S3_BUCKET:meu-bucket}
+    endpoint: ${AWS_S3_ENDPOINT:}
+    path-style-access: ${AWS_S3_PATH_STYLE:false}
 
 logging:
   level:

@@ -29,7 +29,7 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ArgonService argonService;
-    private final LocalImageStorageService imageStorageService;
+    private final ImageStorageService imageStorageService;
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
@@ -102,6 +102,7 @@ public class UsuarioService {
             throw new SenhaNaoCorrespondeAtual();
         }
     }
+
 
     public String trocarFotoUsuario(MultipartFile imagem, String fotoAtualPath) throws IOException {
         return imageStorageService.trocarImagem(imagem, Paths.get(fotoAtualPath));
