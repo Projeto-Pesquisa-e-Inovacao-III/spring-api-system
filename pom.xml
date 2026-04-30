@@ -61,10 +61,6 @@
                     <artifactId>h2</artifactId>
                     <scope>runtime</scope>
                 </dependency>
-                <dependency>
-                    <groupId>software.amazon.awssdk</groupId>
-                    <artifactId>s3</artifactId>
-                </dependency>
             </dependencies>
         </profile>
         <profile>
@@ -75,7 +71,10 @@
         </profile>
     </profiles>
 	<dependencies>
-
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-amqp</artifactId>
