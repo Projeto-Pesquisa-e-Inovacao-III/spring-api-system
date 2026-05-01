@@ -9,7 +9,7 @@ import com.spring.ApiSystem.domain.usuario.events.UsuarioEventPublisher;
 import com.spring.ApiSystem.domain.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.domain.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
-
+import com.spring.ApiSystem.domain.usuario.LocalImageStorageService;
 
 import com.spring.ApiSystem.shared.security.ArgonService;
 import jakarta.transaction.Transactional;
@@ -33,7 +33,7 @@ public class UsuarioService {
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
+    public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, ImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
         this.argonService = argonService;
         this.imageStorageService = imageStorageService;

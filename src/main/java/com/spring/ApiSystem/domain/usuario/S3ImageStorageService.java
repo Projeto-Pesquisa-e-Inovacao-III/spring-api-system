@@ -33,6 +33,9 @@ public class S3ImageStorageService implements ImageStorageService {
     @Value("${storage.s3.bucket:}")
     private String s3Bucket;
 
+    @Value("${storage.s3.path:imagens/perfil/}")
+    private String s3Path;
+
     @Value("${spring.servlet.multipart.max-file-size:4MB}")
     private DataSize maxImageSize;
 
@@ -53,10 +56,11 @@ public class S3ImageStorageService implements ImageStorageService {
         original = Paths.get(original).getFileName().toString().replaceAll("[^A-Za-z0-9._-]", "_");
 
         String nomeArquivo = System.currentTimeMillis() + "_" + original;
+        String s3Key = s3Path + nomeArquivo;
 
         PutObjectRequest putReq = PutObjectRequest.builder()
                 .bucket(s3Bucket)
-                .key(nomeArquivo)
+                .key(s3Key)
                 .contentType(imagem.getContentType())
                 .build();
 
@@ -64,7 +68,7 @@ public class S3ImageStorageService implements ImageStorageService {
             s3Client.putObject(putReq, RequestBody.fromInputStream(in, imagem.getSize()));
         }
 
-        return nomeArquivo;
+        return s3Key;
     }
 
     @Override
@@ -80,7 +84,7 @@ public class S3ImageStorageService implements ImageStorageService {
         if (path == null) return;
         if (s3Bucket == null || s3Bucket.isBlank()) return;
 
-        String key = path.getFileName() != null ? path.getFileName().toString() : path.toString();
+        String key = path.toString();
         if (key == null || key.isBlank()) return;
 
         DeleteObjectRequest del = DeleteObjectRequest.builder()
