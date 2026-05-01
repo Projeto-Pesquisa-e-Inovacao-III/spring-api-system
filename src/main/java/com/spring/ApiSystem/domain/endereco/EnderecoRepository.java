@@ -17,8 +17,10 @@ public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
     );
 
     @Query(
-"""
-SELECT e FROM endereco e JOIN FETCH e.cep WHERE e.usuario = :usuario
-""")
+    """
+    SELECT e FROM endereco e JOIN FETCH e.cep WHERE e.usuario = :usuario
+    """)
     List<Endereco> findByUsuario(Usuario usuario);
+
+    Integer countByUsuarioId(Long usuarioId);
 }
