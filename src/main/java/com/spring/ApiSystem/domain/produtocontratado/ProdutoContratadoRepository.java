@@ -119,4 +119,6 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     boolean temProdutoContratadoTipoProdutoAtivo(@Param("aluno") Aluno aluno,
                                             @Param("tipoProduto") TipoProduto tipoProduto);
 
+
+    ProdutoContratado findByProdutoExibicaoTipoProdutoAndSituacao(TipoProduto tipoProduto, boolean situacao);
 }
