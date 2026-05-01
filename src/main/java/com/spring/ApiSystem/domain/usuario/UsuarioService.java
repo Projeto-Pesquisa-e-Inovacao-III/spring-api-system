@@ -35,8 +35,6 @@ public class UsuarioService {
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
-    private final String DUMMY_SALT;
-    private final String DUMMY_HASH;
     private final Usuario DUMMY_USUARIO;
 
     public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
@@ -47,8 +45,8 @@ public class UsuarioService {
         this.usuarioEventPublisher = usuarioEventPublisher;
 
         List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
-        this.DUMMY_SALT  = dummyArgon.get(0);
-        this.DUMMY_HASH = dummyArgon.get(1);
+        String DUMMY_SALT = dummyArgon.get(0);
+        String DUMMY_HASH = dummyArgon.get(1);
         this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, true);
     }
 
