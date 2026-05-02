@@ -6,26 +6,45 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.domain.usuario.LocalImageStorageService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
-@EnableJpaAuditing
 public class NoCodeService {
     private final NoCodeRepository noCodeRepository;
+    private final NoCodeImageRepository noCodeImageRepository;
     private final JpaUserDetailsService detailsService;
+    private final LocalImageStorageService imageStorageService;
 
-    public NoCodeService(NoCodeRepository noCodeRepository, JpaUserDetailsService detailsService) {
+    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, LocalImageStorageService imageStorageService) {
         this.noCodeRepository = noCodeRepository;
+        this.noCodeImageRepository = noCodeImageRepository;
         this.detailsService = detailsService;
+        this.imageStorageService = imageStorageService;
+    }
+
+    @Transactional
+    public String salvarImagem(MultipartFile image, String section) throws IOException {
+        Personal currentPersonal = detailsService.getCurrentPersonal();
+        NoCode noCode = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+
+        String url = imageStorageService.salvarBlob(image);
+
+        if (noCode != null) {
+            NoCodeImage noCodeImage = new NoCodeImage(url, section, noCode);
+            noCodeImageRepository.save(noCodeImage);
+        }
+
+        return url;
     }
 
     @Transactional
@@ -67,9 +86,17 @@ public class NoCodeService {
 
     @Transactional
     public ReqAtualizarNoCodeDTO updateContent(ReqAtualizarNoCodeDTO req) {
-        Personal currentPersonal = detailsService.getCurrentPersonal();
-
-        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+        NoCode content;
+        if (req.id() != null) {
+            content = noCodeRepository.findById(req.id())
+                    .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado com ID: " + req.id()));
+        } else {
+            Personal currentPersonal = detailsService.getCurrentPersonal();
+            content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+            if (content == null) {
+                throw new EntityNotFoundException("Nenhum conteúdo NoCode encontrado para o usuário atual.");
+            }
+        }
 
         content.setContent(req.content());
         content.setModificationName(req.modificationName());

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.agendamento.dto.response;
+package com.spring.ApiSystem.domain.agendamento.dto.response.overview;
 
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;

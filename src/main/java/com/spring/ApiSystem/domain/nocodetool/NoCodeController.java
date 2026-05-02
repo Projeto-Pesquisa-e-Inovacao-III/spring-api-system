@@ -14,6 +14,10 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.UUID;
 
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/no-code")
 public class NoCodeController {
@@ -21,6 +25,15 @@ public class NoCodeController {
 
     public NoCodeController(NoCodeService noCodeService) {
         this.noCodeService = noCodeService;
+    }
+
+    @PostMapping("/image")
+    public ResponseEntity<Map<String, String>> uploadImage(
+            @RequestParam("image") MultipartFile image,
+            @RequestParam("section") String section
+    ) throws IOException {
+        String url = noCodeService.salvarImagem(image, section);
+        return ResponseEntity.ok(Map.of("url", url));
     }
 
     @PostMapping
@@ -37,6 +50,7 @@ public class NoCodeController {
         return ResponseEntity.created(uri).body(req);
     }
 
+    //isso vai servir só pra atualizar imagem. talvez tenha um jeito melhormas é feriado
     @PutMapping
     public ResponseEntity<ReqAtualizarNoCodeDTO> updateContent(@RequestBody ReqAtualizarNoCodeDTO req) {
         req = noCodeService.updateContent(req);
