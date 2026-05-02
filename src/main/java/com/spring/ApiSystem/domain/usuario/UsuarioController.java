@@ -157,7 +157,7 @@ public class UsuarioController {
                 return ResponseEntity.notFound().build();
             }
 
-//            String nomeArquivo = Paths.get(usuario.getCaminhoFoto()).getFileName().toString();
+//          String nomeArquivo = Paths.get(usuario.getCaminhoFoto()).getFileName().toString();
             Resource resource = usuarioService.buscarFoto(usuario.getCaminhoFoto());
 
             return ResponseEntity.ok()
