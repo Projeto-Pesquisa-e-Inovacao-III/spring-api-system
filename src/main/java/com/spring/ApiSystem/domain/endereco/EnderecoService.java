@@ -44,7 +44,7 @@ public class EnderecoService {
     public ResCadastrarEnderecoDTO cadastrarEndereco(ReqCadastrarEnderecoDTO enderecoDTO, String email) {
            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
 
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
             if (cep == null){
                 throw new CepNaoEncontradoException();
             }
@@ -69,7 +69,7 @@ public class EnderecoService {
            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
            Endereco enderecoEncontrado = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
 
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
             if (cep == null) {
                 throw new CepNaoEncontradoException();
             }
