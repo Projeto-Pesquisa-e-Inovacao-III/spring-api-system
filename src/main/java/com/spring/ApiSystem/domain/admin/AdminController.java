@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.admin;
 
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroAdminDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,10 +25,22 @@ public class AdminController {
 
     @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
     @PostMapping("/usuarios/personal")
-    public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(
+    @ResponseStatus(HttpStatus.CREATED)
+    public void cadastrarPersonal(
             @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
     ) {
-        return ResponseEntity.ok(adminService.criarPersonal(cadastroUsuarioDTO));
+        adminService.criarPersonal(cadastroUsuarioDTO);
+    }
+
+    // TODO: abstratir para ser 1 endpoint para criar qualquer tipo de usuário, passando a role como parâmetro e verificando os dados adicionais necessários para cada role, como por exemplo, o número do CREF para a role de PERSONAL.
+
+    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
+    @PostMapping("/usuarios/admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void cadastrarUsuario(
+            @Valid @RequestBody ReqCadastroAdminDTO cadastroUsuarioDTO
+    ) {
+        adminService.createAdminUser(cadastroUsuarioDTO);
     }
 
     @Operation(summary = "Adicionar role a usuário", description = "Endpoint para adicionar uma role a um usuário existente no sistema")

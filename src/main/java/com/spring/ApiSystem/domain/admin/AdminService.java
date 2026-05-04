@@ -1,19 +1,25 @@
 package com.spring.ApiSystem.domain.admin;
 
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroAdminDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
 import com.spring.ApiSystem.domain.admin.exception.AdminNaoExisteException;
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
+import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
+import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
+import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
+import com.spring.ApiSystem.shared.security.PasswordGenerator;
 import jakarta.transaction.Transactional;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -35,14 +41,16 @@ public class AdminService {
     private final JpaUserDetailsService userDetailsService;
     private final AlunoService alunoService;
     private final CpfMapper cpfMapper;
+    private final EmailService emailService;
 
-    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper) {
+    public AdminService(AdminRepository adminRepository, UsuarioService usuarioService, PersonalService personalService, JpaUserDetailsService userDetailsService, AlunoService alunoService, CpfMapper cpfMapper, EmailService emailService) {
         this.adminRepository = adminRepository;
         this.usuarioService = usuarioService;
         this.personalService = personalService;
         this.userDetailsService = userDetailsService;
         this.alunoService = alunoService;
         this.cpfMapper = cpfMapper;
+        this.emailService = emailService;
     }
 
     @Transactional
@@ -214,7 +222,7 @@ public class AdminService {
             String anamnese = null;
             String cref = null;
             if (usuario.isAluno() && usuario.getAluno() != null) {
-                var aluno = usuario.getAluno();
+                Aluno aluno = usuario.getAluno();
                 if (aluno.getCpf() != null) {
                     cpf = aluno.getCpf().toString();
                 }
@@ -223,7 +231,7 @@ public class AdminService {
                 }
             }
             if (usuario.isPersonal() && usuario.getPersonal() != null) {
-                var personal = usuario.getPersonal();
+                Personal personal = usuario.getPersonal();
                 if (personal.getCref() != null) {
                     cref = personal.getCref();
                 }
@@ -248,11 +256,47 @@ public class AdminService {
     }
 
     @Transactional
-    public void createAdminUser(String email, String password) {
+    public void createAdminUser(ReqCadastroAdminDTO dto) {
+        usuarioService.validarEmailExistente(dto.email());
+
+        Usuario admin = new Usuario();
+        admin.setNome(dto.nome());
+        admin.setSexo(dto.sexo());
+        admin.setRoles(Set.of(Role.ADMIN));
+        admin.setDataNascimento(LocalDate.parse(dto.dataNascimento().toString()));
+
+        String randomSenha = PasswordGenerator.generate(10);
+        usuarioService.aplicarSenhaCriptografada(admin, randomSenha);
+
+        admin = usuarioService.salvarUsuario(admin);
+        admin = createProfile(admin).getUsuario();
+
+        String corpoEmail = String.format(
+                "Olá %s,<br>Seu perfil de Admin foi criado com sucesso!<br><br>Sua senha temporária é: <strong>%s</strong>",
+                admin.getNome(),
+                randomSenha
+        );
+
+        emailService.enviarEmail(new Email(
+                admin.getEmail(),
+                "Bem-vindo ao sistema de academia",
+                corpoEmail
+        ));
+
+        log.info("Usuario admin inicial criado.");
+    }
+
+
+    @Transactional
+    public void createInitialAdminUser(String email, String password) {
+        if(usuarioService.emailExiste(email)){
+            log.info("Admin inicial já existe, pulando criação.");
+            return;
+        }
         Usuario admin = new Usuario();
         usuarioService.aplicarSenhaCriptografada(admin, password);
         admin.setEmail(email);
-        admin.setNome("Fábio");
+        admin.setNome("ADMIN");
         admin.setSexo("M");
         admin.setRoles(Set.of(Role.ADMIN, Role.PERSONAL, Role.DONO));
         admin.setDataNascimento(LocalDate.parse("1990-01-01"));
