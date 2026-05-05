@@ -109,3 +109,6 @@ logging:
 init:
   email: "fabio.admin@email.com"
   password: "admin123"
+
+rabbitmq:
+  enabled: false
