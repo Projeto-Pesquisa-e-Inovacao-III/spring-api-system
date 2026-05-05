@@ -84,6 +84,7 @@ discord:
 
 storage:
   local-dir: imagens
+  type: local
 
 resilience4j:
   retry:

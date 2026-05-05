@@ -4,7 +4,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 
 public class AlunoJaPossuiProdutoContratadoDoTipoException extends RuntimeException {
     public AlunoJaPossuiProdutoContratadoDoTipoException(TipoProduto tipoProduto) {
-        super("O Aluno já tem um produto contratado do tipo " + tipoProduto);
+        super("Não é possível prosseguir: o aluno já possui um produto do tipo " + tipoProduto + ".");
     }
 }
 

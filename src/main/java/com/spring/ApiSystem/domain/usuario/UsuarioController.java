@@ -157,11 +157,14 @@ public class UsuarioController {
                 return ResponseEntity.notFound().build();
             }
 
-            String nomeArquivo = Paths.get(usuario.getCaminhoFoto()).getFileName().toString();
-            Resource resource = usuarioService.buscarFoto(nomeArquivo);
+//          String nomeArquivo = Paths.get(usuario.getCaminhoFoto()).getFileName().toString();
+            Resource resource = usuarioService.buscarFoto(usuario.getCaminhoFoto());
 
             return ResponseEntity.ok()
                     .header("Content-Type", "image/*")
+                    .header("Cache-Control", "no-cache, no-store, must-revalidate")
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
                     .body(resource);
         } catch (IOException e) {
             return ResponseEntity.notFound().build();
