@@ -1,16 +1,13 @@
 package com.spring.ApiSystem.shared.infrastructure.rabbit;
 
-import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
-import com.spring.ApiSystem.external.comprar.ComprarService;
 import com.spring.ApiSystem.shared.infrastructure.rabbit.dto.OrderPaidMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 
-@Component
+@ConditionalOnProperty(name = "rabbitmq.enabled", havingValue = "true", matchIfMissing = true)
 public class OrderEventConsumer {
 
     private static final Logger log = LoggerFactory.getLogger(OrderEventConsumer.class);
