@@ -7,6 +7,8 @@ import com.spring.ApiSystem.domain.cep.exception.CepNaoEncontradoException;
 import com.spring.ApiSystem.domain.endereco.dto.request.ReqAtualizarEnderecoDTO;
 import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
 import com.spring.ApiSystem.domain.endereco.dto.response.*;
+import com.spring.ApiSystem.domain.endereco.exception.EnderecoAlreadyExistsException;
+import com.spring.ApiSystem.domain.endereco.exception.EnderecoOutOfLimitException;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.endereco.exception.EnderecoNaoExistePorId;
 import com.spring.ApiSystem.domain.endereco.mapper.EnderecoMapper;
@@ -40,9 +42,18 @@ public class EnderecoService {
         this.jpaUserDetailsService = jpaUserDetailsService;
     }
 
+    private final Integer LIMIT_ENDERECO = 6;
+
+    public void checkLimit(){
+        if(enderecoRepository.countByUsuarioId(jpaUserDetailsService.getCurrentUser().getId()) >= LIMIT_ENDERECO){
+            throw new EnderecoOutOfLimitException(LIMIT_ENDERECO);
+        }
+    }
+
     @Transactional
     public ResCadastrarEnderecoDTO cadastrarEndereco(ReqCadastrarEnderecoDTO enderecoDTO, String email) {
-           Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
+            checkLimit();
+            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
 
             CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
             if (cep == null){
@@ -54,7 +65,7 @@ public class EnderecoService {
 
             Optional<Endereco> enderecoExistente = consultarEnderecoExistente(endereco);
             if (enderecoExistente.isPresent()) {
-                return enderecoMapper.toResCadastrarEnderecoDTO(enderecoExistente.get());
+                throw new EnderecoAlreadyExistsException();
             }
 
             endereco.setUsuario(usuarioEncontrado);
