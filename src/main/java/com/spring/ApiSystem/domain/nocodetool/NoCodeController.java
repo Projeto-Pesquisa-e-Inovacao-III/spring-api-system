@@ -32,7 +32,7 @@ public class NoCodeController {
             @RequestParam("image") MultipartFile image,
             @RequestParam("section") String section
     ) throws IOException {
-        String url = noCodeService.salvarImagem(image, section);
+        String url = noCodeService.saveImage(image, section);
         return ResponseEntity.ok(Map.of("url", url));
     }
 

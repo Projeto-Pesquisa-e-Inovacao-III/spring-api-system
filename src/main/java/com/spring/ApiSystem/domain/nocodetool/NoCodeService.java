@@ -6,7 +6,7 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.domain.usuario.LocalImageStorageService;
+import com.spring.ApiSystem.domain.usuario.ImageStorageService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +23,9 @@ public class NoCodeService {
     private final NoCodeRepository noCodeRepository;
     private final NoCodeImageRepository noCodeImageRepository;
     private final JpaUserDetailsService detailsService;
-    private final LocalImageStorageService imageStorageService;
+    private final ImageStorageService imageStorageService;
 
-    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, LocalImageStorageService imageStorageService) {
+    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, ImageStorageService imageStorageService) {
         this.noCodeRepository = noCodeRepository;
         this.noCodeImageRepository = noCodeImageRepository;
         this.detailsService = detailsService;
@@ -33,7 +33,7 @@ public class NoCodeService {
     }
 
     @Transactional
-    public String salvarImagem(MultipartFile image, String section) throws IOException {
+    public String saveImage(MultipartFile image, String section) throws IOException {
         Personal currentPersonal = detailsService.getCurrentPersonal();
         NoCode noCode = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
 

@@ -4,7 +4,7 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.shared.service.ImageStorageService;
+import com.spring.ApiSystem.domain.usuario.ImageStorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -59,5 +59,21 @@ class NoCodeServiceTest {
         assertNotNull(result);
         assertEquals("{\"v\": 2}", result.content());
         verify(noCodeRepository).findFirstByUserIdOrderByCreatedAtDesc(1L);
+    }
+
+    @Test
+    void saveImage_ShouldReturnUrlAndSaveNoCodeImage() throws java.io.IOException {
+        org.springframework.web.multipart.MultipartFile image = mock(org.springframework.web.multipart.MultipartFile.class);
+        String section = "header";
+        String expectedUrl = "http://storage.com/image.png";
+
+        when(imageStorageService.salvarBlob(image)).thenReturn(expectedUrl);
+        when(noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(1L)).thenReturn(new NoCode());
+
+        String result = noCodeService.saveImage(image, section);
+
+        assertEquals(expectedUrl, result);
+        verify(imageStorageService).salvarBlob(image);
+        verify(noCodeImageRepository).save(any(NoCodeImage.class));
     }
 }
