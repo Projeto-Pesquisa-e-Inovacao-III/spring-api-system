@@ -75,8 +75,6 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloIdAluno(Long idProdutoExibicao, Long idAluno){
-        System.out.println("ID do Produto de Exibição recebido: " + idProdutoExibicao);
-        System.out.println("ID do Aluno recebido: " + idAluno);
         Aluno aluno = alunoService.buscarPorId(idAluno);
         return criarProdutoContratadoPeloAluno(idProdutoExibicao, aluno);
     }
