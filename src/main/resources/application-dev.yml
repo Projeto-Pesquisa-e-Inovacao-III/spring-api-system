@@ -111,4 +111,4 @@ init:
   password: "admin123"
 
 rabbitmq:
-  enabled: false
+  enabled: true
