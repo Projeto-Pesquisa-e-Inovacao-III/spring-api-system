@@ -81,7 +81,7 @@ public class AlunoService {
             Boolean isUsuarioEncontrado = usuarioService.loginUsuario(alunoSalvo.getEmail(), rawPassword);
 
             if (isUsuarioEncontrado) {
-                filterService.gerarCookie(response, alunoSalvo.getEmail());
+                filterService.gerarCookie(response, alunoSalvo.getEmail(), true);
             }
             return alunoMapper.toDtoCadastrarAluno(alunoSalvo);
         } catch (DataIntegrityViolationException e) {

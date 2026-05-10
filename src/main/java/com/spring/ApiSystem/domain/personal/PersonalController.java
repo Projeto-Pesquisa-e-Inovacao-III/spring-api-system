@@ -100,7 +100,7 @@ public class PersonalController {
         ResAtualizarPersonalDTO usuarioEditado = personalService.atualizarUsuario(dto, personal);
 
         filterService.removerCookie(response);
-        filterService.gerarCookie(response, usuarioEditado.email());
+        filterService.gerarCookie(response, usuarioEditado.email(), true);
 
         return ResponseEntity.ok(usuarioEditado);
     }
