@@ -22,8 +22,6 @@ import java.util.Optional;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
     /* -------------------- Buscas simples -------------------- */
-
-
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
 
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
