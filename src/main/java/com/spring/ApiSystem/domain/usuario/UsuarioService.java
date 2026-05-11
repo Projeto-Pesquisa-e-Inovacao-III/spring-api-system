@@ -22,6 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import java.util.Optional;
 
 @Service
@@ -33,12 +35,19 @@ public class UsuarioService {
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
+    private final Usuario DUMMY_USUARIO;
+
     public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, ImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
         this.argonService = argonService;
         this.imageStorageService = imageStorageService;
         this.telefoneService = telefoneService;
         this.usuarioEventPublisher = usuarioEventPublisher;
+
+        List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
+        String DUMMY_SALT = dummyArgon.get(0);
+        String DUMMY_HASH = dummyArgon.get(1);
+        this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, true);
     }
 
     public Boolean removerUsuario(String email) {
@@ -50,12 +59,34 @@ public class UsuarioService {
         return true;
     }
 
-    public Boolean loginUsuario(String email, String senha) {
-        Usuario userOpt = buscarUsuarioPorEmail(email);
+    public long getStartTime(){
+        return System.nanoTime();
+    }
 
-        boolean argon = argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
-        boolean isValido = userOpt.isAtivo();
-        return  isValido && argon;
+    public void setEndTime(long startTime, int milliseconds, int millisecondsToAdd){
+        long timeTarget = TimeUnit.MILLISECONDS.toNanos(milliseconds);
+        long stepNanos = TimeUnit.MILLISECONDS.toNanos(millisecondsToAdd);
+        long timeSpent = System.nanoTime() - startTime;
+
+        if (timeSpent > timeTarget) {
+            long excess = timeSpent - timeTarget;
+            long steps = (excess + stepNanos - 1) / stepNanos;
+            timeTarget += steps * stepNanos;
+        }
+
+        long timeLeft = timeTarget - timeSpent;
+        if (timeLeft > 0) {
+            LockSupport.parkNanos(timeLeft);
+        }
+    }
+
+    public Boolean loginUsuario(String email, String senha) {
+        Usuario userOpt = usuarioRepository.findByEmail(email)
+                .orElse(DUMMY_USUARIO);
+
+        return
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha()) &&
+                userOpt.isAtivo();
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {

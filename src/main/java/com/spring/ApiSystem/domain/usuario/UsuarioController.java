@@ -86,14 +86,18 @@ public class UsuarioController {
             @Valid @RequestBody ReqLoginUsuarioDTO dto,
             HttpServletResponse response
     ) {
-        Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
+        long startTime = usuarioService.getStartTime();
+        try {
+            Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
 
-        if (isUsuarioEncontrado) {
-            filterService.gerarCookie(response, dto.email());
-            return ResponseEntity.ok().build();
+            filterService.gerarCookie(response, dto.email(), isUsuarioEncontrado);
+
+            return isUsuarioEncontrado ?
+                    ResponseEntity.ok().build() :
+                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+        } finally {
+            usuarioService.setEndTime(startTime, 1000, 5);
         }
-
-        return ResponseEntity.notFound().build();
     }
 
     @Operation(

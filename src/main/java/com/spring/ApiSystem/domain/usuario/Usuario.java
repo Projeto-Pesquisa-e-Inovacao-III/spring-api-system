@@ -63,6 +63,12 @@ public class Usuario {
 
     public Usuario() {}
 
+    public Usuario(String salt, String senha, boolean ativo) {
+        this.salt = salt;
+        this.senha = senha;
+        this.ativo = ativo;
+    }
+
     public Usuario(Long id, String nome, Set<Role> roles, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
         this.nome = nome;

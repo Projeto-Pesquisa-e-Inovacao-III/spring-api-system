@@ -12,13 +12,15 @@ import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.aluno.dto.response.ResListarAlunosDto;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.domain.produtocontratado.mapper.ProdutoContratadoMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = CpfMapper.class)
+@Mapper(componentModel = "spring", uses = { CpfMapper.class, ProdutoContratadoMapper.class })
 public interface AlunoMapper {
 
     @Mapping(source = "cpf", target = "cpf", qualifiedByName = "toCpf")
@@ -26,7 +28,11 @@ public interface AlunoMapper {
 
     ResCadastrarAlunoDTO toDtoCadastrarAluno(Aluno aluno);
 
+    @Mapping(target = "id", source = "aluno.id")
     ResBuscarAlunoPorIdDTO toDtoBuscarAlunoPorId(Aluno aluno);
+
+    @Mapping(target = "id", source = "aluno.id")
+    ResBuscarAlunoPorIdDTO toDtoBuscarAlunoPorId(Aluno aluno, ProdutoContratado produtoContratado);
 
     default ResListarTelefonesPorIdDoUsuario telefoneToDto(Telefone telefone) {
         if (telefone == null) return null;
