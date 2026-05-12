@@ -4,6 +4,7 @@ package com.spring.ApiSystem.domain.admin.dto.request;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
 import jakarta.validation.constraints.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 public record ReqCadastroAdminDTO(
@@ -13,11 +14,11 @@ public record ReqCadastroAdminDTO(
     String sexo,
 
     @Past(message = "A data de nascimento deve estar no passado")
-    Date dataNascimento,
+    LocalDate dataNascimento,
 
     @NotBlank(message = "O email é obrigatório")
     @Email(message = "O email deve ser válido")
     String email,
 
     ReqCadastrarTelefoneDTO telefone
-) {}
+){}

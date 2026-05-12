@@ -204,9 +204,6 @@ public class Usuario {
     }
 
     public void removeRole(Role role) {
-        if(hasOnlyRole(role)){
-            throw new IllegalArgumentException("O usuário deve ter pelo menos uma role. Não é permitido remover a última role: " + role);
-        }
         if(!isRole(role)){
             throw new IllegalArgumentException("O usuário não possui a role: " + role);
         }

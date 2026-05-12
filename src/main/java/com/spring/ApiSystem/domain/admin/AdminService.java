@@ -64,7 +64,7 @@ public class AdminService {
             throw new IllegalArgumentException("O usuário já possui a role: " + role);
         }
 
-        log.info("O Usuario id {} está adicionando role {} ao usuário de id {}", admin.getId(), role, userId);
+        log.info("O Admin de id {} está adicionando a role {} ao usuário de id {}", admin.getId(), role, userId);
 
         usuarioService.addRoleToUsuario(usuario, role);
 
@@ -120,10 +120,11 @@ public class AdminService {
         }
 
         usuarioService.salvarUsuario(usuario);
+        log.info("O Admin de id {} inativou (soft delete) o usuário de id {}", admin.getId(), userId);
     }
 
     @Transactional
-    public Usuario retirarRole(Role role, Long userId){
+    public Usuario removeRole(Role role, Long userId){
         Admin admin = userDetailsService.getCurrentAdmin();
 
         Usuario usuario = usuarioService.buscarUsuarioPorId(userId);
@@ -136,16 +137,26 @@ public class AdminService {
             throw new IllegalArgumentException("Um administrador não pode remover sua propria role.");
         }
 
+        if(usuario.isAdmin()){
+            throw new IllegalArgumentException("Um admistrador não pode ter a role de admistrador removida, apenas a role DONO posso fazer isso.");
+        }
+
+        if(usuario.hasOnlyRole(role)){
+            throw new IllegalArgumentException("Não é permitido remove a ultima role do usuario. Caso deseje deletar-lo utilize o meio de deletar.");
+        }
+
         usuario = usuarioService.removeRoleFromUsuario(usuario, role);
+
+        log.info("O Admin de id {} removeu a role {} do usuário de id {}", admin.getId(), role, userId);
 
         return usuario;
     }
 
     @Transactional
-    public ResCadastrarPersonalDTO criarPersonal(ReqCadastroPersonalDTO personalDTO){
+    public ResCadastrarPersonalDTO createPersonalUser(ReqCadastroPersonalDTO personalDTO){
         Admin admin = userDetailsService.getCurrentAdmin();
         ResCadastrarPersonalDTO personalCreated = personalService.cadastrarPersonalDto(personalDTO);
-        log.info("O Usuario id {} criou o personal de id {}", admin.getId(), personalCreated.id());
+        log.info("O Admin de id {} criou o personal de id {}", admin.getId(), personalCreated.id());
         return personalCreated;
     }
 
@@ -209,7 +220,7 @@ public class AdminService {
     }
 
     @Transactional
-    public Page<ResUsuarioWithRolesResponseDTO> listarUsuariosComFiltros(String nome, String email, Role role, Pageable pageable) {
+    public Page<ResUsuarioWithRolesResponseDTO> listUsersWithFilter(String nome, String email, Role role, Pageable pageable) {
         userDetailsService.getCurrentAdmin();
         Page<Usuario> usuarios;
         if (role != null) {
@@ -257,35 +268,37 @@ public class AdminService {
 
     @Transactional
     public void createAdminUser(ReqCadastroAdminDTO dto) {
+        Admin admin = userDetailsService.getCurrentAdmin();
         usuarioService.validarEmailExistente(dto.email());
 
-        Usuario admin = new Usuario();
-        admin.setNome(dto.nome());
-        admin.setSexo(dto.sexo());
-        admin.setRoles(Set.of(Role.ADMIN));
-        admin.setDataNascimento(LocalDate.parse(dto.dataNascimento().toString()));
+        Usuario adminCriado = new Usuario();
+        adminCriado.setNome(dto.nome());
+        adminCriado.setSexo(dto.sexo());
+        adminCriado.setRoles(Set.of(Role.ADMIN));
+        adminCriado.setDataNascimento(dto.dataNascimento());
+        adminCriado.setEmail(dto.email());
+        adminCriado.setTelefones(List.of(new Telefone(null, dto.telefone().pais(), dto.telefone().ddd(), dto.telefone().numero(), adminCriado)));
 
         String randomSenha = PasswordGenerator.generate(10);
-        usuarioService.aplicarSenhaCriptografada(admin, randomSenha);
+        usuarioService.aplicarSenhaCriptografada(adminCriado, randomSenha);
 
-        admin = usuarioService.salvarUsuario(admin);
-        admin = createProfile(admin).getUsuario();
+        adminCriado = usuarioService.salvarUsuario(adminCriado);
+        adminCriado = createProfile(adminCriado).getUsuario();
 
         String corpoEmail = String.format(
                 "Olá %s,<br>Seu perfil de Admin foi criado com sucesso!<br><br>Sua senha temporária é: <strong>%s</strong>",
-                admin.getNome(),
+                adminCriado.getNome(),
                 randomSenha
         );
 
         emailService.enviarEmail(new Email(
-                admin.getEmail(),
+                adminCriado.getEmail(),
                 "Bem-vindo ao sistema de academia",
                 corpoEmail
         ));
 
-        log.info("Usuario admin inicial criado.");
+        log.info("O Admin de id {} criou um novo admin de id {}", admin.getId(), adminCriado.getId());
     }
-
 
     @Transactional
     public void createInitialAdminUser(String email, String password) {
@@ -305,6 +318,7 @@ public class AdminService {
         admin = usuarioService.salvarUsuario(admin);
         admin = createProfile(admin).getUsuario();
         personalService.createProfile(admin, "CREF12345");
-        log.info("Usuario admin inicial criado.");
+        log.info("Usuario admin inicial criado na inicialização.");
     }
 }
+

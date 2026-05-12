@@ -3,7 +3,6 @@ package com.spring.ApiSystem.domain.admin;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroAdminDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
@@ -23,24 +22,23 @@ public class AdminController {
             this.adminService = adminService;
         }
 
-    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
-    @PostMapping("/usuarios/personal")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void cadastrarPersonal(
-            @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
-    ) {
-        adminService.criarPersonal(cadastroUsuarioDTO);
-    }
 
-    // TODO: abstratir para ser 1 endpoint para criar qualquer tipo de usuário, passando a role como parâmetro e verificando os dados adicionais necessários para cada role, como por exemplo, o número do CREF para a role de PERSONAL.
-
-    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
+    @Operation(summary = "Criar admin", description = "Endpoint para cadastro de administradores no sistema")
     @PostMapping("/usuarios/admin")
     @ResponseStatus(HttpStatus.CREATED)
-    public void cadastrarUsuario(
+    public void criarAdmin(
             @Valid @RequestBody ReqCadastroAdminDTO cadastroUsuarioDTO
     ) {
         adminService.createAdminUser(cadastroUsuarioDTO);
+    }
+
+    @Operation(summary = "Criar personal", description = "Endpoint para cadastro de personals no sistema")
+    @PostMapping("/usuarios/personal")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void criarPersonal(
+            @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
+    ) {
+        adminService.createPersonalUser(cadastroUsuarioDTO);
     }
 
     @Operation(summary = "Adicionar role a usuário", description = "Endpoint para adicionar uma role a um usuário existente no sistema")
@@ -60,7 +58,7 @@ public class AdminController {
             @RequestParam Role role,
             @PathVariable Long id
     ) {
-        adminService.retirarRole(role, id);
+        adminService.removeRole(role, id);
         return ResponseEntity.noContent().build();
     }
 
@@ -97,7 +95,7 @@ public class AdminController {
             @RequestParam(required = false) Role role,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(adminService.listarUsuariosComFiltros(nome, email, role, pageable));
+        return ResponseEntity.ok(adminService.listUsersWithFilter(nome, email, role, pageable));
     }
 
 
