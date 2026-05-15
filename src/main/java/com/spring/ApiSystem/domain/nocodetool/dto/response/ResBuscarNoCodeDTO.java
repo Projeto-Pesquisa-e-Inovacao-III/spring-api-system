@@ -14,7 +14,4 @@ public record ResBuscarNoCodeDTO(
         LocalDateTime restoredAt,
         UUID restoredFromId
 ) {
-    public ResBuscarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getContent(), content.getModificationName(), content.getDescription(), content.getCreatedAt(), content.getRestoredAt(), content.getRestoredFromId());
-    }
 }

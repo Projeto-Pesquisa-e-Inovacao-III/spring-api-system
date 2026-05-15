@@ -4,6 +4,7 @@ import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqAtualizarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
+import com.spring.ApiSystem.domain.nocodetool.mapper.NoCodeMapper;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.domain.usuario.ImageStorageService;
@@ -24,12 +25,14 @@ public class NoCodeService {
     private final NoCodeImageRepository noCodeImageRepository;
     private final JpaUserDetailsService detailsService;
     private final ImageStorageService imageStorageService;
+    private final NoCodeMapper noCodeMapper;
 
-    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, ImageStorageService imageStorageService) {
+    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, ImageStorageService imageStorageService, NoCodeMapper noCodeMapper) {
         this.noCodeRepository = noCodeRepository;
         this.noCodeImageRepository = noCodeImageRepository;
         this.detailsService = detailsService;
         this.imageStorageService = imageStorageService;
+        this.noCodeMapper = noCodeMapper;
     }
 
     @Transactional
@@ -49,7 +52,7 @@ public class NoCodeService {
 
     @Transactional
     public ReqCriarNoCodeDTO createContent(ReqCriarNoCodeDTO req) {
-        NoCode content = new NoCode(req);
+        NoCode content = noCodeMapper.toEntity(req);
 
         Personal currentPersonal = detailsService.getCurrentPersonal();
 
@@ -60,7 +63,7 @@ public class NoCodeService {
 
         content = noCodeRepository.save(content);
 
-        return new ReqCriarNoCodeDTO(content);
+        return noCodeMapper.toReqCriarNoCodeDTO(content);
     }
 
     @Transactional
@@ -81,7 +84,7 @@ public class NoCodeService {
 
         restored = noCodeRepository.save(restored);
 
-        return new ReqCriarNoCodeDTO(restored);
+        return noCodeMapper.toReqCriarNoCodeDTO(restored);
     }
 
     @Transactional
@@ -104,7 +107,7 @@ public class NoCodeService {
 
         content = noCodeRepository.save(content);
 
-        return new ReqAtualizarNoCodeDTO(content);
+        return noCodeMapper.toReqAtualizarNoCodeDTO(content);
     }
 
     @Transactional
@@ -117,7 +120,7 @@ public class NoCodeService {
             return null;
         }
         
-        return new ResBuscarNoCodeDTO(content);
+        return noCodeMapper.toResBuscarNoCodeDTO(content);
     }
 
     @Transactional
@@ -130,7 +133,7 @@ public class NoCodeService {
             return null;
         }
 
-        return contentPage.map(ResBuscarNoCodeDTO::new);
+        return contentPage.map(noCodeMapper::toResBuscarNoCodeDTO);
     }
 
     @Transactional
@@ -145,9 +148,9 @@ public class NoCodeService {
         NoCode content = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
 
-        content.setModificationName(req.modificationName());
+        noCodeMapper.updateNoCodeFromRenameDto(req, content);
         content = noCodeRepository.save(content);
 
-        return new ResBuscarNoCodeDTO(content);
+        return noCodeMapper.toResBuscarNoCodeDTO(content);
     }
 }

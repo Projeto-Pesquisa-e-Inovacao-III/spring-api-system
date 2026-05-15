@@ -57,14 +57,6 @@ public class NoCode {
         this.restoredFromId = restoredFromId;
     }
 
-    public NoCode(ReqCriarNoCodeDTO req) {
-        this.id = req.id();
-        this.content = req.content();
-        this.modificationName = req.modificationName();
-        this.description = req.description();
-        this.createdAt = req.createdAt();
-    }
-
     public UUID getId() {
         return id;
     }

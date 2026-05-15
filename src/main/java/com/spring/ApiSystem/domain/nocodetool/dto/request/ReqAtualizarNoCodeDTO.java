@@ -11,7 +11,4 @@ public record ReqAtualizarNoCodeDTO(
         String description,
         String content
 ) {
-    public ReqAtualizarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent());
-    }
 }

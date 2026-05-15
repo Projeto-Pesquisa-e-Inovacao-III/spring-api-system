@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.nocodetool;
 
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
+import com.spring.ApiSystem.domain.nocodetool.mapper.NoCodeMapper;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.domain.usuario.ImageStorageService;
@@ -18,6 +19,7 @@ class NoCodeServiceTest {
     private NoCodeImageRepository noCodeImageRepository;
     private JpaUserDetailsService detailsService;
     private ImageStorageService imageStorageService;
+    private NoCodeMapper noCodeMapper;
     private NoCodeService noCodeService;
     private Personal testPersonal;
 
@@ -27,7 +29,8 @@ class NoCodeServiceTest {
         noCodeImageRepository = mock(NoCodeImageRepository.class);
         detailsService = mock(JpaUserDetailsService.class);
         imageStorageService = mock(ImageStorageService.class);
-        noCodeService = new NoCodeService(noCodeRepository, noCodeImageRepository, detailsService, imageStorageService);
+        noCodeMapper = mock(NoCodeMapper.class);
+        noCodeService = new NoCodeService(noCodeRepository, noCodeImageRepository, detailsService, imageStorageService, noCodeMapper);
 
         testPersonal = new Personal();
         testPersonal.setId(1L);
@@ -37,8 +40,11 @@ class NoCodeServiceTest {
     @Test
     void createContent_ShouldSaveNewRecord() {
         ReqCriarNoCodeDTO req = new ReqCriarNoCodeDTO(null, "Name", "Desc", "{}", null);
+        NoCode entity = new NoCode();
         
-        when(noCodeRepository.save(any(NoCode.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(noCodeMapper.toEntity(req)).thenReturn(entity);
+        when(noCodeRepository.save(any(NoCode.class))).thenReturn(entity);
+        when(noCodeMapper.toReqCriarNoCodeDTO(entity)).thenReturn(req);
 
         ReqCriarNoCodeDTO result = noCodeService.createContent(req);
 
@@ -51,8 +57,10 @@ class NoCodeServiceTest {
         NoCode latest = new NoCode();
         latest.setModificationName("Latest");
         latest.setContent("{\"v\": 2}");
+        ResBuscarNoCodeDTO dto = new ResBuscarNoCodeDTO(null, "{\"v\": 2}", "Latest", null, null, null, null);
 
         when(noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(1L)).thenReturn(latest);
+        when(noCodeMapper.toResBuscarNoCodeDTO(latest)).thenReturn(dto);
 
         ResBuscarNoCodeDTO result = noCodeService.getContent();
 

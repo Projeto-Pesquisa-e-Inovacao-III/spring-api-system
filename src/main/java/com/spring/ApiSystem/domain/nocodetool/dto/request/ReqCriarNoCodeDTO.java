@@ -12,7 +12,4 @@ public record ReqCriarNoCodeDTO(
         String content,
         LocalDateTime createdAt
 ) {
-    public ReqCriarNoCodeDTO(NoCode content) {
-        this(content.getId(), content.getModificationName(), content.getDescription(), content.getContent(), content.getCreatedAt());
-    }
 }
