@@ -71,7 +71,17 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarPordutoContratadoDoAlunoAtual(Long idProdutoExibicao){
-        return criarProdutoContratadoPeloAluno(idProdutoExibicao,jpaUserDetailsService.getCurrentAluno());
+
+        ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
+        Aluno aluno = buscarAluno();
+        boolean possuiProdutoDesseTipo = produtoContratadoRepository
+                .temProdutoContratadoTipoProdutoAtivo(aluno, TipoProduto.PACOTE);
+
+        if (produtoExibicao.getTipoProduto() == TipoProduto.ADICIONAL  && !possuiProdutoDesseTipo   ) {
+            throw new  ProdutoContratoAdicionalExigePacote();
+        }
+
+        return criarProdutoContratadoPeloAluno(idProdutoExibicao, aluno);
     }
 
     @Transactional
@@ -130,7 +140,8 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ProdutoContratado buscarPorId(Long id){
-        ProdutoContratado produtoContratado = produtoContratadoRepository.findByIdWithLock(id);
+        ProdutoContratado produtoContratado = produtoContratadoRepository
+                .findByIdWithLock(id);
         if (produtoContratado == null) {
             throw new ProdutoContratadoPorIdNaoExisteException(id);
         }
@@ -161,14 +172,14 @@ public class ProdutoContratadoService {
     }
 
     public ProdutoContratado buscarPorIdAndAluno(Long id){
-        return produtoContratadoRepository.findByIdAndAluno(id, jpaUserDetailsService.getCurrentAluno())
+        return produtoContratadoRepository.findByIdAndAluno(id, buscarAluno())
                 .orElseThrow(() -> new ProdutoContratadoAlunoNaoTemEsseProdutoException(id));
     }
 
 
     public Page<ResProdutoContratadoDto> listarPorAluno(Pageable pageable, ReqProdutoContratadoDto dto){
         Page<ProdutoContratado> produtosContratados = produtoContratadoRepository.findByAlunoIdWithFilters(
-                jpaUserDetailsService.getCurrentAluno().getId(),
+                buscarAluno().getId(),
                 dto.nomeProduto(),
                 dto.dataInicio(),
                 dto.dataFim(),
@@ -193,7 +204,8 @@ public class ProdutoContratadoService {
     }
 
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
-        List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
+        List<ProdutoContratado> produtos = produtoContratadoRepository
+                .buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
         return produtos.stream()
                 .map(ProdutoContratado::getSaldoAula)
@@ -201,7 +213,7 @@ public class ProdutoContratadoService {
     }
 
     public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipoEspecifico(TipoAula tipoAula){
-        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+        Aluno usuario = buscarAluno();
 
         Integer total = getTotalTipoAula(usuario, tipoAula);
 
@@ -209,7 +221,7 @@ public class ProdutoContratadoService {
     }
 
     public ResTotalTipoSaldosDto getSaldoFromAllTipoAula(){
-        Aluno usuario = jpaUserDetailsService.getCurrentAluno();
+        Aluno usuario = buscarAluno();
 
         return new ResTotalTipoSaldosDto(
                 getTotalTipoAula(usuario, TipoAula.PRESENCIAL),
@@ -257,6 +269,8 @@ public class ProdutoContratadoService {
         return new ResQuantidadePercentualAlunosExpiradosDto(qtd, percentual);
     }
 
-
+    private Aluno buscarAluno(){
+        return  jpaUserDetailsService.getCurrentAluno();
+    }
 
 }
