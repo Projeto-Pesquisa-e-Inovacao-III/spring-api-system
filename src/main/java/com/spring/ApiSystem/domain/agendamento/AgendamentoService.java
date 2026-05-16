@@ -455,17 +455,6 @@ public class AgendamentoService {
         );
     }
 
-    public ResTotalAgendamentoByStatusDto countTotalStatusAgendamentoByPersonal(){
-        ResTotalAgendamentoByStatusProjection projection = agendamentoRepository.countTotalStatusAgendamentoByPersonal(
-                jpaUserDetailsService.getCurrentUser().getId()
-        );
-
-        return new ResTotalAgendamentoByStatusDto(
-                projection.getTotalPendente(),
-                projection.getTotalRespondido(),
-                projection.getTotalCanceladoPorMesAtual()
-        );
-    }
 
     public List<ResListarConsultoriasRealizadasDTO> listarConsultoriasRealizadasMes(Integer quantidadeMeses) {
         Usuario usuario = obterUsuarioAutenticado();
