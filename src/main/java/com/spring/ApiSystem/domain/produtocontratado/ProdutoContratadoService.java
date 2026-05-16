@@ -126,13 +126,13 @@ public class ProdutoContratadoService {
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
+
                 .findByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
                         alunoId, tipoAula, PageRequest.of(0, 1)
                 )
                 .stream()
                 .findFirst()
                 .orElseThrow(UsuarioSemTipoAulaException::new);
-
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
         return produtoContratado.getId();
@@ -204,8 +204,7 @@ public class ProdutoContratadoService {
     }
 
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
-        List<ProdutoContratado> produtos = produtoContratadoRepository
-                .buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
+        List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
         return produtos.stream()
                 .map(ProdutoContratado::getSaldoAula)
@@ -272,5 +271,6 @@ public class ProdutoContratadoService {
     private Aluno buscarAluno(){
         return  jpaUserDetailsService.getCurrentAluno();
     }
+
 
 }
