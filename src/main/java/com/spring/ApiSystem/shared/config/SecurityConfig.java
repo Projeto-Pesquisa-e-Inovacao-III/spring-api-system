@@ -102,8 +102,7 @@ public class SecurityConfig {
                                                         "/api/alunos",
                                                         "/api/alunos/*").hasAuthority("ROLE_PERSONAL");
 
-                                        auth.requestMatchers(
-                           "/api/historico-agendamento/total-status",
+                                        auth.requestMatchers("/api/historico-agendamento/total-status",
                                                         "/api/agendamentos/*/confirmar-conclusao",
                                                         "/api/agendamentos/ausencia",
                                                         "/api/agendamentos/consultoria-realizadas/*",
@@ -111,7 +110,12 @@ public class SecurityConfig {
                                                         "/api/personais/**",
                                                         "/api/anamnese/aluno/**").hasAuthority("ROLE_PERSONAL");
 
-                                        // Demais regras para aluno/genéricas
+                                        auth.requestMatchers(
+                                                "/api/resumo-agendamento/**"
+                                        ).hasAuthority("ROLE_PERSONAL");
+
+
+                                    // Demais regras para aluno/genéricas
                                         auth.requestMatchers(
                                                         "/api/alunos/**",
                                                         "/api/comprar/**",

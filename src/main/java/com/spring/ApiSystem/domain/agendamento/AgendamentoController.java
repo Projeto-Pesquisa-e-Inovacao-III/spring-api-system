@@ -9,6 +9,7 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.Agendamen
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -77,8 +78,9 @@ public class AgendamentoController {
 
     @Operation(summary = "Confirmar conclusão", description = "Confirma a conclusão de um agendamento pelo ID. Retorna 204 quando bem sucedido.")
     @PutMapping("/{id}/confirmar-conclusao")
-    public ResponseEntity<Void> confirmarConclusao(@PathVariable("id") Long agendamentoId) {
-        agendamentoService.confirmarConclusao(agendamentoId);
+    public ResponseEntity<Void> confirmarConclusao(@PathVariable("id") Long agendamentoId,
+                                                   @Valid @RequestBody ReqCadastrarResumoAgendamentoDTO dto) {
+        agendamentoService.confirmarConclusao(agendamentoId, dto);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
