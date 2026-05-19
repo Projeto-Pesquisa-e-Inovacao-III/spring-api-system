@@ -28,10 +28,12 @@ public interface ProdutoContratadoRepository  extends JpaRepository<ProdutoContr
     @Query("SELECT p FROM produto_contratado p " +
             "WHERE p.aluno.id = :alunoId " +
             "AND p.produtoExibicao.tipoAula = :tipoAula " +
-            "AND p.saldoAula > 0")
-    Optional<ProdutoContratado> findFirstByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
+            "AND p.saldoAula > 0 " +
+            "ORDER BY p.id ASC")
+    List<ProdutoContratado> findByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
             @Param("alunoId") Long alunoId,
-            @Param("tipoAula") TipoAula tipoAula
+            @Param("tipoAula") TipoAula tipoAula,
+            Pageable pageable
     );
 
     @Query("SELECT pc FROM produto_contratado pc, agendamento a " +

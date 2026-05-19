@@ -35,7 +35,7 @@ public class EnderecoController {
     ) {
         String emailUsuario = userDetails.getUsername();
         ResCadastrarEnderecoDTO enderecoCadastrado =
-                enderecoService.cadastrarEndereco(endereco, emailUsuario);
+                enderecoService.cadastrarEndereco(endereco, emailUsuario, true);
 
         return ResponseEntity.ok(enderecoCadastrado);
     }

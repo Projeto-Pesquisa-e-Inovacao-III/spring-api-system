@@ -112,7 +112,8 @@ public class AgendamentoService {
 
         ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                 criarAgendamentoDTO.novoEndereco(),
-                usuario.getEmail()
+                usuario.getEmail(),
+                false
         );
 
         Agendamento agendamento = agendamentoMapper.toEntity(criarAgendamentoDTO);
@@ -182,7 +183,8 @@ public class AgendamentoService {
             if (editarAgendamentoDTO.endereco() != null) {
                 ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                         editarAgendamentoDTO.endereco(),
-                        agendamento.getAluno().getEmail()
+                        agendamento.getAluno().getEmail(),
+                        false
                 );
                 agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
             }
