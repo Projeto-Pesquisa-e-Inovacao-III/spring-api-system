@@ -8,10 +8,10 @@ spring:
       max-file-size: 4MB
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/api_system}
+    url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:root}
-    password: ${SPRING_DATASOURCE_PASSWORD:Suave2004@}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
@@ -23,10 +23,10 @@ spring:
         format_sql: false
 
   mail:
-    host: ${MAIL_HOST:smtp.gmail.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
@@ -34,46 +34,36 @@ spring:
           starttls:
             enable: true
   rabbitmq:
-    host: ${RABBITMQ_HOST:localhost}
-    port: ${RABBITMQ_PORT:5672}
-    username: ${RABBITMQ_USERNAME:guest}
-    password: ${RABBITMQ_PASSWORD:guest}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
     connection-timeout: 60000
 
 pag:
-  url: ${PAG_API_URL:}
+  url: ${PAG_API_URL}
 
 infobip:
   base:
     url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
   api:
-    key: ${INFOBIP_API_KEY:}
+    key: ${INFOBIP_API_KEY}
   whatsapp:
-    sender: ${INFOBIP_WHATSAPP_SENDER:}
+    sender: ${INFOBIP_WHATSAPP_SENDER}
     template:
       name: ${INFOBIP_TEMPLATE_NAME:authentication}
 
 discord:
   webhook:
-    url: ${DISCORD_WEBHOOK_URL:}
+    url: ${DISCORD_WEBHOOK_URL}
 
 springdoc:
   swagger-ui:
     enabled: false
 
 storage:
-  type: s3
-  s3:
-    bucket: ${AWS_S3_BUCKET:csf-images-prod}
-    path: ${STORAGE_S3_PATH:imagens/perfil/}
-
-aws:
-  region: ${AWS_REGION:us-east-1}
-  s3:
-    bucket: ${AWS_S3_BUCKET:csf-images-prod}
-    endpoint: ${AWS_S3_ENDPOINT:s3://csf-images-prod/imagens/perfil/}
-    path-style-access: ${AWS_S3_PATH_STYLE:false}
+  local-dir: /app/imagens
 
 logging:
   level:
@@ -81,6 +71,5 @@ logging:
     com.spring: INFO
 
 init:
-  email: ${INIT_EMAIL:}
-  password: ${INIT_PASSWORD:}
-
+  email: ${INIT_EMAIL}
+  password: ${INIT_PASSWORD}
