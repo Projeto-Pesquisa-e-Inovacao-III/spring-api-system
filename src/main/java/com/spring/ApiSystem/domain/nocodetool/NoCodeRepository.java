@@ -11,5 +11,7 @@ import java.util.UUID;
 public interface NoCodeRepository extends JpaRepository<NoCode, UUID> {
     NoCode findFirstByUserIdOrderByCreatedAtDesc(Long userId);
 
+    NoCode findFirstByOrderByCreatedAtDesc();
+
     Page<NoCode> findAllByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
 }

@@ -111,16 +111,14 @@ public class NoCodeService {
         return noCodeMapper.toReqAtualizarNoCodeDTO(content);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ResBuscarNoCodeDTO getContent() {
-        Admin currentAdmin = detailsService.getCurrentAdmin();
+        NoCode content = noCodeRepository.findFirstByOrderByCreatedAtDesc();
 
-        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentAdmin.getId());
-        
         if (content == null) {
             return null;
         }
-        
+
         return noCodeMapper.toResBuscarNoCodeDTO(content);
     }
 
