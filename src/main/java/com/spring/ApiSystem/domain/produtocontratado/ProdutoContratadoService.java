@@ -17,6 +17,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.external.comprar.exception.AlunoJaPossuiProdutoContratadoDoTipoException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -115,9 +116,12 @@ public class ProdutoContratadoService {
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
-                .findFirstByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
-                       alunoId, tipoAula
-                ).orElseThrow(UsuarioSemTipoAulaException::new);
+                .findByAlunoIdAndTipoAulaComSaldoMaiorQueZero(
+                        alunoId, tipoAula, PageRequest.of(0, 1)
+                )
+                .stream()
+                .findFirst()
+                .orElseThrow(UsuarioSemTipoAulaException::new);
 
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
