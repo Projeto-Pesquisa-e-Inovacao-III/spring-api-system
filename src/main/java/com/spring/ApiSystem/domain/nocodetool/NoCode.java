@@ -1,17 +1,13 @@
 package com.spring.ApiSystem.domain.nocodetool;
 
-import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "no_code")
-@EntityListeners(AuditingEntityListener.class)
 public class NoCode {
 
     @Id
@@ -32,9 +28,8 @@ public class NoCode {
     @Column(nullable = false, columnDefinition = "LONGTEXT")
     private String content;
 
-    @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     @Column(nullable = true)
     private LocalDateTime restoredAt;
@@ -42,11 +37,11 @@ public class NoCode {
     @Column(nullable = true)
     private UUID restoredFromId;
 
-
     public NoCode() {
     }
 
-    public NoCode(UUID id, Usuario user, String modificationName, String description, String content, LocalDateTime createdAt, LocalDateTime restoredAt, UUID restoredFromId) {
+    public NoCode(UUID id, Usuario user, String modificationName, String description, String content,
+            LocalDateTime createdAt, LocalDateTime restoredAt, UUID restoredFromId) {
         this.id = id;
         this.user = user;
         this.modificationName = modificationName;

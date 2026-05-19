@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.nocodetool;
 
+import com.spring.ApiSystem.domain.admin.Admin;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqAtualizarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqRenomearNoCodeDTO;
@@ -37,8 +38,8 @@ public class NoCodeService {
 
     @Transactional
     public String saveImage(MultipartFile image, String section) throws IOException {
-        Personal currentPersonal = detailsService.getCurrentPersonal();
-        NoCode noCode = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+        Admin currentAdmin = detailsService.getCurrentAdmin();
+        NoCode noCode = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentAdmin.getId());
 
         String url = imageStorageService.salvarBlob(image);
 
@@ -54,12 +55,12 @@ public class NoCodeService {
     public ReqCriarNoCodeDTO createContent(ReqCriarNoCodeDTO req) {
         NoCode content = noCodeMapper.toEntity(req);
 
-        Personal currentPersonal = detailsService.getCurrentPersonal();
+        Admin currentAdmin = detailsService.getCurrentAdmin();
 
         content.setContent(req.content());
         content.setModificationName(req.modificationName());
         content.setDescription(req.description());
-        content.setUser(currentPersonal.getUsuario());
+        content.setUser(currentAdmin.getUsuario());
 
         content = noCodeRepository.save(content);
 
@@ -70,14 +71,14 @@ public class NoCodeService {
     public ReqCriarNoCodeDTO restoreContent(UUID id) {
         NoCode original = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
-        Personal currentPersonal = detailsService.getCurrentPersonal();
+        Admin currentAdmin = detailsService.getCurrentAdmin();
 
         NoCode restored = new NoCode();
 
         restored.setContent(original.getContent());
         restored.setModificationName(original.getModificationName());
         restored.setDescription(original.getDescription());
-        restored.setUser(currentPersonal.getUsuario());
+        restored.setUser(currentAdmin.getUsuario());
 
         restored.setRestoredAt(LocalDateTime.now());
         restored.setRestoredFromId(original.getId());
@@ -94,8 +95,8 @@ public class NoCodeService {
             content = noCodeRepository.findById(req.id())
                     .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado com ID: " + req.id()));
         } else {
-            Personal currentPersonal = detailsService.getCurrentPersonal();
-            content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+            Admin currentAdmin = detailsService.getCurrentAdmin();
+            content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentAdmin.getId());
             if (content == null) {
                 throw new EntityNotFoundException("Nenhum conteúdo NoCode encontrado para o usuário atual.");
             }
@@ -112,9 +113,9 @@ public class NoCodeService {
 
     @Transactional
     public ResBuscarNoCodeDTO getContent() {
-        Personal currentPersonal = detailsService.getCurrentPersonal();
+        Admin currentAdmin = detailsService.getCurrentAdmin();
 
-        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
+        NoCode content = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentAdmin.getId());
         
         if (content == null) {
             return null;
@@ -125,9 +126,9 @@ public class NoCodeService {
 
     @Transactional
     public Page<ResBuscarNoCodeDTO> getContentHistory(Pageable pageable) {
-        Personal currentPersonal = detailsService.getCurrentPersonal();
+        Admin currentAdmin = detailsService.getCurrentAdmin();
 
-        Page<NoCode> contentPage = noCodeRepository.findAllByUserIdOrderByCreatedAtDesc(currentPersonal.getId(), pageable);
+        Page<NoCode> contentPage = noCodeRepository.findAllByUserIdOrderByCreatedAtDesc(currentAdmin.getId(), pageable);
         
         if (contentPage == null) {
             return null;

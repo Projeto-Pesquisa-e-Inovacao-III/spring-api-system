@@ -13,6 +13,7 @@ import org.mapstruct.MappingTarget;
 public interface NoCodeMapper {
 
     @Mapping(target = "user", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "restoredAt", ignore = true)
     @Mapping(target = "restoredFromId", ignore = true)
     NoCode toEntity(ReqCriarNoCodeDTO req);
