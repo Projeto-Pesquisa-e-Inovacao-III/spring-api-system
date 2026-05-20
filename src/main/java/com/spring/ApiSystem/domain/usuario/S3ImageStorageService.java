@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -111,12 +112,27 @@ public class S3ImageStorageService implements ImageStorageService {
     }
 
     private void validarImagem(MultipartFile imagem) {
-        if (imagem == null || imagem.isEmpty()) throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
-        String contentType = imagem.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) throw new IllegalArgumentException("Arquivo não é uma imagem");
+        if (imagem == null || imagem.isEmpty()) {
+            throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
+        }
+
         if (maxImageSize != null && imagem.getSize() > maxImageSize.toBytes()) {
             throw new IllegalArgumentException("Imagem muito grande (máx " + maxImageSize.toMegabytes() + "MB)");
         }
+
+        String contentType = imagem.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Arquivo não é uma imagem");
+        }
+
+        try (InputStream is = imagem.getInputStream()) {
+            if (ImageIO.read(is) == null) {
+                throw new IllegalArgumentException("O conteúdo do arquivo não é uma imagem válida ou está corrompido");
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Erro ao processar o arquivo de imagem", e);
+        }
+
     }
 
     private void garantirBucketConfigurado() {
@@ -131,12 +147,10 @@ public class S3ImageStorageService implements ImageStorageService {
     }
 
     private String normalizarCaminhoS3() {
-        if (s3Path == null) {
+        if (s3Path == null || s3Path.isEmpty()) {
             return "";
         }
-        if (s3Path.isEmpty()) {
-            return "";
-        }
+
         if (s3Path.endsWith("/")) {
             return s3Path;
         } else {
