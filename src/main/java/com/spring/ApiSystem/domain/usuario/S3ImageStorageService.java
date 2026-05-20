@@ -17,6 +17,7 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
 import javax.imageio.ImageIO;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -121,12 +122,31 @@ public class S3ImageStorageService implements ImageStorageService {
         }
 
         String contentType = imagem.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
+        if (contentType == null) {
             throw new IllegalArgumentException("Arquivo não é uma imagem");
         }
 
-        try (InputStream is = imagem.getInputStream()) {
-            if (ImageIO.read(is) == null) {
+        String mediaType = contentType.split(";")[0].trim().toLowerCase(java.util.Locale.ROOT);
+        if (!mediaType.startsWith("image/") || "image/svg+xml".equals(mediaType)) {
+            throw new IllegalArgumentException("Arquivo não é uma imagem suportada");
+        }
+
+        try (InputStream originalIs = imagem.getInputStream();
+             BufferedInputStream bis = new BufferedInputStream(originalIs)) {
+
+            bis.mark(100);
+            byte[] primeirosBytes = new byte[100];
+            int bytesLidos = bis.read(primeirosBytes, 0, 100);
+            bis.reset();
+            if (bytesLidos > 0) {
+                String inicioDoArquivo = new String(primeirosBytes, 0, bytesLidos, "UTF-8").toLowerCase();
+
+                if (inicioDoArquivo.contains("<?xml") || inicioDoArquivo.contains("<svg")) {
+                    throw new IllegalArgumentException("Imagens do tipo SVG não são permitidas por motivos de segurança");
+                }
+            }
+
+            if (ImageIO.read(bis) == null) {
                 throw new IllegalArgumentException("O conteúdo do arquivo não é uma imagem válida ou está corrompido");
             }
         } catch (IOException e) {
