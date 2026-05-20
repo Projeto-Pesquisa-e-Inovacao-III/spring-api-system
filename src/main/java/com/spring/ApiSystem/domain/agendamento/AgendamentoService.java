@@ -276,7 +276,10 @@ public class AgendamentoService {
                     agendamentoSalvo
             );
 
-            resumoAgendamentoService.cadastrar(dto);
+            resumoAgendamentoService.cadastrar(
+                    agendamento.getAluno(), agendamento.getPersonal(),
+                    dto.resumo(), dto.grupoMuscular()
+            );
         }
 
        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);

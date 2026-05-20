@@ -4,9 +4,8 @@ import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 
 import java.util.List;
 
-public record ResCadastrarResumoAgendamentoDTO(
-        Long idAluno,
-        Long idPersonal,
+public record ResResumoAgendamentoAlunoDTO(
+        String nomeAluno,
         String resumo,
         List<GrupoMuscular> grupoMuscular
-) {}
+){}

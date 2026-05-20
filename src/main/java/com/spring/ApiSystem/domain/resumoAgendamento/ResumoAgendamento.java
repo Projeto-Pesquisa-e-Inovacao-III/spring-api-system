@@ -5,6 +5,8 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 import jakarta.persistence.*;
 
+import java.util.List;
+
 @Entity(name = "resumo_agendamento")
 public class ResumoAgendamento {
     @Id
@@ -23,12 +25,14 @@ public class ResumoAgendamento {
     private String resumo;
 
     @Enumerated(EnumType.STRING)
-    private GrupoMuscular grupoMuscular;
+    @Column(nullable = false)
+    private List<GrupoMuscular> grupoMuscular;
 
     public ResumoAgendamento() {
     }
 
-    public ResumoAgendamento(Long id, Aluno aluno, Personal personal, String resumo, GrupoMuscular grupoMuscular) {
+    public ResumoAgendamento(Long id, Aluno aluno, Personal personal,
+                             String resumo, List<GrupoMuscular> grupoMuscular) {
         this.id = id;
         this.aluno = aluno;
         this.personal = personal;
@@ -68,11 +72,11 @@ public class ResumoAgendamento {
         this.resumo = resumo;
     }
 
-    public GrupoMuscular getGrupoMuscular() {
+    public List<GrupoMuscular> getGrupoMuscular() {
         return grupoMuscular;
     }
 
-    public void setGrupoMuscular(GrupoMuscular grupoMuscular) {
+    public void setGrupoMuscular(List<GrupoMuscular> grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
     }
 }

@@ -4,16 +4,12 @@ import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record ReqCadastrarResumoAgendamentoDTO(
-        @NotNull(message = "O id do aluno é obrigatório")
-        Long idAluno,
-
-        @NotNull(message = "O id do personal é obrigatório")
-        Long idPersonal,
-
         @NotBlank(message = "O resumo é obrigatório")
         String resumo,
 
         @NotNull(message = "O grupo muscular é obrigatório")
-        GrupoMuscular grupoMuscular
+        List<GrupoMuscular> grupoMuscular
 ) {}

@@ -1,19 +1,21 @@
 package com.spring.ApiSystem.domain.resumoAgendamento.mapper;
 
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamento;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public abstract class ResumoAgendamentoMapper {
 
-    @Mapping(target = "aluno.id", source = "idAluno")
-    @Mapping(target = "personal.id", source = "idPersonal")
-    public abstract ResumoAgendamento toEntity(ReqCadastrarResumoAgendamentoDTO dto);
-
     @Mapping(target = "idAluno", source = "aluno.id")
     @Mapping(target = "idPersonal", source = "personal.id")
     public abstract ResCadastrarResumoAgendamentoDTO toResCadastrarResumoDTO(ResumoAgendamento resumoAgendamento);
+
+    @Mapping(target = "nomeAluno", source = "aluno.nome")
+    public abstract ResResumoAgendamentoAlunoDTO toResResumoAgendamentoAlunoDTO(ResumoAgendamento resumoAgendamento);
+    public abstract List<ResResumoAgendamentoAlunoDTO> toResResumoAgendamentoAlunoDTO(List<ResumoAgendamento> resumoAgendamento);
 }
