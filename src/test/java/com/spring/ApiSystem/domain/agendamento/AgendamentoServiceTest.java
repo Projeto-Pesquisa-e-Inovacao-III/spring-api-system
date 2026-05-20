@@ -109,6 +109,7 @@ class AgendamentoServiceTest {
         verify(resumoAgendamentoService).cadastrar(
                 agendamento.getAluno(),
                 agendamento.getPersonal(),
+                agendamento,
                 dto.resumo(),
                 dto.grupoMuscular()
         );
@@ -130,7 +131,7 @@ class AgendamentoServiceTest {
 
         agendamentoService.confirmarConclusao(1L, dto);
 
-        verify(resumoAgendamentoService, never()).cadastrar(any(), any(), any(), any());
+        verify(resumoAgendamentoService, never()).cadastrar(any(), any(), any(), any(), any());
         verify(agendamentoRepository, never()).save(any());
         verify(historicoAgendamentoService, never()).cadastrar(any(), any());
         verify(agendamentoEventPublisher).publishAgendamentoConcluidoEvent(agendamento);

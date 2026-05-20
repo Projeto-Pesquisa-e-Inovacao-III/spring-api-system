@@ -16,7 +16,7 @@ public interface ResumoAgendamentoRepository extends JpaRepository<ResumoAgendam
         WHERE r.aluno.id = :alunoId AND
         r.personal.id = :personalId AND
         (:proximoId is null or r.id > :proximoId)
-        ORDER BY r.id ASC
+        ORDER BY r.agendamento.data DESC
     """)
     List<ResumoAgendamento> findByAlunoIdAndPersonalId(Long alunoId, Long personalId,
                                                        Long proximoId, Pageable pageable);

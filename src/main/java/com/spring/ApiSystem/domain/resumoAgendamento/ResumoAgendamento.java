@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.resumoAgendamento;
 
+import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
@@ -21,6 +22,10 @@ public class ResumoAgendamento {
     @JoinColumn(name = "personal_id", nullable = false)
     private Personal personal;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "agendamento_id", nullable = false)
+    private Agendamento agendamento;
+
     @Column(nullable = false, length = 200)
     private String resumo;
 
@@ -32,10 +37,12 @@ public class ResumoAgendamento {
     }
 
     public ResumoAgendamento(Long id, Aluno aluno, Personal personal,
-                             String resumo, List<GrupoMuscular> grupoMuscular) {
+                             Agendamento agendamento, String resumo,
+                             List<GrupoMuscular> grupoMuscular) {
         this.id = id;
         this.aluno = aluno;
         this.personal = personal;
+        this.agendamento = agendamento;
         this.resumo = resumo;
         this.grupoMuscular = grupoMuscular;
     }
@@ -62,6 +69,14 @@ public class ResumoAgendamento {
 
     public void setPersonal(Personal personal) {
         this.personal = personal;
+    }
+
+    public Agendamento getAgendamento() {
+        return agendamento;
+    }
+
+    public void setAgendamento(Agendamento agendamento) {
+        this.agendamento = agendamento;
     }
 
     public String getResumo() {

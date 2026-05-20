@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
@@ -35,7 +36,7 @@ class ResumoAgendamentoControllerTest {
         Long proximoCursor = 10L;
         int limit = 2;
         PaginaCursor<ResResumoAgendamentoAlunoDTO> pagina = new PaginaCursor<>(
-                List.of(new ResResumoAgendamentoAlunoDTO("Aluno", "Resumo", List.of(GrupoMuscular.PEITO))),
+                List.of(new ResResumoAgendamentoAlunoDTO("Aluno", "Personal", LocalDateTime.now(), "Resumo", List.of(GrupoMuscular.PEITO))),
                 proximoCursor
         );
 

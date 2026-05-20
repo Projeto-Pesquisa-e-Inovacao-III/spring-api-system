@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.resumoAgendamento;
 
+import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.personal.Personal;
@@ -19,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -50,8 +52,9 @@ class ResumoAgendamentoServiceTest {
     void deveCadastrarResumo() {
         Aluno aluno = new Aluno();
         Personal personal = new Personal();
+        Agendamento agendamento = new Agendamento();
         List<GrupoMuscular> grupos = List.of(GrupoMuscular.PEITO);
-        ResumoAgendamento salvo = new ResumoAgendamento(1L, aluno, personal, "Resumo", grupos);
+        ResumoAgendamento salvo = new ResumoAgendamento(1L, aluno, personal, agendamento, "Resumo", grupos);
         ResCadastrarResumoAgendamentoDTO dto = new ResCadastrarResumoAgendamentoDTO(1L, 2L, "Resumo", grupos);
 
         when(resumoAgendamentoRepository.save(any(ResumoAgendamento.class))).thenReturn(salvo);
@@ -60,6 +63,7 @@ class ResumoAgendamentoServiceTest {
         ResCadastrarResumoAgendamentoDTO resultado = resumoAgendamentoService.cadastrar(
                 aluno,
                 personal,
+                agendamento,
                 "Resumo",
                 grupos
         );
@@ -100,7 +104,13 @@ class ResumoAgendamentoServiceTest {
 
         when(resumoAgendamentoMapper.toResResumoAgendamentoAlunoDTO(
                 ArgumentMatchers.<List<ResumoAgendamento>>any()
-        )).thenReturn(List.of(new ResResumoAgendamentoAlunoDTO("Aluno", "Resumo", List.of(GrupoMuscular.PEITO))));
+        )).thenReturn(List.of(new ResResumoAgendamentoAlunoDTO(
+                "Aluno",
+                "Personal",
+                LocalDateTime.now(),
+                "Resumo",
+                List.of(GrupoMuscular.PEITO)
+        )));
 
         PaginaCursor<ResResumoAgendamentoAlunoDTO> pagina =
                 resumoAgendamentoService.consultarResumoAluno(alunoId, proximoCursor, limit);
@@ -133,7 +143,13 @@ class ResumoAgendamentoServiceTest {
         )).thenReturn(resultados);
 
         when(resumoAgendamentoMapper.toResResumoAgendamentoAlunoDTO(any(List.class)))
-                .thenReturn(List.of(new ResResumoAgendamentoAlunoDTO("Aluno", "Resumo", List.of(GrupoMuscular.PEITO))));
+                .thenReturn(List.of(new ResResumoAgendamentoAlunoDTO(
+                        "Aluno",
+                        "Personal",
+                        LocalDateTime.now(),
+                        "Resumo",
+                        List.of(GrupoMuscular.PEITO)
+                )));
 
         PaginaCursor<ResResumoAgendamentoAlunoDTO> pagina =
                 resumoAgendamentoService.consultarResumoAluno(alunoId, proximoCursor, limit);
@@ -158,4 +174,3 @@ class ResumoAgendamentoServiceTest {
         return resumo;
     }
 }
-

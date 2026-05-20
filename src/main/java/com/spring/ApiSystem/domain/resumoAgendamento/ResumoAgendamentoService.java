@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.resumoAgendamento;
 
+import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.personal.Personal;
@@ -33,10 +34,10 @@ public class ResumoAgendamentoService {
         this.alunoService = alunoService;
     }
 
-    public ResCadastrarResumoAgendamentoDTO cadastrar(Aluno aluno, Personal personal,
+    public ResCadastrarResumoAgendamentoDTO cadastrar(Aluno aluno, Personal personal, Agendamento agendamento,
                                                       String resumo, List<GrupoMuscular> grupoMuscular) {
         ResumoAgendamento resumoAgendamentoCadastrado = resumoAgendamentoRepository.save(
-                new ResumoAgendamento(null, aluno, personal, resumo, grupoMuscular)
+                new ResumoAgendamento(null, aluno, personal, agendamento, resumo, grupoMuscular)
         );
 
         return resumoAgendamentoMapper.toResCadastrarResumoDTO(resumoAgendamentoCadastrado);

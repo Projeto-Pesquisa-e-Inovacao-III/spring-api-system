@@ -16,6 +16,8 @@ public abstract class ResumoAgendamentoMapper {
     public abstract ResCadastrarResumoAgendamentoDTO toResCadastrarResumoDTO(ResumoAgendamento resumoAgendamento);
 
     @Mapping(target = "nomeAluno", source = "aluno.nome")
+    @Mapping(target = "nomePersonal", source = "personal.nome")
+    @Mapping(target = "agendamentoData", source = "agendamento.data")
     public abstract ResResumoAgendamentoAlunoDTO toResResumoAgendamentoAlunoDTO(ResumoAgendamento resumoAgendamento);
     public abstract List<ResResumoAgendamentoAlunoDTO> toResResumoAgendamentoAlunoDTO(List<ResumoAgendamento> resumoAgendamento);
 }

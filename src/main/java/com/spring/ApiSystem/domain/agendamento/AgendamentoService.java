@@ -277,7 +277,7 @@ public class AgendamentoService {
             );
 
             resumoAgendamentoService.cadastrar(
-                    agendamento.getAluno(), agendamento.getPersonal(),
+                    agendamento.getAluno(), agendamento.getPersonal(), agendamento,
                     dto.resumo(), dto.grupoMuscular()
             );
         }
