@@ -103,6 +103,7 @@ public class SecurityConfig {
                                                         "/api/alunos/*").hasAuthority("ROLE_PERSONAL");
 
                                         auth.requestMatchers(
+                           "/api/historico-agendamento/total-status",
                                                         "/api/agendamentos/*/confirmar-conclusao",
                                                         "/api/agendamentos/ausencia",
                                                         "/api/agendamentos/consultoria-realizadas/*",

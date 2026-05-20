@@ -154,11 +154,6 @@ public class AgendamentoController {
         return ResponseEntity.ok(agendamentoService.listarConsultoriasRealizadasMes(quantidadeMeses));
     }
 
-    @GetMapping("/total-status")
-    public ResponseEntity<ResTotalAgendamentoByStatusDto> countTotalByStatus(){
-        return ResponseEntity.ok(agendamentoService.countTotalStatusAgendamentoByPersonal());
-    }
-
 
     @GetMapping("/dia-semana/{diaSemana}")
     public ResponseEntity<Page<ResAgendamentoByDayOfWeekDto>>
