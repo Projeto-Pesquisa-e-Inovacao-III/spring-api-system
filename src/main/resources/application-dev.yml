@@ -64,6 +64,7 @@ spring:
   servlet:
     multipart:
       max-file-size: 4MB
+      max-request-size: 4MB
 pag:
   url: http://localhost:8081
 
@@ -83,6 +84,7 @@ discord:
 
 storage:
   local-dir: imagens
+  type: local
 
 resilience4j:
   retry:

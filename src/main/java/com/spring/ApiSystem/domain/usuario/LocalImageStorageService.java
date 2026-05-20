@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.usuario;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
@@ -14,7 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @Service
-public class LocalImageStorageService {
+@ConditionalOnProperty(name = "storage.type", havingValue = "local", matchIfMissing = true)
+public class LocalImageStorageService implements ImageStorageService {
 
     @Value("${spring.servlet.multipart.max-file-size}")
     private DataSize MAX_IMAGE_SIZE;
@@ -75,7 +77,7 @@ public class LocalImageStorageService {
             throw new IllegalArgumentException("Arquivo não é uma imagem");
         }
 
-        if (imagem.getSize() > (MAX_IMAGE_SIZE.toBytes() - DataSize.ofMegabytes(1L).toBytes())) {
+        if (MAX_IMAGE_SIZE != null && imagem.getSize() > MAX_IMAGE_SIZE.toBytes()) {
             throw new IllegalArgumentException("Imagem muito grande (máx " + MAX_IMAGE_SIZE.toMegabytes() + "MB)");
         }
     }
