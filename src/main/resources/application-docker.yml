@@ -24,6 +24,7 @@ spring:
 
 
   rabbitmq:
+    enabled: false
     listener:
       simple:
         auto-startup: ${RABBITMQ_AUTO_STARTUP:true}
@@ -74,4 +75,3 @@ logging:
 init:
   email: ${INIT_EMAIL}
   password: ${INIT_PASSWORD}
-

@@ -1,8 +1,8 @@
 package com.spring.ApiSystem.domain.admin;
 
 import com.spring.ApiSystem.domain.admin.dto.request.ReqAdicionarRoleDTO;
+import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroAdminDTO;
 import com.spring.ApiSystem.domain.admin.dto.request.ReqCadastroPersonalDTO;
-import com.spring.ApiSystem.domain.admin.dto.response.ResCadastrarPersonalDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResRoleNeedDataDTO;
 import com.spring.ApiSystem.domain.admin.dto.response.ResUsuarioWithRolesResponseDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,12 +22,23 @@ public class AdminController {
             this.adminService = adminService;
         }
 
-    @Operation(summary = "Criar usuário", description = "Endpoint para cadastro de usuários no sistema")
+
+    @Operation(summary = "Criar admin", description = "Endpoint para cadastro de administradores no sistema")
+    @PostMapping("/usuarios/admin")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void criarAdmin(
+            @Valid @RequestBody ReqCadastroAdminDTO cadastroUsuarioDTO
+    ) {
+        adminService.createAdminUser(cadastroUsuarioDTO);
+    }
+
+    @Operation(summary = "Criar personal", description = "Endpoint para cadastro de personals no sistema")
     @PostMapping("/usuarios/personal")
-    public ResponseEntity<ResCadastrarPersonalDTO> cadastrarUsuario(
+    @ResponseStatus(HttpStatus.CREATED)
+    public void criarPersonal(
             @Valid @RequestBody ReqCadastroPersonalDTO cadastroUsuarioDTO
     ) {
-        return ResponseEntity.ok(adminService.criarPersonal(cadastroUsuarioDTO));
+        adminService.createPersonalUser(cadastroUsuarioDTO);
     }
 
     @Operation(summary = "Adicionar role a usuário", description = "Endpoint para adicionar uma role a um usuário existente no sistema")
@@ -46,7 +58,7 @@ public class AdminController {
             @RequestParam Role role,
             @PathVariable Long id
     ) {
-        adminService.retirarRole(role, id);
+        adminService.removeRole(role, id);
         return ResponseEntity.noContent().build();
     }
 
@@ -83,7 +95,7 @@ public class AdminController {
             @RequestParam(required = false) Role role,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(adminService.listarUsuariosComFiltros(nome, email, role, pageable));
+        return ResponseEntity.ok(adminService.listUsersWithFilter(nome, email, role, pageable));
     }
 
 

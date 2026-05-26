@@ -10,21 +10,21 @@ import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 import software.amazon.awssdk.services.s3.presigner.model.PresignedGetObjectRequest;
 
+import javax.imageio.ImageIO;
+import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Objects;
-import java.util.UUID;
 
 @Service
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
@@ -50,13 +50,12 @@ public class S3ImageStorageService implements ImageStorageService {
     @Override
     public String salvarBlob(MultipartFile imagem) throws IOException {
         validarImagem(imagem);
-        if (s3Bucket == null || s3Bucket.isBlank()) throw new IllegalStateException("Bucket S3 não configurado");
+        garantirBucketConfigurado();
 
         String original = Objects.requireNonNullElse(imagem.getOriginalFilename(), "file");
-        original = Paths.get(original).getFileName().toString().replaceAll("[^A-Za-z0-9._-]", "_");
-
-        String nomeArquivo = System.currentTimeMillis() + "_" + original;
-        String s3Key = s3Path + nomeArquivo;
+        String safeName = sanitizarNomeArquivo(original);
+        String nomeArquivo = System.currentTimeMillis() + "_" + safeName;
+        String s3Key = construirChaveS3(nomeArquivo);
 
         PutObjectRequest putReq = PutObjectRequest.builder()
                 .bucket(s3Bucket)
@@ -82,7 +81,7 @@ public class S3ImageStorageService implements ImageStorageService {
     @Override
     public void deletarImagem(Path path) throws IOException {
         if (path == null) return;
-        if (s3Bucket == null || s3Bucket.isBlank()) return;
+        garantirBucketConfigurado();
 
         String key = path.toString();
         if (key == null || key.isBlank()) return;
@@ -96,7 +95,7 @@ public class S3ImageStorageService implements ImageStorageService {
 
     @Override
     public Resource buscarImagem(String fileName) throws IOException {
-        if (s3Bucket == null || s3Bucket.isBlank()) throw new IOException("Bucket S3 não configurado");
+        garantirBucketConfigurado();
 
         GetObjectRequest getReq = GetObjectRequest.builder()
                 .bucket(s3Bucket)
@@ -114,11 +113,72 @@ public class S3ImageStorageService implements ImageStorageService {
     }
 
     private void validarImagem(MultipartFile imagem) {
-        if (imagem == null || imagem.isEmpty()) throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
-        String contentType = imagem.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) throw new IllegalArgumentException("Arquivo não é uma imagem");
+        if (imagem == null || imagem.isEmpty()) {
+            throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
+        }
+
         if (maxImageSize != null && imagem.getSize() > maxImageSize.toBytes()) {
             throw new IllegalArgumentException("Imagem muito grande (máx " + maxImageSize.toMegabytes() + "MB)");
         }
+
+        String contentType = imagem.getContentType();
+        if (contentType == null) {
+            throw new IllegalArgumentException("Arquivo não é uma imagem");
+        }
+
+        String mediaType = contentType.split(";")[0].trim().toLowerCase(java.util.Locale.ROOT);
+        if (!mediaType.startsWith("image/") || "image/svg+xml".equals(mediaType)) {
+            throw new IllegalArgumentException("Arquivo não é uma imagem suportada");
+        }
+
+        try (InputStream originalIs = imagem.getInputStream();
+             BufferedInputStream bis = new BufferedInputStream(originalIs)) {
+
+            bis.mark(100);
+            byte[] primeirosBytes = new byte[100];
+            int bytesLidos = bis.read(primeirosBytes, 0, 100);
+            bis.reset();
+            if (bytesLidos > 0) {
+                String inicioDoArquivo = new String(primeirosBytes, 0, bytesLidos, "UTF-8").toLowerCase();
+
+                if (inicioDoArquivo.contains("<?xml") || inicioDoArquivo.contains("<svg")) {
+                    throw new IllegalArgumentException("Imagens do tipo SVG não são permitidas por motivos de segurança");
+                }
+            }
+
+            if (ImageIO.read(bis) == null) {
+                throw new IllegalArgumentException("O conteúdo do arquivo não é uma imagem válida ou está corrompido");
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Erro ao processar o arquivo de imagem", e);
+        }
+
+    }
+
+    private void garantirBucketConfigurado() {
+        if (s3Bucket == null || s3Bucket.isBlank()) {
+            throw new IllegalStateException("Bucket S3 não configurado");
+        }
+    }
+
+    private String sanitizarNomeArquivo(String original) {
+        String name = Paths.get(original).getFileName().toString();
+        return name.replaceAll("[^A-Za-z0-9._-]", "_");
+    }
+
+    private String normalizarCaminhoS3() {
+        if (s3Path == null || s3Path.isEmpty()) {
+            return "";
+        }
+
+        if (s3Path.endsWith("/")) {
+            return s3Path;
+        } else {
+            return s3Path + "/";
+        }
+    }
+
+    private String construirChaveS3(String filename) {
+        return normalizarCaminhoS3() + filename;
     }
 }

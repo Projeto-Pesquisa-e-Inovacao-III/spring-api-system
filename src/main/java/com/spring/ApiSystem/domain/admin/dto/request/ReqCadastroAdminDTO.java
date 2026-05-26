@@ -7,7 +7,7 @@ import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.util.Date;
 
-public record ReqCadastroPersonalDTO(
+public record ReqCadastroAdminDTO(
     @NotBlank(message = "O nome é obrigatório")
     String nome,
 
@@ -20,9 +20,5 @@ public record ReqCadastroPersonalDTO(
     @Email(message = "O email deve ser válido")
     String email,
 
-    @NotBlank
-    String cref,
-
     ReqCadastrarTelefoneDTO telefone
-
-) {}
+){}
