@@ -91,39 +91,29 @@ public class SecurityConfig {
                                                         "/api/no-code/",
                                                         "/api/no-code/**").hasAuthority("ROLE_ADMIN");
 
-                                        // Aluno - matcher específico para GET /api/personais deve vir antes do matcher
-                                        // PERSONAL genérico
-                                        auth.requestMatchers(HttpMethod.GET,
-                                                        "/api/produtos-contratados/total-tipo/*",
-                                                        "/api/personais").hasAuthority("ROLE_ALUNO");
-
                                         // Personal (regras mais específicas após a regra acima)
                                         auth.requestMatchers(HttpMethod.GET,
                                                         "/api/alunos",
-                                                        "/api/alunos/*").hasAuthority("ROLE_PERSONAL");
-
-                                        auth.requestMatchers("/api/historico-agendamento/total-status",
+                                                        "/api/alunos/*",
+                                                        "/api/historico-agendamento/total-status",
                                                         "/api/agendamentos/*/confirmar-conclusao",
                                                         "/api/agendamentos/ausencia",
                                                         "/api/agendamentos/consultoria-realizadas/*",
                                                         "/api/agendamentos/contagem-status-data",
                                                         "/api/personais/**",
-                                                        "/api/anamnese/aluno/**").hasAuthority("ROLE_PERSONAL");
-
-                                        auth.requestMatchers(
-                                                "/api/resumo-agendamento/**"
+                                                        "/api/anamnese/aluno/**",
+                                                        "/api/resumo-agendamento/**"
                                         ).hasAuthority("ROLE_PERSONAL");
 
 
                                     // Demais regras para aluno/genéricas
-                                        auth.requestMatchers(
+                                        auth.requestMatchers("/api/produtos-contratados/total-tipo/*",
+                                                        "/api/personais",
                                                         "/api/alunos/**",
                                                         "/api/comprar/**",
                                                         "/api/checkouts/**",
                                                         "/api/produtos-contratados/**",
                                                         "/api/anamnese/**").hasAuthority("ROLE_ALUNO");
-
-                                        auth.requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN");
 
                                 })
                                 .exceptionHandling(ex -> ex
