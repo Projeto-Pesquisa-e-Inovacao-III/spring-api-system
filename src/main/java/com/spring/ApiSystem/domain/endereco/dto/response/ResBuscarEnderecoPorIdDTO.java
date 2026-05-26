@@ -10,7 +10,5 @@ public record ResBuscarEnderecoPorIdDTO(
         String complemento,
         String unidade,
         String tipo,
-        DadosCepDTO cep,
-        LocalDateTime dataCriacao,
-        LocalDateTime dataAtualizacao
+        DadosCepDTO cep
 ) {}

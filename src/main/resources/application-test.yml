@@ -36,6 +36,9 @@ discord:
 pag:
   url: http://localhost:8081
 
+rabbitmq:
+  enabled: false
+
 init:
   email: "fabio.admin@email.com"
   password: "admin123"

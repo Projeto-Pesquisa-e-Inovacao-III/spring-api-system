@@ -22,8 +22,6 @@ import java.util.Optional;
 public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> {
 
     /* -------------------- Buscas simples -------------------- */
-
-
     List<Agendamento> findAgendamentoByPersonal_Id(Long personalId);
 
     List<Agendamento> findAgendamentoByAluno_Id(Long alunoId);
@@ -209,29 +207,5 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             @Param("personalId") Long personalId,
             @Param("status") AgendamentoStatus status
     );
-
-    @Query("""
-        SELECT
-            COALESCE(SUM(CASE WHEN a.status IN (
-                PENDENTE_PERSONAL_APROVACAO,
-                PENDENTE_PERSONAL_CONCLUIR
-            ) THEN 1 ELSE 0 END), 0) as totalPendente,
-    
-            COALESCE(SUM(CASE WHEN a.status IN (
-                PENDENTE_CLIENTE_APROVACAO,
-                APROVADO
-            ) THEN 1 ELSE 0 END), 0) as totalRespondido,
-    
-            COALESCE(SUM(CASE WHEN a.status IN (
-                CANCELADO_CLIENTE,
-                CANCELADO_PERSONAL
-            )
-            AND YEAR(a.data) = YEAR(CURRENT_DATE)
-            AND MONTH(a.data) = MONTH(CURRENT_DATE)
-            THEN 1 ELSE 0 END), 0) as totalCanceladoPorMesAtual
-        FROM agendamento a
-        WHERE a.personal.id = :personalId
-    """)
-    ResTotalAgendamentoByStatusProjection countTotalStatusAgendamentoByPersonal(@Param("personalId") Long personalId);
 
 }

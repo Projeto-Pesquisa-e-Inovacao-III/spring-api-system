@@ -74,7 +74,7 @@ public class FilterService extends OncePerRequestFilter {
     /*
     Gera um cookie com o token gerado
      */
-    public void gerarCookie(HttpServletResponse response, String email){
+    public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
         Usuario usuario = usuarioService.getOpitionalUsuarioByEmailWithRoles(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
@@ -87,7 +87,9 @@ public class FilterService extends OncePerRequestFilter {
         cookie.setPath("/");      // disponível para toda a aplicação
         cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
 
-        response.addCookie(cookie);
+        if(enviarCookie){
+            response.addCookie(cookie);
+        }
     }
 
 

@@ -49,7 +49,7 @@ public class Usuario {
     @Column(name= "caminho_foto")
     private String caminhoFoto;
 
-    @OneToMany (cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Telefone> telefones = new ArrayList<>();
 
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -62,6 +62,12 @@ public class Usuario {
     private Admin admin;
 
     public Usuario() {}
+
+    public Usuario(String salt, String senha, boolean ativo) {
+        this.salt = salt;
+        this.senha = senha;
+        this.ativo = ativo;
+    }
 
     public Usuario(Long id, String nome, Set<Role> roles, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
@@ -204,9 +210,6 @@ public class Usuario {
     }
 
     public void removeRole(Role role) {
-        if(hasOnlyRole(role)){
-            throw new IllegalArgumentException("O usuário deve ter pelo menos uma role. Não é permitido remover a última role: " + role);
-        }
         if(!isRole(role)){
             throw new IllegalArgumentException("O usuário não possui a role: " + role);
         }

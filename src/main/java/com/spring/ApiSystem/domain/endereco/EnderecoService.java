@@ -1,5 +1,8 @@
 package com.spring.ApiSystem.domain.endereco;
 
+import com.spring.ApiSystem.domain.agendamento.Agendamento;
+import com.spring.ApiSystem.domain.agendamento.AgendamentoRepository;
+import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.cep.CepRepository;
 import com.spring.ApiSystem.domain.cep.dto.response.DadosCepDTO;
 
@@ -7,6 +10,8 @@ import com.spring.ApiSystem.domain.cep.exception.CepNaoEncontradoException;
 import com.spring.ApiSystem.domain.endereco.dto.request.ReqAtualizarEnderecoDTO;
 import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
 import com.spring.ApiSystem.domain.endereco.dto.response.*;
+import com.spring.ApiSystem.domain.endereco.exception.EnderecoAlreadyExistsException;
+import com.spring.ApiSystem.domain.endereco.exception.EnderecoOutOfLimitException;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.endereco.exception.EnderecoNaoExistePorId;
 import com.spring.ApiSystem.domain.endereco.mapper.EnderecoMapper;
@@ -24,6 +29,7 @@ import java.util.Optional;
 @Service
 public class EnderecoService {
     private final EnderecoRepository enderecoRepository;
+    private final AgendamentoRepository agendamentoRepository;
     private final UsuarioService usuarioService;
     private final EnderecoMapper enderecoMapper;
     private final ViaCepService viaCepService;
@@ -31,20 +37,30 @@ public class EnderecoService {
     private final JpaUserDetailsService jpaUserDetailsService;
 
     public EnderecoService(EnderecoRepository enderecoRepository, UsuarioService usuarioService, EnderecoMapper enderecoMapper, ViaCepService viaCepService,
-                           CepRepository cepRepository, JpaUserDetailsService jpaUserDetailsService) {
+                           CepRepository cepRepository, JpaUserDetailsService jpaUserDetailsService, AgendamentoRepository agendamentoRepository) {
         this.enderecoRepository = enderecoRepository;
         this.usuarioService = usuarioService;
         this.enderecoMapper = enderecoMapper;
         this.viaCepService = viaCepService;
         this.cepRepository = cepRepository;
         this.jpaUserDetailsService = jpaUserDetailsService;
+        this.agendamentoRepository = agendamentoRepository;
+    }
+
+    private final Integer LIMIT_ENDERECO = 6;
+
+    public void checkLimit(){
+        if(enderecoRepository.countByUsuarioIdAndAtivo(jpaUserDetailsService.getCurrentUser().getId(), true) >= LIMIT_ENDERECO){
+            throw new EnderecoOutOfLimitException(LIMIT_ENDERECO);
+        }
     }
 
     @Transactional
-    public ResCadastrarEnderecoDTO cadastrarEndereco(ReqCadastrarEnderecoDTO enderecoDTO, String email) {
-           Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
+    public ResCadastrarEnderecoDTO cadastrarEndereco(ReqCadastrarEnderecoDTO enderecoDTO, String email, boolean bloquearCadastroExistente) {
+            checkLimit();
+            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
 
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
+            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
             if (cep == null){
                 throw new CepNaoEncontradoException();
             }
@@ -53,12 +69,14 @@ public class EnderecoService {
             endereco.setCep(cep);
 
             Optional<Endereco> enderecoExistente = consultarEnderecoExistente(endereco);
-            if (enderecoExistente.isPresent()) {
+            if(bloquearCadastroExistente && enderecoExistente.isPresent()) {
+                throw new EnderecoAlreadyExistsException();
+            }
+            if(enderecoExistente.isPresent()){
                 return enderecoMapper.toResCadastrarEnderecoDTO(enderecoExistente.get());
             }
 
             endereco.setUsuario(usuarioEncontrado);
-            endereco.setDataCriacao(LocalDateTime.now());
 
             enderecoRepository.save(endereco);
             return enderecoMapper.toResCadastrarEnderecoDTO(endereco);
@@ -66,36 +84,39 @@ public class EnderecoService {
 
     @Transactional
     public ResAtualizarEnderecoDTO atualizarEndereco(Long id, ReqAtualizarEnderecoDTO enderecoDTO, String email) {
-           Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
-           Endereco enderecoEncontrado = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
+        Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
+        Endereco enderecoAntigo = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
 
-            CEP cep = viaCepService.procurarCEP(enderecoDTO.cep().id());
-            if (cep == null) {
-                throw new CepNaoEncontradoException();
-            }
+        CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+        if (cep == null) {
+            throw new CepNaoEncontradoException();
+        }
 
-            enderecoMapper.partialUpdate(enderecoDTO, enderecoEncontrado);
-            enderecoEncontrado.setDataAtualizacao(LocalDateTime.now());
-            enderecoEncontrado.setCep(cepRepository.getReferenceById(cep.getId()));
+        enderecoAntigo.setAtivo(false);
+        enderecoRepository.save(enderecoAntigo);
 
-            enderecoRepository.save(enderecoEncontrado);
-            return enderecoMapper.toResAtualizarEnderecoDTO(enderecoEncontrado);
+        Endereco enderecoNovo = enderecoMapper.toEntity(enderecoDTO);
+        enderecoNovo.setUsuario(usuarioEncontrado);
+        enderecoNovo.setAtivo(true);
+        enderecoNovo.setCep(cepRepository.getReferenceById(cep.getId()));
+        enderecoNovo = enderecoRepository.save(enderecoNovo);
 
+        return enderecoMapper.toResAtualizarEnderecoDTO(enderecoNovo);
     }
 
     @Transactional
-    public Boolean removerEndereco(Long id, String email) {
-            Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
-            Endereco enderecoEncontrado = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
-            enderecoRepository.delete(enderecoEncontrado);
-            return true;
+    public void removerEndereco(Long id, String email) {
+        Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
+        Endereco enderecoEncontrado = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);
+        enderecoEncontrado.setAtivo(false);
+        enderecoRepository.save(enderecoEncontrado);
     }
 
     @Transactional(readOnly = true)
     public List<ResListarEnderecoDTO> listarEnderecos() {
         Usuario usuario = jpaUserDetailsService.getCurrentUser();
         List<Endereco> enderecos = enderecoRepository
-                .findByUsuario(usuario);
+                .findByUsuarioAndAtivo(usuario, true);
 
         return enderecoMapper.toResListarEnderecosDTO(enderecos);
     }
@@ -125,9 +146,7 @@ public class EnderecoService {
                         endereco.getCep().getBairro(),
                         endereco.getCep().getLocalidade(),
                         endereco.getCep().getUf()
-                ),
-                endereco.getDataCriacao(),
-                endereco.getDataAtualizacao()
+                )
         );
     }
 
@@ -140,12 +159,12 @@ public class EnderecoService {
 
     private Optional<Endereco> consultarEnderecoExistente(Endereco endereco) {
         return enderecoRepository
-                .findByCepIdAndNumeroAndComplementoAndUnidadeAndTipo(
+                .findByCepIdAndNumeroAndComplementoAndUnidadeAndAtivo(
                         endereco.getCep().getId(),
                         endereco.getNumero(),
                         endereco.getComplemento(),
                         endereco.getUnidade(),
-                        endereco.getTipo()
+                        true
                 );
     }
     private Endereco buscarEnderecoPorIdEUsuario(Long id, Usuario usuario) {

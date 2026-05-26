@@ -23,14 +23,6 @@ public class Endereco {
     @Column(nullable = false)
     private String tipo;
 
-    @Column(name = "data_criacao",
-            nullable = false,
-            updatable = false)
-    private LocalDateTime dataCriacao;
-
-    @Column(name = "data_atualizacao")
-    private LocalDateTime dataAtualizacao;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
@@ -39,23 +31,23 @@ public class Endereco {
     @JoinColumn(name = "CEP_id")
     private CEP cep;
 
+    private boolean ativo = true;
+
     public Endereco() {
     }
 
     public Endereco(Long id, String numero,
                     String complemento, String unidade,
-                    String tipo, LocalDateTime dataCriacao,
-                    LocalDateTime dataAtualizacao,
-                    Usuario usuario, CEP cep) {
+                    String tipo, Usuario usuario,
+                    CEP cep, boolean ativo) {
         this.id = id;
         this.numero = numero;
         this.complemento = complemento;
         this.unidade = unidade;
         this.tipo = tipo;
-        this.dataCriacao = dataCriacao;
-        this.dataAtualizacao = dataAtualizacao;
         this.usuario = usuario;
         this.cep = cep;
+        this.ativo = ativo;
     }
 
     public Long getId() {
@@ -98,22 +90,6 @@ public class Endereco {
         this.tipo = tipo;
     }
 
-    public LocalDateTime getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public void setDataCriacao(LocalDateTime dataCriacao) {
-        this.dataCriacao = dataCriacao;
-    }
-
-    public LocalDateTime getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setDataAtualizacao(LocalDateTime dataAtualizacao) {
-        this.dataAtualizacao = dataAtualizacao;
-    }
-
     public Usuario getUsuario() {
         return usuario;
     }
@@ -128,5 +104,13 @@ public class Endereco {
 
     public void setCep(CEP cep) {
         this.cep = cep;
+    }
+
+    public boolean isAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(boolean ativo) {
+        this.ativo = ativo;
     }
 }

@@ -15,6 +15,8 @@ import com.spring.ApiSystem.domain.aluno.events.AlunoEventPublisher;
 import com.spring.ApiSystem.domain.aluno.mapper.CpfMapper;
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.anamnese.Anamnese;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
+import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoRepository;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqCadastrarTelefoneDTO;
@@ -42,14 +44,16 @@ public class AlunoService {
     private final AlunoEventPublisher alunoEventPublisher;
     private final CpfMapper cpfMapper;
     private final FilterService filterService;
+    private final ProdutoContratadoRepository produtoContratadoRepository;
 
-    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper, FilterService filterService) {
+    public AlunoService(AlunoRepository alunoRepository, UsuarioService usuarioService, AlunoMapper alunoMapper, AlunoEventPublisher alunoEventPublisher, CpfMapper cpfMapper, FilterService filterService, ProdutoContratadoRepository produtoContratadoRepository) {
         this.alunoRepository = alunoRepository;
         this.usuarioService = usuarioService;
         this.alunoMapper = alunoMapper;
         this.alunoEventPublisher = alunoEventPublisher;
         this.cpfMapper = cpfMapper;
         this.filterService = filterService;
+        this.produtoContratadoRepository = produtoContratadoRepository;
     }
 
     @Transactional
@@ -77,7 +81,7 @@ public class AlunoService {
             Boolean isUsuarioEncontrado = usuarioService.loginUsuario(alunoSalvo.getEmail(), rawPassword);
 
             if (isUsuarioEncontrado) {
-                filterService.gerarCookie(response, alunoSalvo.getEmail());
+                filterService.gerarCookie(response, alunoSalvo.getEmail(), true);
             }
             return alunoMapper.toDtoCadastrarAluno(alunoSalvo);
         } catch (DataIntegrityViolationException e) {
@@ -128,7 +132,10 @@ public class AlunoService {
 
     public ResBuscarAlunoPorIdDTO buscarAlunoPorIdComRole(Long id){
         Aluno aluno = buscarPorIdWithRole(id);
-        return alunoMapper.toDtoBuscarAlunoPorId(aluno);
+        ProdutoContratado produtoContratado =
+                produtoContratadoRepository.findByProdutoExibicaoTipoProdutoAndSituacao(
+                        TipoProduto.PACOTE, true);
+        return alunoMapper.toDtoBuscarAlunoPorId(aluno, produtoContratado);
     }
 
     public Aluno buscarPorId(Long id) {
@@ -188,5 +195,4 @@ public class AlunoService {
         validarCpfUnico(cpf);
         return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
     }
-
 }
