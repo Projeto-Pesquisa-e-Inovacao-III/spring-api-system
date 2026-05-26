@@ -59,14 +59,14 @@ class NoCodeServiceTest {
         latest.setContent("{\"v\": 2}");
         ResBuscarNoCodeDTO dto = new ResBuscarNoCodeDTO(null, "{\"v\": 2}", "Latest", null, null, null, null);
 
-        when(noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(1L)).thenReturn(latest);
+        when(noCodeRepository.findFirstByOrderByCreatedAtDesc()).thenReturn(latest);
         when(noCodeMapper.toResBuscarNoCodeDTO(latest)).thenReturn(dto);
 
         ResBuscarNoCodeDTO result = noCodeService.getContent();
 
         assertNotNull(result);
         assertEquals("{\"v\": 2}", result.content());
-        verify(noCodeRepository).findFirstByUserIdOrderByCreatedAtDesc(1L);
+        verify(noCodeRepository).findFirstByOrderByCreatedAtDesc();
     }
 
     @Test

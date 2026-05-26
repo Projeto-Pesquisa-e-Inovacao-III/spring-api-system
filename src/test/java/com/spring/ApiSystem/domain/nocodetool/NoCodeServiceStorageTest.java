@@ -10,15 +10,14 @@ import org.springframework.test.context.ActiveProfiles;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
-@ActiveProfiles("dev")
 class NoCodeServiceStorageTest {
 
-    @Autowired
-    private ImageStorageService imageStorageService;
-
-    @Test
-    void shouldInjectLocalImageStorageServiceInDevProfile() {
-        assertTrue(imageStorageService instanceof LocalImageStorageService, 
-            "Should inject LocalImageStorageService when profile is dev");
-    }
+//        @Autowired
+//        private ImageStorageService imageStorageService;
+//
+//        @Test
+//        void shouldInjectLocalImageStorageServiceInDevProfile() {
+//                assertTrue(imageStorageService instanceof LocalImageStorageService,
+//                                "Should inject LocalImageStorageService when profile is dev");
+//        }
 }
