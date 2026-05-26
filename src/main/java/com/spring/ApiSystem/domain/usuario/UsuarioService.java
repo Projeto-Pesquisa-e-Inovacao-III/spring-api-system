@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.usuario;
 
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.telefone.TelefoneService;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;

@@ -28,14 +28,8 @@ public class AdminUserInitializer implements CommandLineRunner {
     @Override
     public void run(String @NonNull ... args) {
         log.info("Inicializando usuário admin inicial.");
-
-        if (!adminUserService.existsByEmail(email)) {
-            adminUserService.createAdminUser(email, password);
-            email = null;
-            password = null;
-            return;
-        }
-
-        log.info("Usuário admin inicial já existe. Nenhuma ação necessária.");
+        adminUserService.createInitialAdminUser(email, password);
+        email = null;
+        password = null;
     }
 }
