@@ -22,6 +22,8 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -52,6 +54,7 @@ public class AgendamentoService {
     private final ProdutoContratadoService produtoContratadoService;
     private final AlunoService alunoService;
     private final EnderecoService enderecoService;
+    private final ResumoAgendamentoService resumoAgendamentoService;
     private final AgendamentoMapper agendamentoMapper;
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
@@ -64,6 +67,7 @@ public class AgendamentoService {
             ProdutoContratadoService produtoContratadoService,
             AlunoService alunoService,
             EnderecoService enderecoService,
+            ResumoAgendamentoService resumoAgendamentoService,
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
@@ -80,6 +84,7 @@ public class AgendamentoService {
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.agendamentoEventPublisher = agendamentoEventPublisher;
         this.utilsService = utilsService;
+        this.resumoAgendamentoService = resumoAgendamentoService;
     }
 
     @Transactional
@@ -250,7 +255,7 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public void confirmarConclusao(Long agendamentoId) {
+    public void confirmarConclusao(Long agendamentoId, ReqCadastrarResumoAgendamentoDTO dto) {
         Usuario usuario = obterUsuarioAutenticado();
         Agendamento agendamento = validarSeAgendamentoPertenceAoUsuario(agendamentoId, usuario.getEmail());
 
@@ -270,9 +275,14 @@ public class AgendamentoService {
                     agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
                     agendamentoSalvo
             );
+
+            resumoAgendamentoService.cadastrar(
+                    agendamento.getAluno(), agendamento.getPersonal(), agendamento,
+                    dto.resumo(), dto.grupoMuscular()
+            );
         }
 
-        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
+       agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
     @Transactional
