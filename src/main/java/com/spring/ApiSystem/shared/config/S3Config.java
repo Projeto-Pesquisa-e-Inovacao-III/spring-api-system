@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 @Configuration
 @ConditionalOnProperty(name = "storage.type", havingValue = "s3")
 public class S3Config {
-    @Value("${aws.region:us-east-1}")
+    @Value("${aws.region}")
     private String region;
     @Bean
     public S3Client s3Client() {
