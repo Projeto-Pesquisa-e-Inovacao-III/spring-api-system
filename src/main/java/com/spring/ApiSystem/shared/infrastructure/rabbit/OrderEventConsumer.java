@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.shared.infrastructure.rabbit;
 
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
-import com.spring.ApiSystem.shared.infrastructure.rabbit.dto.OrderPaidMessage;
+import com.spring.ApiSystem.shared.infrastructure.rabbit.dto.OrderPaidEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -13,9 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 
@@ -35,7 +33,7 @@ public class OrderEventConsumer {
     }
 
     @RabbitListener(queues = "api_system.orders.queue")
-    public void consumeOrderPaidEvent(OrderPaidMessage message,
+    public void consumeOrderPaidEvent(OrderPaidEvent message,
                                       @Header("x-idempotency-key") String idempotencyKey,
                                       @Header("x-timestamp") String timestampHeader) {
         if (!isTimestampValid(timestampHeader)) {
@@ -68,7 +66,7 @@ public class OrderEventConsumer {
         return diff.compareTo(TIMESTAMP_TOLERANCE) <= 0;
     }
 
-    private boolean isHmacValid(OrderPaidMessage message, String signatureBase64) {
+    private boolean isHmacValid(OrderPaidEvent message, String signatureBase64) {
         if (hmacSecret == null || hmacSecret.isBlank()) {
             log.error("Segredo HMAC nao configurado (rabbitmq.hmac.secret)");
             return false;
@@ -82,21 +80,11 @@ public class OrderEventConsumer {
             return false;
         }
 
-        String payload = buildIdempotencyPayload(message);
+        String payload = message.toString();
+        System.out.println("payload: " + payload);
         String expectedBase64 = hmacSha256(payload, hmacSecret);
 
         return expectedBase64.equals(signatureBase64);
-    }
-
-    private String buildIdempotencyPayload(OrderPaidMessage orderPaidMessage) {
-        return String.join("|",
-                "orderId=" + orderPaidMessage.orderId(),
-                "checkoutId=" + orderPaidMessage.checkoutId(),
-                "gatewayOrderId=" + orderPaidMessage.gatewayOrderId(),
-                "customerId=" + orderPaidMessage.customerId(),
-                "itensId=" + orderPaidMessage.itensId(),
-                "chargeId=" + orderPaidMessage.chargeId()
-        );
     }
 
     private String hmacSha256(String payload, String secret) {
