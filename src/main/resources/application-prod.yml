@@ -1,75 +1,85 @@
 server:
-  port: ${SERVER_PORT:8080}
+  port: ${SERVER_PORT:}
 
 spring:
-
   servlet:
     multipart:
-      max-file-size: 4MB
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/api_system}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Suave2004@}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:}
+    show-sql: ${JPA_SHOW_SQL:}
     properties:
       hibernate:
-        format_sql: false
+        format_sql: ${HIBERNATE_FORMAT_SQL:}
 
   mail:
-    host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
-    username: ${MAIL_USERNAME}
-    password: ${MAIL_PASSWORD}
+    host: ${MAIL_HOST:}
+    port: ${MAIL_PORT:}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: true
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:}
+
   rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
-    connection-timeout: 60000
+    host: ${RABBITMQ_HOST:}
+    port: ${RABBITMQ_PORT:}
+    username: ${RABBITMQ_USERNAME:}
+    password: ${RABBITMQ_PASSWORD:}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
+    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
 
 pag:
-  url: ${PAG_API_URL}
+  url: ${PAG_API_URL:}
 
 infobip:
   base:
-    url: ${INFOBIP_BASE_URL:https://xk4qx3.api.infobip.com}
+    url: ${INFOBIP_BASE_URL:}
   api:
-    key: ${INFOBIP_API_KEY}
+    key: ${INFOBIP_API_KEY:}
   whatsapp:
-    sender: ${INFOBIP_WHATSAPP_SENDER}
+    sender: ${INFOBIP_WHATSAPP_SENDER:}
     template:
-      name: ${INFOBIP_TEMPLATE_NAME:authentication}
+      name: ${INFOBIP_TEMPLATE_NAME:}
 
 discord:
   webhook:
-    url: ${DISCORD_WEBHOOK_URL}
+    url: ${DISCORD_WEBHOOK_URL:}
 
 springdoc:
   swagger-ui:
-    enabled: false
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:}
 
 storage:
-  local-dir: /app/imagens
+  type: ${STORAGE_TYPE:}
+  s3:
+    bucket: ${AWS_S3_BUCKET:}
+    path: ${STORAGE_S3_PATH:}
+
+aws:
+  region: ${AWS_REGION:}
+  s3:
+    bucket: ${AWS_S3_BUCKET:}
+    endpoint: ${AWS_S3_ENDPOINT:}
+    path-style-access: ${AWS_S3_PATH_STYLE:}
 
 logging:
   level:
-    root: INFO
-    com.spring: INFO
+    root: ${LOGGING_LEVEL_ROOT:}
+    com.spring: ${LOGGING_LEVEL_COM_SPRING:}
 
 init:
-  email: ${INIT_EMAIL}
-  password: ${INIT_PASSWORD}
+  email: ${INIT_EMAIL:}
+  password: ${INIT_PASSWORD:}
