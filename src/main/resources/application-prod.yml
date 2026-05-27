@@ -40,7 +40,11 @@ spring:
     password: ${RABBITMQ_PASSWORD:}
     virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
     connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
-
+  cache:
+    type: redis
+  data:
+    redis:
+      url: ${SPRING_REDIS_URL:redis://localhost:6379}
 pag:
   url: ${PAG_API_URL:}
 
