@@ -16,10 +16,12 @@ public interface EnderecoMapper {
 
 
     Endereco toEntity(ReqCadastrarEnderecoDTO enderecoDTO);
+    Endereco toEntity(ReqAtualizarEnderecoDTO reqAtualizarEnderecoDTO);
+
     Endereco toEntity(ResCadastrarEnderecoDTO resEnderecoDTO);
     Endereco toEntity(ResListarEnderecoDTO resListarEnderecoDTO);
     Endereco toEntity(ResEnderecoSemIdDto enderecoSemIdDto);
-    Endereco toEntity(ResAtualizarEnderecoDTO resAtuailizarEnderecoDTO);
+    Endereco toEntity(ResAtualizarEnderecoDTO resAtualizarEnderecoDTO);
 
     ResCadastrarEnderecoDTO toResCadastrarEnderecoDTO(Endereco endereco);
     ResAtualizarEnderecoDTO toResAtualizarEnderecoDTO(Endereco endereco);

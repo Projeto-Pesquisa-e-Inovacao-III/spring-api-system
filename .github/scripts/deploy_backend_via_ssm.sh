@@ -85,6 +85,22 @@ rollback() {
   fi
 }
 
+cleanup_previous_image() {
+  CURRENT_IMAGE_ID=$(docker inspect --format='{{.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)
+
+  if [ -z "$PREV_IMAGE_ID" ]; then
+    return
+  fi
+
+  if [ "$PREV_IMAGE_ID" = "$CURRENT_IMAGE_ID" ]; then
+    echo "[INFO] Imagem anterior e igual a atual. Nenhuma limpeza necessaria."
+  elif docker image rm "$PREV_IMAGE_ID" >/dev/null 2>&1; then
+    echo "[INFO] Imagem anterior removida com sucesso: $PREV_IMAGE_ID"
+  else
+    echo "[INFO] Nao foi possivel remover a imagem anterior (pode estar em uso). Seguindo deploy."
+  fi
+}
+
 echo "[INFO] Pull da nova imagem..."
 if ! docker pull "$APP_IMAGE"; then
   echo "[ERRO] Falha ao baixar imagem"
@@ -105,6 +121,7 @@ for i in {1..30}; do
   if curl -fsS "$HEALTHCHECK_URL" >/dev/null; then
     echo "[INFO] Healthcheck OK"
     docker ps --filter "name=$CONTAINER_NAME"
+    cleanup_previous_image
     echo "[INFO] Deploy concluido com sucesso"
     exit 0
   fi

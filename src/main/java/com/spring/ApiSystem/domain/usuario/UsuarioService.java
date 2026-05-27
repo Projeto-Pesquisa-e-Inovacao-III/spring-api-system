@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.usuario;
 
 
+import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.telefone.TelefoneService;
 import com.spring.ApiSystem.domain.telefone.dto.request.ReqAtualizarTelefoneDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
@@ -9,7 +10,7 @@ import com.spring.ApiSystem.domain.usuario.events.UsuarioEventPublisher;
 import com.spring.ApiSystem.domain.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.domain.usuario.exception.SenhaNaoCorrespondeAtual;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
-
+import com.spring.ApiSystem.domain.usuario.LocalImageStorageService;
 
 import com.spring.ApiSystem.shared.security.ArgonService;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.LockSupport;
 import java.util.Optional;
 
 @Service
@@ -29,16 +32,23 @@ public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final ArgonService argonService;
-    private final LocalImageStorageService imageStorageService;
+    private final ImageStorageService imageStorageService;
     private final TelefoneService telefoneService;
     private final UsuarioEventPublisher usuarioEventPublisher;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, LocalImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
+    private final Usuario DUMMY_USUARIO;
+
+    public UsuarioService(UsuarioRepository usuarioRepository, ArgonService argonService, ImageStorageService imageStorageService, TelefoneService telefoneService, UsuarioEventPublisher usuarioEventPublisher) {
         this.usuarioRepository = usuarioRepository;
         this.argonService = argonService;
         this.imageStorageService = imageStorageService;
         this.telefoneService = telefoneService;
         this.usuarioEventPublisher = usuarioEventPublisher;
+
+        List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
+        String DUMMY_SALT = dummyArgon.get(0);
+        String DUMMY_HASH = dummyArgon.get(1);
+        this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, true);
     }
 
     public Boolean removerUsuario(String email) {
@@ -50,12 +60,34 @@ public class UsuarioService {
         return true;
     }
 
-    public Boolean loginUsuario(String email, String senha) {
-        Usuario userOpt = buscarUsuarioPorEmail(email);
+    public long getStartTime(){
+        return System.nanoTime();
+    }
 
-        boolean argon = argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha());
-        boolean isValido = userOpt.isAtivo();
-        return  isValido && argon;
+    public void setEndTime(long startTime, int milliseconds, int millisecondsToAdd){
+        long timeTarget = TimeUnit.MILLISECONDS.toNanos(milliseconds);
+        long stepNanos = TimeUnit.MILLISECONDS.toNanos(millisecondsToAdd);
+        long timeSpent = System.nanoTime() - startTime;
+
+        if (timeSpent > timeTarget) {
+            long excess = timeSpent - timeTarget;
+            long steps = (excess + stepNanos - 1) / stepNanos;
+            timeTarget += steps * stepNanos;
+        }
+
+        long timeLeft = timeTarget - timeSpent;
+        if (timeLeft > 0) {
+            LockSupport.parkNanos(timeLeft);
+        }
+    }
+
+    public Boolean loginUsuario(String email, String senha) {
+        Usuario userOpt = usuarioRepository.findByEmail(email)
+                .orElse(DUMMY_USUARIO);
+
+        return
+                argonService.validarSenha(senha, userOpt.getSalt(), userOpt.getSenha()) &&
+                userOpt.isAtivo();
     }
 
     public Usuario buscarUsuarioPorEmail(String email) {
@@ -103,6 +135,7 @@ public class UsuarioService {
         }
     }
 
+
     public String trocarFotoUsuario(MultipartFile imagem, String fotoAtualPath) throws IOException {
         return imageStorageService.trocarImagem(imagem, Paths.get(fotoAtualPath));
     }
@@ -130,9 +163,10 @@ public class UsuarioService {
                     .filter(t -> t.getId().equals(telefoneDTO.id()))
                     .findFirst()
                     .ifPresent(telefone -> {
-                        telefone.setPais("55+");
+                        telefone.setPais("+55");
                         telefone.setDdd(telefoneDTO.ddd());
                         telefone.setNumero(telefoneDTO.numero());
+                        telefone.setUsuario(usuario); // keep FK non-null
                     });
         }
     }

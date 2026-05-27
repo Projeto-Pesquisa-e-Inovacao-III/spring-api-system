@@ -9,10 +9,10 @@ public class Telefone {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 2, nullable = false)
+    @Column(length = 3, nullable = false)
     private String pais;
 
-    @Column(length = 3, nullable = false)
+    @Column(length = 2, nullable = false)
     private String ddd;
 
     @Column(length = 9, nullable = false)

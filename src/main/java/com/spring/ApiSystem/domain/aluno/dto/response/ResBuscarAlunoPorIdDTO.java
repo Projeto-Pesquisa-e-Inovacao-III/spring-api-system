@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.aluno.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.domain.telefone.dto.response.ResListarTelefonesPorIdDoUsuario;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 
@@ -15,9 +16,9 @@ public record ResBuscarAlunoPorIdDTO(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate dataNascimento,
         String email,
-        String cpf,
         Set<Role> roles,
         boolean ativo,
         String caminhoFoto,
+        ResProdutoContratadoDto produtoContratado,
         List<ResListarTelefonesPorIdDoUsuario> telefones
 ) {}

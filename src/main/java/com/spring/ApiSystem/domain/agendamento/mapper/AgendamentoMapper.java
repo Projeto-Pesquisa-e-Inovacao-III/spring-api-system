@@ -3,7 +3,7 @@ package com.spring.ApiSystem.domain.agendamento.mapper;
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.request.ReqReagendarAgendamentoDTO;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoAlunoOverviewDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.overview.ResAgendamentoAlunoOverviewDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.ResBuscarAgendamentoCalendarioAlunoDTO;
