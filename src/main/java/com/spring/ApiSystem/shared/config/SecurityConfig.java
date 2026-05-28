@@ -54,7 +54,6 @@ public class SecurityConfig {
                                                                 "/api/controle/admin/dev/**").permitAll();
                                         }
 
-                                        auth.requestMatchers("/api/agendamentos/recomendacao-treino").permitAll();
 
                                         // Públicas
                                         auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();

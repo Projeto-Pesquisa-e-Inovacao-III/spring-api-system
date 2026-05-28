@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;

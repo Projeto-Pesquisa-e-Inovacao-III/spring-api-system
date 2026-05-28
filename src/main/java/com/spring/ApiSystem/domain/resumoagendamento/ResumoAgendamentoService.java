@@ -1,9 +1,10 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.personal.Personal;
+<<<<<<< HEAD:src/main/java/com/spring/ApiSystem/domain/resumoAgendamento/ResumoAgendamentoService.java
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
@@ -11,6 +12,12 @@ import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.resumoAgendamento.mapper.ResumoAgendamentoMapper;
 import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
+=======
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.mapper.ResumoAgendamentoMapper;
+>>>>>>> 93f75a8 (Using spring ai to create a training plan):src/main/java/com/spring/ApiSystem/domain/resumoagendamento/ResumoAgendamentoService.java
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
 import org.springframework.data.domain.Page;
