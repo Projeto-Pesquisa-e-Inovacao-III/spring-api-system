@@ -1,13 +1,13 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.personal.Personal;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
-import com.spring.ApiSystem.domain.resumoAgendamento.mapper.ResumoAgendamentoMapper;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.mapper.ResumoAgendamentoMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
 import org.junit.jupiter.api.DisplayName;
