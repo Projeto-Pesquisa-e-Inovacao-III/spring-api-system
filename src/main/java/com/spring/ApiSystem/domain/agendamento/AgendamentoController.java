@@ -17,6 +17,7 @@ import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -38,11 +39,24 @@ public class AgendamentoController {
 
     private final AgendamentoService agendamentoService;
     private final PageableService pageableService;
+    private final ChatClient.Builder chatClientBuilder;
 
-    public AgendamentoController(AgendamentoService agendamentoService, PageableService pageableService) {
+    public AgendamentoController(AgendamentoService agendamentoService, PageableService pageableService, ChatClient.Builder chatClientBuilder) {
         this.agendamentoService = agendamentoService;
         this.pageableService = pageableService;
+        this.chatClientBuilder = chatClientBuilder;
     }
+
+    /* -------------------- IA -------------------- */
+    @GetMapping("/recomendacao-treino")
+    public ResponseEntity<?> gerarRecomendacaoTreino(){
+        return ResponseEntity.ok(agendamentoService.runner(chatClientBuilder));
+    }
+
+//    @GetMapping("/{agendamentoId}/recomendacao-treino")
+//    public ResponseEntity<?> consultarRecomendacaoTreino(){
+//        return null;
+//    }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */
 
