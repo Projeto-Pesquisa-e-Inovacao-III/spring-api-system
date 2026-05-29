@@ -9,26 +9,24 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface HistoricoAgendamentoRepository extends JpaRepository<HistoricoAgendamento, Long> {
+
     @Query("""
         SELECT
+            COALESCE(SUM(CASE WHEN h.status = PENDENTE_PERSONAL_APROVACAO THEN 1 ELSE 0 END), 0) as totalPendente,
+            COALESCE(SUM(CASE WHEN h.status = APROVADO THEN 1 ELSE 0 END), 0) as totalRespondido,
             COALESCE(SUM(CASE WHEN h.status IN (
-                PENDENTE_PERSONAL_APROVACAO,
-                PENDENTE_PERSONAL_CONCLUIR
-            ) THEN 1 ELSE 0 END), 0) as totalPendente,
-
-            COALESCE(SUM(CASE WHEN h.status IN (
-                PENDENTE_CLIENTE_APROVACAO,
-                APROVADO
-            ) THEN 1 ELSE 0 END), 0) as totalRespondido,
-
-            COALESCE(SUM(CASE WHEN h.status IN (
-              CANCELADO_CLIENTE,
-              CANCELADO_PERSONAL
+                CANCELADO_CLIENTE,
+                CANCELADO_PERSONAL
             ) THEN 1 ELSE 0 END), 0) as totalCanceladoPorMesAtual
         FROM historico_agendamento h
-        WHERE h.agendamento.personal.id = :personalId
-          AND YEAR(h.dataCriacao) = YEAR(CURRENT_DATE)
-          AND MONTH(h.dataCriacao) = MONTH(CURRENT_DATE)
+        WHERE h.dataCriacao = (
+            SELECT MAX(h2.dataCriacao)
+            FROM historico_agendamento h2
+            WHERE h2.agendamento = h.agendamento
+        )
+          AND h.agendamento.personal.id = :personalId
+          AND FUNCTION('YEAR', h.dataCriacao) = FUNCTION('YEAR', CURRENT_DATE)
+          AND FUNCTION('MONTH', h.dataCriacao) = FUNCTION('MONTH', CURRENT_DATE)
     """)
     ResTotalAgendamentoByStatusProjection countTotalStatusAgendamentoByPersonal(@Param("personalId") Long personalId);
 }
