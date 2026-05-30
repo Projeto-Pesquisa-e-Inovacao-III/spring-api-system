@@ -64,7 +64,7 @@ springdoc:
     enabled: false
 
 storage:
-  type: ${STORAGE_TYPE}
+  type: s3
   s3:
     bucket: ${AWS_S3_BUCKET}
     path: ${STORAGE_S3_PATH}
