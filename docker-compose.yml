@@ -1,3 +1,4 @@
+version: '3.8'
 services:
   mysql:
     image: mysql:8.0
@@ -18,6 +19,22 @@ services:
     networks:
       - app-net
 
+  redis:
+    image: redis:7
+    container_name: spring-api-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-net
+
   app:
     build:
       context: .
@@ -25,6 +42,8 @@ services:
     restart: unless-stopped
     depends_on:
       mysql:
+        condition: service_healthy
+      redis:
         condition: service_healthy
     ports:
       - "8080:8080"
@@ -44,6 +63,7 @@ services:
       INFOBIP_WHATSAPP_SENDER: ${INFOBIP_WHATSAPP_SENDER:-ci}
       INFOBIP_TEMPLATE_NAME: ${INFOBIP_TEMPLATE_NAME:-authentication}
       DISCORD_WEBHOOK_URL: ${DISCORD_WEBHOOK_URL:-https://example.com/webhook}
+      SPRING_REDIS_URL: ${SPRING_REDIS_URL:-redis://redis:6379}
     networks:
       - app-net
 
@@ -53,4 +73,4 @@ networks:
 
 volumes:
   mysql_data:
-
+  redis_data:
