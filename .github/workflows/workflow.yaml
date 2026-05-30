@@ -195,6 +195,12 @@ jobs:
           RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
+          STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
+          AWS_S3_PATH_STYLE: ${{ secrets.AWS_S3_PATH_STYLE }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
@@ -259,6 +265,7 @@ jobs:
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
+          MAIL_SMTP_STARTTLS_ENABLE: ${{ secrets.MAIL_SMTP_STARTTLS_ENABLE }}
           PAG_API_URL: ${{ secrets.PAG_API_URL }}
           INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
           INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
@@ -270,11 +277,15 @@ jobs:
           RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          RABBITMQ_CONNECTION_TIMEOUT: ${{ secrets.RABBITMQ_CONNECTION_TIMEOUT }}
+          STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
+          STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
+          AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
+          AWS_S3_PATH_STYLE: ${{ secrets.AWS_S3_PATH_STYLE }}
+          HIBERNATE_FORMAT_SQL: ${{ secrets.HIBERNATE_FORMAT_SQL }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
-          
 
-          
-
-  
