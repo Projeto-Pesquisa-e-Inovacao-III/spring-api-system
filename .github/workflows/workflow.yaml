@@ -184,7 +184,6 @@ jobs:
           MAIL_PORT: ${{ secrets.MAIL_PORT }}
           MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
           MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          MAIL_SMTP_STARTTLS_ENABLE: ${{ secrets.MAIL_SMTP_STARTTLS_ENABLE }}
           PAG_API_URL: ${{ secrets.PAG_API_URL }}
           INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
           INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
