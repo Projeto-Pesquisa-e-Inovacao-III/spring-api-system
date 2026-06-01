@@ -18,7 +18,6 @@ import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -51,15 +50,15 @@ public class AgendamentoController {
     }
 
     /* -------------------- IA -------------------- */
-    @GetMapping("{agendamentoId}/recomendacao-treino")
-    public ResponseEntity<?> gerarRecomendacaoTreino(@PathVariable Long agendamentoId){
-        return ResponseEntity.ok(recomendacaoTreinoService.gerarRecomendacaoTreino(agendamentoId));
+    @PostMapping("{agendamentoId}/recomendacao-treino")
+    public ResponseEntity<?> cadastrarRecomendacaoTreino(@PathVariable Long agendamentoId){
+        return ResponseEntity.ok(recomendacaoTreinoService.cadastrarRecomendacaoTreino(agendamentoId));
     }
 
-//    @GetMapping("/{agendamentoId}/recomendacao-treino")
-//    public ResponseEntity<?> consultarRecomendacaoTreino(){
-//        return null;
-//    }
+    @GetMapping("/{agendamentoId}/recomendacao-treino")
+    public ResponseEntity<?> consultarRecomendacaoTreino(@PathVariable Long agendamentoId){
+        return ResponseEntity.ok(recomendacaoTreinoService.consultarRecomendacaoTreino(agendamentoId));
+    }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */
 

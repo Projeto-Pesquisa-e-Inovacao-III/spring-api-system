@@ -502,7 +502,7 @@ public class AgendamentoService {
 
     private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
-    private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
+    public Agendamento buscarAgendamentoPorId(Long agendamentoId) {
         return agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(AgendamentoNaoExisteException::new);
     }
