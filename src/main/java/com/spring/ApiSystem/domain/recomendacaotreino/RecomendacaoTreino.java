@@ -18,6 +18,7 @@ public class RecomendacaoTreino {
     @Column(name = "data_criacao", nullable = false)
     private LocalDate dataCriacao;
 
+    @Lob
     private String treino;
 
     public RecomendacaoTreino() {
