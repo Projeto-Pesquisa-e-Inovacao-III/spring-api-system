@@ -35,12 +35,14 @@ spring:
             enable: true
 
   rabbitmq:
-    host: ${RABBITMQ_HOST}
-    port: ${RABBITMQ_PORT}
-    username: ${RABBITMQ_USERNAME}
-    password: ${RABBITMQ_PASSWORD}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST}
-    connection-timeout: 5s
+    host: ${RABBITMQ_HOST:}
+    port: ${RABBITMQ_PORT:}
+    username: ${RABBITMQ_USERNAME:}
+    password: ${RABBITMQ_PASSWORD:}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
+    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
+    hmac:
+      secret: ${RABBITMQ_HMAC_SECRET}
 
 pag:
   url: ${PAG_API_URL}
