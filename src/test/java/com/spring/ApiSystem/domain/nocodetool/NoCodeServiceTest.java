@@ -76,6 +76,7 @@ class NoCodeServiceTest {
         String expectedUrl = "http://storage.com/image.png";
 
         when(imageStorageService.salvarBlob(image)).thenReturn(expectedUrl);
+        when(imageStorageService.gerarUrlPublica(expectedUrl)).thenReturn(expectedUrl);
         when(noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(1L)).thenReturn(new NoCode());
 
         String result = noCodeService.saveImage(image, section);
