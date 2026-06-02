@@ -113,9 +113,7 @@ public class SecurityConfig {
 
 
                                     // Demais regras para aluno/genéricas
-                                        auth.requestMatchers("/api/produtos-contratados/total-tipo/*",
-                                                        "/api/personais",
-                                                        "/api/alunos/**",
+                                        auth.requestMatchers("/api/alunos/**",
                                                         "/api/comprar/**",
                                                         "/api/checkouts/**",
                                                         "/api/produtos-contratados/**",
