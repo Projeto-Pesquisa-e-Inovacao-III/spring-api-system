@@ -195,6 +195,7 @@ jobs:
           RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
+          RABBITMQ_HMAC_SECRET: ${{ secrets.SPRING_RABBITMQ_HMAC_SECRET}}
           STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
           STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -278,6 +279,7 @@ jobs:
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
           RABBITMQ_CONNECTION_TIMEOUT: ${{ secrets.RABBITMQ_CONNECTION_TIMEOUT }}
+          RABBITMQ_HMAC_SECRET: ${{ secrets.SPRING_RABBITMQ_HMAC_SECRET}}
           STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
           STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -287,6 +289,9 @@ jobs:
           HIBERNATE_FORMAT_SQL: ${{ secrets.HIBERNATE_FORMAT_SQL }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
-          RABBITMQ_HMAC_SECRET: ${{ secrets.SPRING_RABBITMQ_HMAC_SECRET}}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
+
+
+
+
 
