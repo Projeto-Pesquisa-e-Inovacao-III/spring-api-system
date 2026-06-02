@@ -250,7 +250,7 @@ jobs:
         timeout-minutes: 5
         env:
           APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
-          CONTAINER_NAME: sprRABBITMQ_HMAC_SECRETing-api-system
+          CONTAINER_NAME: spring-api-system
           HOST_PORT: "8080"
           CONTAINER_PORT: "8080"
           HEALTHCHECK_URL: http://localhost:8080/health
