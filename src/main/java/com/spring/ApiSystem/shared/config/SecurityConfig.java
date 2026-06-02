@@ -91,6 +91,12 @@ public class SecurityConfig {
                                                         "/api/no-code/",
                                                         "/api/no-code/**").hasAuthority("ROLE_ADMIN");
 
+                                        // Aluno - matcher específico para GET /api/personais deve vir antes do matcher
+                                        // PERSONAL genérico
+                                        auth.requestMatchers(HttpMethod.GET,
+                                                "/api/produtos-contratados/total-tipo/*",
+                                                "/api/personais").hasAuthority("ROLE_ALUNO");
+
                                         // Personal (regras mais específicas após a regra acima)
                                         auth.requestMatchers(HttpMethod.GET,
                                                         "/api/alunos",
