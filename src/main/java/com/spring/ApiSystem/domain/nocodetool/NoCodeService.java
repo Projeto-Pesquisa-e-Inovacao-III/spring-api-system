@@ -41,14 +41,14 @@ public class NoCodeService {
         Personal currentPersonal = detailsService.getCurrentPersonal();
         NoCode noCode = noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(currentPersonal.getId());
 
-        String url = imageStorageService.salvarBlob(image);
+        String storageKey = imageStorageService.salvarBlob(image);
 
         if (noCode != null) {
-            NoCodeImage noCodeImage = new NoCodeImage(url, section, noCode);
+            NoCodeImage noCodeImage = new NoCodeImage(storageKey, section, noCode);
             noCodeImageRepository.save(noCodeImage);
         }
 
-        return url;
+        return imageStorageService.gerarUrlPublica(storageKey);
     }
 
     @Transactional

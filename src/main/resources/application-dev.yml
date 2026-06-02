@@ -1,4 +1,6 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: spring-api-system
   profiles:
@@ -113,4 +115,6 @@ init:
   password: "admin123"
 
 rabbitmq:
-  enabled: false
+  enabled: true
+  hmac:
+    secret: ${RABBITMQ_HMAC_SECRET:urubu100}
