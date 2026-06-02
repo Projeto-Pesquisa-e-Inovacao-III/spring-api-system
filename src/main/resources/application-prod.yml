@@ -40,6 +40,8 @@ spring:
     password: ${RABBITMQ_PASSWORD:}
     virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
     connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
+    hmac:
+      secret: ${RABBITMQ_HMAC_SECRET}
 
 pag:
   url: ${PAG_API_URL:}

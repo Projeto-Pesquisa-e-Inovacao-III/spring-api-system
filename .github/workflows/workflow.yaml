@@ -272,6 +272,7 @@ jobs:
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
+          RABBITMQ_HMAC_SECRET: ${{ secrets.SPRING_RABBITMQ_HMAC_SECRET}}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
           
 
