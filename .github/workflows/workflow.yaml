@@ -195,7 +195,7 @@ jobs:
           RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
           RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
           RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
-          RABBITMQ_HMAC_SECRET: ${{ secrets.SPRING_RABBITMQ_HMAC_SECRET }}
+          RABBITMQ_HMAC_SECRET: ${{ secrets.RABBITMQ_HMAC_SECRET }}
           STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
           STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
@@ -250,7 +250,7 @@ jobs:
         timeout-minutes: 5
         env:
           APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
-          CONTAINER_NAME: spring-api-system
+          CONTAINER_NAME: sprRABBITMQ_HMAC_SECRETing-api-system
           HOST_PORT: "8080"
           CONTAINER_PORT: "8080"
           HEALTHCHECK_URL: http://localhost:8080/health
