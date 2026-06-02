@@ -8,7 +8,7 @@ spring:
     livereload:
       enabled: true
   profiles:
-    default: prod
+    active: dev
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 
