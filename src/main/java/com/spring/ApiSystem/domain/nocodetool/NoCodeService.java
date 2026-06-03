@@ -139,6 +139,7 @@ public class NoCodeService {
     public void deleteContent(UUID id) {
         NoCode content = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
+        noCodeImageRepository.deleteByNoCode(content);
         noCodeRepository.delete(content);
     }
 
