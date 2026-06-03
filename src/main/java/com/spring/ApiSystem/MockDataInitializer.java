@@ -141,22 +141,22 @@ public class MockDataInitializer implements CommandLineRunner {
         enderecoRepository.save(endereco);
 
         // 3. Create 4 Alunos with Anamnese, Produto Contratado (past), and Agendamentos
-        for (int i = 1; i <= 4; i++) {
+        for (int i = 0; i < 4; i++) {
             // Save Usuario first so Hibernate assigns the id before Aluno (@MapsId) enters the session
             Usuario u = new Usuario();
-            u.setNome(MOCK_NOMES.get(i - 1));
-            u.setEmail(MOCK_NOMES.get(i - 1).toLowerCase().replaceAll("\\s", "") + "@teste.com");
+            u.setNome(MOCK_NOMES.get(i));
+            u.setEmail(MOCK_NOMES.get(i).toLowerCase().replaceAll("\\s", "") + "@teste.com");
             u.setSenha("hashfake");
             u.setAtivo(true);
             u.setDataNascimento(LocalDate.of(1990, 1, 1));
-            u.setSexo(MOCK_SEXOS.get(i - 1));
+            u.setSexo(MOCK_SEXOS.get(i));
             u.addRole(Role.ALUNO);
-            Telefone telefone = MOCK_TELEFONE.get(i-1);
+            Telefone telefone = MOCK_TELEFONE.get(i);
             telefone.setUsuario(u);
             u.setTelefones(List.of(telefone));
             Usuario savedU = usuarioRepository.save(u);
 
-            Cpf cpf = new Cpf(MOCK_CPFS.get(i - 1));
+            Cpf cpf = new Cpf(MOCK_CPFS.get(i));
             Aluno aluno = new Aluno(null, savedU, cpf, true, null, true);
 
             Anamnese anamnese = new Anamnese(null, 180d, 80.0, "Emagrecer", "Rotina", new ArrayList<>(), NivelDeAtividadeEnum.ATIVO, null, aluno);
@@ -170,14 +170,14 @@ public class MockDataInitializer implements CommandLineRunner {
             Agendamento ag1 = new Agendamento(null, pastDate, "Agendamento " + i, endereco, aluno, personal, pc);
             ag1.setDataFim(pastDate.plusHours(1));
             ag1.setDiaSemana(DiaSemana.SEGUNDA);
-            if (i == 1) {
+            if (i == 0) {
                 ag1.aprovado();
                 ag1.pendentePersonalConcluir();
-            } else if (i == 2) {
+            } else if (i == 1) {
                 ag1.aprovado();
                 ag1.pendentePersonalConcluir();
                 ag1.ausenciaCliente();
-            } else if (i == 3) {
+            } else if (i == 2) {
                 ag1.canceladoCliente();
             } else {
                 ag1.canceladoPersonal();
