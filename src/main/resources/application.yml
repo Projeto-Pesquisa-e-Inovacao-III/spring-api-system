@@ -35,3 +35,7 @@ argon:
 logging:
   level:
     org.example: INFO
+app:
+  mock:
+    seed:
+      enabled: true

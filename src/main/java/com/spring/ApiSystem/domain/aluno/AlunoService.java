@@ -133,8 +133,8 @@ public class AlunoService {
     public ResBuscarAlunoPorIdDTO buscarAlunoPorIdComRole(Long id){
         Aluno aluno = buscarPorIdWithRole(id);
         ProdutoContratado produtoContratado =
-                produtoContratadoRepository.findByProdutoExibicaoTipoProdutoAndSituacao(
-                        TipoProduto.PACOTE, true);
+                produtoContratadoRepository.findByProdutoExibicaoTipoProdutoAndSituacaoAndAluno(
+                        TipoProduto.PACOTE, true, aluno);
         return alunoMapper.toDtoBuscarAlunoPorId(aluno, produtoContratado);
     }
 

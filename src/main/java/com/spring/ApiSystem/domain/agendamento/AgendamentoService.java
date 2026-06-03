@@ -392,7 +392,7 @@ public class AgendamentoService {
                     );
 
             return agendamentosPage.map(
-                    agendamento -> (AgendamentoSolicitacaoResponse)
+                    agendamento ->
                             agendamentoMapper.toResBuscarSolicitacaoPorPersonal(
                                     agendamento,
                                     agendamento.getAluno()

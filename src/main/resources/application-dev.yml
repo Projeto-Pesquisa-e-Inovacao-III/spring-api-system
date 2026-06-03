@@ -115,6 +115,6 @@ init:
   password: "admin123"
 
 rabbitmq:
-  enabled: true
+  enabled: false
   hmac:
     secret: ${RABBITMQ_HMAC_SECRET:urubu100}
