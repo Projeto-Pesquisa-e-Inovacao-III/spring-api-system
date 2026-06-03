@@ -159,7 +159,7 @@ public class MockDataInitializer implements CommandLineRunner {
             Cpf cpf = new Cpf(MOCK_CPFS.get(i - 1));
             Aluno aluno = new Aluno(null, savedU, cpf, true, null, true);
 
-            Anamnese anamnese = new Anamnese(null, 1.80, 80.0, "Emagrecer", "Rotina", new ArrayList<>(), NivelDeAtividadeEnum.ATIVO, null, aluno);
+            Anamnese anamnese = new Anamnese(null, 180d, 80.0, "Emagrecer", "Rotina", new ArrayList<>(), NivelDeAtividadeEnum.ATIVO, null, aluno);
             aluno.setAnamnese(anamnese);
             alunoRepository.save(aluno);
 
