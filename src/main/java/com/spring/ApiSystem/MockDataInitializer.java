@@ -135,9 +135,9 @@ public class MockDataInitializer implements CommandLineRunner {
         produtoExibicaoRepository.saveAll(List.of(p1, p2, p3));
 
         // Create CEP & Endereco
-        CEP cep = new CEP("00000000", "Rua", "Bairro", "Cidade", "SP");
+        CEP cep = new CEP("01310100", "Avenida Paulista", "Bela Vista", "São Paulo", "SP");
         cepRepository.save(cep);
-        Endereco endereco = new Endereco(null, "123", "", "", "CASA", adminUser, cep, true);
+        Endereco endereco = new Endereco(null, "1000", "Apto 12", "", "CASA", adminUser, cep, true);
         enderecoRepository.save(endereco);
 
         // 3. Create 4 Alunos with Anamnese, Produto Contratado (past), and Agendamentos
