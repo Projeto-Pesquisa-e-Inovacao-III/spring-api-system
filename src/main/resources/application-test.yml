@@ -1,5 +1,8 @@
 spring:
-
+  ai:
+    google:
+      genai:
+        api-key: a
   servlet:
     multipart:
       max-file-size: 4MB
