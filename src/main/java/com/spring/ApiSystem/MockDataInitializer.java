@@ -25,6 +25,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioRepository;
+import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,78 +112,80 @@ public class MockDataInitializer implements CommandLineRunner {
         Usuario adminUser = usuarioRepository.findByEmail(adminEmail).orElseThrow();
         Personal personal = adminUser.getPersonal();
 
-        // 2. Create 3 Produto Exibicao (2 Pacote, 1 Adicional)
-        ProdutoExibicao p1 = new ProdutoExibicao(null, "Pacote Mensal", "1 Mês", "Descricao", new ArrayList<>(), 100.0, "MENSAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(), TipoAula.PRESENCIAL, 12, 1);
-        ProdutoExibicao p2 = new ProdutoExibicao(null, "Pacote Anual", "1 Ano", "Descricao", new ArrayList<>(), 1000.0, "ANUAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(), TipoAula.PRESENCIAL, 144, 12);
+        if(!usuarioRepository.existsById(2L)){
+            // 2. Create 3 Produto Exibicao (2 Pacote, 1 Adicional)
+            ProdutoExibicao p1 = new ProdutoExibicao(null, "Pacote Mensal", "1 Mês", "Descricao", new ArrayList<>(), 100.0, "MENSAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(), TipoAula.PRESENCIAL, 12, 1);
+            ProdutoExibicao p2 = new ProdutoExibicao(null, "Pacote Anual", "1 Ano", "Descricao", new ArrayList<>(), 1000.0, "ANUAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(), TipoAula.PRESENCIAL, 144, 12);
 
 
-        // Benefícios p1 - Pacote Mensal (12 aulas/mês)
-        Beneficio b1 = new Beneficio(null, "12 aulas presenciais por mês", p1);
-        Beneficio b2 = new Beneficio(null, "Avaliação física mensal", p1);
-        Beneficio b3 = new Beneficio(null, "Planilha de treino personalizada", p1);
-        Beneficio b4 = new Beneficio(null, "Suporte via WhatsApp", p1);
-        p1.getBeneficios().addAll(List.of(b1, b2, b3, b4));
+            // Benefícios p1 - Pacote Mensal (12 aulas/mês)
+            Beneficio b1 = new Beneficio(null, "12 aulas presenciais por mês", p1);
+            Beneficio b2 = new Beneficio(null, "Avaliação física mensal", p1);
+            Beneficio b3 = new Beneficio(null, "Planilha de treino personalizada", p1);
+            Beneficio b4 = new Beneficio(null, "Suporte via WhatsApp", p1);
+            p1.getBeneficios().addAll(List.of(b1, b2, b3, b4));
 
-// Benefícios p2 - Pacote Anual (144 aulas/ano → 12/mês)
-        Beneficio b5 = new Beneficio(null, "144 aulas presenciais no ano", p2);
-        Beneficio b6 = new Beneficio(null, "Avaliação física trimestral", p2);
-        Beneficio b7 = new Beneficio(null, "Planilha de treino atualizada mensalmente", p2);
-        Beneficio b8 = new Beneficio(null, "Suporte prioritário via WhatsApp", p2);
-        Beneficio b9 = new Beneficio(null, "Desconto de 17% em relação ao mensal", p2);
-        p2.getBeneficios().addAll(List.of(b5, b6, b7, b8, b9));
+            // Benefícios p2 - Pacote Anual (144 aulas/ano → 12/mês)
+            Beneficio b5 = new Beneficio(null, "144 aulas presenciais no ano", p2);
+            Beneficio b6 = new Beneficio(null, "Avaliação física trimestral", p2);
+            Beneficio b7 = new Beneficio(null, "Planilha de treino atualizada mensalmente", p2);
+            Beneficio b8 = new Beneficio(null, "Suporte prioritário via WhatsApp", p2);
+            Beneficio b9 = new Beneficio(null, "Desconto de 17% em relação ao mensal", p2);
+            p2.getBeneficios().addAll(List.of(b5, b6, b7, b8, b9));
 
-        ProdutoExibicao p3 = new ProdutoExibicao(null, "Aula Adicional", "Avulso", "Descricao", new ArrayList<>(), 20.0, "AVULSO", ProdutoExibicaoStatus.ATIVO, TipoProduto.ADICIONAL, LocalDateTime.now(), TipoAula.PRESENCIAL, 1, 0);
-        produtoExibicaoRepository.saveAll(List.of(p1, p2, p3));
+            ProdutoExibicao p3 = new ProdutoExibicao(null, "Aula Adicional", "Avulso", "Descricao", new ArrayList<>(), 20.0, "AVULSO", ProdutoExibicaoStatus.ATIVO, TipoProduto.ADICIONAL, LocalDateTime.now(), TipoAula.PRESENCIAL, 1, 0);
+            produtoExibicaoRepository.saveAll(List.of(p1, p2, p3));
 
-        // Create CEP & Endereco
-        CEP cep = new CEP("01310100", "Avenida Paulista", "Bela Vista", "São Paulo", "SP");
-        cepRepository.save(cep);
-        Endereco endereco = new Endereco(null, "1000", "Apto 12", "", "CASA", adminUser, cep, true);
-        enderecoRepository.save(endereco);
+            // Create CEP & Endereco
+            CEP cep = new CEP("01310100", "Avenida Paulista", "Bela Vista", "São Paulo", "SP");
+            cepRepository.save(cep);
+            Endereco endereco = new Endereco(null, "1000", "Apto 12", "", "CASA", adminUser, cep, true);
+            enderecoRepository.save(endereco);
 
-        // 3. Create 4 Alunos with Anamnese, Produto Contratado (past), and Agendamentos
-        for (int i = 0; i < 4; i++) {
-            // Save Usuario first so Hibernate assigns the id before Aluno (@MapsId) enters the session
-            Usuario u = new Usuario();
-            u.setNome(MOCK_NOMES.get(i));
-            u.setEmail(MOCK_NOMES.get(i).toLowerCase().replaceAll("\\s", "") + "@teste.com");
-            u.setSenha("hashfake");
-            u.setAtivo(true);
-            u.setDataNascimento(LocalDate.of(1990, 1, 1));
-            u.setSexo(MOCK_SEXOS.get(i));
-            u.addRole(Role.ALUNO);
-            Telefone telefone = MOCK_TELEFONE.get(i);
-            telefone.setUsuario(u);
-            u.setTelefones(List.of(telefone));
-            Usuario savedU = usuarioRepository.save(u);
+            // 3. Create 4 Alunos with Anamnese, Produto Contratado (past), and Agendamentos
+            for (int i = 0; i < 4; i++) {
+                // Save Usuario first so Hibernate assigns the id before Aluno (@MapsId) enters the session
+                Usuario u = new Usuario();
+                u.setNome(MOCK_NOMES.get(i));
+                u.setEmail(MOCK_NOMES.get(i).toLowerCase().replaceAll("\\s", "") + "@teste.com");
+                u.setSenha("hashfake");
+                u.setAtivo(true);
+                u.setDataNascimento(LocalDate.of(1990, 1, 1));
+                u.setSexo(MOCK_SEXOS.get(i));
+                u.addRole(Role.ALUNO);
+                Telefone telefone = MOCK_TELEFONE.get(i);
+                telefone.setUsuario(u);
+                u.setTelefones(List.of(telefone));
+                Usuario savedU = usuarioRepository.save(u);
 
-            Cpf cpf = new Cpf(MOCK_CPFS.get(i));
-            Aluno aluno = new Aluno(null, savedU, cpf, true, null, true);
+                Cpf cpf = new Cpf(MOCK_CPFS.get(i));
+                Aluno aluno = new Aluno(null, savedU, cpf, true, null, true);
 
-            Anamnese anamnese = new Anamnese(null, 180d, 80.0, "Emagrecer", "Rotina", new ArrayList<>(), NivelDeAtividadeEnum.ATIVO, null, aluno);
-            aluno.setAnamnese(anamnese);
-            alunoRepository.save(aluno);
+                Anamnese anamnese = new Anamnese(null, 180d, 80.0, "Emagrecer", "Rotina", new ArrayList<>(), NivelDeAtividadeEnum.ATIVO, null, aluno);
+                aluno.setAnamnese(anamnese);
+                alunoRepository.save(aluno);
 
-            ProdutoContratado pc = new ProdutoContratado(null, true, LocalDate.now().minusMonths(i), LocalDate.now().minusDays(i), 10, aluno, i % 2 == 0 ? p1 : p2);
-            produtoContratadoRepository.save(pc);
+                ProdutoContratado pc = new ProdutoContratado(null, true, LocalDate.now().minusMonths(i), LocalDate.now().minusDays(i), 10, aluno, i % 2 == 0 ? p1 : p2);
+                produtoContratadoRepository.save(pc);
 
-            LocalDateTime pastDate = LocalDateTime.now().minusDays(i);
-            Agendamento ag1 = new Agendamento(null, pastDate, "Agendamento " + i, endereco, aluno, personal, pc);
-            ag1.setDataFim(pastDate.plusHours(1));
-            ag1.setDiaSemana(DiaSemana.SEGUNDA);
-            if (i == 0) {
-                ag1.aprovado();
-                ag1.pendentePersonalConcluir();
-            } else if (i == 1) {
-                ag1.aprovado();
-                ag1.pendentePersonalConcluir();
-                ag1.ausenciaCliente();
-            } else if (i == 2) {
-                ag1.canceladoCliente();
-            } else {
-                ag1.canceladoPersonal();
+                LocalDateTime pastDate = LocalDateTime.now().minusDays(i);
+                Agendamento ag1 = new Agendamento(null, pastDate, "Agendamento " + i, endereco, aluno, personal, pc);
+                ag1.setDataFim(pastDate.plusHours(1));
+                ag1.setDiaSemana(DiaSemana.SEGUNDA);
+                if (i == 0) {
+                    ag1.aprovado();
+                    ag1.pendentePersonalConcluir();
+                } else if (i == 1) {
+                    ag1.aprovado();
+                    ag1.pendentePersonalConcluir();
+                    ag1.ausenciaCliente();
+                } else if (i == 2) {
+                    ag1.canceladoCliente();
+                } else {
+                    ag1.canceladoPersonal();
+                }
+                agendamentoRepository.save(ag1);
             }
-            agendamentoRepository.save(ag1);
         }
     }
 }
