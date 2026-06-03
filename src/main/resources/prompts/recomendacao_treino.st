@@ -11,6 +11,9 @@ Anamnese:
 Histórico de agendamentos anteriores:
 {resumoAgendamentos}
 
+Todos os grupos musculares disponíveis:
+{todosGruposMusculares}
+
 Grupos musculares trabalhados na última sessão:
 {gruposMusculares}
 

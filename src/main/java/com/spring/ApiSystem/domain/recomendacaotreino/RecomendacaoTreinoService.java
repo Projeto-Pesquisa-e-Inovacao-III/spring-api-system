@@ -20,6 +20,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -161,6 +162,9 @@ public class RecomendacaoTreinoService {
                 "tipoAgendamento", agendamento.getStatus(),
                 "anamnese", anamnese,
                 "resumoAgendamentos", historico,
+                "todosGruposMusculares", treinoLlmMapper.formatarGrupos(
+                        List.of(resumoAgendamentoService.listarGruposMusculares())
+                ),
                 "gruposMusculares", grupos
         ));
     }
