@@ -1,4 +1,7 @@
 spring:
+  devtools:
+    livereload:
+      enabled: true
   application:
     name: spring-api-system
   profiles:

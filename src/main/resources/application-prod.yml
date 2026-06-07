@@ -1,85 +1,95 @@
 server:
-  port: ${SERVER_PORT:}
+  port: ${SERVER_PORT:8080}
 
 spring:
+  devtools:
+    restart:
+      enabled: false
   servlet:
     multipart:
-      max-file-size: ${MULTIPART_MAX_FILE_SIZE:}
-
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD}
+  cache:
+    type: redis
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/api_system}
+    url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:}
-    password: ${SPRING_DATASOURCE_PASSWORD:}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
 
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:}
-    show-sql: ${JPA_SHOW_SQL:}
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:none}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
-        format_sql: ${HIBERNATE_FORMAT_SQL:}
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
 
   mail:
-    host: ${MAIL_HOST:}
-    port: ${MAIL_PORT:}
-    username: ${MAIL_USERNAME:}
-    password: ${MAIL_PASSWORD:}
+    host: ${MAIL_HOST}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail:
         smtp:
           auth: true
           starttls:
-            enable: ${MAIL_SMTP_STARTTLS_ENABLE:}
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
 
   rabbitmq:
-    host: ${RABBITMQ_HOST:}
-    port: ${RABBITMQ_PORT:}
-    username: ${RABBITMQ_USERNAME:}
-    password: ${RABBITMQ_PASSWORD:}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
-    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
+    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:10s}
 
 pag:
-  url: ${PAG_API_URL:}
+  url: ${PAG_API_URL}
 
 infobip:
   base:
-    url: ${INFOBIP_BASE_URL:}
+    url: ${INFOBIP_BASE_URL}
   api:
-    key: ${INFOBIP_API_KEY:}
+    key: ${INFOBIP_API_KEY}
   whatsapp:
-    sender: ${INFOBIP_WHATSAPP_SENDER:}
+    sender: ${INFOBIP_WHATSAPP_SENDER}
     template:
-      name: ${INFOBIP_TEMPLATE_NAME:}
+      name: ${INFOBIP_TEMPLATE_NAME}
 
 discord:
   webhook:
-    url: ${DISCORD_WEBHOOK_URL:}
+    url: ${DISCORD_WEBHOOK_URL}
 
 springdoc:
   swagger-ui:
-    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:}
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:false}
 
 storage:
-  type: ${STORAGE_TYPE:}
+  type: ${STORAGE_TYPE:s3}
   s3:
-    bucket: ${AWS_S3_BUCKET:}
-    path: ${STORAGE_S3_PATH:}
+    bucket: ${AWS_S3_BUCKET}
+    path: ${STORAGE_S3_PATH}
 
 aws:
-  region: ${AWS_REGION:}
+  region: ${AWS_REGION}
   s3:
-    bucket: ${AWS_S3_BUCKET:}
-    endpoint: ${AWS_S3_ENDPOINT:}
-    path-style-access: ${AWS_S3_PATH_STYLE:}
+    bucket: ${AWS_S3_BUCKET}
+    endpoint: ${AWS_S3_ENDPOINT}
+    path-style-access: ${AWS_S3_PATH_STYLE:false}
 
 logging:
   level:
-    root: ${LOGGING_LEVEL_ROOT:}
-    com.spring: ${LOGGING_LEVEL_COM_SPRING:}
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.spring: ${LOGGING_LEVEL_COM_SPRING:INFO}
 
 init:
-  email: ${INIT_EMAIL:}
-  password: ${INIT_PASSWORD:}
+  email: ${INIT_EMAIL}
+  password: ${INIT_PASSWORD}
