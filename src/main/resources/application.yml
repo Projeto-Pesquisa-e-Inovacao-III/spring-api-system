@@ -6,13 +6,9 @@ spring:
       add-mappings: false
   devtools:
     livereload:
-      enabled: false
-    restart:
-      enabled: false
-    add-properties: false
+      enabled: true
   profiles:
-    default: prod
-    active: prod
+    active: dev
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 
@@ -39,6 +35,3 @@ argon:
 logging:
   level:
     org.example: INFO
-
-    org.springframework.data.redis: DEBUG
-    org.springframework.cache: TRACE
