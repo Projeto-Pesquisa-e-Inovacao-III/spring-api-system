@@ -10,6 +10,9 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.domain.usuario.ImageStorageService;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,6 +55,7 @@ public class NoCodeService {
     }
 
     @Transactional
+    @CacheEvict(value = "noCode", key = "'current'")
     public ReqCriarNoCodeDTO createContent(ReqCriarNoCodeDTO req) {
         NoCode content = noCodeMapper.toEntity(req);
 
@@ -68,6 +72,7 @@ public class NoCodeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "noCode", key = "'current'")
     public ReqCriarNoCodeDTO restoreContent(UUID id) {
         NoCode original = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
@@ -89,6 +94,7 @@ public class NoCodeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "noCode", key = "'current'")
     public ReqAtualizarNoCodeDTO updateContent(ReqAtualizarNoCodeDTO req) {
         NoCode content;
         if (req.id() != null) {
@@ -112,6 +118,7 @@ public class NoCodeService {
     }
 
     @Transactional(readOnly = true)
+    @Cacheable(cacheNames = "noCode", key = "'current'", unless = "#result == null")
     public ResBuscarNoCodeDTO getContent() {
         NoCode content = noCodeRepository.findFirstByOrderByCreatedAtDesc();
 
@@ -136,6 +143,7 @@ public class NoCodeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "noCode", key = "'current'")
     public void deleteContent(UUID id) {
         NoCode content = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
@@ -144,6 +152,7 @@ public class NoCodeService {
     }
 
     @Transactional
+    @CacheEvict(cacheNames = "noCode", key = "'current'")
     public ResBuscarNoCodeDTO renameContent(UUID id, ReqRenomearNoCodeDTO req) {
         NoCode content = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
