@@ -12,7 +12,7 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: test
+    active: prod
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 
@@ -40,6 +40,5 @@ argon:
 logging:
   level:
     org.example: INFO
-
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE

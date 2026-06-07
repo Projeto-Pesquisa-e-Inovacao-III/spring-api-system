@@ -1,12 +1,21 @@
 server:
-  port: 8080
+  port: ${SERVER_PORT:8080}
 
 spring:
+  devtools:
+    restart:
+      enabled: false
   servlet:
     multipart:
-      max-file-size: 32MB
-      max-request-size: 32MB
-
+      max-file-size: ${MULTIPART_MAX_FILE_SIZE:10MB}
+      max-request-size: ${MULTIPART_MAX_REQUEST_SIZE:10MB}
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST}
+      port: ${SPRING_REDIS_PORT:6379}
+      password: ${SPRING_REDIS_PASSWORD}
+  cache:
+    type: redis
   datasource:
     url: ${SPRING_DATASOURCE_URL}
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -16,15 +25,15 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: update
-    show-sql: false
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:none}
+    show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
-        format_sql: false
+        format_sql: ${HIBERNATE_FORMAT_SQL:false}
 
   mail:
     host: ${MAIL_HOST}
-    port: ${MAIL_PORT}
+    port: ${MAIL_PORT:587}
     username: ${MAIL_USERNAME}
     password: ${MAIL_PASSWORD}
     properties:
@@ -32,17 +41,15 @@ spring:
         smtp:
           auth: true
           starttls:
-            enable: true
+            enable: ${MAIL_SMTP_STARTTLS_ENABLE:true}
 
   rabbitmq:
-    host: ${RABBITMQ_HOST:}
-    port: ${RABBITMQ_PORT:}
-    username: ${RABBITMQ_USERNAME:}
-    password: ${RABBITMQ_PASSWORD:}
-    virtual-host: ${RABBITMQ_VIRTUAL_HOST:}
-    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:}
-    hmac:
-      secret: ${RABBITMQ_HMAC_SECRET}
+    host: ${RABBITMQ_HOST}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    virtual-host: ${RABBITMQ_VIRTUAL_HOST:/}
+    connection-timeout: ${RABBITMQ_CONNECTION_TIMEOUT:10s}
 
 pag:
   url: ${PAG_API_URL}
@@ -63,10 +70,10 @@ discord:
 
 springdoc:
   swagger-ui:
-    enabled: false
+    enabled: ${SPRINGDOC_SWAGGER_UI_ENABLED:false}
 
 storage:
-  type: s3
+  type: ${STORAGE_TYPE:s3}
   s3:
     bucket: ${AWS_S3_BUCKET}
     path: ${STORAGE_S3_PATH}
@@ -76,12 +83,12 @@ aws:
   s3:
     bucket: ${AWS_S3_BUCKET}
     endpoint: ${AWS_S3_ENDPOINT}
-    path-style-access: ${AWS_S3_PATH_STYLE}
+    path-style-access: ${AWS_S3_PATH_STYLE:false}
 
 logging:
   level:
-    root: info
-    com.spring: info
+    root: ${LOGGING_LEVEL_ROOT:INFO}
+    com.spring: ${LOGGING_LEVEL_gitCOM_SPRING:INFO}
 
 init:
   email: ${INIT_EMAIL}
