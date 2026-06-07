@@ -15,3 +15,4 @@ public record ResBuscarNoCodeDTO(
         UUID restoredFromId
 ) {
 }
+
