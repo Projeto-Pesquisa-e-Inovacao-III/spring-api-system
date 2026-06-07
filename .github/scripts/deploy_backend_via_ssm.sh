@@ -138,3 +138,4 @@ done
 echo "[ERRO] Healthcheck falhou em $HEALTHCHECK_URL"
 rollback
 exit 1
+
