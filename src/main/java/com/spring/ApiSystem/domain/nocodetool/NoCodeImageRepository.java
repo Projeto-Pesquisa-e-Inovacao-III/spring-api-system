@@ -7,4 +7,5 @@ import java.util.UUID;
 
 @Repository
 public interface NoCodeImageRepository extends JpaRepository<NoCodeImage, UUID> {
+    void deleteByNoCode(NoCode noCode);
 }

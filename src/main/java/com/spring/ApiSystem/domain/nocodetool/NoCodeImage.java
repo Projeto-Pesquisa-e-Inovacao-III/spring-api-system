@@ -1,15 +1,12 @@
 package com.spring.ApiSystem.domain.nocodetool;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
 @Table(name = "no_code_image")
-@EntityListeners(AuditingEntityListener.class)
 public class NoCodeImage {
 
     @Id
@@ -26,9 +23,8 @@ public class NoCodeImage {
     @JoinColumn(name = "no_code_id", nullable = false)
     private NoCode noCode;
 
-    @CreatedDate
     @Column(nullable = false, updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime createdAt = LocalDateTime.now();
 
     public NoCodeImage() {
     }

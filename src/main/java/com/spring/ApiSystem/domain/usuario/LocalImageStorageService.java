@@ -67,6 +67,11 @@ public class LocalImageStorageService implements ImageStorageService {
         }
     }
 
+    @Override
+    public String gerarUrlPublica(String storageKey) {
+        return storageKey;
+    }
+
     private void validarImagem(MultipartFile imagem) {
         if (imagem == null || imagem.isEmpty()) {
             throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");

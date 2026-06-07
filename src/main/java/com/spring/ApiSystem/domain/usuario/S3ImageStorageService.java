@@ -112,6 +112,24 @@ public class S3ImageStorageService implements ImageStorageService {
         return new UrlResource(uri);
     }
 
+    @Override
+    public String gerarUrlPublica(String storageKey) {
+        garantirBucketConfigurado();
+
+        GetObjectRequest getReq = GetObjectRequest.builder()
+                .bucket(s3Bucket)
+                .key(storageKey)
+                .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+                .getObjectRequest(getReq)
+                .signatureDuration(Duration.ofHours(1))
+                .build();
+
+        PresignedGetObjectRequest presigned = s3Presigner.presignGetObject(presignRequest);
+        return presigned.url().toString();
+    }
+
     private void validarImagem(MultipartFile imagem) {
         if (imagem == null || imagem.isEmpty()) {
             throw new IllegalArgumentException("Imagem não pode ser nula ou vazia");
