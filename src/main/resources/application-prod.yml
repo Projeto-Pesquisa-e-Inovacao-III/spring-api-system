@@ -92,4 +92,5 @@ logging:
 
 init:
   email: ${INIT_EMAIL}
+
   password: ${INIT_PASSWORD}

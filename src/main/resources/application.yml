@@ -12,9 +12,10 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: prod
+    active: test
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
+
 
 jwt:
   public:

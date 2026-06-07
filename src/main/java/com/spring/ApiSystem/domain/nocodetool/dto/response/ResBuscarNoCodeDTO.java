@@ -16,3 +16,4 @@ public record ResBuscarNoCodeDTO(
         UUID restoredFromId
 ) implements Serializable {
 }
+

@@ -14,3 +14,4 @@ public record ReqCriarNoCodeDTO(
         LocalDateTime createdAt
 ) implements Serializable {
 }
+
