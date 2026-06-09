@@ -175,7 +175,7 @@ public class AgendamentoController {
 
     @GetMapping("/{alunoId}/resumos")
     public ResponseEntity<Page<ResResumoDTO>> getAgendamentosWithResume(
-            @PageableDefault(size = 20, direction = Sort.Direction.ASC) Pageable pageable,
+            @PageableDefault(size = 20) Pageable pageable,
             @PathVariable Long alunoId
     ) {
         return ResponseEntity.ok(agendamentoService.pegarAgendamentosComResumoPorAlunoId(alunoId, pageable));
