@@ -33,7 +33,7 @@ public interface ResumoAgendamentoRepository extends JpaRepository<ResumoAgendam
     INNER JOIN FETCH r.aluno al
     INNER JOIN FETCH r.personal p
     WHERE al.id = :alunoId
-    ORDER BY a.data ASC
+    ORDER BY a.data DESC
     """)
     Page<ResumoAgendamento> getResumosWithAgendamentoByAlunoId(@Param("alunoId") Long alunoId, Pageable pageable);
 }
