@@ -12,7 +12,7 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: prod
+    active: dev
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
 

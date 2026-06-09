@@ -7,10 +7,13 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.resumoAgendamento.mapper.ResumoAgendamentoMapper;
+import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -61,6 +64,16 @@ public class ResumoAgendamentoService {
                 resumoAgendamentoMapper.toResResumoAgendamentoAlunoDTO(pagina),
                 proximoCursor
         );
+    }
+
+    public Page<ResResumoDTO> pegarResumoAlunoComAgendamento(Long alunoId, int page, int offset) {
+        Pageable pageable = PageRequest.of(page, offset);
+        return pegarResumoAlunoComAgendamento(alunoId, pageable);
+    }
+
+    public Page<ResResumoDTO> pegarResumoAlunoComAgendamento(Long alunoId, Pageable pageable) {
+        Page<ResumoAgendamento> resumoAgendamentos = resumoAgendamentoRepository.getResumosWithAgendamentoByAlunoId(alunoId, pageable);
+        return resumoAgendamentos.map(ResResumoDTO::from);
     }
 
     public GrupoMuscular[] listarGruposMusculares(){

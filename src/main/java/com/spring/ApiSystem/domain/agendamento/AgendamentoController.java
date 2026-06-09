@@ -10,6 +10,8 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.Agendamento
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -169,5 +171,13 @@ public class AgendamentoController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok(agendamentos);
+    }
+
+    @GetMapping("/{alunoId}/resumos")
+    public ResponseEntity<Page<ResResumoDTO>> getAgendamentosWithResume(
+            @PageableDefault(size = 20, direction = Sort.Direction.ASC) Pageable pageable,
+            @PathVariable Long alunoId
+    ) {
+        return ResponseEntity.ok(agendamentoService.pegarAgendamentosComResumoPorAlunoId(alunoId, pageable));
     }
 }

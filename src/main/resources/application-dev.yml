@@ -121,3 +121,8 @@ rabbitmq:
   enabled: false
   hmac:
     secret: urubu100
+
+app:
+  mock:
+    seed:
+      enabled: true

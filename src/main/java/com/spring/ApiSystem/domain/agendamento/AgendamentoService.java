@@ -24,6 +24,8 @@ import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -494,6 +496,12 @@ public class AgendamentoService {
         return agendamentos.map(agendamentoMapper::toResAgendamentoByDayOfWeekDto);
     }
 
+    public Page<ResResumoDTO> pegarAgendamentosComResumoPorAlunoId(Long alunoId, Pageable pageable){
+        jpaUserDetailsService.getCurrentPersonal();
+
+        return resumoAgendamentoService.pegarResumoAlunoComAgendamento(alunoId, pageable);
+    }
+
     private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
@@ -594,4 +602,5 @@ public class AgendamentoService {
                 ((Number) row[2]).intValue()
         );
     }
+
 }
