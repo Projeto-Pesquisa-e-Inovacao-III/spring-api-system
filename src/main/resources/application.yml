@@ -42,3 +42,8 @@ logging:
     org.example: INFO
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE
+
+app:
+  mock:
+    seed:
+      enabled: false
