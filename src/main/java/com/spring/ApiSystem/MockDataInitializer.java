@@ -247,6 +247,21 @@ public class MockDataInitializer implements CommandLineRunner {
                         }
                     }
                 }
+
+                for (int j = 1; j <= 5; j++) {
+                    LocalDateTime futureDate = LocalDateTime.now().plusDays(i * 5L + j * 2L);
+                    Agendamento agFuture = new Agendamento(null, futureDate, "Agendamento Futuro " + i + "-" + j, endereco, aluno, personal, pc);
+                    agFuture.setDataFim(futureDate.plusHours(1));
+                    agFuture.setDiaSemana(DiaSemana.fromDayOfWeek(futureDate.getDayOfWeek()));
+
+                    if (j % 3 == 0) {
+                        agFuture.aprovado();
+                    } else if (j % 3 == 1) {
+                        agFuture.pendenteClienteAprovacao();
+                    }
+                    // O construtor já define PENDENTE_PERSONAL_APROVACAO por padrão para o else
+                    agendamentoRepository.save(agFuture);
+                }
             }
         }
     }
