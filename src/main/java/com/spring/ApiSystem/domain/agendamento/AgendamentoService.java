@@ -39,6 +39,7 @@ import com.spring.ApiSystem.shared.service.UtilsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -497,7 +498,11 @@ public class AgendamentoService {
     }
 
     public Page<ResResumoDTO> pegarAgendamentosComResumoPorAlunoId(Long alunoId, Pageable pageable){
-        jpaUserDetailsService.getCurrentPersonal();
+        Usuario usuario = jpaUserDetailsService.getCurrentUser();
+
+        if(!usuario.isAdmin() || !usuario.isPersonal()){
+            throw new AccessDeniedException("Access Denied");
+        }
 
         return resumoAgendamentoService.pegarResumoAlunoComAgendamento(alunoId, pageable);
     }

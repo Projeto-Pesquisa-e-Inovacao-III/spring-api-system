@@ -82,6 +82,10 @@ public class SecurityConfig {
                                                         .hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
 
                                         auth.requestMatchers(
+                                                "/api/agendamentos/*/resumos"
+                                        ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ADMIN");
+
+                                        auth.requestMatchers(
                                                         "/api/admin/**",
                                                         "/api/produtos-exibicoes/**",
                                                         "/api/produtos-contratados/ganhos-mes/*",
@@ -108,8 +112,7 @@ public class SecurityConfig {
                                                         "/api/agendamentos/contagem-status-data",
                                                         "/api/personais/**",
                                                         "/api/anamnese/aluno/**",
-                                                        "/api/resumo-agendamento/**",
-                                                        "/api/agendamentos/*/resumos"
+                                                        "/api/resumo-agendamento/**"
                                         ).hasAuthority("ROLE_PERSONAL");
 
 
