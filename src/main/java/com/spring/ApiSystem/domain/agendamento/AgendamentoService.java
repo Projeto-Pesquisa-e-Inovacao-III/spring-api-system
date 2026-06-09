@@ -498,12 +498,6 @@ public class AgendamentoService {
     }
 
     public Page<ResResumoDTO> pegarAgendamentosComResumoPorAlunoId(Long alunoId, Pageable pageable){
-        Usuario usuario = jpaUserDetailsService.getCurrentUser();
-
-        if(!usuario.isAdmin() || !usuario.isPersonal()){
-            throw new AccessDeniedException("Access Denied");
-        }
-
         return resumoAgendamentoService.pegarResumoAlunoComAgendamento(alunoId, pageable);
     }
 
