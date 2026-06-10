@@ -2,6 +2,8 @@ spring:
   devtools:
     livereload:
       enabled: true
+  config:
+    import: optional:file:.env[.properties]
   application:
     name: spring-api-system
   profiles:
@@ -117,3 +119,10 @@ init:
 
 rabbitmq:
   enabled: false
+  hmac:
+    secret: urubu100
+
+app:
+  mock:
+    seed:
+      enabled: true
