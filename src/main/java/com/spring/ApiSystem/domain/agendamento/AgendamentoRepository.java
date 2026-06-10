@@ -63,8 +63,8 @@ public interface AgendamentoRepository extends JpaRepository<Agendamento, Long> 
             "  AND (:tipoAgendamento IS NULL OR a.produtoContratado.produtoExibicao.tipoAula = :tipoAgendamento) " +
             "  AND (:dataInic IS NULL OR a.data >= :dataInic) " +
             "  AND (:dataFim IS NULL OR a.data <= :dataFim) " +
-            "ORDER BY a.data ASC")
-    Page<Agendamento> findByAlunoIdOrderByDataAsc(
+            "ORDER BY a.data desc ")
+    Page<Agendamento> findByAlunoIdOrderByDataDesc(
             @Param("alunoId") Long alunoId,
             @Param("nomeDoPersonal") String nomeDoPersonal,
             @Param("status") AgendamentoStatus status,
