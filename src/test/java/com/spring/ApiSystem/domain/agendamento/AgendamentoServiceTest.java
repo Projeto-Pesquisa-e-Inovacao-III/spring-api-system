@@ -20,7 +20,6 @@ import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
-import com.spring.ApiSystem.shared.service.UtilsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -70,9 +69,6 @@ class AgendamentoServiceTest {
 
     @Mock
     private AgendamentoEventPublisher agendamentoEventPublisher;
-
-    @Mock
-    private UtilsService utilsService;
 
     @InjectMocks
     private AgendamentoService agendamentoService;

@@ -8,8 +8,6 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.Agendamen
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
-import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
 import com.spring.ApiSystem.domain.agendamento.exception.*;
@@ -25,7 +23,6 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -35,11 +32,9 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
-import com.spring.ApiSystem.shared.service.UtilsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +57,6 @@ public class AgendamentoService {
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
-    private final UtilsService utilsService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -74,8 +68,7 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
-            AgendamentoEventPublisher agendamentoEventPublisher,
-            UtilsService utilsService
+            AgendamentoEventPublisher agendamentoEventPublisher
     ) {
         this.agendamentoRepository = agendamentoRepository;
         this.personalService = personalService;
@@ -86,7 +79,6 @@ public class AgendamentoService {
         this.historicoAgendamentoService = historicoAgendamentoService;
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.agendamentoEventPublisher = agendamentoEventPublisher;
-        this.utilsService = utilsService;
         this.resumoAgendamentoService = resumoAgendamentoService;
     }
 
@@ -358,10 +350,6 @@ public class AgendamentoService {
             Pageable pageable
     ) {
         Usuario usuario = obterUsuarioAutenticado();
-
-        if(utilsService.hasAnyFilter(dto)){
-            pageable = PageRequest.of(0, pageable.getPageSize());
-        }
 
         if (usuario.isAluno()) {
             Page<Agendamento> agendamentosPage =
