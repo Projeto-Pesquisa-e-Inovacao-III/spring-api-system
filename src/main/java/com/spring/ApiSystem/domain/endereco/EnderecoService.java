@@ -72,6 +72,7 @@ public class EnderecoService {
             if(bloquearCadastroExistente && enderecoExistente.isPresent()) {
                 throw new EnderecoAlreadyExistsException();
             }
+
             if(enderecoExistente.isPresent()){
                 return enderecoMapper.toResCadastrarEnderecoDTO(enderecoExistente.get());
             }
@@ -158,12 +159,12 @@ public class EnderecoService {
     }
 
     private Optional<Endereco> consultarEnderecoExistente(Endereco endereco) {
+
         return enderecoRepository
-                .findByCepIdAndNumeroAndComplementoAndUnidadeAndAtivo(
+                .findByCepIdAndNumeroAndComplementoAndAtivo(
                         endereco.getCep().getId(),
                         endereco.getNumero(),
                         endereco.getComplemento(),
-                        endereco.getUnidade(),
                         true
                 );
     }
