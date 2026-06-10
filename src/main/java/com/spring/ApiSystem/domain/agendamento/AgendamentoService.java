@@ -24,6 +24,8 @@ import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -37,6 +39,7 @@ import com.spring.ApiSystem.shared.service.UtilsService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -114,6 +117,8 @@ public class AgendamentoService {
                 criarAgendamentoDTO.data(),
                 dataFim
         );
+
+
 
         ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                 criarAgendamentoDTO.novoEndereco(),
@@ -360,7 +365,7 @@ public class AgendamentoService {
 
         if (usuario.isAluno()) {
             Page<Agendamento> agendamentosPage =
-                    agendamentoRepository.findByAlunoIdOrderByDataAsc(
+                    agendamentoRepository.findByAlunoIdOrderByDataDesc(
                                     usuario.getId(),
                                     dto.nome(),
                                     dto.getStatusEnum(),
@@ -494,6 +499,10 @@ public class AgendamentoService {
         return agendamentos.map(agendamentoMapper::toResAgendamentoByDayOfWeekDto);
     }
 
+    public Page<ResResumoDTO> pegarAgendamentosComResumoPorAlunoId(Long alunoId, Pageable pageable){
+        return resumoAgendamentoService.pegarResumoAlunoComAgendamento(alunoId, pageable);
+    }
+
     private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
     private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
@@ -594,4 +603,5 @@ public class AgendamentoService {
                 ((Number) row[2]).intValue()
         );
     }
+
 }

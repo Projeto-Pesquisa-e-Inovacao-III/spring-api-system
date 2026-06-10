@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.nocodetool.dto.request;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -10,5 +11,6 @@ public record ReqAtualizarNoCodeDTO(
         String modificationName,
         String description,
         String content
-) {
+) implements Serializable {
 }
+

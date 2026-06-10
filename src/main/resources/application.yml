@@ -6,11 +6,16 @@ spring:
       add-mappings: false
   devtools:
     livereload:
-      enabled: true
+      enabled: false
+    restart:
+      enabled: false
+    add-properties: false
   profiles:
+    default: prod
     active: dev
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
+
 
 jwt:
   public:
@@ -35,7 +40,10 @@ argon:
 logging:
   level:
     org.example: INFO
+    org.springframework.data.redis: DEBUG
+    org.springframework.cache: TRACE
+
 app:
   mock:
     seed:
-      enabled: true
+      enabled: false

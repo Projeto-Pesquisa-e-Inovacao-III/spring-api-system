@@ -1,4 +1,7 @@
 spring:
+  devtools:
+    livereload:
+      enabled: true
   config:
     import: optional:file:.env[.properties]
   application:
@@ -117,4 +120,9 @@ init:
 rabbitmq:
   enabled: false
   hmac:
-    secret: ${RABBITMQ_HMAC_SECRET:urubu100}
+    secret: urubu100
+
+app:
+  mock:
+    seed:
+      enabled: true

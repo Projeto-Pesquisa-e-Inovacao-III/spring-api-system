@@ -13,8 +13,8 @@ public interface EnderecoRepository extends JpaRepository<Endereco, Long> {
     List<Endereco> findByUsuarioId(Long usuarioId);
     Optional<Endereco> findByIdAndUsuario(Long id, Usuario usuario);
 
-    Optional<Endereco> findByCepIdAndNumeroAndComplementoAndUnidadeAndAtivo(
-            String id, String numero, String complemento, String unidade, boolean ativo
+    Optional<Endereco> findByCepIdAndNumeroAndComplementoAndAtivo(
+            String id, String numero, String complemento, boolean ativo
     );
 
     @Query(
