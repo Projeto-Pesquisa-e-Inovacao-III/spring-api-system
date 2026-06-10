@@ -102,8 +102,7 @@ public class SecurityConfig {
                                                 "/api/personais").hasAuthority("ROLE_ALUNO");
 
                                         // Personal (regras mais específicas após a regra acima)
-                                        auth.requestMatchers(HttpMethod.GET,
-                                                        "/api/alunos",
+                                        auth.requestMatchers("/api/alunos",
                                                         "/api/alunos/*",
                                                         "/api/historico-agendamento/total-status",
                                                         "/api/agendamentos/*/confirmar-conclusao",

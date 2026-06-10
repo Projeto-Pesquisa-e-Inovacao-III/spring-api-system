@@ -25,7 +25,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQLDialect
     hibernate:
-      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:none}
+      ddl-auto: ${JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: ${JPA_SHOW_SQL:false}
     properties:
       hibernate:
