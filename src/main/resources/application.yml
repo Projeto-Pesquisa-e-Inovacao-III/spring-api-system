@@ -41,7 +41,7 @@ logging:
   level:
     org.example: INFO
     org.springframework.data.redis: DEBUG
-    org.springframework.cache: TRACE
+    org.springframework.cache: debug
 
 app:
   mock:
