@@ -118,6 +118,8 @@ public class AgendamentoService {
                 dataFim
         );
 
+
+
         ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                 criarAgendamentoDTO.novoEndereco(),
                 usuario.getEmail(),
