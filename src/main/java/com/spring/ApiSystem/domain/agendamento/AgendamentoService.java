@@ -363,7 +363,7 @@ public class AgendamentoService {
 
         if (usuario.isAluno()) {
             Page<Agendamento> agendamentosPage =
-                    agendamentoRepository.findByAlunoIdOrderByDataAsc(
+                    agendamentoRepository.findByAlunoIdOrderByDataDesc(
                                     usuario.getId(),
                                     dto.nome(),
                                     dto.getStatusEnum(),
