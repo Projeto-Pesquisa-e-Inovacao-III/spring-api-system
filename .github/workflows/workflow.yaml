@@ -204,6 +204,9 @@ jobs:
           AWS_S3_PATH_STYLE: ${{ secrets.AWS_S3_PATH_STYLE }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
+          SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
+          SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
+          SPRING_REDIS_PASSWORD: ${{ secrets.SPRING_REDIS_PASSWORD}}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
 
   deploy-aws-vm-2:
@@ -289,6 +292,9 @@ jobs:
           HIBERNATE_FORMAT_SQL: ${{ secrets.HIBERNATE_FORMAT_SQL }}
           INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
           INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
+          SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
+          SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
+          SPRING_REDIS_PASSWORD: ${{ secrets.SPRING_REDIS_PASSWORD}}
         run: bash .github/scripts/deploy_backend_via_ssm.sh
 
 
