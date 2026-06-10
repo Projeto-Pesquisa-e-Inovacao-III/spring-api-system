@@ -94,7 +94,7 @@ init:
   email: ${INIT_EMAIL}
   password: ${INIT_PASSWORD}
 
-  app:
-    mock:
-      seed:
-        enabled: true
+app:
+  mock:
+    seed:
+      enabled: true
