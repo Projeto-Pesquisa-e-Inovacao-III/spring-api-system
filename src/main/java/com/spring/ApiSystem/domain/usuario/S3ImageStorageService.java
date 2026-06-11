@@ -115,6 +115,19 @@ public class S3ImageStorageService implements ImageStorageService {
     }
 
     @Override
+    public Resource buscarImagemPorKey(String storageKey) throws IOException {
+        garantirBucketConfigurado();
+
+        GetObjectRequest getReq = GetObjectRequest.builder()
+                .bucket(s3Bucket)
+                .key(storageKey)
+                .build();
+
+        InputStream stream = s3Client.getObject(getReq);
+        return new org.springframework.core.io.InputStreamResource(stream);
+    }
+
+    @Override
     public String gerarUrlPublica(String storageKey) {
         garantirBucketConfigurado();
 

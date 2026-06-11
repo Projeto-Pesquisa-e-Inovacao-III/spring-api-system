@@ -2,8 +2,11 @@ package com.spring.ApiSystem.domain.nocodetool;
 
 import com.spring.ApiSystem.domain.nocodetool.dto.request.ReqCriarNoCodeDTO;
 import com.spring.ApiSystem.domain.nocodetool.dto.response.ResBuscarNoCodeDTO;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +37,16 @@ public class NoCodeController {
     ) throws IOException {
         String url = noCodeService.saveImage(image, section);
         return ResponseEntity.ok(Map.of("url", url));
+    }
+
+    @GetMapping("/images/**")
+    public ResponseEntity<Resource> buscarImagem(HttpServletRequest request) throws IOException {
+        String requestUri = request.getRequestURI();
+        String storageKey = requestUri.split("/api/no-code/images/", 2)[1];
+        Resource resource = noCodeService.buscarImagem(storageKey);
+        return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
     }
 
     @PostMapping

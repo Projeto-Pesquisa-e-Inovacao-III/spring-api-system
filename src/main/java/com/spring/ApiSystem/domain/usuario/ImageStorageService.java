@@ -11,5 +11,6 @@ public interface ImageStorageService {
     String trocarImagem(MultipartFile imagem, Path currentFileName) throws IOException;
     void deletarImagem(Path path) throws IOException;
     Resource buscarImagem(String fileName) throws IOException;
+    Resource buscarImagemPorKey(String storageKey) throws IOException;
     String gerarUrlPublica(String storageKey) throws IOException;
 }

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -30,7 +31,8 @@ class NoCodeServiceTest {
         detailsService = mock(JpaUserDetailsService.class);
         imageStorageService = mock(ImageStorageService.class);
         noCodeMapper = mock(NoCodeMapper.class);
-        noCodeService = new NoCodeService(noCodeRepository, noCodeImageRepository, detailsService, imageStorageService, noCodeMapper);
+        noCodeService = new NoCodeService(noCodeRepository, noCodeImageRepository, detailsService, imageStorageService,
+                noCodeMapper);
 
         testPersonal = new Personal();
         testPersonal.setId(1L);
@@ -41,7 +43,7 @@ class NoCodeServiceTest {
     void createContent_ShouldSaveNewRecord() {
         ReqCriarNoCodeDTO req = new ReqCriarNoCodeDTO(null, "Name", "Desc", "{}", null);
         NoCode entity = new NoCode();
-        
+
         when(noCodeMapper.toEntity(req)).thenReturn(entity);
         when(noCodeRepository.save(any(NoCode.class))).thenReturn(entity);
         when(noCodeMapper.toReqCriarNoCodeDTO(entity)).thenReturn(req);
@@ -71,17 +73,18 @@ class NoCodeServiceTest {
 
     @Test
     void saveImage_ShouldReturnUrlAndSaveNoCodeImage() throws java.io.IOException {
-        org.springframework.web.multipart.MultipartFile image = mock(org.springframework.web.multipart.MultipartFile.class);
+        org.springframework.web.multipart.MultipartFile image = mock(
+                org.springframework.web.multipart.MultipartFile.class);
         String section = "header";
-        String expectedUrl = "http://storage.com/image.png";
+        String storageKey = "imagens/nocode/123_foto.jpg";
 
-        when(imageStorageService.salvarBlob(image)).thenReturn(expectedUrl);
-        when(imageStorageService.gerarUrlPublica(expectedUrl)).thenReturn(expectedUrl);
+        when(imageStorageService.salvarBlob(image)).thenReturn(storageKey);
         when(noCodeRepository.findFirstByUserIdOrderByCreatedAtDesc(1L)).thenReturn(new NoCode());
 
         String result = noCodeService.saveImage(image, section);
 
-        assertEquals(expectedUrl, result);
+        assertNotNull(result);
+        assertTrue(result.contains(storageKey), "A URL deve conter o storageKey");
         verify(imageStorageService).salvarBlob(image);
         verify(noCodeImageRepository).save(any(NoCodeImage.class));
     }
