@@ -158,7 +158,7 @@ public class MockDataInitializer implements CommandLineRunner {
 
             ProdutoExibicao p3 = new ProdutoExibicao(
                     null,
-                    "Crédito Avulso - Presencial VIP",
+                    "Crédito Avulso",
                     "1 aula individual e exclusiva com o personal na academia.",
                     "Foco total nos seus objetivos com análise biomecânica e correção de postura ao vivo.",
                     new ArrayList<>(),
