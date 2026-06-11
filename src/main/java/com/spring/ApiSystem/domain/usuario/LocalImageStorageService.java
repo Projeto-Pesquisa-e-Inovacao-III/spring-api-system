@@ -68,6 +68,22 @@ public class LocalImageStorageService implements ImageStorageService {
     }
 
     @Override
+    public Resource buscarImagemPorKey(String storageKey) throws IOException {
+        Path caminho = Paths.get(storageKey);
+
+        if (!Files.exists(caminho)) {
+            throw new FileNotFoundException("Imagem não encontrada: " + storageKey);
+        }
+
+        UrlResource resource = new UrlResource(caminho.toUri());
+        if (resource.exists() && resource.isReadable()) {
+            return resource;
+        } else {
+            throw new IOException("Não foi possível ler a imagem");
+        }
+    }
+
+    @Override
     public String gerarUrlPublica(String storageKey) {
         return storageKey;
     }
