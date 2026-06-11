@@ -19,7 +19,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -33,7 +33,8 @@ public class NoCodeService {
     private final ImageStorageService imageStorageService;
     private final NoCodeMapper noCodeMapper;
 
-    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository, JpaUserDetailsService detailsService, ImageStorageService imageStorageService, NoCodeMapper noCodeMapper) {
+    public NoCodeService(NoCodeRepository noCodeRepository, NoCodeImageRepository noCodeImageRepository,
+            JpaUserDetailsService detailsService, ImageStorageService imageStorageService, NoCodeMapper noCodeMapper) {
         this.noCodeRepository = noCodeRepository;
         this.noCodeImageRepository = noCodeImageRepository;
         this.detailsService = detailsService;
@@ -53,16 +54,12 @@ public class NoCodeService {
             noCodeImageRepository.save(noCodeImage);
         }
 
-        return ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/api/no-code/images/")
-                .path(storageKey)
-                .toUriString();
+        return "/api/no-code/images/" + storageKey;
     }
 
     public Resource buscarImagem(String storageKey) throws IOException {
         return imageStorageService.buscarImagemPorKey(storageKey);
     }
-
 
     @Transactional
     @CacheEvict(value = "noCode", key = "'current'")
@@ -143,8 +140,9 @@ public class NoCodeService {
     public Page<ResBuscarNoCodeDTO> getContentHistory(Pageable pageable) {
         Personal currentPersonal = detailsService.getCurrentPersonal();
 
-        Page<NoCode> contentPage = noCodeRepository.findAllByUserIdOrderByCreatedAtDesc(currentPersonal.getId(), pageable);
-        
+        Page<NoCode> contentPage = noCodeRepository.findAllByUserIdOrderByCreatedAtDesc(currentPersonal.getId(),
+                pageable);
+
         if (contentPage == null) {
             return null;
         }
