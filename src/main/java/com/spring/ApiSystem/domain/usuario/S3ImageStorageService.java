@@ -97,9 +97,11 @@ public class S3ImageStorageService implements ImageStorageService {
     public Resource buscarImagem(String fileName) throws IOException {
         garantirBucketConfigurado();
 
+        String s3Key = construirChaveS3(fileName);
+
         GetObjectRequest getReq = GetObjectRequest.builder()
                 .bucket(s3Bucket)
-                .key(fileName)
+                .key(s3Key)
                 .build();
 
         GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
