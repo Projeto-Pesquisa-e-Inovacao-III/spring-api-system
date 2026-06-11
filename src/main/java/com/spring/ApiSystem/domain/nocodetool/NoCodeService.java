@@ -54,7 +54,7 @@ public class NoCodeService {
             noCodeImageRepository.save(noCodeImage);
         }
 
-        return "/api/no-code/images/" + storageKey;
+        return storageKey;
     }
 
     public Resource buscarImagem(String storageKey) throws IOException {
