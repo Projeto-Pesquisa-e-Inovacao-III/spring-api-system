@@ -23,6 +23,8 @@ import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoRepository;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
+import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamento;
+import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoRepository;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamento;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoRepository;
 import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
@@ -59,6 +61,7 @@ public class MockDataInitializer implements CommandLineRunner {
     private final EnderecoRepository enderecoRepository;
     private final CepRepository cepRepository;
     private final ResumoAgendamentoRepository resumoAgendamentoRepository;
+    private final HistoricoAgendamentoRepository historicoAgendamentoRepository;
     @Value("${init.email}")
     private String adminEmail;
 
@@ -71,7 +74,8 @@ public class MockDataInitializer implements CommandLineRunner {
             UsuarioRepository usuarioRepository,
             EnderecoRepository enderecoRepository,
             CepRepository cepRepository,
-            ResumoAgendamentoRepository resumoAgendamentoRepository) {
+            ResumoAgendamentoRepository resumoAgendamentoRepository,
+            HistoricoAgendamentoRepository historicoAgendamentoRepository) {
         this.produtoExibicaoRepository = produtoExibicaoRepository;
         this.alunoRepository = alunoRepository;
         this.produtoContratadoRepository = produtoContratadoRepository;
@@ -81,6 +85,7 @@ public class MockDataInitializer implements CommandLineRunner {
         this.enderecoRepository = enderecoRepository;
         this.cepRepository = cepRepository;
         this.resumoAgendamentoRepository = resumoAgendamentoRepository;
+        this.historicoAgendamentoRepository = historicoAgendamentoRepository;
     }
 
     private static final List<String> MOCK_CPFS = List.of(
@@ -232,7 +237,21 @@ public class MockDataInitializer implements CommandLineRunner {
                     } else {
                         ag1.canceladoPersonal();
                     }
-                    agendamentosCriados.add(agendamentoRepository.save(ag1));
+                    Agendamento ag1Salvo = agendamentoRepository.save(ag1);
+                    HistoricoAgendamento hist1 = new HistoricoAgendamento(
+                            null,
+                            ag1Salvo.getData(),
+                            ag1Salvo.getProdutoContratado().getProdutoExibicao().getTipoAula(),
+                            ag1Salvo.getDescricao(),
+                            ag1Salvo.getStatus(),
+                            LocalDateTime.now(),
+                            ag1Salvo,
+                            adminUser,
+                            ag1Salvo.getEndereco()
+                    );
+                    hist1.setDataFim(ag1Salvo.getDataFim());
+                    historicoAgendamentoRepository.save(hist1);
+                    agendamentosCriados.add(ag1Salvo);
                 }
 
                 if (i < 2) {
@@ -257,7 +276,20 @@ public class MockDataInitializer implements CommandLineRunner {
                             resumoIndex++;
                             
                             agendamentoSalvo.concluido();
-                            agendamentoRepository.save(agendamentoSalvo);
+                            Agendamento agConcluido = agendamentoRepository.save(agendamentoSalvo);
+                            HistoricoAgendamento histConcluido = new HistoricoAgendamento(
+                                    null,
+                                    agConcluido.getData(),
+                                    agConcluido.getProdutoContratado().getProdutoExibicao().getTipoAula(),
+                                    agConcluido.getDescricao(),
+                                    agConcluido.getStatus(),
+                                    LocalDateTime.now(),
+                                    agConcluido,
+                                    adminUser,
+                                    agConcluido.getEndereco()
+                            );
+                            histConcluido.setDataFim(agConcluido.getDataFim());
+                            historicoAgendamentoRepository.save(histConcluido);
                         }
                     }
                 }
@@ -274,7 +306,20 @@ public class MockDataInitializer implements CommandLineRunner {
                         agFuture.pendenteClienteAprovacao();
                     }
                     // O construtor já define PENDENTE_PERSONAL_APROVACAO por padrão para o else
-                    agendamentoRepository.save(agFuture);
+                    Agendamento agFutureSalvo = agendamentoRepository.save(agFuture);
+                    HistoricoAgendamento histFuturo = new HistoricoAgendamento(
+                            null,
+                            agFutureSalvo.getData(),
+                            agFutureSalvo.getProdutoContratado().getProdutoExibicao().getTipoAula(),
+                            agFutureSalvo.getDescricao(),
+                            agFutureSalvo.getStatus(),
+                            LocalDateTime.now(),
+                            agFutureSalvo,
+                            adminUser,
+                            agFutureSalvo.getEndereco()
+                    );
+                    histFuturo.setDataFim(agFutureSalvo.getDataFim());
+                    historicoAgendamentoRepository.save(histFuturo);
                 }
             }
         }
