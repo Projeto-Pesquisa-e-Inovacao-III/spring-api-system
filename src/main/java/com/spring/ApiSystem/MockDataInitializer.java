@@ -137,7 +137,7 @@ public class MockDataInitializer implements CommandLineRunner {
             // 2. Create 3 Produto Exibicao (2 Pacote, 1 Adicional)
             ProdutoExibicao p1 = new ProdutoExibicao(null, "Plano Fit Flex", "O primeiro passo ideal para iniciar a evolução da sua saúde", "Descricao", new ArrayList<>(),
                     99.99, "Mensal", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
-                    TipoAula.PRESENCIAL, 1, 1);
+                    TipoAula.PRESENCIAL, 2, 1);
             ProdutoExibicao p2 = new ProdutoExibicao(null, "Plano Fit Evolution", "O plano anual ideal para ter uma evolução real na sua saúde", "Descricao", new ArrayList<>(),
                     899.99, "Anual", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
                     TipoAula.PRESENCIAL, 56, 12);
