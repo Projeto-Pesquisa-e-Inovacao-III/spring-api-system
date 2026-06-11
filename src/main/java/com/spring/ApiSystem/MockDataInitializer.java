@@ -167,6 +167,10 @@ public class MockDataInitializer implements CommandLineRunner {
                     0
             );
 
+            p1 = produtoExibicaoRepository.save(p1);
+            p2 = produtoExibicaoRepository.save(p2);
+            produtoExibicaoRepository.save(p3);
+
             // Create CEP & Endereco
             CEP cep = new CEP("01310100", "Avenida Paulista", "Bela Vista", "São Paulo", "SP");
             cepRepository.save(cep);
