@@ -130,32 +130,42 @@ public class MockDataInitializer implements CommandLineRunner {
 
         if (!usuarioRepository.existsById(2L)) {
             // 2. Create 3 Produto Exibicao (2 Pacote, 1 Adicional)
-            ProdutoExibicao p1 = new ProdutoExibicao(null, "Pacote Mensal", "1 Mês", "Descricao", new ArrayList<>(),
-                    100.0, "MENSAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
-                    TipoAula.PRESENCIAL, 12, 1);
-            ProdutoExibicao p2 = new ProdutoExibicao(null, "Pacote Anual", "1 Ano", "Descricao", new ArrayList<>(),
-                    1000.0, "ANUAL", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
-                    TipoAula.PRESENCIAL, 144, 12);
+            ProdutoExibicao p1 = new ProdutoExibicao(null, "Plano Fit Flex", "O primeiro passo ideal para iniciar a evolução da sua saúde", "Descricao", new ArrayList<>(),
+                    99.99, "Mensal", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
+                    TipoAula.PRESENCIAL, 1, 1);
+            ProdutoExibicao p2 = new ProdutoExibicao(null, "Plano Fit Evolution", "O plano anual ideal para ter uma evolução real na sua saúde", "Descricao", new ArrayList<>(),
+                    899.99, "Anual", ProdutoExibicaoStatus.ATIVO, TipoProduto.PACOTE, LocalDateTime.now(),
+                    TipoAula.PRESENCIAL, 56, 12);
 
-            // Benefícios p1 - Pacote Mensal (12 aulas/mês)
-            Beneficio b1 = new Beneficio(null, "12 aulas presenciais por mês", p1);
-            Beneficio b2 = new Beneficio(null, "Avaliação física mensal", p1);
-            Beneficio b3 = new Beneficio(null, "Planilha de treino personalizada", p1);
+            // Benefícios p1 - Pacote Mensal
+            Beneficio b1 = new Beneficio(null, "1 aula presencial no mês", p1);
+            Beneficio b2 = new Beneficio(null, "Avaliação física", p1);
+            Beneficio b3 = new Beneficio(null, "Treino recomendado", p1);
             Beneficio b4 = new Beneficio(null, "Suporte via WhatsApp", p1);
             p1.getBeneficios().addAll(List.of(b1, b2, b3, b4));
 
-            // Benefícios p2 - Pacote Anual (144 aulas/ano → 12/mês)
-            Beneficio b5 = new Beneficio(null, "144 aulas presenciais no ano", p2);
+            // Benefícios p2 - Pacote Anual
+            Beneficio b5 = new Beneficio(null, "56 aulas presenciais no ano", p2);
             Beneficio b6 = new Beneficio(null, "Avaliação física trimestral", p2);
-            Beneficio b7 = new Beneficio(null, "Planilha de treino atualizada mensalmente", p2);
-            Beneficio b8 = new Beneficio(null, "Suporte prioritário via WhatsApp", p2);
-            Beneficio b9 = new Beneficio(null, "Desconto de 17% em relação ao mensal", p2);
-            p2.getBeneficios().addAll(List.of(b5, b6, b7, b8, b9));
+            Beneficio b7 = new Beneficio(null, "Treino personalizado", p2);
+            Beneficio b8 = new Beneficio(null, "Suporte via WhatsApp", p2);
+            p2.getBeneficios().addAll(List.of(b5, b6, b7, b8));
 
-            ProdutoExibicao p3 = new ProdutoExibicao(null, "Aula Adicional", "Avulso", "Descricao", new ArrayList<>(),
-                    20.0, "AVULSO", ProdutoExibicaoStatus.ATIVO, TipoProduto.ADICIONAL, LocalDateTime.now(),
-                    TipoAula.PRESENCIAL, 1, 0);
-            produtoExibicaoRepository.saveAll(List.of(p1, p2, p3));
+            ProdutoExibicao p3 = new ProdutoExibicao(
+                    null,
+                    "Crédito Avulso - Presencial VIP",
+                    "1 aula individual e exclusiva com o personal na academia.",
+                    "Foco total nos seus objetivos com análise biomecânica e correção de postura ao vivo.",
+                    new ArrayList<>(),
+                    90.00,
+                    "AVULSO",
+                    ProdutoExibicaoStatus.ATIVO,
+                    TipoProduto.ADICIONAL,
+                    LocalDateTime.now(),
+                    TipoAula.PRESENCIAL,
+                    1,
+                    0
+            );
 
             // Create CEP & Endereco
             CEP cep = new CEP("01310100", "Avenida Paulista", "Bela Vista", "São Paulo", "SP");
