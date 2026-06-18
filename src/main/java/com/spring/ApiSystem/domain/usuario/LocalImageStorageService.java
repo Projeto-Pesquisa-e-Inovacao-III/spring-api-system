@@ -50,7 +50,17 @@ public class LocalImageStorageService implements ImageStorageService {
 
     public void deletarImagem(Path path) throws IOException {
         if (path == null) return;
-        Path finalPath = path.isAbsolute() ? path : Paths.get(localDir).resolve(path);
+        Path localDirPath = Paths.get(localDir);
+        Path finalPath;
+
+        if (path.isAbsolute()) {
+            finalPath = path;
+        } else if (path.startsWith(localDirPath)) {
+            finalPath = path;
+        } else {
+            finalPath = localDirPath.resolve(path);
+        }
+
         Files.deleteIfExists(finalPath);
     }
 
@@ -76,7 +86,16 @@ public class LocalImageStorageService implements ImageStorageService {
         }
         
         Path caminho = Paths.get(storageKey);
-        Path finalPath = caminho.isAbsolute() ? caminho : Paths.get(localDir).resolve(caminho);
+        Path localDirPath = Paths.get(localDir);
+        Path finalPath;
+
+        if (caminho.isAbsolute()) {
+            finalPath = caminho;
+        } else if (caminho.startsWith(localDirPath)) {
+            finalPath = caminho;
+        } else {
+            finalPath = localDirPath.resolve(caminho);
+        }
 
         if (!Files.exists(finalPath)) {
             throw new FileNotFoundException("Imagem não encontrada: " + storageKey);
