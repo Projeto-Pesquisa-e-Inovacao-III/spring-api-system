@@ -22,7 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -155,6 +157,17 @@ public class NoCodeService {
     public void deleteContent(UUID id) {
         NoCode content = noCodeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Conteúdo não encontrado: " + id));
+
+        List<NoCodeImage> images = noCodeImageRepository.findByNoCode(content);
+        for (NoCodeImage image : images) {
+            try {
+                imageStorageService.deletarImagem(Paths.get(image.getUrl()));
+            } catch (IOException e) {
+                System.err.println("Erro ao deletar imagem do storage: " + image.getUrl());
+                e.printStackTrace();
+            }
+        }
+
         noCodeImageRepository.deleteByNoCode(content);
         noCodeRepository.delete(content);
     }

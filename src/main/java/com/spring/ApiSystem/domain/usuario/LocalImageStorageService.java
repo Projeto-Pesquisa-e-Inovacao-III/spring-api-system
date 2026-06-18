@@ -49,7 +49,9 @@ public class LocalImageStorageService implements ImageStorageService {
     }
 
     public void deletarImagem(Path path) throws IOException {
-        Files.deleteIfExists(path);
+        if (path == null) return;
+        Path finalPath = path.isAbsolute() ? path : Paths.get(localDir).resolve(path);
+        Files.deleteIfExists(finalPath);
     }
 
     public Resource buscarImagem(String nomeArquivo) throws IOException {
@@ -69,13 +71,18 @@ public class LocalImageStorageService implements ImageStorageService {
 
     @Override
     public Resource buscarImagemPorKey(String storageKey) throws IOException {
+        if (storageKey == null || storageKey.isBlank()) {
+            throw new FileNotFoundException("Key da imagem vazia");
+        }
+        
         Path caminho = Paths.get(storageKey);
+        Path finalPath = caminho.isAbsolute() ? caminho : Paths.get(localDir).resolve(caminho);
 
-        if (!Files.exists(caminho)) {
+        if (!Files.exists(finalPath)) {
             throw new FileNotFoundException("Imagem não encontrada: " + storageKey);
         }
 
-        UrlResource resource = new UrlResource(caminho.toUri());
+        UrlResource resource = new UrlResource(finalPath.toUri());
         if (resource.exists() && resource.isReadable()) {
             return resource;
         } else {
