@@ -1,8 +1,5 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
-import com.spring.ApiSystem.domain.agendamento.projection.ResTotalAgendamentoByStatusProjection;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

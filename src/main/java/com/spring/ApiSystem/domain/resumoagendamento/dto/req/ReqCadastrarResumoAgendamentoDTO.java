@@ -1,6 +1,6 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.dto.req;
+package com.spring.ApiSystem.domain.resumoagendamento.dto.req;
 
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

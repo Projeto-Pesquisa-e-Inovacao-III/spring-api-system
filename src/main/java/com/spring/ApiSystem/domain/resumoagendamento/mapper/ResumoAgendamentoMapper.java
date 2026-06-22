@@ -1,8 +1,8 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.mapper;
+package com.spring.ApiSystem.domain.resumoagendamento.mapper;
 
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamento;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamento;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.enums;
+package com.spring.ApiSystem.domain.resumoagendamento.enums;
 
 public enum GrupoMuscular {
     PEITO,

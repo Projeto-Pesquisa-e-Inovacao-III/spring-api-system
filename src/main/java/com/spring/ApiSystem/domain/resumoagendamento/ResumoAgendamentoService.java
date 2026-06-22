@@ -1,18 +1,17 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.personal.Personal;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoAgendamentoAlunoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
-import com.spring.ApiSystem.domain.resumoAgendamento.mapper.ResumoAgendamentoMapper;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.mapper.ResumoAgendamentoMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +36,7 @@ public class ResumoAgendamentoService {
         this.alunoService = alunoService;
     }
 
+    @Transactional
     public ResCadastrarResumoAgendamentoDTO cadastrar(Aluno aluno, Personal personal, Agendamento agendamento,
                                                       String resumo, List<GrupoMuscular> grupoMuscular) {
         ResumoAgendamento resumoAgendamentoCadastrado = resumoAgendamentoRepository.save(
