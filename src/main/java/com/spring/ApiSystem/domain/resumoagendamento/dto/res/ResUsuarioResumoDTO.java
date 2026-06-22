@@ -1,4 +1,4 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.dto.res;
+package com.spring.ApiSystem.domain.resumoagendamento.dto.res;
 
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.personal.Personal;
