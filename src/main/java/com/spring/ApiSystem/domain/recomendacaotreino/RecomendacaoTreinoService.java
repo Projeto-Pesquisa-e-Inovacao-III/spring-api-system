@@ -13,6 +13,7 @@ import com.spring.ApiSystem.domain.recomendacaotreino.mapper.TreinoLlmMapper;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
+import jakarta.transaction.Transactional;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
@@ -47,6 +48,7 @@ public class RecomendacaoTreinoService {
         this.recomendacaoTreinoRepository = recomendacaoTreinoRepository;
     }
 
+    @Transactional
     private String gerarRecomendacaoTreino(Agendamento agendamento) {
         validarStatusAprovado(agendamento);
 

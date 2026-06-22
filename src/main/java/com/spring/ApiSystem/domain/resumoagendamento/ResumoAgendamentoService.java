@@ -11,6 +11,7 @@ import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.resumoagendamento.mapper.ResumoAgendamentoMapper;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -35,6 +36,7 @@ public class ResumoAgendamentoService {
         this.alunoService = alunoService;
     }
 
+    @Transactional
     public ResCadastrarResumoAgendamentoDTO cadastrar(Aluno aluno, Personal personal, Agendamento agendamento,
                                                       String resumo, List<GrupoMuscular> grupoMuscular) {
         ResumoAgendamento resumoAgendamentoCadastrado = resumoAgendamentoRepository.save(
