@@ -76,19 +76,21 @@ public class FilterService extends OncePerRequestFilter {
      */
     public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
         Usuario usuario = usuarioService.getOpitionalUsuarioByEmailWithRoles(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
+                .orElse(null);
 
-        String token = tokenService.gerarToken(email, usuario.getRoles());
+        if(usuario != null){
+            String token = tokenService.gerarToken(email, usuario.getRoles());
 
-        Cookie cookie = new Cookie("jwt", token);
+            Cookie cookie = new Cookie("jwt", token);
 
-        cookie.setHttpOnly(true); // protege contra acesso via JavaScript
-        cookie.setSecure(false); // envia apenas em conexões HTTPS
-        cookie.setPath("/");      // disponível para toda a aplicação
-        cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
+            cookie.setHttpOnly(true); // protege contra acesso via JavaScript
+            cookie.setSecure(false); // envia apenas em conexões HTTPS
+            cookie.setPath("/");      // disponível para toda a aplicação
+            cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
 
-        if(enviarCookie){
-            response.addCookie(cookie);
+            if(enviarCookie){
+                response.addCookie(cookie);
+            }
         }
     }
 
