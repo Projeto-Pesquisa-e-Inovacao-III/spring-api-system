@@ -65,13 +65,6 @@ public class RecomendacaoTreinoService {
                 resumoAgendamento
         );
 
-        System.out.println("SYSTEM:");
-        System.out.println(promptSystem.getTemplate());
-
-        System.out.println("USER:");
-        System.out.println(promptUserFinal.getContents());
-
-//        return null;
         return chatClient.prompt()
                 .system(promptSystem.getTemplate())
                 .user(promptUserFinal.getContents())

@@ -10,9 +10,7 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.overview.Agendamento
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
 import com.spring.ApiSystem.domain.recomendacaotreino.RecomendacaoTreinoService;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -51,12 +49,12 @@ public class AgendamentoController {
 
     /* -------------------- IA -------------------- */
     @PostMapping("{agendamentoId}/recomendacao-treino")
-    public ResponseEntity<?> cadastrarRecomendacaoTreino(@PathVariable Long agendamentoId){
+    public ResponseEntity<String> cadastrarRecomendacaoTreino(@PathVariable Long agendamentoId){
         return ResponseEntity.ok(recomendacaoTreinoService.cadastrarRecomendacaoTreino(agendamentoId));
     }
 
     @GetMapping("/{agendamentoId}/recomendacao-treino")
-    public ResponseEntity<?> consultarRecomendacaoTreino(@PathVariable Long agendamentoId){
+    public ResponseEntity<String> consultarRecomendacaoTreino(@PathVariable Long agendamentoId){
         return ResponseEntity.ok(recomendacaoTreinoService.consultarRecomendacaoTreino(agendamentoId));
     }
 

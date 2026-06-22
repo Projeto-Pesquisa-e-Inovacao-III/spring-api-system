@@ -1,7 +1,7 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.projection;
+package com.spring.ApiSystem.domain.resumoagendamento.projection;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamento;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamento;
 
 public interface ResAgendamentoWithResumeProjection {
     Agendamento getAgendamento();
