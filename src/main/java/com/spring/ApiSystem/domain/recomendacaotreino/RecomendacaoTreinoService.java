@@ -50,8 +50,9 @@ public class RecomendacaoTreinoService {
     private String gerarRecomendacaoTreino(Agendamento agendamento) {
         validarStatusAprovado(agendamento);
 
-        ResBuscarAnamneseDTO anamneseDto = anamneseService.buscarAnamneseDoAluno(agendamento.getAluno().getId());
-        PaginaCursor<ResResumoAgendamentoAlunoDTO> resumoAgendamento = carregarResumoAgendamento(agendamento.getId());
+        Long alunoId = agendamento.getAluno().getId();
+        ResBuscarAnamneseDTO anamneseDto = anamneseService.buscarAnamneseDoAluno(alunoId);
+        PaginaCursor<ResResumoAgendamentoAlunoDTO> resumoAgendamento = carregarResumoAgendamento(alunoId);
 
         ChatClient chatClient = chatClientBuilder.build();
 
@@ -76,7 +77,6 @@ public class RecomendacaoTreinoService {
         validarRecomendacaoTreinoExistente(agendamentoId);
         Agendamento agendamento = agendamentoService.buscarAgendamentoPorId(agendamentoId);
         String treino = gerarRecomendacaoTreino(agendamento);
-        System.out.println(treino);
 
         RecomendacaoTreino recomendacaoTreino = new RecomendacaoTreino(
                 null,
@@ -119,11 +119,11 @@ public class RecomendacaoTreinoService {
     }
 
     private PaginaCursor<ResResumoAgendamentoAlunoDTO> carregarResumoAgendamento(
-            Long agendamentoId
+            Long alunoId
     ) {
         PaginaCursor<ResResumoAgendamentoAlunoDTO> resumoAgendamento =
                 resumoAgendamentoService.consultarResumoAluno(
-                        agendamentoId, null, 5
+                        alunoId, null, 5
                 );
 
         if (resumoAgendamento.conteudo().isEmpty()) {
