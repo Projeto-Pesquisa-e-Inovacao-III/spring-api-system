@@ -124,5 +124,7 @@ rabbitmq:
 
 app:
   mock:
+    payment:
+      enabled: true
     seed:
       enabled: true
