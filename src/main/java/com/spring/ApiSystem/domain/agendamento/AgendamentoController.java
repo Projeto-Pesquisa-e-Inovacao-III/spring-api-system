@@ -180,4 +180,6 @@ public class AgendamentoController {
     ) {
         return ResponseEntity.ok(agendamentoService.pegarAgendamentosComResumoPorAlunoId(alunoId, pageable));
     }
+
+
 }

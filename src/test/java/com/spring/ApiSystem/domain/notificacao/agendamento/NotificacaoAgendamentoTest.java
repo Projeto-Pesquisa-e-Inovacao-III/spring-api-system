@@ -7,6 +7,7 @@ import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
+import com.spring.ApiSystem.shared.infrastructure.websocket.NotificationWebSocketService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,6 +31,9 @@ public class NotificacaoAgendamentoTest {
 
     @Mock
     private EmailService emailService;
+
+    @Mock
+    private NotificationWebSocketService notificationWebSocketService;
 
     @InjectMocks
     private NotificacaoAgendamentoListener notificacaoAgendamentoListener;

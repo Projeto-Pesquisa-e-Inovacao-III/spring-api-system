@@ -4,17 +4,24 @@ import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import com.spring.ApiSystem.shared.infrastructure.email.service.EmailService;
+import com.spring.ApiSystem.shared.infrastructure.websocket.NotificationWebSocketService;
+import com.spring.ApiSystem.shared.infrastructure.websocket.dto.NotificationPayload;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import org.springframework.stereotype.Component;
+
+import java.time.Instant;
 
 @Component
 public class NotificacaoAgendamentoListener implements AgendamentoListener {
 
     private final EmailService emailService;
+    private final NotificationWebSocketService notificationWebSocketService;
 
-    public NotificacaoAgendamentoListener(EmailService emailService) {
+    public NotificacaoAgendamentoListener(EmailService emailService,
+                                          NotificationWebSocketService notificationWebSocketService) {
         this.emailService = emailService;
+        this.notificationWebSocketService = notificationWebSocketService;
     }
 
     @Override
@@ -35,6 +42,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailAluno);
+        notificarUsuario(aluno.getEmail(), "Confirmação de Agendamento",
+                String.format("Seu agendamento com o personal %s para %s às %s foi enviado para aprovação.",
+                        personal.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_CRIADO");
 
         Email emailPersonal = new Email(
                 personal.getEmail(),
@@ -48,6 +61,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailPersonal);
+        notificarUsuario(personal.getEmail(), "Novo Agendamento Recebido",
+                String.format("Você recebeu um novo agendamento de %s para %s às %s.",
+                        aluno.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_CRIADO");
     }
 
 
@@ -68,6 +87,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailSolicitante);
+        notificarUsuario(usuario.getEmail(), "Solicitação de reagendamento de Agendamento",
+                String.format("Seu reagendamento com %s para %s às %s foi enviado para aprovação.",
+                        destinatario.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_REAGENDADO");
 
         Email emailDestinatario = new Email(
                 destinatario.getEmail(),
@@ -81,6 +106,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailDestinatario);
+        notificarUsuario(destinatario.getEmail(), "Novo Reagendamento Recebido",
+                String.format("Você recebeu uma solicitação de reagendamento de %s para %s às %s.",
+                        usuario.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_REAGENDADO");
 
     }
 
@@ -100,6 +131,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailCancelamento);
+        notificarUsuario(destinatario.getEmail(), "Agendamento Cancelado",
+                String.format("%s cancelou o agendamento para %s às %s.",
+                        usuario.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_CANCELADO");
     }
 
     @Override
@@ -118,6 +155,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(emailConclusao);
+        notificarUsuario(aluno.getEmail(), "Agendamento Concluído",
+                String.format("Seu agendamento com %s para %s às %s foi concluído com sucesso.",
+                        personal.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_CONCLUIDO");
     }
 
     @Override
@@ -135,6 +178,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
                 )
         );
         emailService.enviarEmail(emailAprovacao);
+        notificarUsuario(destinatario.getEmail(), "Agendamento Aprovado",
+                String.format("Seu agendamento com %s para %s às %s foi aprovado.",
+                        usuario.getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_APROVADO");
     }
 
     @Override
@@ -151,6 +200,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(email);
+        notificarUsuario(agendamento.getAluno().getEmail(), "Registro de Ausência",
+                String.format("%s registrou uma ausência para o agendamento em %s às %s.",
+                        agendamento.getPersonal().getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_AUSENCIA");
     }
 
 
@@ -168,6 +223,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(email);
+        notificarUsuario(agendamento.getAluno().getEmail(), "Registro de Ausência",
+                String.format("%s registrou sua ausência para o agendamento em %s às %s.",
+                        agendamento.getPersonal().getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_AUSENCIA");
     }
 
     @Override
@@ -184,6 +245,12 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         );
 
         emailService.enviarEmail(email);
+        notificarUsuario(agendamento.getAluno().getEmail(), "Justificativa de Ausência Aceita",
+                String.format("%s justificou a ausência do agendamento em %s às %s.",
+                        agendamento.getPersonal().getNome(),
+                        agendamento.getData().toLocalDate(),
+                        agendamento.getData().toLocalTime()),
+                "AGENDAMENTO_AUSENCIA_JUSTIFICADA");
     }
 
 
@@ -209,6 +276,10 @@ public class NotificacaoAgendamentoListener implements AgendamentoListener {
         } else {
             throw new IllegalArgumentException("Tipo de usuário inválido para reagendamento.");
         }
+    }
+
+    private void notificarUsuario(String email, String title, String message, String type) {
+        notificationWebSocketService.sendToUser(email, new NotificationPayload(title, message, type, Instant.now()));
     }
 
 }
