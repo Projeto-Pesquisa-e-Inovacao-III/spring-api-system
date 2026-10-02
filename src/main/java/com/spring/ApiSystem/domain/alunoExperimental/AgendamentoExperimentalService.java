@@ -52,8 +52,10 @@ public class AgendamentoExperimentalService {
     private Aluno obterOuCriarAluno(ReqCriarAgendamentoExperimentalRequest request) {
         String email = request.emailAluno();
 
+
         if (usuarioService.emailExiste(email)) {
-            throw new EmailExistenteException();
+            Usuario usuarioExistente = usuarioService.buscarUsuarioPorEmail(email);
+            return alunoService.createProfile(usuarioExistente, new Cpf(request.cpfAluno()));
         }
 
         Usuario novoUsuario = new Usuario();
