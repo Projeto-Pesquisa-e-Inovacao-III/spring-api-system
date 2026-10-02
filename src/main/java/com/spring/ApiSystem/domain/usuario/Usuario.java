@@ -69,6 +69,15 @@ public class Usuario {
         this.ativo = ativo;
     }
 
+    public Usuario(String nome, String email, String senha,String sexo) {
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.ativo = true;
+        this.sexo = sexo;
+    }
+
+
     public Usuario(Long id, String nome, Set<Role> roles, String sexo, LocalDate dataNascimento, String email, String salt, String senha, boolean ativo, String caminhoFoto, List<Telefone> telefones) {
         this.id = id;
         this.nome = nome;
