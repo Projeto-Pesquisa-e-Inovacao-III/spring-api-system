@@ -37,6 +37,10 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
+import com.spring.ApiSystem.shared.service.AiService;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -64,6 +68,8 @@ public class AgendamentoService {
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
     private final ProdutoExibicaoService produtoExibicaoService;
+    private final ChatClient.Builder chatClientBuilder;
+    private final AiService aiService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -75,6 +81,10 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
+            AgendamentoEventPublisher agendamentoEventPublisher,
+            ChatClient.Builder chatClientBuilder,
+            AiService aiService
+    ) {
             AgendamentoEventPublisher agendamentoEventPublisher,
             ProdutoExibicaoService produtoExibicaoService) {
         this.agendamentoRepository = agendamentoRepository;
@@ -88,6 +98,23 @@ public class AgendamentoService {
         this.agendamentoEventPublisher = agendamentoEventPublisher;
         this.resumoAgendamentoService = resumoAgendamentoService;
         this.produtoExibicaoService = produtoExibicaoService;
+        this.chatClientBuilder = chatClientBuilder;
+        this.aiService = aiService;
+    }
+
+    public String gerarDadosAgendamento(String textoAgendamento){
+        ChatClient chatClient = chatClientBuilder.build();
+
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoAluno(usuario);
+
+        PromptTemplate promptSystem = aiService.carregarPromptTemplate("prompts/extracao_dados_agendamento.st");
+
+        return chatClient.prompt()
+                .system(promptSystem.getTemplate())
+                .user(textoAgendamento)
+                .options(GoogleGenAiChatOptions.builder().responseMimeType("application/json"))
+                .call().content();
     }
 
     @Transactional
