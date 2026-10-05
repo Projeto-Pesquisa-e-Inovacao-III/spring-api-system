@@ -11,7 +11,6 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.overview.Agendamento
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,6 +41,13 @@ public class AgendamentoController {
     public AgendamentoController(AgendamentoService agendamentoService, PageableService pageableService) {
         this.agendamentoService = agendamentoService;
         this.pageableService = pageableService;
+    }
+
+    /* -------------------- IA -------------------- */
+
+    @PostMapping("/extrair")
+    public ResponseEntity<?> extrairDadosAgendamento(@RequestBody String textoAgendamento){
+        return ResponseEntity.ok(agendamentoService.gerarDadosAgendamento(textoAgendamento));
     }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */
