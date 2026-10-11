@@ -7,7 +7,7 @@ from load import insert_data_to_mysql
 from transform import prepare_data
 
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_CSV_PATH = PROJECT_ROOT / "data" / "exercises(1).csv"
 
 

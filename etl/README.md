@@ -103,13 +103,13 @@ $env:MYSQL_URL = "mysql+pymysql://usuario:senha@localhost:3306/spring_api_system
 Depois, a partir da raiz do projeto, execute:
 
 ```powershell
-python main.py
+python etl\main.py
 ```
 
 Também é possível informar outro CSV:
 
 ```powershell
-python main.py "caminho\para\outra-base.csv"
+python etl\main.py "caminho\para\outra-base.csv"
 ```
 
 O critério de reutilização é o mesmo do notebook: dimensões são localizadas por `name`, exercícios por `(name, gif_url)` e relações por `(exercise_id, secondary_muscle_id)`. Portanto, executar a mesma base novamente não insere exercícios ou relações duplicados.
