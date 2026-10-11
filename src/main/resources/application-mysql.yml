@@ -7,10 +7,10 @@ spring:
     virtual-host: /app
     connection-timeout: 60000
   datasource:
-    url: jdbc:mysql://localhost:3306/apisystem?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/spring_api_system?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: sa
-    password:
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:}
   jpa:
     show-sql: true
     properties:
@@ -58,5 +58,19 @@ storage:
   local-dir: imagens
 logging:
   level:
+    com.spring.ApiSystem: DEBUG
     org.springframework.amqp: DEBUG
 
+init:
+  email: ${INIT_ADMIN_EMAIL:fabio.admin@email.com}
+  password: ${INIT_ADMIN_PASSWORD:admin123}
+
+rabbitmq:
+  enabled: false
+  hmac:
+    secret: ${RABBITMQ_HMAC_SECRET:urubu100}
+
+app:
+  mock:
+    seed:
+      enabled: true
