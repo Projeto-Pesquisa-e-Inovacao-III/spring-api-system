@@ -47,6 +47,7 @@ public abstract class AgendamentoMapper {
     @Autowired
     private PersonalService personalService;
 
+
     @Mapping(target = "personal.id", source = "personalId")
     @Mapping(target = "endereco", source = "novoEndereco")
     @Mapping(target = "id", ignore = true)
@@ -196,5 +197,6 @@ public abstract class AgendamentoMapper {
     @Mapping(target = "alunoName", source = "aluno.nome")
     @Mapping(target = "pathImage", source = "aluno.usuario.caminhoFoto")
     public abstract ResAgendamentoByDayOfWeekDto toResAgendamentoByDayOfWeekDto(Agendamento agendamento);
+
 
 }

@@ -122,7 +122,6 @@ public class ProdutoContratadoService {
         );
     }
 
-
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
@@ -136,6 +135,13 @@ public class ProdutoContratadoService {
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
         return produtoContratado.getId();
+    }
+
+    @Transactional
+    public void zerarSaldoProdutoContratado(Long produtoContratadoId) {
+        ProdutoContratado produtoContratado = buscarPorId(produtoContratadoId);
+        produtoContratado.setSaldoAula(0);
+        produtoContratadoRepository.save(produtoContratado);
     }
 
     @Transactional
