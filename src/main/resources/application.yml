@@ -47,3 +47,15 @@ app:
   mock:
     seed:
       enabled: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: minha-api-java
