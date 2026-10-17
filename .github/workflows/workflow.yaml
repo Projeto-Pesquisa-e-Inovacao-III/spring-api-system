@@ -2,23 +2,28 @@ name: Continuous Integration
 
 on:
   pull_request:
-      branches: [develop]
-      types: [opened, synchronize, reopened]
+    branches: [develop]
+    types: [opened, synchronize, reopened]
   push:
     branches: [main, develop]
+  # Permite executar manualmente pela aba Actions
+  workflow_dispatch:
 
 concurrency:
   group: deploy-backend-${{ github.ref_name }}
   cancel-in-progress: false
 
+env:
+  IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-api-system
+
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
-    env:
-      IMAGE_NAME: ${{ secrets.DOCKER_USERNAME }}/spring-api-system
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
       - name: Set up java
         uses: actions/setup-java@v4
         with:
@@ -35,7 +40,8 @@ jobs:
           RABBITMQ_ENABLED: "false"
         run: ./mvnw clean verify
 
-      - name: Build Docker image
+      # Build local rápido apenas para o Smoke Test
+      - name: Build local Docker image (for smoke test)
         run: |
           docker build -t ${IMAGE_NAME}:latest .
           docker build -t ${IMAGE_NAME}:${{ github.sha }} .
@@ -113,191 +119,142 @@ jobs:
           docker rm -f mysql-ci || true
           docker network rm ci-net || true
 
-      - name: login to Docker Hub
-        uses: docker/login-action@v2
+      # Após o sucesso no Smoke Test, prepara a imagem para a Azure (Multi-arch)
+      - name: Configurar Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login no Docker Hub
+        if: github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Push Docker image to Docker Hub
-        run: |
-          docker push ${IMAGE_NAME}:latest
-          docker push ${IMAGE_NAME}:${{ github.sha }}
+      - name: Build e publicação multi-arquitetura
+        if: github.ref == 'refs/heads/main'
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          platforms: linux/amd64,linux/arm64
+          tags: |
+            ${{ env.IMAGE_NAME }}:latest
+            ${{ env.IMAGE_NAME }}:${{ github.sha }}
 
-  deploy-aws-vm-1:
+  # ============================================================
+  # JOB AZURE - BACKEND 1
+  # ============================================================
+  deploy-azure-backend-1:
+    name: Deploy Azure Backend 1
     needs: continuous-integration
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, backend-1]
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
+      - backend
+      - backend-1
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Docker preflight
-        run: |
-          whoami
-          id
-          groups
-          ls -l /var/run/docker.sock || true
-          docker version
-          docker ps
-
-      - name: Update machine
-        timeout-minutes: 5
-        run: sudo apt-get update -y
-
-      - name: Ensure JWT PEM keys
-        timeout-minutes: 5
-        env:
-          JWT_PRIVATE_KEY_B64: ${{ secrets.JWT_PRIVATE_KEY_B64 }}
-          JWT_PUBLIC_KEY_B64: ${{ secrets.JWT_PUBLIC_KEY_B64 }}
-        run: |
-          sudo mkdir -p /opt/spring-api-system/keys
-          echo "${JWT_PRIVATE_KEY_B64}" | base64 -d | sudo tee /opt/spring-api-system/keys/private.pem > /dev/null
-          echo "${JWT_PUBLIC_KEY_B64}"  | base64 -d | sudo tee /opt/spring-api-system/keys/public.pem  > /dev/null
-          sudo chmod 600 /opt/spring-api-system/keys/private.pem
-          sudo chmod 644 /opt/spring-api-system/keys/public.pem
-          echo "[INFO] Chaves JWT escritas a partir dos secrets"
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy on instance
-        timeout-minutes: 5
-        env:
-          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
-          CONTAINER_NAME: spring-api-system
-          HOST_PORT: "8080"
-          CONTAINER_PORT: "8080"
-          HEALTHCHECK_URL: http://localhost:8080/health
-          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
-          JWT_KEYS_CONTAINER_DIR: /run/keys
-          JWT_PUBLIC_KEY: file:/run/keys/public.pem
-          JWT_PRIVATE_KEY: file:/run/keys/private.pem
-          SPRING_PROFILES_ACTIVE: prod
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          MAIL_HOST: ${{ secrets.MAIL_HOST }}
-          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          PAG_API_URL: ${{ secrets.PAG_API_URL }}
-          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
-          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
-          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
-          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
-          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
-          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
-          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
-          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
-          RABBITMQ_HMAC_SECRET: ${{ secrets.RABBITMQ_HMAC_SECRET }}
-          STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
-          STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
-          AWS_S3_PATH_STYLE: ${{ secrets.AWS_S3_PATH_STYLE }}
-          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
-          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
-          SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
-          SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
-          SPRING_REDIS_PASSWORD: ${{ secrets.SPRING_REDIS_PASSWORD}}
-        run: bash .github/scripts/deploy_backend_via_ssm.sh
+      - name: Baixar imagem do backend 1
+        run: |
+          set -e
+          sudo docker pull "${IMAGE_NAME}:${GITHUB_SHA}"
 
-  deploy-aws-vm-2:
-    needs: deploy-aws-vm-1
+      - name: Parar container anterior do backend 1
+        run: |
+          sudo docker rm -f spring-api-system-1 || true
+
+      - name: Iniciar backend 1
+        run: |
+          set -e
+          sudo docker run -d \
+            --name spring-api-system-1 \
+            --restart unless-stopped \
+            -p 8080:8080 \
+            --env-file /home/ubuntu/backend-api-1/.env \
+            "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Verificar backend 1
+        run: |
+          set -e
+          echo "Aguardando o Spring Boot iniciar..."
+          sleep 20
+          sudo docker ps --filter "name=spring-api-system-1"
+
+          status_code=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 10 \
+            http://127.0.0.1:8080/actuator/health || true)
+
+          if [ "$status_code" = "000" ]; then
+            echo "Backend 1 não respondeu na porta 8080."
+            sudo docker logs --tail 100 spring-api-system-1
+            exit 1
+          fi
+
+          echo "Backend 1 respondeu com HTTP $status_code."
+
+  # ============================================================
+  # JOB AZURE - BACKEND 2
+  # ============================================================
+  deploy-azure-backend-2:
+    name: Deploy Azure Backend 2
+    needs: continuous-integration
     if: github.ref == 'refs/heads/main'
-    runs-on: [self-hosted, backend-2]
+    runs-on:
+      - self-hosted
+      - Linux
+      - ARM64
+      - backend
+      - backend-2
 
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Docker preflight
-        run: |
-          whoami
-          id
-          groups
-          ls -l /var/run/docker.sock || true
-          docker version
-          docker ps
-
-      - name: Update machine
-        timeout-minutes: 5
-        run: sudo apt-get update -y
-
-      - name: Ensure JWT PEM keys
-        timeout-minutes: 5
-        env:
-          JWT_PRIVATE_KEY_B64: ${{ secrets.JWT_PRIVATE_KEY_B64 }}
-          JWT_PUBLIC_KEY_B64: ${{ secrets.JWT_PUBLIC_KEY_B64 }}
-        run: |
-          sudo mkdir -p /opt/spring-api-system/keys
-          echo "${JWT_PRIVATE_KEY_B64}" | base64 -d | sudo tee /opt/spring-api-system/keys/private.pem > /dev/null
-          echo "${JWT_PUBLIC_KEY_B64}"  | base64 -d | sudo tee /opt/spring-api-system/keys/public.pem  > /dev/null
-          sudo chmod 600 /opt/spring-api-system/keys/private.pem
-          sudo chmod 644 /opt/spring-api-system/keys/public.pem
-          echo "[INFO] Chaves JWT escritas a partir dos secrets"
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
+      - name: Login no Docker Hub
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Deploy on instance
-        timeout-minutes: 5
-        env:
-          APP_IMAGE: ${{ secrets.DOCKER_USERNAME }}/spring-api-system:${{ github.sha }}
-          CONTAINER_NAME: spring-api-system
-          HOST_PORT: "8080"
-          CONTAINER_PORT: "8080"
-          HEALTHCHECK_URL: http://localhost:8080/health
-          JWT_KEYS_HOST_DIR: /opt/spring-api-system/keys
-          JWT_KEYS_CONTAINER_DIR: /run/keys
-          JWT_PUBLIC_KEY: file:/run/keys/public.pem
-          JWT_PRIVATE_KEY: file:/run/keys/private.pem
-          SPRING_PROFILES_ACTIVE: prod
-          SPRING_DATASOURCE_URL: ${{ secrets.SPRING_DATASOURCE_URL }}
-          SPRING_DATASOURCE_USERNAME: ${{ secrets.SPRING_DATASOURCE_USERNAME }}
-          SPRING_DATASOURCE_PASSWORD: ${{ secrets.SPRING_DATASOURCE_PASSWORD }}
-          MAIL_HOST: ${{ secrets.MAIL_HOST }}
-          MAIL_PORT: ${{ secrets.MAIL_PORT }}
-          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME }}
-          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD }}
-          MAIL_SMTP_STARTTLS_ENABLE: ${{ secrets.MAIL_SMTP_STARTTLS_ENABLE }}
-          PAG_API_URL: ${{ secrets.PAG_API_URL }}
-          INFOBIP_BASE_URL: ${{ secrets.INFOBIP_BASE_URL }}
-          INFOBIP_API_KEY: ${{ secrets.INFOBIP_API_KEY }}
-          INFOBIP_WHATSAPP_SENDER: ${{ secrets.INFOBIP_WHATSAPP_SENDER }}
-          INFOBIP_TEMPLATE_NAME: ${{ secrets.INFOBIP_TEMPLATE_NAME }}
-          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
-          RABBITMQ_HOST: ${{ secrets.RABBITMQ_HOST }}
-          RABBITMQ_PORT: ${{ secrets.RABBITMQ_PORT }}
-          RABBITMQ_USERNAME: ${{ secrets.RABBITMQ_USERNAME }}
-          RABBITMQ_PASSWORD: ${{ secrets.RABBITMQ_PASSWORD }}
-          RABBITMQ_VIRTUAL_HOST: ${{ secrets.RABBITMQ_VIRTUAL_HOST }}
-          RABBITMQ_CONNECTION_TIMEOUT: ${{ secrets.RABBITMQ_CONNECTION_TIMEOUT }}
-          RABBITMQ_HMAC_SECRET: ${{ secrets.RABBITMQ_HMAC_SECRET }}
-          STORAGE_TYPE: ${{ secrets.STORAGE_TYPE }}
-          STORAGE_S3_PATH: ${{ secrets.STORAGE_S3_PATH }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          AWS_S3_BUCKET: ${{ secrets.AWS_S3_BUCKET }}
-          AWS_S3_ENDPOINT: ${{ secrets.AWS_S3_ENDPOINT }}
-          AWS_S3_PATH_STYLE: ${{ secrets.AWS_S3_PATH_STYLE }}
-          HIBERNATE_FORMAT_SQL: ${{ secrets.HIBERNATE_FORMAT_SQL }}
-          INIT_EMAIL: ${{ secrets.INIT_EMAIL }}
-          INIT_PASSWORD: ${{ secrets.INIT_PASSWORD }}
-          SPRING_REDIS_HOST: ${{ secrets.SPRING_REDIS_HOST }}
-          SPRING_REDIS_PORT: ${{ secrets.SPRING_REDIS_PORT }}
-          SPRING_REDIS_PASSWORD: ${{ secrets.SPRING_REDIS_PASSWORD}}
-        run: bash .github/scripts/deploy_backend_via_ssm.sh
+      - name: Baixar imagem do backend 2
+        run: |
+          set -e
+          sudo docker pull "${IMAGE_NAME}:${GITHUB_SHA}"
 
+      - name: Parar container anterior do backend 2
+        run: |
+          sudo docker rm -f spring-api-system-2 || true
 
+      - name: Iniciar backend 2
+        run: |
+          set -e
+          sudo docker run -d \
+            --name spring-api-system-2 \
+            --restart unless-stopped \
+            -p 8081:8081 \
+            --env-file /home/ubuntu/backend-api-2/.env \
+            "${IMAGE_NAME}:${GITHUB_SHA}"
 
+      - name: Verificar backend 2
+        run: |
+          set -e
+          echo "Aguardando o Spring Boot iniciar..."
+          sleep 20
+          sudo docker ps --filter "name=spring-api-system-2"
 
+          status_code=$(curl -s -o /dev/null -w "%{http_code}" \
+            --max-time 10 \
+            http://127.0.0.1:8081/actuator/health || true)
 
+          if [ "$status_code" = "000" ]; then
+            echo "Backend 2 não respondeu na porta 8081."
+            sudo docker logs --tail 100 spring-api-system-2
+            exit 1
+          fi
+
+          echo "Backend 2 respondeu com HTTP $status_code."
