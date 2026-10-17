@@ -185,18 +185,19 @@ jobs:
         run: |
           set -e
           echo "Aguardando o Spring Boot iniciar..."
-          sleep 20
-          sudo docker ps --filter "name=spring-api-system-1"
+          for i in {1..12}; do
+            status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:8080/actuator/health || true)
+            if [ "$status_code" = "200" ]; then
+              echo "Backend 1 respondeu com sucesso (HTTP 200)!"
+              exit 0
+            fi
+            echo "Ainda aguardando... (Tentativa $i/12)"
+            sleep 5
+          done
 
-          status_code=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 10 \
-            http://127.0.0.1:8080/actuator/health || true)
-
-          if [ "$status_code" = "000" ]; then
-            echo "Backend 1 não respondeu na porta 8080."
-            sudo docker logs --tail 100 spring-api-system-1
-            exit 1
-          fi
+          echo "Backend 1 não respondeu a tempo."
+          sudo docker logs --tail 100 spring-api-system-1
+          exit 1
 
           echo "Backend 1 respondeu com HTTP $status_code."
 
@@ -245,16 +246,18 @@ jobs:
           set -e
           echo "Aguardando o Spring Boot iniciar..."
           sleep 20
-          sudo docker ps --filter "name=spring-api-system-2"
+          for i in {1..12}; do
+            status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 http://127.0.0.1:8081/actuator/health || true)
+            if [ "$status_code" = "200" ]; then
+              echo "Backend 2 respondeu com sucesso (HTTP 200)!"
+              exit 0
+            fi
+            echo "Ainda aguardando... (Tentativa $i/12)"
+            sleep 5
+          done
 
-          status_code=$(curl -s -o /dev/null -w "%{http_code}" \
-            --max-time 10 \
-            http://127.0.0.1:8081/actuator/health || true)
-
-          if [ "$status_code" = "000" ]; then
-            echo "Backend 2 não respondeu na porta 8081."
-            sudo docker logs --tail 100 spring-api-system-2
-            exit 1
-          fi
+          echo "Backend 2 não respondeu a tempo."
+          sudo docker logs --tail 100 spring-api-system-2
+          exit 1
 
           echo "Backend 2 respondeu com HTTP $status_code."
