@@ -13,6 +13,7 @@ import com.spring.ApiSystem.domain.alunoExperimental.dto.ReqCriarAgendamentoExpe
 import com.spring.ApiSystem.domain.alunoExperimental.mapper.AlunoExperimentalMapper;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
+import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class AgendamentoExperimentalService {
@@ -67,6 +70,10 @@ public class AgendamentoExperimentalService {
 
         String senhaPlana = request.nomeAluno() + SENHA_PADRAO;
         usuarioService.aplicarSenhaCriptografada(novoUsuario, senhaPlana);
+        Telefone novoTelefone = new Telefone(null,request.pais(),request.ddd(),request.numero(),novoUsuario);
+         List<Telefone> telefones = new ArrayList<>();
+        telefones.add(novoTelefone);
+        novoUsuario.setTelefones(telefones);
 
         Usuario usuarioSalvo = usuarioService.salvarUsuario(novoUsuario);
         return alunoService.createProfile(usuarioSalvo, new Cpf(request.cpfAluno()));

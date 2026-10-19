@@ -48,8 +48,10 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
-        temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
 
+        if (!jpaUserDetailsService.getCurrentUser().isPersonal()) {
+            temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
+        }
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(

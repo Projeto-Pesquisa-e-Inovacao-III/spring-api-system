@@ -1,6 +1,8 @@
 package com.spring.ApiSystem.domain.alunoExperimental.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.ApiSystem.domain.agendamento.dto.request.ReqCadastrarAgendamentoDTO;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
@@ -27,6 +29,8 @@ public record ReqCriarAgendamentoExperimentalRequest(
         String numero,
         @NotBlank(message = "País não pode estar vazio")
         String pais,
+        @Valid
+        @NotNull(message = "O agendamento é obrigatório")
         ReqCadastrarAgendamentoDTO agendamentoDTO
 ) {
 }
