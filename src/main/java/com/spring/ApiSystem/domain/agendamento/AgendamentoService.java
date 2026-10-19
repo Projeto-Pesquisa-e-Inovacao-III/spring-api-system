@@ -1,8 +1,11 @@
 package com.spring.ApiSystem.domain.agendamento;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResDadoExtraidoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
@@ -11,6 +14,8 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.Agendame
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
 import com.spring.ApiSystem.domain.agendamento.exception.*;
+import com.spring.ApiSystem.domain.agendamento.exception.ai.AgendamentoIAErradoException;
+import com.spring.ApiSystem.domain.agendamento.exception.ai.AgendamentoVazioException;
 import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.endereco.EnderecoService;
@@ -92,7 +97,11 @@ public class AgendamentoService {
         this.aiService = aiService;
     }
 
-    public String gerarDadosAgendamento(String textoAgendamento){
+    public ResDadoExtraidoDTO gerarDadosAgendamento(String textoAgendamento){
+        if (textoAgendamento == null || textoAgendamento.isBlank()) {
+            throw new AgendamentoVazioException();
+        }
+
         ChatClient chatClient = chatClientBuilder.build();
 
         Usuario usuario = obterUsuarioAutenticado();
@@ -100,11 +109,33 @@ public class AgendamentoService {
 
         PromptTemplate promptSystem = aiService.carregarPromptTemplate("prompts/extracao_dados_agendamento.st");
 
-        return chatClient.prompt()
+        String respostaIA = chatClient.prompt()
                 .system(promptSystem.getTemplate())
                 .user(textoAgendamento)
                 .options(GoogleGenAiChatOptions.builder().responseMimeType("application/json"))
-                .call().content();
+                .call()
+                .content();
+
+        return validarRespostaExtracao(respostaIA);
+    }
+
+    private static final String CAMPO_ERRO = "erro";
+
+    private ResDadoExtraidoDTO validarRespostaExtracao(String respostaIA) {
+        try {
+            JsonNode jsonResposta = new ObjectMapper().readTree(respostaIA);
+
+            System.out.println("jsonResposta "+ jsonResposta);
+            if (jsonResposta.hasNonNull(CAMPO_ERRO)) {
+                throw new AgendamentoIAErradoException(jsonResposta.get(CAMPO_ERRO).asText());
+            }
+
+            return new ObjectMapper().treeToValue(jsonResposta, ResDadoExtraidoDTO.class);
+        } catch (AgendamentoIAErradoException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("A resposta da IA veio em um formato inválido.", e);
+        }
     }
 
     @Transactional
@@ -389,8 +420,7 @@ public class AgendamentoService {
                             );
 
             return agendamentosPage.map(
-                    agendamento -> (AgendamentoSolicitacaoResponse)
-                            agendamentoMapper.toResBuscarSolicitacaoPorAluno(
+                    agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(
                                     agendamento,
                                     agendamento.getPersonal().getTelefones().getFirst()
                             )
@@ -426,11 +456,9 @@ public class AgendamentoService {
     public void validateDateInicAndEnd(LocalDateTime dateBegin, LocalDateTime dateEnd) {
         if (dateBegin != null && dateEnd == null) {
             throw new DateBeginAndEndNecessaryException("dateEnd", "dateBegin");
-        }
-        if (dateBegin == null && dateEnd != null) {
+        } else if (dateBegin == null && dateEnd != null) {
             throw new DateBeginAndEndNecessaryException("dateBegin", "dateEnd");
-        }
-        if (dateBegin != null && dateEnd != null && dateBegin.isAfter(dateEnd)) {
+        } else if (dateBegin != null && dateBegin.isAfter(dateEnd)) {
             throw new DateEndAfterBeginException("dateEnd", "dateBegin");
         }
     }

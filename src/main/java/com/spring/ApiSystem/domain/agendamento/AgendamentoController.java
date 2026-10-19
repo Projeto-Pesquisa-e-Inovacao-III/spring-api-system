@@ -1,9 +1,9 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResDadoExtraidoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
@@ -11,6 +11,7 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.overview.Agendamento
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.shared.exception.CustomApiException;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,7 +33,6 @@ import java.util.List;
 @RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
-    private static final int PAGE_SIZE_FILTRAR = 8;
     private static final int PAGE_SIZE_SOLICITACOES = 30;
 
     private final AgendamentoService agendamentoService;
@@ -46,8 +46,8 @@ public class AgendamentoController {
     /* -------------------- IA -------------------- */
 
     @PostMapping("/extrair")
-    public ResponseEntity<?> extrairDadosAgendamento(@RequestBody String textoAgendamento){
-        return ResponseEntity.ok(agendamentoService.gerarDadosAgendamento(textoAgendamento));
+    public ResponseEntity<ResDadoExtraidoDTO> extrairDadosAgendamento(@RequestBody ReqAgendamentoIADTO req){
+        return ResponseEntity.ok(agendamentoService.gerarDadosAgendamento(req.textoAgendamento()));
     }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */

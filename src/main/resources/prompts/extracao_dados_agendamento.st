@@ -20,8 +20,7 @@ ANTES de extrair qualquer dado, você DEVE validar se a mensagem é realmente um
 **Se a mensagem NÃO for uma solicitação de agendamento, retorne IMEDIATAMENTE:**
 ```json
 {
-  "erro": "REJEIÇÃO_ENTRADA",
-  "mensagem": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada e tipo de aula."
+  "erro": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada e tipo de aula."
 }
 ```
 
@@ -39,7 +38,13 @@ ANTES de extrair qualquer dado, você DEVE validar se a mensagem é realmente um
 
 1. Analise a mensagem completa do usuário
 2. Identifique cada dado mencionado acima
-3. Se algum dado não for encontrado, retorne como "NÃO INFORMADO"
+3. Verifique se os campos obrigatórios foram preenchidos: personalNome, data, tipoAula e endereco
+   - Se algum campo obrigatório estiver ausente, retorne imediatamente:
+```json
+{
+  "erro": "Faltam dados para concluir o agendamento. Por favor, informe: nome do personal, data/hora desejada e tipo de aula."
+}
+```
 4. Normalize os dados:
    - Datas no formato dd/MM/yyyy HH:mm
    - Tipos de aula em MAIÚSCULA (PRESENCIAL, RESIDENCIAL, FUNCIONAL)
@@ -63,58 +68,54 @@ ANTES de extrair qualquer dado, você DEVE validar se a mensagem é realmente um
 **ACEITADOS - Solicitações válidas de agendamento:**
 
 **Exemplo 1:**
-Entrada: "Gostaria de agendar uma aula com o João no próximo sábado às 10:30 em casa."
+Entrada: "Gostaria de agendar uma aula com o Carlos na rua das Flores, 123, Centro, São Paulo, na sexta às 18:30, no modelo presencial."
 Resposta:
 ```json
 {
-  "personalNome": "João",
-  "data": "04/10/2026 10:30",
-  "tipoAula": "RESIDENCIAL",
-  "endereco": "Endereço residencial do cliente"
+  "personalNome": "Carlos",
+  "data": "04/10/2026 18:30",
+  "tipoAula": "PRESENCIAL",
+  "endereco": "rua das Flores, 123, Centro, São Paulo"
 }
 ```
 
+**ERROS - Dados obrigatórios ausentes:**
+
 **Exemplo 2:**
-Entrada: "Quero treinar com a Maria na academia na terça às 14:00"
+Entrada: "Quero agendar uma aula com o João na terça às 14:00"
 Resposta:
 ```json
 {
-  "personalNome": "Maria",
-  "data": "01/10/2026 14:00",
-  "tipoAula": "PRESENCIAL",
-  "endereco": "Academia"
+  "erro": "Faltam dados para concluir o agendamento. Por favor, informe: tipo de aula e endereço."
+}
+```
+
+**Exemplo 3:**
+Entrada: "Quero marcar uma aula com a Maria, tipo funcional."
+Resposta:
+```json
+{
+  "erro": "Faltam dados para concluir o agendamento. Por favor, informe: data/hora desejada e endereço."
 }
 ```
 
 **REJEITADOS - Entradas inválidas:**
 
-**Exemplo 3:**
+**Exemplo 4:**
 Entrada: "Qual é o melhor personal para emagrecer?"
 Resposta:
 ```json
 {
-  "erro": "REJEIÇÃO_ENTRADA",
-  "mensagem": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada e tipo de aula."
-}
-```
-
-**Exemplo 4:**
-Entrada: "Qual é o horário de funcionamento?"
-Resposta:
-```json
-{
-  "erro": "REJEIÇÃO_ENTRADA",
-  "mensagem": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada e tipo de aula."
+  "erro": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada, tipo de aula e endereço."
 }
 ```
 
 **Exemplo 5:**
-Entrada: "Gostaria de remarcar meu agendamento para segunda"
+Entrada: "Qual é o horário de funcionamento?"
 Resposta:
 ```json
 {
-  "erro": "REJEIÇÃO_ENTRADA",
-  "mensagem": "Desculpe, esta solicitação é para modificar um agendamento existente. Use a opção de reagendamento ou cancelamento."
+  "erro": "Desculpe, esta solicitação não é um agendamento de aula. Por favor, forneça uma nova solicitação de agendamento com: nome do personal, data/hora desejada, tipo de aula e endereço."
 }
 ```
 
