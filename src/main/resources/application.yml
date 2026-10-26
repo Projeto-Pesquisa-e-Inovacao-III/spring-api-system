@@ -1,3 +1,10 @@
+app:
+  ai:
+    provider: ${AI_PROVIDER:gemini}
+  mock:
+    seed:
+      enabled: false
+
 spring:
   config:
     import:
@@ -50,8 +57,3 @@ logging:
     org.example: INFO
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE
-
-app:
-  mock:
-    seed:
-      enabled: false
