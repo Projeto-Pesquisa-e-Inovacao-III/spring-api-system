@@ -149,9 +149,7 @@ public class AgendamentoService {
 
     @Transactional
     public ResCriarAgendamentoDTO criaAgendamentoExperimental(ReqCadastrarAgendamentoDTO criarAgendamentoDTO, Aluno alunoInput) {
-        Usuario usuario = obterUsuarioAutenticado();
-        validarSeUsuarioDoTipoPersonal(usuario);
-
+        Personal usuario = jpaUserDetailsService.getCurrentPersonal();
         Aluno aluno = alunoService.buscarPorId(alunoInput.getId());
         Personal personal = personalService.buscarPorId(criarAgendamentoDTO.personalId());
 
