@@ -11,7 +11,7 @@ spring:
       enabled: false
     add-properties: false
   profiles:
-    default: dev
+    default: prod
     active: dev
   config:
     import: "optional:classpath:application-${spring.profiles.active}.yml"
