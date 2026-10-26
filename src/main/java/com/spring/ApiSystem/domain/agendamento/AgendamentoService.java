@@ -114,12 +114,18 @@ public class AgendamentoService {
 
         List<ResListarEnderecoDTO> listaEndereco = enderecoService.listarEnderecos();
         PromptTemplate promptSystem = aiService.carregarPromptTemplate("prompts/extracao_dados_agendamento.st");
+        LocalDateTime dataHoraAtual = LocalDateTime.now();
+
         PromptTemplate promptUsuario = PromptTemplate.builder()
-                .template("Mensagem do aluno: {textoAgendamento}\n\nEndereços disponíveis: {listaEndereco}")
+                .template("Mensagem do aluno: {textoAgendamento}\n\n" +
+                        "Endereços disponíveis: {listaEndereco}\n\n" +
+                        "Data e hora atual: {dataHoraAtual}")
                 .build();
+
         Prompt inputs = promptUsuario.create(
                 Map.of("textoAgendamento", textoAgendamento,
-                        "listaEndereco", listaEndereco)
+                        "listaEndereco", listaEndereco,
+                        "dataHoraAtual", dataHoraAtual)
         );
 
         String respostaIA = aiService.usarLLM(promptSystem, inputs);

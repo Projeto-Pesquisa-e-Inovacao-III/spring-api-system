@@ -9,5 +9,5 @@ public record ResDadoExtraidoDTO(
         String personalNome,
         LocalDateTime data,
         TipoAula tipoAula,
-        ReqCadastrarEnderecoDTO endereco
+        ReqCadastrarEnderecoDTO novoEndereco
 ) {}
