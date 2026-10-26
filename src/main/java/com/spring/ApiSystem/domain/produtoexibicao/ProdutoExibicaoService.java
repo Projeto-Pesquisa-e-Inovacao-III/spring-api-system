@@ -4,6 +4,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqCadastroProdut
 import com.spring.ApiSystem.domain.produtoexibicao.dto.request.ReqEdicaoProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.dto.response.ResProdutoExibicaoLimitAndSizeDto;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
 import com.spring.ApiSystem.domain.produtoexibicao.exception.ProdutoExibicaoNaoEncontradoPorId;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProdutoExibicaoService {
@@ -75,6 +77,10 @@ public class ProdutoExibicaoService {
 
         return produtoExibicaoMapper.toResProdutoExibicaoDTO(produtoEntity);
 
+    }
+
+    public Optional<ProdutoExibicao> buscarProdutoExibicaoPeloTipoDeAula(TipoAula tipoAula){
+        return  produtoExibicaoRepository.findFirstByTipoAulaAndStatus(tipoAula,ProdutoExibicaoStatus.ATIVO);
     }
 
     @Transactional

@@ -48,8 +48,10 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
-        temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
 
+        if (!jpaUserDetailsService.getCurrentUser().isPersonal()) {
+            temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
+        }
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -122,7 +124,6 @@ public class ProdutoContratadoService {
         );
     }
 
-
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
@@ -136,6 +137,13 @@ public class ProdutoContratadoService {
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
         return produtoContratado.getId();
+    }
+
+    @Transactional
+    public void zerarSaldoProdutoContratado(Long produtoContratadoId) {
+        ProdutoContratado produtoContratado = buscarPorId(produtoContratadoId);
+        produtoContratado.setSaldoAula(0);
+        produtoContratadoRepository.save(produtoContratado);
     }
 
     @Transactional

@@ -111,7 +111,8 @@ public class SecurityConfig {
                                                         "/api/agendamentos/contagem-status-data",
                                                         "/api/personais/**",
                                                         "/api/anamnese/aluno/**",
-                                                        "/api/resumo-agendamento/**"
+                                                        "/api/resumo-agendamento/**",
+                                                        "/api/agendamentos-experimentais/**"
                                         ).hasAuthority("ROLE_PERSONAL");
 
 

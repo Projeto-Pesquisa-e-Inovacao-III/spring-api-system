@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.produtoexibicao;
 import com.spring.ApiSystem.domain.disponibilidade.HorarioAgendadoProjection;
 
 import com.spring.ApiSystem.domain.produtoexibicao.enums.ProdutoExibicaoStatus;
+import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao, Long> {
@@ -34,4 +36,7 @@ public interface ProdutoExibicaoRepository extends JpaRepository<ProdutoExibicao
 
     boolean existsByIdAndStatus(Long id, ProdutoExibicaoStatus status);
 
-}
+    Optional<ProdutoExibicao> findFirstByTipoAulaAndStatus(
+            TipoAula tipoAula,
+            ProdutoExibicaoStatus status
+    );}
