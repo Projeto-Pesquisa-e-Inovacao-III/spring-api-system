@@ -1,8 +1,7 @@
-package com.spring.ApiSystem.domain.resumoAgendamento.dto.res;
+package com.spring.ApiSystem.domain.resumoagendamento.dto.res;
 
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 

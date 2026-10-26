@@ -20,9 +20,9 @@ import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoService;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -493,7 +493,7 @@ public class AgendamentoService {
 
     private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
-    private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
+    public Agendamento buscarAgendamentoPorId(Long agendamentoId) {
         return agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(AgendamentoNaoExisteException::new);
     }

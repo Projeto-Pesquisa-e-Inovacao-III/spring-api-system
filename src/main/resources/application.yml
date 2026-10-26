@@ -36,7 +36,6 @@ argon:
   memory: 65536
   iterations: 3
 
-
 logging:
   level:
     org.example: INFO
