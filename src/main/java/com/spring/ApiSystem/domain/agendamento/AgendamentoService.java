@@ -1,7 +1,11 @@
 package com.spring.ApiSystem.domain.agendamento;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
@@ -20,10 +24,12 @@ import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.endereco.EnderecoService;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.response.ResListarEnderecoDTO;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
+import com.spring.ApiSystem.domain.produtocontratado.exception.UsuarioSemTipoAulaException;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
@@ -39,8 +45,8 @@ import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
 import com.spring.ApiSystem.shared.service.AiService;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
-import org.springframework.ai.google.genai.GoogleGenAiChatOptions;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -50,11 +56,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AgendamentoService {
 
     private static final long HORAS_ANTECEDENCIA_MINIMA = 24;
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
 
     private final AgendamentoRepository agendamentoRepository;
     private final PersonalService personalService;
@@ -66,7 +76,6 @@ public class AgendamentoService {
     private final HistoricoAgendamentoService historicoAgendamentoService;
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
-    private final ChatClient.Builder chatClientBuilder;
     private final AiService aiService;
 
     public AgendamentoService(
@@ -80,7 +89,6 @@ public class AgendamentoService {
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
             AgendamentoEventPublisher agendamentoEventPublisher,
-            ChatClient.Builder chatClientBuilder,
             AiService aiService
     ) {
         this.agendamentoRepository = agendamentoRepository;
@@ -93,7 +101,6 @@ public class AgendamentoService {
         this.jpaUserDetailsService = jpaUserDetailsService;
         this.agendamentoEventPublisher = agendamentoEventPublisher;
         this.resumoAgendamentoService = resumoAgendamentoService;
-        this.chatClientBuilder = chatClientBuilder;
         this.aiService = aiService;
     }
 
@@ -102,39 +109,43 @@ public class AgendamentoService {
             throw new AgendamentoVazioException();
         }
 
-        ChatClient chatClient = chatClientBuilder.build();
-
         Usuario usuario = obterUsuarioAutenticado();
         validarSeUsuarioDoTipoAluno(usuario);
 
+        List<ResListarEnderecoDTO> listaEndereco = enderecoService.listarEnderecos();
         PromptTemplate promptSystem = aiService.carregarPromptTemplate("prompts/extracao_dados_agendamento.st");
+        PromptTemplate promptUsuario = PromptTemplate.builder()
+                .template("Mensagem do aluno: {textoAgendamento}\n\nEndereços disponíveis: {listaEndereco}")
+                .build();
+        Prompt inputs = promptUsuario.create(
+                Map.of("textoAgendamento", textoAgendamento,
+                        "listaEndereco", listaEndereco)
+        );
 
-        String respostaIA = chatClient.prompt()
-                .system(promptSystem.getTemplate())
-                .user(textoAgendamento)
-                .options(GoogleGenAiChatOptions.builder().responseMimeType("application/json"))
-                .call()
-                .content();
+        String respostaIA = aiService.usarLLM(promptSystem, inputs);
 
         return validarRespostaExtracao(respostaIA);
     }
 
     private static final String CAMPO_ERRO = "erro";
+    private static final String CAMPO_TIPO = "tipoAula";
 
     private ResDadoExtraidoDTO validarRespostaExtracao(String respostaIA) {
         try {
-            JsonNode jsonResposta = new ObjectMapper().readTree(respostaIA);
+            JsonNode jsonResposta = OBJECT_MAPPER.readTree(respostaIA);
+            TipoAula tipoAula = TipoAula.valueOf(jsonResposta.get(CAMPO_TIPO).asText());
 
-            System.out.println("jsonResposta "+ jsonResposta);
+            if(produtoContratadoService.getTotalTipoAula(tipoAula) <= 0){
+               throw new UsuarioSemTipoAulaException();
+            }
+
             if (jsonResposta.hasNonNull(CAMPO_ERRO)) {
                 throw new AgendamentoIAErradoException(jsonResposta.get(CAMPO_ERRO).asText());
             }
 
-            return new ObjectMapper().treeToValue(jsonResposta, ResDadoExtraidoDTO.class);
-        } catch (AgendamentoIAErradoException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("A resposta da IA veio em um formato inválido.", e);
+            return OBJECT_MAPPER.treeToValue(jsonResposta, ResDadoExtraidoDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
         }
     }
 

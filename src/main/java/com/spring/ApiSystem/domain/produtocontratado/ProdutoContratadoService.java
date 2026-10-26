@@ -203,6 +203,12 @@ public class ProdutoContratadoService {
 
     }
 
+    public Integer getTotalTipoAula(TipoAula tipoAula){
+        Aluno aluno =jpaUserDetailsService.getCurrentAluno();
+
+        return getTotalTipoAula(aluno, tipoAula);
+    }
+
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
         List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
