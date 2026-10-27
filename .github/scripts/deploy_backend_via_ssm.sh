@@ -123,7 +123,7 @@ if ! docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${
   exit 1
 fi
 
-for i in {1..30}; do
+for i in {1..60}; do
   status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$HEALTHCHECK_URL" || true)
   if [ "$status_code" != "000" ] && [ -n "$status_code" ]; then
     echo "[INFO] Healthcheck OK (HTTP $status_code)"
@@ -132,7 +132,7 @@ for i in {1..30}; do
     echo "[INFO] Deploy concluido com sucesso"
     exit 0
   fi
-  sleep 2
+  sleep 5
 done
 
 echo "[ERRO] Healthcheck falhou em $HEALTHCHECK_URL"
