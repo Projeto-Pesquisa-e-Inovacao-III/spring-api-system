@@ -6,7 +6,7 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import java.time.LocalDateTime;
 
 public record ResDadoExtraidoDTO(
-        String personalNome,
+        String personalId,
         LocalDateTime data,
         TipoAula tipoAula,
         ReqCadastrarEnderecoDTO novoEndereco

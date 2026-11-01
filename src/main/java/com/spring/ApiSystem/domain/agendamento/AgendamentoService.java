@@ -32,7 +32,6 @@ import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
-import com.spring.ApiSystem.domain.produtocontratado.exception.UsuarioSemTipoAulaException;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
@@ -139,16 +138,10 @@ public class AgendamentoService {
     }
 
     private static final String CAMPO_ERRO = "erro";
-    private static final String CAMPO_TIPO = "tipoAula";
 
     private ResDadoExtraidoDTO validarRespostaExtracao(String respostaIA) {
         try {
             JsonNode jsonResposta = OBJECT_MAPPER.readTree(respostaIA);
-            TipoAula tipoAula = TipoAula.valueOf(jsonResposta.get(CAMPO_TIPO).asText());
-
-            if(produtoContratadoService.getTotalTipoAula(tipoAula) <= 0){
-               throw new UsuarioSemTipoAulaException();
-            }
 
             if (jsonResposta.hasNonNull(CAMPO_ERRO)) {
                 throw new AgendamentoIAErradoException(jsonResposta.get(CAMPO_ERRO).asText());
