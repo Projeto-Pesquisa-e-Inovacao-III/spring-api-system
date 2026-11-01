@@ -1,9 +1,9 @@
-package com.spring.ApiSystem.domain.resumoAgendamento;
+package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.personal.Personal;
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import jakarta.persistence.*;
 
 import java.util.List;

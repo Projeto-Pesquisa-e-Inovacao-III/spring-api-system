@@ -1,4 +1,15 @@
 spring:
+  config:
+    import:
+      - "optional:classpath:application-${spring.profiles.active}.yml"
+      - optional:file:.env[.properties]
+  ai:
+    google:
+      genai:
+        api-key: ${GOOGLE_API_KEY:a}
+        chat:
+          options:
+            model: ${GOOGLE_GEMINI_MODEL:gemini-2.5-flash}
   application:
     name: spring-api-system
   web:
@@ -13,8 +24,6 @@ spring:
   profiles:
     default: prod
     active: mysql
-  config:
-    import: "optional:classpath:application-${spring.profiles.active}.yml"
 
 
 jwt:
@@ -35,7 +44,6 @@ argon:
   parallelism: 1
   memory: 65536
   iterations: 3
-
 
 logging:
   level:

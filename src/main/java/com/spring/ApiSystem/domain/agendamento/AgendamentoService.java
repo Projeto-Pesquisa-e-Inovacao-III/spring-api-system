@@ -25,9 +25,9 @@ import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResProdutoCont
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicaoService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoService;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoService;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.exception.AlunoTemAcessoApenasException;
@@ -334,22 +334,24 @@ public class AgendamentoService {
             throw new PersonalTemAcessoApenasException();
         }
 
-        if (agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
-            agendamento.concluido();
-            Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
-            historicoAgendamentoService.cadastrar(
-                    agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
-                    agendamentoSalvo
-            );
-
-            resumoAgendamentoService.cadastrar(
-                    agendamento.getAluno(), agendamento.getPersonal(), agendamento,
-                    dto.resumo(), dto.grupoMuscular()
-            );
+        if (agendamento.getStatus() != AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
+            throw new AgendamentoStateException("O agendamento precisa estar como pendente para o personal concluir");
         }
 
-       agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
+        agendamento.concluido();
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(
+                agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
+                agendamentoSalvo
+        );
+
+        resumoAgendamentoService.cadastrar(
+                agendamento.getAluno(), agendamento.getPersonal(), agendamento,
+                dto.resumo(), dto.grupoMuscular()
+        );
+
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
     @Transactional
@@ -563,7 +565,7 @@ public class AgendamentoService {
 
     private Usuario obterUsuarioAutenticado() { return jpaUserDetailsService.getCurrentUser(); }
 
-    private Agendamento buscarAgendamentoPorId(Long agendamentoId) {
+    public Agendamento buscarAgendamentoPorId(Long agendamentoId) {
         return agendamentoRepository.findById(agendamentoId)
                 .orElseThrow(AgendamentoNaoExisteException::new);
     }

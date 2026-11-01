@@ -1,6 +1,5 @@
 package com.spring.ApiSystem;
 
-import com.spring.ApiSystem.domain.admin.AdminUserInitializer;
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.agendamento.AgendamentoRepository;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
@@ -25,13 +24,12 @@ import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoProduto;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamento;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoRepository;
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamento;
-import com.spring.ApiSystem.domain.resumoAgendamento.ResumoAgendamentoRepository;
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamento;
+import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoRepository;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioRepository;
-import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import org.springframework.beans.factory.annotation.Value;

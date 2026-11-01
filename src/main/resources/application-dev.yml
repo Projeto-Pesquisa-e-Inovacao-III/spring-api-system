@@ -2,8 +2,6 @@ spring:
   devtools:
     livereload:
       enabled: true
-  config:
-    import: optional:file:.env[.properties]
   application:
     name: spring-api-system
   profiles:

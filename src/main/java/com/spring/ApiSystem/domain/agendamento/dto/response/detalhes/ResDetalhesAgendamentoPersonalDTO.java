@@ -1,6 +1,5 @@
 package com.spring.ApiSystem.domain.agendamento.dto.response.detalhes;
 
-import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResAgendementoDadosEnderecoAlunoDTO;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
