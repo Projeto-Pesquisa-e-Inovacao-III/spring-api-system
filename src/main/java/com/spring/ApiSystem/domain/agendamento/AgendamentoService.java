@@ -1,7 +1,6 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
@@ -29,7 +28,6 @@ import com.spring.ApiSystem.domain.endereco.dto.response.ResListarEnderecoDTO;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
-import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
@@ -49,7 +47,6 @@ import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
 import com.spring.ApiSystem.shared.service.AiService;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.data.domain.Page;
@@ -83,7 +80,6 @@ public class AgendamentoService {
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
     private final ProdutoExibicaoService produtoExibicaoService;
-    private final ChatClient.Builder chatClientBuilder;
     private final AiService aiService;
 
     public AgendamentoService(
@@ -96,9 +92,7 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
-            AgendamentoEventPublisher agendamentoEventPublisher,
-            AiService aiService
-    ) {
+            AiService aiService,
             AgendamentoEventPublisher agendamentoEventPublisher,
             ProdutoExibicaoService produtoExibicaoService) {
         this.agendamentoRepository = agendamentoRepository;
@@ -112,7 +106,6 @@ public class AgendamentoService {
         this.agendamentoEventPublisher = agendamentoEventPublisher;
         this.resumoAgendamentoService = resumoAgendamentoService;
         this.produtoExibicaoService = produtoExibicaoService;
-        this.chatClientBuilder = chatClientBuilder;
         this.aiService = aiService;
     }
 
@@ -254,8 +247,6 @@ public class AgendamentoService {
                 produtoExibicao.get().getId(),
                 aluno.getId()
         );
-
-
 
         ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                 criarAgendamentoDTO.novoEndereco(),

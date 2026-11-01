@@ -35,6 +35,16 @@ public class AiService {
         throw new IllegalArgumentException("Provedor de IA inválido");
     }
 
+    public String usarLLMTexto(PromptTemplate promptSystem, Prompt inputs) {
+        if (provider.equals("ollama")) {
+            return usarOllamaTexto(promptSystem, inputs);
+        } else if (provider.equals("gemini")) {
+            return usarGeminiTexto(promptSystem, inputs);
+        }
+
+        throw new IllegalArgumentException("Provedor de IA inválido");
+    }
+
     public String usarOllama(PromptTemplate promptSystem, Prompt inputs) {
         return ollama.prompt()
                 .system(promptSystem.getTemplate())
@@ -47,12 +57,31 @@ public class AiService {
                 .content();
     }
 
+    public String usarOllamaTexto(PromptTemplate promptSystem, Prompt inputs) {
+        return ollama.prompt()
+                .system(promptSystem.getTemplate())
+                .user(inputs.getContents())
+                .options(OllamaChatOptions.builder()
+                        .numCtx(32768)
+                        .disableThinking())
+                .call()
+                .content();
+    }
+
     public String usarGemini(PromptTemplate promptSystem, Prompt inputs) {
         return gemini.prompt()
                 .system(promptSystem.getTemplate())
                 .user(inputs.getContents())
                 .options(GoogleGenAiChatOptions.builder()
                         .responseMimeType("application/json"))
+                .call()
+                .content();
+    }
+
+    public String usarGeminiTexto(PromptTemplate promptSystem, Prompt inputs) {
+        return gemini.prompt()
+                .system(promptSystem.getTemplate())
+                .user(inputs.getContents())
                 .call()
                 .content();
     }
