@@ -334,22 +334,24 @@ public class AgendamentoService {
             throw new PersonalTemAcessoApenasException();
         }
 
-        if (agendamento.getStatus() == AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
-            agendamento.concluido();
-            Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-
-            historicoAgendamentoService.cadastrar(
-                    agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
-                    agendamentoSalvo
-            );
-
-            resumoAgendamentoService.cadastrar(
-                    agendamento.getAluno(), agendamento.getPersonal(), agendamento,
-                    dto.resumo(), dto.grupoMuscular()
-            );
+        if (agendamento.getStatus() != AgendamentoStatus.PENDENTE_PERSONAL_CONCLUIR) {
+            throw new AgendamentoStateException("O agendamento precisa estar como pendente para o personal concluir");
         }
 
-       agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
+        agendamento.concluido();
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(
+                agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
+                agendamentoSalvo
+        );
+
+        resumoAgendamentoService.cadastrar(
+                agendamento.getAluno(), agendamento.getPersonal(), agendamento,
+                dto.resumo(), dto.grupoMuscular()
+        );
+
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
     @Transactional
