@@ -1,8 +1,14 @@
 package com.spring.ApiSystem.domain.agendamento;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResDadoExtraidoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
@@ -11,15 +17,17 @@ import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.Agendame
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
 import com.spring.ApiSystem.domain.agendamento.exception.*;
+import com.spring.ApiSystem.domain.agendamento.exception.ai.AgendamentoIAErradoException;
+import com.spring.ApiSystem.domain.agendamento.exception.ai.AgendamentoVazioException;
 import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.endereco.EnderecoService;
 import com.spring.ApiSystem.domain.endereco.dto.response.ResCadastrarEnderecoDTO;
+import com.spring.ApiSystem.domain.endereco.dto.response.ResListarEnderecoDTO;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoService;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.personal.PersonalService;
-import com.spring.ApiSystem.domain.personal.exception.PersonalNaoExisteExcepetion;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoService;
 import com.spring.ApiSystem.domain.produtocontratado.dto.response.ResProdutoContratadoDto;
 import com.spring.ApiSystem.domain.produtoexibicao.ProdutoExibicao;
@@ -37,6 +45,9 @@ import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.exception.DateEndAfterBeginException;
 import com.spring.ApiSystem.shared.exception.DateBeginAndEndNecessaryException;
+import com.spring.ApiSystem.shared.service.AiService;
+import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,11 +58,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Map;
 
 @Service
 public class AgendamentoService {
 
     private static final long HORAS_ANTECEDENCIA_MINIMA = 24;
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder()
+            .addModule(new JavaTimeModule())
+            .build();
 
     private final AgendamentoRepository agendamentoRepository;
     private final PersonalService personalService;
@@ -64,6 +79,7 @@ public class AgendamentoService {
     private final JpaUserDetailsService jpaUserDetailsService;
     private final AgendamentoEventPublisher agendamentoEventPublisher;
     private final ProdutoExibicaoService produtoExibicaoService;
+    private final AiService aiService;
 
     public AgendamentoService(
             AgendamentoRepository agendamentoRepository,
@@ -75,6 +91,7 @@ public class AgendamentoService {
             AgendamentoMapper agendamentoMapper,
             HistoricoAgendamentoService historicoAgendamentoService,
             JpaUserDetailsService jpaUserDetailsService,
+            AiService aiService,
             AgendamentoEventPublisher agendamentoEventPublisher,
             ProdutoExibicaoService produtoExibicaoService) {
         this.agendamentoRepository = agendamentoRepository;
@@ -88,6 +105,52 @@ public class AgendamentoService {
         this.agendamentoEventPublisher = agendamentoEventPublisher;
         this.resumoAgendamentoService = resumoAgendamentoService;
         this.produtoExibicaoService = produtoExibicaoService;
+        this.aiService = aiService;
+    }
+
+    public ResDadoExtraidoDTO gerarDadosAgendamento(String textoAgendamento){
+        if (textoAgendamento == null || textoAgendamento.isBlank()) {
+            throw new AgendamentoVazioException();
+        }
+
+        Usuario usuario = obterUsuarioAutenticado();
+        validarSeUsuarioDoTipoAluno(usuario);
+
+        List<ResListarEnderecoDTO> listaEndereco = enderecoService.listarEnderecos();
+        PromptTemplate promptSystem = aiService.carregarPromptTemplate("prompts/extracao_dados_agendamento.st");
+        LocalDateTime dataHoraAtual = LocalDateTime.now();
+
+        PromptTemplate promptUsuario = PromptTemplate.builder()
+                .template("Mensagem do aluno: {textoAgendamento}\n\n" +
+                        "Endereços disponíveis: {listaEndereco}\n\n" +
+                        "Data e hora atual: {dataHoraAtual}")
+                .build();
+
+        Prompt inputs = promptUsuario.create(
+                Map.of("textoAgendamento", textoAgendamento,
+                        "listaEndereco", listaEndereco,
+                        "dataHoraAtual", dataHoraAtual)
+        );
+
+        String respostaIA = aiService.usarLLM(promptSystem, inputs);
+
+        return validarRespostaExtracao(respostaIA);
+    }
+
+    private static final String CAMPO_ERRO = "erro";
+
+    private ResDadoExtraidoDTO validarRespostaExtracao(String respostaIA) {
+        try {
+            JsonNode jsonResposta = OBJECT_MAPPER.readTree(respostaIA);
+
+            if (jsonResposta.hasNonNull(CAMPO_ERRO)) {
+                throw new AgendamentoIAErradoException(jsonResposta.get(CAMPO_ERRO).asText());
+            }
+
+            return OBJECT_MAPPER.treeToValue(jsonResposta, ResDadoExtraidoDTO.class);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
@@ -177,8 +240,6 @@ public class AgendamentoService {
                 produtoExibicao.get().getId(),
                 aluno.getId()
         );
-
-
 
         ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
                 criarAgendamentoDTO.novoEndereco(),
@@ -436,8 +497,7 @@ public class AgendamentoService {
                             );
 
             return agendamentosPage.map(
-                    agendamento -> (AgendamentoSolicitacaoResponse)
-                            agendamentoMapper.toResBuscarSolicitacaoPorAluno(
+                    agendamento -> agendamentoMapper.toResBuscarSolicitacaoPorAluno(
                                     agendamento,
                                     agendamento.getPersonal().getTelefones().getFirst()
                             )
@@ -473,11 +533,9 @@ public class AgendamentoService {
     public void validateDateInicAndEnd(LocalDateTime dateBegin, LocalDateTime dateEnd) {
         if (dateBegin != null && dateEnd == null) {
             throw new DateBeginAndEndNecessaryException("dateEnd", "dateBegin");
-        }
-        if (dateBegin == null && dateEnd != null) {
+        } else if (dateBegin == null && dateEnd != null) {
             throw new DateBeginAndEndNecessaryException("dateBegin", "dateEnd");
-        }
-        if (dateBegin != null && dateEnd != null && dateBegin.isAfter(dateEnd)) {
+        } else if (dateBegin != null && dateBegin.isAfter(dateEnd)) {
             throw new DateEndAfterBeginException("dateEnd", "dateBegin");
         }
     }

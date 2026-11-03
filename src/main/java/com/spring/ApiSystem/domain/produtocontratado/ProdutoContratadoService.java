@@ -211,12 +211,24 @@ public class ProdutoContratadoService {
 
     }
 
+    public Integer getTotalTipoAula(TipoAula tipoAula){
+        Aluno aluno =jpaUserDetailsService.getCurrentAluno();
+
+        return getTotalTipoAula(aluno, tipoAula);
+    }
+
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
         List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
-        return produtos.stream()
+        System.out.println("TIPO_AULA: " + tipoAula);
+
+        Integer saldo = produtos.stream()
                 .map(ProdutoContratado::getSaldoAula)
                 .reduce(0, Integer::sum);
+
+        System.out.println("SALDO: " + saldo);
+
+        return saldo;
     }
 
     public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipoEspecifico(TipoAula tipoAula){

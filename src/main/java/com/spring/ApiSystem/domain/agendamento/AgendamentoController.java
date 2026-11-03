@@ -3,6 +3,7 @@ package com.spring.ApiSystem.domain.agendamento;
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResDadoExtraidoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
@@ -32,7 +33,6 @@ import java.util.List;
 @RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
-    private static final int PAGE_SIZE_FILTRAR = 8;
     private static final int PAGE_SIZE_SOLICITACOES = 30;
 
     private final AgendamentoService agendamentoService;
@@ -48,6 +48,12 @@ public class AgendamentoController {
     }
 
     /* -------------------- IA -------------------- */
+
+    @PostMapping("/extrair")
+    public ResponseEntity<ResDadoExtraidoDTO> extrairDadosAgendamento(@RequestBody ReqAgendamentoIADTO req){
+        return ResponseEntity.ok(agendamentoService.gerarDadosAgendamento(req.textoAgendamento()));
+    }
+
     @PostMapping("{agendamentoId}/recomendacao-treino")
     public ResponseEntity<String> cadastrarRecomendacaoTreino(@PathVariable Long agendamentoId){
         return ResponseEntity.ok(recomendacaoTreinoService.cadastrarRecomendacaoTreino(agendamentoId));

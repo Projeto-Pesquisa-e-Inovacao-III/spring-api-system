@@ -1,3 +1,10 @@
+app:
+  ai:
+    provider: ${AI_PROVIDER:gemini}
+  mock:
+    seed:
+      enabled: false
+
 spring:
   config:
     import:
@@ -10,6 +17,13 @@ spring:
         chat:
           options:
             model: ${GOOGLE_GEMINI_MODEL:gemini-2.5-flash}
+
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:qwen3.5:0.8b}
+
   application:
     name: spring-api-system
   web:
@@ -50,8 +64,3 @@ logging:
     org.example: INFO
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE
-
-app:
-  mock:
-    seed:
-      enabled: false

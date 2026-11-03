@@ -13,6 +13,7 @@ import com.spring.ApiSystem.domain.recomendacaotreino.mapper.TreinoLlmMapper;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoService;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
+import com.spring.ApiSystem.shared.service.AiService;
 import jakarta.transaction.Transactional;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
@@ -31,21 +32,21 @@ public class RecomendacaoTreinoService {
     private final AnamneseService anamneseService;
     private final ResumoAgendamentoService resumoAgendamentoService;
     private final TreinoLlmMapper treinoLlmMapper;
-    private final ChatClient.Builder chatClientBuilder;
     private final RecomendacaoTreinoRepository recomendacaoTreinoRepository;
+    private final AiService aiService;
 
     public RecomendacaoTreinoService(AgendamentoService agendamentoService,
                                      AnamneseService anamneseService,
                                      ResumoAgendamentoService resumoAgendamentoService,
                                      TreinoLlmMapper treinoLlmMapper,
-                                     ChatClient.Builder chatClientBuilder,
-                                     RecomendacaoTreinoRepository recomendacaoTreinoRepository) {
+                                     RecomendacaoTreinoRepository recomendacaoTreinoRepository,
+                                     AiService aiService) {
         this.agendamentoService = agendamentoService;
         this.anamneseService = anamneseService;
         this.resumoAgendamentoService = resumoAgendamentoService;
-        this.chatClientBuilder = chatClientBuilder;
         this.treinoLlmMapper = treinoLlmMapper;
         this.recomendacaoTreinoRepository = recomendacaoTreinoRepository;
+        this.aiService = aiService;
     }
 
     @Transactional
@@ -55,8 +56,6 @@ public class RecomendacaoTreinoService {
         Long alunoId = agendamento.getAluno().getId();
         ResBuscarAnamneseDTO anamneseDto = anamneseService.buscarAnamneseDoAluno(alunoId);
         PaginaCursor<ResResumoAgendamentoAlunoDTO> resumoAgendamento = carregarResumoAgendamento(alunoId);
-
-        ChatClient chatClient = chatClientBuilder.build();
 
         PromptTemplate promptSystem = carregarPromptTemplate("prompts/recomendacao_treino_system.st");
         PromptTemplate promptUser = carregarPromptTemplate("prompts/recomendacao_treino.st");
@@ -68,11 +67,7 @@ public class RecomendacaoTreinoService {
                 resumoAgendamento
         );
 
-        return chatClient.prompt()
-                .system(promptSystem.getTemplate())
-                .user(promptUserFinal.getContents())
-                .call().content();
-
+        return aiService.usarOllamaTexto(promptSystem, promptUserFinal);
     }
 
     public String cadastrarRecomendacaoTreino(Long agendamentoId) {
