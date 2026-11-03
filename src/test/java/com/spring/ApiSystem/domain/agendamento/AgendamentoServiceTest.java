@@ -2,6 +2,7 @@ package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.agendamento.events.AgendamentoEventPublisher;
+import com.spring.ApiSystem.domain.agendamento.exception.AgendamentoStateException;
 import com.spring.ApiSystem.domain.agendamento.mapper.AgendamentoMapper;
 import com.spring.ApiSystem.domain.agendamento.state.AgendamentoPendentePersonalConcluir;
 import com.spring.ApiSystem.domain.aluno.Aluno;
@@ -35,6 +36,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Testes do AgendamentoService - Resumo Agendamento")
@@ -125,12 +127,15 @@ class AgendamentoServiceTest {
         when(agendamentoRepository.buscarPorIdEEmailDoUsuario(1L, "personal@email.com"))
                 .thenReturn(Optional.of(agendamento));
 
-        agendamentoService.confirmarConclusao(1L, dto);
+        assertThrows(
+                AgendamentoStateException.class,
+                () -> agendamentoService.confirmarConclusao(1L, dto)
+        );
 
         verify(resumoAgendamentoService, never()).cadastrar(any(), any(), any(), any(), any());
         verify(agendamentoRepository, never()).save(any());
         verify(historicoAgendamentoService, never()).cadastrar(any(), any());
-        verify(agendamentoEventPublisher).publishAgendamentoConcluidoEvent(agendamento);
+        verify(agendamentoEventPublisher, never()).publishAgendamentoConcluidoEvent(any());
     }
 
     private Agendamento criarAgendamentoPendente(LocalDateTime data) {
@@ -167,4 +172,3 @@ class AgendamentoServiceTest {
         );
     }
 }
-
