@@ -44,6 +44,8 @@ logging:
     org.springframework.cache: TRACE
 
 app:
+  email:
+    enabled: ${APP_EMAIL_ENABLED:true}
   mock:
     seed:
       enabled: false

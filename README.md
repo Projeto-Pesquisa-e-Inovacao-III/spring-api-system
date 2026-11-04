@@ -46,6 +46,7 @@ MAIL_HOST=sandbox.smtp.mailtrap.io
 MAIL_PORT=2525
 MAIL_USERNAME=your_mailtrap_username
 MAIL_PASSWORD=your_mailtrap_password
+APP_EMAIL_ENABLED=true # set to false to disable all email notifications
 
 # Infobip Configuration
 INFOBIP_API_KEY=your_infobip_api_key_here
@@ -74,6 +75,7 @@ MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
 MAIL_USERNAME=your_email@gmail.com
 MAIL_PASSWORD=your_app_password
+APP_EMAIL_ENABLED=true # set to false to disable all email notifications
 
 # Infobip
 INFOBIP_API_KEY=your_infobip_api_key

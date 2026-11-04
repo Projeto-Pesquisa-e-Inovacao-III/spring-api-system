@@ -50,7 +50,7 @@ public class FilterService extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = recuperarCookie(request);
+        String token = recuperarToken(request);
 
         if (token == null) {
             filterChain.doFilter(request, response);
@@ -74,11 +74,15 @@ public class FilterService extends OncePerRequestFilter {
     /*
     Gera um cookie com o token gerado
      */
-    public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
+    public String gerarToken(String email) {
         Usuario usuario = usuarioService.getOpitionalUsuarioByEmailWithRoles(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        String token = tokenService.gerarToken(email, usuario.getRoles());
+        return tokenService.gerarToken(email, usuario.getRoles());
+    }
+
+    public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
+        String token = gerarToken(email);
 
         Cookie cookie = new Cookie("jwt", token);
 
@@ -92,6 +96,14 @@ public class FilterService extends OncePerRequestFilter {
         }
     }
 
+    public String recuperarToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring("Bearer ".length()).trim();
+        }
+
+        return recuperarCookie(request);
+    }
 
     public String recuperarCookie(HttpServletRequest request){
         if(request.getCookies() != null){

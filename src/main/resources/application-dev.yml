@@ -44,7 +44,7 @@ spring:
     password:
   jpa:
     defer-datasource-initialization: true
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -70,6 +70,7 @@ spring:
     multipart:
       max-file-size: 4MB
       max-request-size: 4MB
+
 pag:
   url: http://localhost:8081
 
@@ -110,8 +111,10 @@ resilience4j:
 
 logging:
   level:
-    com.spring.ApiSystem: DEBUG
-    org.springframework.amqp: DEBUG
+    com.spring.ApiSystem: INFO
+    org.springframework.amqp: ERROR
+    org.springframework.web.socket: INFO
+    org.springframework.messaging: INFO
 
 init:
   email: "fabio.admin@email.com"
@@ -126,3 +129,5 @@ app:
   mock:
     seed:
       enabled: true
+  email:
+    enabled: false
