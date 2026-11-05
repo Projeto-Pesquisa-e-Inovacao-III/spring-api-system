@@ -39,10 +39,6 @@ REQUIRED_RUNTIME_VARS=(
   SPRING_REDIS_PASSWORD
   STORAGE_TYPE
   STORAGE_S3_PATH
-  AWS_REGION
-  AWS_S3_BUCKET
-  AWS_S3_ENDPOINT
-  AWS_S3_PATH_STYLE
   INIT_EMAIL
   INIT_PASSWORD
 )
@@ -128,8 +124,9 @@ if ! docker run -d --name "$CONTAINER_NAME" --restart always -p "${HOST_PORT}:${
 fi
 
 for i in {1..30}; do
-  if curl -fsS "$HEALTHCHECK_URL" >/dev/null; then
-    echo "[INFO] Healthcheck OK"
+  status_code=$(curl -s -o /dev/null -w "%{http_code}" --max-time 5 "$HEALTHCHECK_URL" || true)
+  if [ "$status_code" != "000" ] && [ -n "$status_code" ]; then
+    echo "[INFO] Healthcheck OK (HTTP $status_code)"
     docker ps --filter "name=$CONTAINER_NAME"
     cleanup_previous_image
     echo "[INFO] Deploy concluido com sucesso"

@@ -84,6 +84,33 @@ public class EnderecoService {
     }
 
     @Transactional
+    public ResCadastrarEnderecoDTO cadastrarEndereco(ReqCadastrarEnderecoDTO enderecoDTO, Usuario usuario, boolean bloquearCadastroExistente) {
+        checkLimit();
+
+        CEP cep = viaCepService.procurarCEP(enderecoDTO.cep());
+        if (cep == null){
+            throw new CepNaoEncontradoException();
+        }
+
+        Endereco endereco = enderecoMapper.toEntity(enderecoDTO);
+        endereco.setCep(cep);
+
+        Optional<Endereco> enderecoExistente = consultarEnderecoExistente(endereco);
+        if(bloquearCadastroExistente && enderecoExistente.isPresent()) {
+            throw new EnderecoAlreadyExistsException();
+        }
+
+        if(enderecoExistente.isPresent()){
+            return enderecoMapper.toResCadastrarEnderecoDTO(enderecoExistente.get());
+        }
+
+        endereco.setUsuario(usuario);
+
+        enderecoRepository.save(endereco);
+        return enderecoMapper.toResCadastrarEnderecoDTO(endereco);
+    }
+
+    @Transactional
     public ResAtualizarEnderecoDTO atualizarEndereco(Long id, ReqAtualizarEnderecoDTO enderecoDTO, String email) {
         Usuario usuarioEncontrado = usuarioService.buscarUsuarioPorEmail(email);
         Endereco enderecoAntigo = buscarEnderecoPorIdEUsuario(id, usuarioEncontrado);

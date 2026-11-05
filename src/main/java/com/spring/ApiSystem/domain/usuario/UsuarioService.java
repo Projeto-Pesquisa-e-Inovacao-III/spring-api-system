@@ -48,7 +48,7 @@ public class UsuarioService {
         List<String> dummyArgon = argonService.criptografarSenha("dummy_senha");
         String DUMMY_SALT = dummyArgon.get(0);
         String DUMMY_HASH = dummyArgon.get(1);
-        this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, true);
+        this.DUMMY_USUARIO = new Usuario(DUMMY_SALT, DUMMY_HASH, false);
     }
 
     public Boolean removerUsuario(String email) {

@@ -33,6 +33,13 @@ public class OpenApiConfig {
                 .build();
     }
 
+    @Bean GroupedOpenApi aulaExperimental(){
+        return GroupedOpenApi.builder()
+                .group("Aulas Experimentais")
+                .pathsToMatch("/api/agendamentos-experimentais")
+                .build();
+    }
+
     @Bean
     public GroupedOpenApi agendamentoApi() {
         return GroupedOpenApi.builder()

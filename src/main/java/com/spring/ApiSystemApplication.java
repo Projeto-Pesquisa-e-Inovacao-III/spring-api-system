@@ -12,7 +12,6 @@ import static org.springframework.data.web.config.EnableSpringDataWebSupport.Pag
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-@EnableCaching
 @EnableSpringDataWebSupport(pageSerializationMode = VIA_DTO)
 
 public class ApiSystemApplication {

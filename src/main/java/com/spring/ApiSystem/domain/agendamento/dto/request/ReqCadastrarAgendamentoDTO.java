@@ -1,6 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento.dto.request;
 
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.spring.ApiSystem.domain.endereco.dto.request.ReqCadastrarEnderecoDTO;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import jakarta.validation.Valid;

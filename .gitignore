@@ -48,3 +48,6 @@ imagens/*
 src/main/resources/.env
 .env.local
 .env.*.local
+
+__pycache__/
+*.log

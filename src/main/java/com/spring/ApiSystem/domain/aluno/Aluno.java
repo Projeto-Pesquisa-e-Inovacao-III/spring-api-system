@@ -17,6 +17,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "aluno")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_aluno", discriminatorType = DiscriminatorType.STRING)
 public class Aluno {
 
     @Id

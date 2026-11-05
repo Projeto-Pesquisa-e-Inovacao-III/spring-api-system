@@ -1,4 +1,22 @@
 spring:
+  config:
+    import:
+      - "optional:classpath:application-${spring.profiles.active}.yml"
+      - optional:file:.env[.properties]
+  ai:
+    google:
+      genai:
+        api-key: ${GOOGLE_API_KEY:a}
+        chat:
+          options:
+            model: ${GOOGLE_GEMINI_MODEL:gemini-2.5-flash}
+
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:qwen3.5:0.8b}
+
   application:
     name: spring-api-system
   web:
@@ -12,9 +30,6 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: dev
-  config:
-    import: "optional:classpath:application-${spring.profiles.active}.yml"
 
 
 jwt:
@@ -36,7 +51,6 @@ argon:
   memory: 65536
   iterations: 3
 
-
 logging:
   level:
     org.example: INFO
@@ -46,6 +60,8 @@ logging:
 app:
   email:
     enabled: ${APP_EMAIL_ENABLED:true}
+  ai:
+    provider: ${AI_PROVIDER:gemini}
   mock:
     seed:
       enabled: false

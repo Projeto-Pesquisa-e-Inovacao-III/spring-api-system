@@ -54,6 +54,7 @@ public class SecurityConfig {
                                                                 "/api/controle/admin/dev/**").permitAll();
                                         }
 
+
                                         // Públicas
                                         auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
 
@@ -103,7 +104,7 @@ public class SecurityConfig {
                                         // PERSONAL genérico
                                         auth.requestMatchers(HttpMethod.GET,
                                                 "/api/produtos-contratados/total-tipo/*",
-                                                "/api/personais").hasAuthority("ROLE_ALUNO");
+                                                        "/api/personais").hasAuthority("ROLE_ALUNO");
 
                                         // Personal (regras mais específicas após a regra acima)
                                         auth.requestMatchers("/api/alunos",
@@ -115,7 +116,8 @@ public class SecurityConfig {
                                                         "/api/agendamentos/contagem-status-data",
                                                         "/api/personais/**",
                                                         "/api/anamnese/aluno/**",
-                                                        "/api/resumo-agendamento/**"
+                                                        "/api/resumo-agendamento/**",
+                                                        "/api/agendamentos-experimentais/**"
                                         ).hasAuthority("ROLE_PERSONAL");
 
 

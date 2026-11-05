@@ -1,17 +1,17 @@
 package com.spring.ApiSystem.domain.agendamento;
 
 import com.spring.ApiSystem.domain.agendamento.dto.request.*;
-import com.spring.ApiSystem.domain.agendamento.dto.response.ResTotalAgendamentoByStatusDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResAgendamentoByDayOfWeekDto;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
+import com.spring.ApiSystem.domain.agendamento.dto.response.ResDadoExtraidoDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResListarConsultoriasRealizadasDTO;
 import com.spring.ApiSystem.domain.agendamento.dto.response.calendario.AgendamentoCalendarioResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.detalhes.AgendamentoDetalheResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.overview.AgendamentoOverviewResponse;
 import com.spring.ApiSystem.domain.agendamento.dto.response.solicitacao.AgendamentoSolicitacaoResponse;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.res.ResResumoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.projection.ResAgendamentoWithResumeProjection;
+import com.spring.ApiSystem.domain.recomendacaotreino.RecomendacaoTreinoService;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoDTO;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import com.spring.ApiSystem.shared.service.PageableService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,15 +33,35 @@ import java.util.List;
 @RequestMapping("/api/agendamentos")
 public class AgendamentoController {
 
-    private static final int PAGE_SIZE_FILTRAR = 8;
     private static final int PAGE_SIZE_SOLICITACOES = 30;
 
     private final AgendamentoService agendamentoService;
+    private final RecomendacaoTreinoService recomendacaoTreinoService;
     private final PageableService pageableService;
 
-    public AgendamentoController(AgendamentoService agendamentoService, PageableService pageableService) {
+    public AgendamentoController(AgendamentoService agendamentoService,
+                                 RecomendacaoTreinoService recomendacaoTreinoService,
+                                 PageableService pageableService) {
         this.agendamentoService = agendamentoService;
+        this.recomendacaoTreinoService = recomendacaoTreinoService;
         this.pageableService = pageableService;
+    }
+
+    /* -------------------- IA -------------------- */
+
+    @PostMapping("/extrair")
+    public ResponseEntity<ResDadoExtraidoDTO> extrairDadosAgendamento(@RequestBody ReqAgendamentoIADTO req){
+        return ResponseEntity.ok(agendamentoService.gerarDadosAgendamento(req.textoAgendamento()));
+    }
+
+    @PostMapping("{agendamentoId}/recomendacao-treino")
+    public ResponseEntity<String> cadastrarRecomendacaoTreino(@PathVariable Long agendamentoId){
+        return ResponseEntity.ok(recomendacaoTreinoService.cadastrarRecomendacaoTreino(agendamentoId));
+    }
+
+    @GetMapping("/{agendamentoId}/recomendacao-treino")
+    public ResponseEntity<String> consultarRecomendacaoTreino(@PathVariable Long agendamentoId){
+        return ResponseEntity.ok(recomendacaoTreinoService.consultarRecomendacaoTreino(agendamentoId));
     }
 
     /* -------------------- Criação e ações sobre agendamentos -------------------- */

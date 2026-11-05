@@ -191,8 +191,26 @@ public class AlunoService {
         return alunoRepository.save(aluno);
     }
 
-    public Aluno createProfile(Usuario usuario, Cpf cpf){
-        validarCpfUnico(cpf);
-        return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
+    public Aluno createProfile(Usuario usuario, Cpf cpf) {
+        return alunoRepository.findByEmail(usuario.getEmail())
+                .map(alunoExistente -> {
+                    alunoExistente.setCpf(cpf);
+                    alunoExistente.setProfileAtivo(true);
+                    return alunoRepository.save(alunoExistente);
+                })
+                .orElseGet(() -> {
+                    validarCpfUnico(cpf);
+                    return alunoRepository.save(new Aluno(null, usuario, cpf, false, null, true));
+                });
     }
+
+    public Aluno createProfile(Usuario usuario) {
+        return alunoRepository.findByEmail(usuario.getEmail())
+                .map(alunoExistente -> {
+                    alunoExistente.setProfileAtivo(true);
+                    return alunoRepository.save(alunoExistente);
+                })
+                .orElseThrow(() -> new IllegalArgumentException("Aluno não encontrado para o usuário fornecido."));
+    }
+
 }

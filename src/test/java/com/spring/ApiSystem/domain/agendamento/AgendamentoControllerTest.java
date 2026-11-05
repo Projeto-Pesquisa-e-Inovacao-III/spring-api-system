@@ -1,7 +1,7 @@
 package com.spring.ApiSystem.domain.agendamento;
 
-import com.spring.ApiSystem.domain.resumoAgendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
-import com.spring.ApiSystem.domain.resumoAgendamento.enums.GrupoMuscular;
+import com.spring.ApiSystem.domain.resumoagendamento.dto.req.ReqCadastrarResumoAgendamentoDTO;
+import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.shared.service.PageableService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

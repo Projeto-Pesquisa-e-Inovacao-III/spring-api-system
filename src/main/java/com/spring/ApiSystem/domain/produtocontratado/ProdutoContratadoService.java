@@ -48,8 +48,10 @@ public class ProdutoContratadoService {
 
     @Transactional
     public ResProdutoContratadoDto criarProdutoContratadoPeloAluno(Long idProdutoExibicao, Aluno aluno){
-        temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
 
+        if (!jpaUserDetailsService.getCurrentUser().isPersonal()) {
+            temProdutoContratadoTipoProdutoAtivo(idProdutoExibicao, aluno, TipoProduto.PACOTE);
+        }
         ProdutoExibicao produtoExibicao = produtoExibicaoService.buscarPorId(idProdutoExibicao);
 
         ProdutoContratado produtoContratado = new ProdutoContratado(
@@ -122,7 +124,6 @@ public class ProdutoContratadoService {
         );
     }
 
-
     @Transactional
     public Long decrementar(Long alunoId, TipoAula tipoAula) {
         ProdutoContratado produtoContratado = produtoContratadoRepository
@@ -136,6 +137,13 @@ public class ProdutoContratadoService {
         produtoContratado.setSaldoAula(produtoContratado.getSaldoAula() - 1);
         produtoContratadoRepository.save(produtoContratado);
         return produtoContratado.getId();
+    }
+
+    @Transactional
+    public void zerarSaldoProdutoContratado(Long produtoContratadoId) {
+        ProdutoContratado produtoContratado = buscarPorId(produtoContratadoId);
+        produtoContratado.setSaldoAula(0);
+        produtoContratadoRepository.save(produtoContratado);
     }
 
     @Transactional
@@ -203,12 +211,24 @@ public class ProdutoContratadoService {
 
     }
 
+    public Integer getTotalTipoAula(TipoAula tipoAula){
+        Aluno aluno =jpaUserDetailsService.getCurrentAluno();
+
+        return getTotalTipoAula(aluno, tipoAula);
+    }
+
     public Integer getTotalTipoAula(Aluno usuario, TipoAula tipoAula){
         List<ProdutoContratado> produtos = produtoContratadoRepository.buscarProdutoContratadoAtivoPorAlunoETipoAula(usuario, tipoAula);
 
-        return produtos.stream()
+        System.out.println("TIPO_AULA: " + tipoAula);
+
+        Integer saldo = produtos.stream()
                 .map(ProdutoContratado::getSaldoAula)
                 .reduce(0, Integer::sum);
+
+        System.out.println("SALDO: " + saldo);
+
+        return saldo;
     }
 
     public ResBuscarSaldoPorTipoAulaDto buscarTotalSaldoAulaPorTipoEspecifico(TipoAula tipoAula){
