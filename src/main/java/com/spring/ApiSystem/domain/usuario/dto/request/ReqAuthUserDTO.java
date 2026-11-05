@@ -7,5 +7,6 @@ import java.util.Set;
 public record ReqAuthUserDTO(
         Long id,
         String nome,
+        String email,
         Set<Role> roles
 ){}

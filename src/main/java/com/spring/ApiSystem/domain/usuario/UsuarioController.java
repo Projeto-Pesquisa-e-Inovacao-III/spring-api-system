@@ -140,6 +140,7 @@ public class UsuarioController {
     @Operation(summary = "Realizar logout", description = "Endpoint para o logout de usuários no sistema")
     @GetMapping("/logout")
     public ResponseEntity<Void> logoutUsuario(HttpServletResponse response) {
+        userDetails.isLogged().ifPresent(usuarioPushTokenService::removeAllTokensForUser);
         filterService.removerCookie(response);
         return ResponseEntity.noContent().build();
     }
