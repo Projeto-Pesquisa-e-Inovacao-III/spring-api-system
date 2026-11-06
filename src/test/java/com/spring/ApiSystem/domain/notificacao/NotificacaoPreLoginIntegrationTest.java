@@ -19,7 +19,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.profiles.active=test")
 @ActiveProfiles("test")
 @Transactional
 @DisplayName("Teste de Integração - Persistência Pré-Login e Recuperação Pós-Login")

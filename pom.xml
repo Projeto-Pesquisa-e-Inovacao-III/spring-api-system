@@ -31,6 +31,7 @@
 		<java.version>21</java.version>
 		<mapstruct.version>1.5.5.Final</mapstruct.version>
 		<spring-cloud.version>2025.1.4</spring-cloud.version>
+		<activatedProperties>prod</activatedProperties>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -63,6 +64,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.h2database</groupId>
@@ -79,9 +83,15 @@
         </profile>
         <profile>
             <id>docker</id>
+            <properties>
+                <activatedProperties>docker</activatedProperties>
+            </properties>
         </profile>
         <profile>
             <id>prod</id>
+            <properties>
+                <activatedProperties>prod</activatedProperties>
+            </properties>
         </profile>
     </profiles>
 	<dependencies>

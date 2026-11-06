@@ -22,7 +22,7 @@ public class SecurityConfig {
         private final FilterService filterService;
         private final CorsConfig corsConfig;
 
-        @Value("${spring.profiles.active:}")
+        @Value("${spring.profiles.active}")
         private String perfilAtivo;
 
         public SecurityConfig(FilterService filterService, CorsConfig corsConfig) {
