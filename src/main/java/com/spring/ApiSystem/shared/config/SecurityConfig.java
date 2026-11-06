@@ -57,6 +57,7 @@ public class SecurityConfig {
 
                                         // Públicas
                                         auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+                                        auth.requestMatchers("/actuator/**", "/actuator/prometheus").permitAll();
 
                                         auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
 
