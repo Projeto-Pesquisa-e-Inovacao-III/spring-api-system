@@ -37,7 +37,7 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: mysql
+    active: "@activatedProperties@"
 
 
 jwt:
