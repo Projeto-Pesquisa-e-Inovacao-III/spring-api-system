@@ -30,6 +30,7 @@ spring:
     add-properties: false
   profiles:
     default: prod
+    active: "@activatedProperties@"
 
 
 jwt:

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
  * TESTE DE INTEGRAÇÃO - Este teste REALMENTE envia email para o Mailtrap!
  * Use @SpringBootTest para carregar o contexto completo do Spring
  */
-@SpringBootTest
+@SpringBootTest(properties = "spring.profiles.active=test")
 @ActiveProfiles("test") // Usa as configurações de application-dev.yml
 public class EmailServiceIntegrationTest {
 
