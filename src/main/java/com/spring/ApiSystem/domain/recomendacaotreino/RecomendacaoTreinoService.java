@@ -67,7 +67,7 @@ public class RecomendacaoTreinoService {
                 resumoAgendamento
         );
 
-        return aiService.usarOllamaTexto(promptSystem, promptUserFinal);
+        return aiService.usarLLMTexto(promptSystem, promptUserFinal);
     }
 
     public String cadastrarRecomendacaoTreino(Long agendamentoId) {
