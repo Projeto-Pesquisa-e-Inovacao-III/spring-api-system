@@ -60,6 +60,8 @@ public class SecurityConfig {
 
                                         auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
 
+                                        auth.requestMatchers("/api/ws/**", "/api/ws-native").permitAll();
+
                                         auth.requestMatchers(HttpMethod.GET,
                                                         "/api/produtos-exibicoes/ativos",
                                                         "/api/produtos-exibicoes",
@@ -79,8 +81,10 @@ public class SecurityConfig {
                                                         "/api/agendamentos/**",
                                                         "/api/usuarios/**",
                                                         "/api/enderecos/**",
+                                                        "/api/notificacoes",
+                                                        "/api/notificacoes/**",
                                                         "/api/personais/dias-semana/**")
-                                                        .hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO");
+                                                        .hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO", "ROLE_ADMIN");
 
                                         auth.requestMatchers(
                                                 "/api/agendamentos/*/resumos"

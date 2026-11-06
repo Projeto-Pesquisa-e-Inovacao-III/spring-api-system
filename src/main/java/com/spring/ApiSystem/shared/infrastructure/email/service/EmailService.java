@@ -3,6 +3,7 @@ package com.spring.ApiSystem.shared.infrastructure.email.service;
 
 import com.spring.ApiSystem.shared.infrastructure.email.dto.Email;
 import jakarta.mail.internet.MimeMessage;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -17,13 +18,20 @@ import java.nio.charset.StandardCharsets;
 public class EmailService {
 
     private final JavaMailSender mailSender;
+    private final boolean emailEnabled;
 
-    public EmailService(JavaMailSender mailSender) {
+    public EmailService(JavaMailSender mailSender,
+                        @Value("${app.email.enabled:true}") boolean emailEnabled) {
         this.mailSender = mailSender;
+        this.emailEnabled = emailEnabled;
     }
 
     @Async
     public void enviarEmail(Email email) {
+        if (!emailEnabled) {
+            return;
+        }
+
         try {
             MimeMessage message = mailSender.createMimeMessage();
             // Use Jakarta Mail 2.1+ types (Standard in SB4)

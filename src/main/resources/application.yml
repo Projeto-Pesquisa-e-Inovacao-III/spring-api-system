@@ -1,10 +1,3 @@
-app:
-  ai:
-    provider: ${AI_PROVIDER:gemini}
-  mock:
-    seed:
-      enabled: false
-
 spring:
   config:
     import:
@@ -37,7 +30,6 @@ spring:
     add-properties: false
   profiles:
     default: prod
-    active: mysql
 
 
 jwt:
@@ -64,3 +56,12 @@ logging:
     org.example: INFO
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE
+
+app:
+  email:
+    enabled: ${APP_EMAIL_ENABLED:true}
+  ai:
+    provider: ${AI_PROVIDER:gemini}
+  mock:
+    seed:
+      enabled: false

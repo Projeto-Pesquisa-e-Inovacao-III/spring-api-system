@@ -8,14 +8,17 @@ import com.spring.ApiSystem.domain.personal.dto.response.ResBuscarPersonalPorIdD
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAtualizarSenhaDto;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqAuthDTO;
 import com.spring.ApiSystem.domain.usuario.dto.request.ReqLoginUsuarioDTO;
+import com.spring.ApiSystem.domain.usuario.dto.request.ReqPushTokenDTO;
 import com.spring.ApiSystem.domain.usuario.exception.UsuarioNaoEncontradoException;
 import com.spring.ApiSystem.domain.usuario.mapper.UsuarioMapper;
+import com.spring.ApiSystem.domain.usuario.push.UsuarioPushTokenService;
 import com.spring.ApiSystem.domain.usuario.security.JpaUserDetailsService;
 import com.spring.ApiSystem.shared.config.filter.FilterService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import java.util.Map;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -39,6 +42,7 @@ public class UsuarioController {
     private final AlunoService alunoService;
     private final PersonalService personalService;
     private final UsuarioMapper usuarioMapper;
+    private final UsuarioPushTokenService usuarioPushTokenService;
 
     public UsuarioController(
             UsuarioService usuarioService,
@@ -46,7 +50,8 @@ public class UsuarioController {
             JpaUserDetailsService userDetails,
             AlunoService alunoService,
             PersonalService personalService,
-            UsuarioMapper usuarioMapper
+            UsuarioMapper usuarioMapper,
+            UsuarioPushTokenService usuarioPushTokenService
     ) {
         this.usuarioService = usuarioService;
         this.filterService = filterService;
@@ -54,6 +59,7 @@ public class UsuarioController {
         this.alunoService = alunoService;
         this.personalService = personalService;
         this.usuarioMapper = usuarioMapper;
+        this.usuarioPushTokenService = usuarioPushTokenService;
     }
 
     @Operation(summary = "Adiciona imagem ao perfil do usuário", description = "Endpoint para adicionar uma imagem ao perfil do usuário")
@@ -82,7 +88,7 @@ public class UsuarioController {
 
     @Operation(summary = "Realizar login (necessário cadastro)", description = "Endpoint para o login de usuários no sistema")
     @PostMapping("/login")
-    public ResponseEntity<Void> loginUsuario(
+    public ResponseEntity<Map<String, String>> loginUsuario(
             @Valid @RequestBody ReqLoginUsuarioDTO dto,
             HttpServletResponse response
     ) {
@@ -90,11 +96,14 @@ public class UsuarioController {
         try {
             Boolean isUsuarioEncontrado = usuarioService.loginUsuario(dto.email(), dto.senha());
 
-            filterService.gerarCookie(response, dto.email(), isUsuarioEncontrado);
+            if (!isUsuarioEncontrado) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
 
-            return isUsuarioEncontrado ?
-                    ResponseEntity.ok().build() :
-                    ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            String token = filterService.gerarToken(dto.email());
+            filterService.gerarCookie(response, dto.email(), true);
+
+            return ResponseEntity.ok(Map.of("token", token));
         } finally {
             usuarioService.setEndTime(startTime, 1000, 5);
         }
@@ -131,6 +140,7 @@ public class UsuarioController {
     @Operation(summary = "Realizar logout", description = "Endpoint para o logout de usuários no sistema")
     @GetMapping("/logout")
     public ResponseEntity<Void> logoutUsuario(HttpServletResponse response) {
+        userDetails.isLogged().ifPresent(usuarioPushTokenService::removeAllTokensForUser);
         filterService.removerCookie(response);
         return ResponseEntity.noContent().build();
     }
@@ -228,5 +238,21 @@ public class UsuarioController {
         }
 
         return ResponseEntity.ok(new ReqAuthDTO(true, usuarioMapper.toDtoAuthUser(usuario), null));
+    }
+
+    @Operation(summary = "Registrar push token", description = "Registra ou atualiza o Expo push token do usuário autenticado")
+    @PostMapping("/me/push-token")
+    public ResponseEntity<Void> registrarPushToken(@Valid @RequestBody ReqPushTokenDTO dto) {
+        Usuario usuario = userDetails.getCurrentUser();
+        usuarioPushTokenService.registerToken(usuario, dto.pushToken());
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Remover push token", description = "Remove o Expo push token do usuário autenticado")
+    @DeleteMapping("/me/push-token")
+    public ResponseEntity<Void> removerPushToken(@Valid @RequestBody ReqPushTokenDTO dto) {
+        Usuario usuario = userDetails.getCurrentUser();
+        usuarioPushTokenService.removeToken(usuario, dto.pushToken());
+        return ResponseEntity.noContent().build();
     }
 }
