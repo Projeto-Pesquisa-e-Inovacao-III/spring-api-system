@@ -81,18 +81,16 @@ public class EtlService implements CommandLineRunner {
     }
 
     private void constructPythonVenv() throws IOException, InterruptedException {
-        boolean created = false;
         if (!Files.exists(pythonVenvPath)) {
             String pythonCommand = isWindows() ? "py" : "python3";
             runProcess(new ProcessBuilder(pythonCommand, "-m", "venv", ".venv"));
-            created = true;
         }
 
         if (!Files.exists(pythonVenvPath)) {
             throw new IOException("Executável Python do ambiente virtual não foi criado.");
         }
 
-        if (created && Files.exists(requirementsPath)) {
+        if (Files.exists(requirementsPath)) {
             runProcess(new ProcessBuilder(
                     pythonVenvPath.toString(), "-m", "pip", "install", "-r", requirementsPath.toString()
             ));
