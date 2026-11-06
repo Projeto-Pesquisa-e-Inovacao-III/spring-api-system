@@ -50,7 +50,7 @@ public class FilterService extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = recuperarCookie(request);
+        String token = recuperarToken(request);
 
         if (token == null) {
             filterChain.doFilter(request, response);
@@ -74,26 +74,36 @@ public class FilterService extends OncePerRequestFilter {
     /*
     Gera um cookie com o token gerado
      */
-    public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
+    public String gerarToken(String email) {
         Usuario usuario = usuarioService.getOpitionalUsuarioByEmailWithRoles(email)
-                .orElse(null);
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
-        if(usuario != null){
-            String token = tokenService.gerarToken(email, usuario.getRoles());
+        return tokenService.gerarToken(email, usuario.getRoles());
+    }
 
-            Cookie cookie = new Cookie("jwt", token);
+    public void gerarCookie(HttpServletResponse response, String email, boolean enviarCookie){
+        String token = gerarToken(email);
 
-            cookie.setHttpOnly(true); // protege contra acesso via JavaScript
-            cookie.setSecure(false); // envia apenas em conexões HTTPS
-            cookie.setPath("/");      // disponível para toda a aplicação
-            cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
+        Cookie cookie = new Cookie("jwt", token);
 
-            if(enviarCookie){
-                response.addCookie(cookie);
-            }
+        cookie.setHttpOnly(true); // protege contra acesso via JavaScript
+        cookie.setSecure(false); // envia apenas em conexões HTTPS
+        cookie.setPath("/");      // disponível para toda a aplicação
+        cookie.setMaxAge(3600);   // duração do cookie de 1 hora (3600 segundos)
+
+        if(enviarCookie){
+            response.addCookie(cookie);
         }
     }
 
+    public String recuperarToken(HttpServletRequest request) {
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return authorizationHeader.substring("Bearer ".length()).trim();
+        }
+
+        return recuperarCookie(request);
+    }
 
     public String recuperarCookie(HttpServletRequest request){
         if(request.getCookies() != null){
