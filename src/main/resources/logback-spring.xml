@@ -3,6 +3,11 @@
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
     <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
 
+    <springProperty scope="context" name="OBSERVABILITY_ENABLED" source="observability.enabled" defaultValue="true"/>
+    <springProperty scope="context" name="LOKI_ENABLED" source="logging.loki.enabled" defaultValue="${OBSERVABILITY_ENABLED}"/>
+    <springProperty scope="context" name="LOKI_URL" source="logging.loki.url" defaultValue="http://localhost:3100/loki/api/v1/push"/>
+    <springProperty scope="context" name="APP_ENV" source="spring.profiles.active" defaultValue="dev"/>
+
     <!-- Timestamp apenas com a data -->
     <timestamp key="byDate" datePattern="dd-MM-yyyy"/>
 
@@ -14,12 +19,55 @@
         </encoder>
     </appender>
 
-    <!-- Logs do SpringBoot não irão para o arquivo -->
+    <!-- Appender Loki para logs do Backend (sem tag/screen/stack de mobile) -->
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <enabled>${LOKI_ENABLED}</enabled>
+        <http>
+            <url>${LOKI_URL}</url>
+        </http>
+        <format>
+            <label>
+                <pattern>service_name=csf-api,env=${APP_ENV},level=%level,source=backend,os=%X{os:-unknown}</pattern>
+            </label>
+            <message>
+                <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%level","logger":"%logger","message":"%msg","requestId":"%X{requestId}","userId":"%X{userId}","os":"%X{os}","osVersion":"%X{osVersion}","appVersion":"%X{appVersion}","appBuild":"%X{appBuild}","method":"%X{method}","uri":"%X{uri}","status":"%X{status}","durationMs":"%X{durationMs}","exception":"%ex"}</pattern>
+            </message>
+        </format>
+    </appender>
+
+    <!-- Appender Loki específico para telemetria Mobile (inclui tag, screen e stack) -->
+    <appender name="LOKI_MOBILE" class="com.github.loki4j.logback.Loki4jAppender">
+        <enabled>${LOKI_ENABLED}</enabled>
+        <http>
+            <url>${LOKI_URL}</url>
+        </http>
+        <format>
+            <label>
+                <pattern>service_name=csf-mobile,env=${APP_ENV},level=%level,source=mobile,os=%X{os:-unknown}</pattern>
+            </label>
+            <message>
+                <pattern>{"timestamp":"%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ}","level":"%level","logger":"%logger","message":"%msg","requestId":"%X{requestId}","userId":"%X{userId}","os":"%X{os}","osVersion":"%X{osVersion}","appVersion":"%X{appVersion}","appBuild":"%X{appBuild}","tag":"%X{tag}","screen":"%X{screen}","stack":"%X{stack}","method":"%X{method}","uri":"%X{uri}","status":"%X{status}","durationMs":"%X{durationMs}"}</pattern>
+            </message>
+        </format>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
     </root>
 
-    <!-- Só so logs em ProdutoContratadoService irão para o arquivo -->
+    <!-- Access logs enviados apenas para o Loki (sem poluir o console do spring-api) -->
+    <logger name="com.spring.ApiSystem.access" level="INFO" additivity="false">
+        <appender-ref ref="LOKI"/>
+    </logger>
+
+    <!-- Mobile logs enviados para o stream csf-mobile -->
+    <logger name="com.spring.ApiSystem.mobile.telemetry" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI_MOBILE"/>
+    </logger>
+
+    <!-- Só os logs em ProdutoContratadoService irão para o arquivo -->
     <logger name="com.spring.ApiSystem.produtocontratado.ProdutoContratadoService" level="INFO">
         <appender-ref ref="MEU_LOG"/>
     </logger>

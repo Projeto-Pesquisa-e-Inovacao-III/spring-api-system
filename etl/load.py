@@ -1,11 +1,13 @@
 from datetime import datetime
 from pathlib import Path
+import time
 from typing import Any
 
 import pandas as pd
 from sqlalchemy import Engine, text
 
 from database import run_sql
+from logger import get_run_id, logger
 from transform import PreparedData
 
 
@@ -13,7 +15,7 @@ ETL_SUMMARY_LOG = Path("etl_summary.log")
 ETL_ERROR_LOG = Path("etl_errors.log")
 
 
-def _write_log(path: Path, message: str) -> None:
+def _append_local_log(path: Path, message: str) -> None:
     timestamp = datetime.now().isoformat(timespec="seconds")
     with path.open("a", encoding="utf-8") as log_file:
         log_file.write(f"[{timestamp}] {message}\n")
@@ -52,7 +54,9 @@ def insert_data_to_mysql(
     prepared: PreparedData,
 ) -> None:
     """Insere o ETL com IDs gerados pelo banco e registra a execução."""
-    summary = []
+    summary: list[tuple[str, int, int]] = []
+    start_time = time.perf_counter()
+    run_id = get_run_id()
 
     try:
         with engine.begin() as connection:
@@ -182,25 +186,54 @@ def insert_data_to_mysql(
                 len(relations),
             ))
 
-        _write_log(
-            ETL_SUMMARY_LOG,
-            "SUCESSO | " + " | ".join(
-                f"{table}: {inserted}/{total} novas linhas"
-                for table, inserted, total in summary
-            ),
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        for table_name, inserted_count, total_count in summary:
+            logger.info(
+                f"Tabela {table_name}: {inserted_count}/{total_count} novas linhas inseridas",
+                extra={
+                    "step": "load",
+                    "run_id": run_id,
+                    "table": table_name,
+                    "inserted_rows": inserted_count,
+                    "total_rows": total_count,
+                    "duration_ms": duration_ms,
+                },
+            )
+
+        summary_line = "SUCESSO | " + " | ".join(
+            f"{table}: {inserted}/{total} novas linhas"
+            for table, inserted, total in summary
+        )
+        _append_local_log(ETL_SUMMARY_LOG, summary_line)
+        logger.info(
+            summary_line,
+            extra={
+                "step": "load",
+                "run_id": run_id,
+                "duration_ms": duration_ms,
+            },
         )
         print("[Sucesso] ETL concluído. Resumo salvo em etl_summary.log.")
     except Exception as error:
-        _write_log(
-            ETL_ERROR_LOG,
-            f"ERRO | transação revertida | linhas efetivamente inseridas: 0 | {error!r}",
+        duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+        error_line = (
+            f"ERRO | transação revertida | linhas efetivamente inseridas: 0 | {error!r}"
         )
-        _write_log(
-            ETL_ERROR_LOG,
-            "Detalhes | " + " | ".join(
-                f"{table}: {inserted}/{total} linhas preparadas"
-                for table, inserted, total in summary
-            ),
+        details_line = "Detalhes | " + " | ".join(
+            f"{table}: {inserted}/{total} linhas preparadas"
+            for table, inserted, total in summary
+        )
+        _append_local_log(ETL_ERROR_LOG, error_line)
+        _append_local_log(ETL_ERROR_LOG, details_line)
+        logger.error(
+            f"{error_line} | {details_line}",
+            exc_info=True,
+            extra={
+                "step": "load",
+                "run_id": run_id,
+                "duration_ms": duration_ms,
+                "error_type": type(error).__name__,
+            },
         )
         print("[Erro] ETL revertido pela transação. Detalhes salvos em etl_errors.log.")
         raise
