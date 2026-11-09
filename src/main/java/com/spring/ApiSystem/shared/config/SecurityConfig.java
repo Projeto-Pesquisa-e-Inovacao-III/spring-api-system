@@ -69,6 +69,8 @@ public class SecurityConfig {
                                                         "/api/usuarios/auth",
                                                         "/api/no-code").permitAll();
 
+                                        auth.requestMatchers(HttpMethod.POST, "/api/logs/mobile").permitAll();
+
                                         auth.requestMatchers(HttpMethod.POST,
                                                         "/api/alunos/cadastro",
                                                         "/api/personais/cadastro",

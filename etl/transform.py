@@ -1,6 +1,9 @@
 from dataclasses import dataclass
+import time
 
 import pandas as pd
+
+from logger import get_run_id, logger
 
 
 @dataclass
@@ -25,6 +28,12 @@ def summarize_instructions(row: pd.Series, instruction_cols: list[str]) -> str:
 
 def prepare_data(df: pd.DataFrame) -> PreparedData:
     """Consolida instruções e prepara os DataFrames relacionais do ETL."""
+    start_time = time.perf_counter()
+    logger.info(
+        f"Iniciando transformação de {len(df)} registros",
+        extra={"step": "transform", "run_id": get_run_id(), "total_rows": len(df)},
+    )
+
     instruction_cols = [
         column for column in df.columns if column.startswith("instructions/")
     ]
@@ -86,6 +95,17 @@ def prepare_data(df: pd.DataFrame) -> PreparedData:
             "secondary_muscle_name",
         ],
     ).drop_duplicates()
+
+    duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
+    logger.info(
+        "Transformação concluída com sucesso",
+        extra={
+            "step": "transform",
+            "run_id": get_run_id(),
+            "total_rows": len(exercises),
+            "duration_ms": duration_ms,
+        },
+    )
 
     return PreparedData(
         body_parts=body_parts,
