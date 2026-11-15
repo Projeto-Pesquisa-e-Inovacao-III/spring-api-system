@@ -1,7 +1,5 @@
 package com.spring.ApiSystem.domain.alunoExperimental;
 
-import com.spring.ApiSystem.domain.agendamento.Agendamento;
-import com.spring.ApiSystem.domain.agendamento.AgendamentoRepository;
 import com.spring.ApiSystem.domain.agendamento.AgendamentoService;
 import com.spring.ApiSystem.domain.agendamento.dto.response.ResCriarAgendamentoDTO;
 import com.spring.ApiSystem.domain.agendamento.exception.AgendamentoComAtencedenciaException;
@@ -10,20 +8,17 @@ import com.spring.ApiSystem.domain.aluno.Aluno;
 import com.spring.ApiSystem.domain.aluno.AlunoService;
 import com.spring.ApiSystem.domain.aluno.vo.Cpf;
 import com.spring.ApiSystem.domain.alunoExperimental.dto.ReqCriarAgendamentoExperimentalRequest;
-import com.spring.ApiSystem.domain.alunoExperimental.mapper.AlunoExperimentalMapper;
 import com.spring.ApiSystem.domain.personal.PersonalService;
 import com.spring.ApiSystem.domain.produtoexibicao.enums.TipoAula;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
-import com.spring.ApiSystem.domain.usuario.exception.EmailExistenteException;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -33,7 +28,7 @@ public class AgendamentoExperimentalService {
     private static final String SENHA_PADRAO = "1234";
     private final PersonalService personalService;
     private final AgendamentoService agendamentoService;
-    private final  AlunoService alunoService;
+    private final AlunoService alunoService;
     private final UsuarioService usuarioService;
 
     public AgendamentoExperimentalService(PersonalService personalService, AgendamentoService agendamentoService, AlunoService alunoService, UsuarioService usuarioService) {
@@ -46,40 +41,53 @@ public class AgendamentoExperimentalService {
     @Transactional
     public ResCriarAgendamentoDTO criarAgendamentoExperimental(ReqCriarAgendamentoExperimentalRequest request) {
         Aluno aluno = obterOuCriarAluno(request);
-        validarDisponibilidadePersonal(request);
-        validarAntecedenciaDeHorarioMarcado(request.agendamentoDTO().data());
-
+        validarRegrasDeAgendamento(request);
         return agendamentoService.criaAgendamentoExperimental(request.agendamentoDTO(), aluno);
     }
 
     private Aluno obterOuCriarAluno(ReqCriarAgendamentoExperimentalRequest request) {
-        String email = request.emailAluno();
-
-
-        if (usuarioService.emailExiste(email)) {
-            Usuario usuarioExistente = usuarioService.buscarUsuarioPorEmail(email);
-            return alunoService.createProfile(usuarioExistente, new Cpf(request.cpfAluno()));
+        if (usuarioService.emailExiste(request.emailAluno())) {
+            return criarPerfilParaUsuarioExistente(request);
         }
+        return criarNovoUsuarioEPerfil(request);
+    }
 
-        Usuario novoUsuario = new Usuario();
-        novoUsuario.setNome(request.nomeAluno());
-        novoUsuario.setEmail(email);
-        novoUsuario.setSexo(request.sexo());
-        novoUsuario.setDataNascimento(request.dataNascimento());
-        novoUsuario.addRole(Role.ALUNO);
+    private Aluno criarPerfilParaUsuarioExistente(ReqCriarAgendamentoExperimentalRequest request) {
+        Usuario usuarioExistente = usuarioService.buscarUsuarioPorEmail(request.emailAluno());
+        return alunoService.createProfile(usuarioExistente, new Cpf(request.cpfAluno()));
+    }
 
-        String senhaPlana = request.nomeAluno() + SENHA_PADRAO;
-        usuarioService.aplicarSenhaCriptografada(novoUsuario, senhaPlana);
-        Telefone novoTelefone = new Telefone(null,request.pais(),request.ddd(),request.numero(),novoUsuario);
-         List<Telefone> telefones = new ArrayList<>();
-        telefones.add(novoTelefone);
-        novoUsuario.setTelefones(telefones);
-
+    private Aluno criarNovoUsuarioEPerfil(ReqCriarAgendamentoExperimentalRequest request) {
+        Usuario novoUsuario = criarUsuario(request);
+        usuarioService.aplicarSenhaCriptografada(novoUsuario, gerarSenhaPadrao(request.nomeAluno()));
+        novoUsuario.setTelefones(criarTelefones(request, novoUsuario));
         Usuario usuarioSalvo = usuarioService.salvarUsuario(novoUsuario);
         return alunoService.createProfile(usuarioSalvo, new Cpf(request.cpfAluno()));
     }
 
+    private Usuario criarUsuario(ReqCriarAgendamentoExperimentalRequest request) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(request.nomeAluno());
+        usuario.setEmail(request.emailAluno());
+        usuario.setSexo(request.sexo());
+        usuario.setDataNascimento(request.dataNascimento());
+        usuario.addRole(Role.ALUNO);
+        return usuario;
+    }
 
+    private List<Telefone> criarTelefones(ReqCriarAgendamentoExperimentalRequest request, Usuario usuario) {
+        Telefone telefone = new Telefone(null, request.pais(), request.ddd(), request.numero(), usuario);
+        return List.of(telefone);
+    }
+
+    private String gerarSenhaPadrao(String nomeAluno) {
+        return nomeAluno + SENHA_PADRAO;
+    }
+
+    private void validarRegrasDeAgendamento(ReqCriarAgendamentoExperimentalRequest request) {
+        validarDisponibilidadePersonal(request);
+        validarAntecedenciaDeHorarioMarcado(request.agendamentoDTO().data());
+    }
 
     private void validarDisponibilidadePersonal(ReqCriarAgendamentoExperimentalRequest request) {
         personalService.validateDisponibilidade(
@@ -87,11 +95,15 @@ public class AgendamentoExperimentalService {
                 DiaSemana.fromDayOfWeek(request.agendamentoDTO().data().getDayOfWeek())
         );
     }
+
     private void validarAntecedenciaDeHorarioMarcado(LocalDateTime dataHora) {
-        LocalDateTime dataHoraMinima = LocalDateTime.now().plusHours(HORAS_ANTECEDENCIA_MINIMA);
-        if (dataHora.isBefore(dataHoraMinima)) {
+        if (dataHora.isBefore(calcularDataHoraMinima())) {
             throw new AgendamentoComAtencedenciaException();
         }
+    }
+
+    private LocalDateTime calcularDataHoraMinima() {
+        return LocalDateTime.now().plusHours(HORAS_ANTECEDENCIA_MINIMA);
     }
 
     private LocalDateTime calcularHorarioDeAulaPorTipoAula(LocalDateTime horarioInicio, TipoAula tipoAula) {
@@ -102,5 +114,4 @@ public class AgendamentoExperimentalService {
         }
         throw new AgendamentoTipoDeAulaInvalido();
     }
-
 }
