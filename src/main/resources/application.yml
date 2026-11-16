@@ -1,4 +1,7 @@
 spring:
+  output:
+    ansi:
+      enabled: ALWAYS
   config:
     import:
       - "optional:classpath:application-${spring.profiles.active}.yml"

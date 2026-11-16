@@ -1,12 +1,18 @@
 import os
+from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from dotenv import load_dotenv
 from sqlalchemy import Engine, create_engine, text
 
 
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
+
 def create_database_engine(connection_string: str | None = None) -> Engine:
-    connection_string = "mysql+pymysql://root:41465490Fe*@localhost:3306/spring_api_system"
+    connection_string = connection_string or os.getenv("MYSQL_URL")
+
     if not connection_string:
         raise RuntimeError(
             "Defina a variável de ambiente MYSQL_URL antes de acessar o banco. "

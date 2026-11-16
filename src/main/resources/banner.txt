@@ -1,0 +1,8 @@
+${AnsiColor.DEFAULT}
+       ____  ____   _____
+      / ___|/ ___| |  ___|   ${AnsiColor.RED}T R E I N A M E N T O S${AnsiColor.DEFAULT}
+     | |    \___ \ | |_      ${AnsiColor.RED}▌▌━━━━━━━━━━━━━━━━━━━▐▐ ${AnsiColor.DEFAULT}
+     | |___  ___) ||  _|     Versão ${spring-boot.version}${AnsiColor.DEFAULT}
+      \____||____/ |_|
+
+${AnsiColor.DEFAULT} 
