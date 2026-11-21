@@ -72,13 +72,13 @@ def insert_data_to_mysql(
 
             muscles, muscle_inserted = _insert_dimension(
                 connection,
-                "secondary_muscle",
-                prepared.secondary_muscles,
+                "muscle",
+                prepared.muscles,
             )
             summary.append((
-                "secondary_muscle",
+                "muscle",
                 muscle_inserted,
-                len(prepared.secondary_muscles),
+                len(prepared.muscles),
             ))
 
             body_map = dict(zip(body_parts["name"], body_parts["id"]))
@@ -137,7 +137,7 @@ def insert_data_to_mysql(
             ))
             summary.append(("exercise", len(new_exercises), len(exercises)))
 
-            relations = prepared.exercise_secondary_muscles.copy()
+            relations = prepared.exercise_muscles.copy()
             relations["exercise_id"] = [
                 exercise_map.get((name, gif_url))
                 for name, gif_url in zip(
@@ -145,21 +145,22 @@ def insert_data_to_mysql(
                     relations["exercise_gif_url"],
                 )
             ]
-            relations["secondary_muscle_id"] = relations[
-                "secondary_muscle_name"
-            ].map(muscle_map)
-            if relations[["exercise_id", "secondary_muscle_id"]].isna().any().any():
+            relations["muscle_id"] = relations["muscle_name"].map(muscle_map)
+            if relations[["exercise_id", "muscle_id", "type"]].isna().any().any():
                 raise ValueError(
-                    "Há relações N-N sem exercício ou músculo correspondente."
+                    "Há relações N-N sem exercício, músculo ou tipo correspondente."
                 )
 
             relations = relations[
-                ["exercise_id", "secondary_muscle_id"]
-            ].drop_duplicates()
+                ["exercise_id", "muscle_id", "type"]
+            ].drop_duplicates(
+                subset=["exercise_id", "muscle_id"],
+                keep="first",
+            )
             existing_relations = pd.read_sql_query(
                 text(
-                    "SELECT exercise_id, secondary_muscle_id "
-                    "FROM exercise_secondary_muscle"
+                    "SELECT exercise_id, muscle_id "
+                    "FROM exercise_muscle"
                 ),
                 connection,
             )
@@ -167,21 +168,21 @@ def insert_data_to_mysql(
             new_relations = [
                 row
                 for row in relations.to_dict("records")
-                if (row["exercise_id"], row["secondary_muscle_id"])
+                if (row["exercise_id"], row["muscle_id"])
                 not in existing_pairs
             ]
 
             if new_relations:
                 connection.execute(
                     text("""
-                        INSERT INTO exercise_secondary_muscle
-                            (exercise_id, secondary_muscle_id)
-                        VALUES (:exercise_id, :secondary_muscle_id)
+                        INSERT INTO exercise_muscle
+                            (exercise_id, muscle_id, type)
+                        VALUES (:exercise_id, :muscle_id, :type)
                     """),
                     new_relations,
                 )
             summary.append((
-                "exercise_secondary_muscle",
+                "exercise_muscle",
                 len(new_relations),
                 len(relations),
             ))
@@ -252,33 +253,52 @@ def query_by_body_part(engine: Engine, body_part: str) -> pd.DataFrame:
     return run_sql(engine, query, {"body_part": body_part})
 
 
+def query_by_muscles(
+    engine: Engine,
+    muscles: list[str],
+    muscle_type: str | None = None,
+) -> pd.DataFrame:
+    if not muscles:
+        raise ValueError("Informe pelo menos um músculo.")
+    if muscle_type is not None and muscle_type not in {"principal", "secundario"}:
+        raise ValueError(
+            "muscle_type deve ser 'principal', 'secundario' ou None."
+        )
+    placeholders = ", ".join(
+        f":muscle_{index}" for index in range(len(muscles))
+    )
+    params: dict[str, Any] = {
+        f"muscle_{index}": muscle
+        for index, muscle in enumerate(muscles)
+    }
+    type_filter = ""
+    if muscle_type is not None:
+        type_filter = "AND em.type = :muscle_type"
+        params["muscle_type"] = muscle_type
+    query = f"""
+    SELECT e.id, e.name, e.gif_url, bp.name AS body_part,
+           eq.name AS equipment, COUNT(DISTINCT m.name) AS matched_muscles
+    FROM exercise AS e
+    JOIN exercise_muscle AS em ON em.exercise_id = e.id
+    JOIN muscle AS m ON m.id = em.muscle_id
+    LEFT JOIN body_part AS bp ON bp.id = e.fk_body_part
+    LEFT JOIN equipment AS eq ON eq.id = e.fk_equipment
+    WHERE m.name IN ({placeholders})
+      {type_filter}
+    GROUP BY e.id, e.name, e.gif_url, bp.name, eq.name
+    HAVING COUNT(DISTINCT m.name) = {len(muscles)}
+    ORDER BY e.name;
+    """
+    return run_sql(engine, query, params)
+
+
 def query_by_secondary_muscles(
     engine: Engine,
     secondary_muscles: list[str],
 ) -> pd.DataFrame:
     if not secondary_muscles:
         raise ValueError("Informe pelo menos um músculo secundário.")
-    placeholders = ", ".join(
-        f":muscle_{index}" for index in range(len(secondary_muscles))
-    )
-    params = {
-        f"muscle_{index}": muscle
-        for index, muscle in enumerate(secondary_muscles)
-    }
-    query = f"""
-    SELECT e.id, e.name, e.gif_url, bp.name AS body_part,
-           eq.name AS equipment, COUNT(DISTINCT sm.name) AS matched_muscles
-    FROM exercise AS e
-    JOIN exercise_secondary_muscle AS esm ON esm.exercise_id = e.id
-    JOIN secondary_muscle AS sm ON sm.id = esm.secondary_muscle_id
-    LEFT JOIN body_part AS bp ON bp.id = e.fk_body_part
-    LEFT JOIN equipment AS eq ON eq.id = e.fk_equipment
-    WHERE sm.name IN ({placeholders})
-    GROUP BY e.id, e.name, e.gif_url, bp.name, eq.name
-    HAVING COUNT(DISTINCT sm.name) = {len(secondary_muscles)}
-    ORDER BY e.name;
-    """
-    return run_sql(engine, query, params)
+    return query_by_muscles(engine, secondary_muscles, muscle_type="secundario")
 
 
 def query_by_equipment(

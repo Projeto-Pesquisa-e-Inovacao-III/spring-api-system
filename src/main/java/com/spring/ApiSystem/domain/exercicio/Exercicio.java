@@ -32,7 +32,7 @@ public class Exercicio {
     private Equipamento equipamento;
 
     @OneToMany(mappedBy = "exercicio", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExercicioMusculoSecundario> musculosSecundarios = new ArrayList<>();
+    private List<ExercicioMusculo> musculos = new ArrayList<>();
 
     public Exercicio() {}
 
@@ -58,6 +58,6 @@ public class Exercicio {
     public void setParteCorpo(ParteCorpo parteCorpo) { this.parteCorpo = parteCorpo; }
     public Equipamento getEquipamento() { return equipamento; }
     public void setEquipamento(Equipamento equipamento) { this.equipamento = equipamento; }
-    public List<ExercicioMusculoSecundario> getMusculosSecundarios() { return musculosSecundarios; }
-    public void setMusculosSecundarios(List<ExercicioMusculoSecundario> value) { this.musculosSecundarios = value; }
+    public List<ExercicioMusculo> getMusculos() { return musculos; }
+    public void setMusculos(List<ExercicioMusculo> value) { this.musculos = value; }
 }

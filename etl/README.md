@@ -9,10 +9,10 @@ O projeto transforma o arquivo CSV de exercícios em dados relacionais prontos p
 - carrega e inspeciona os dados com Pandas;
 - verifica duplicidades e valores disponíveis;
 - consolida as instruções de cada exercício;
-- separa equipamentos, partes do corpo e músculos secundários em tabelas de referência;
-- cria a relação muitos-para-muitos entre exercícios e músculos secundários;
+- separa equipamentos, partes do corpo e músculos (unificando `target` e `secondaryMuscles/*`) em tabelas de referência;
+- cria a relação muitos-para-muitos entre exercícios e músculos na tabela associativa `exercise_muscle`, diferenciando o papel de cada músculo na coluna `type` (`principal` ou `secundario`);
 - cria as tabelas no MySQL e insere os dados respeitando as chaves estrangeiras;
-- executa consultas para analisar os exercícios por parte do corpo, músculo e equipamento.
+- executa consultas para analisar os exercícios por parte do corpo, músculo (principal ou secundário) e equipamento.
 
 ## Estado atual
 
@@ -24,7 +24,8 @@ O fluxo também está disponível em módulos Python na raiz, mantendo a mesma l
 - [extract.py](extract.py): lê o CSV e retorna o DataFrame bruto;
 - [transform.py](transform.py): consolida instruções e prepara os DataFrames relacionais;
 - [load.py](load.py): insere dimensões, exercícios e relações, registra logs e contém as consultas analíticas;
-- [database.py](database.py): cria o engine SQLAlchemy e centraliza a execução de consultas.
+- [database.py](database.py): cria o engine SQLAlchemy e centraliza a execução de consultas;
+- [logger.py](logger.py): gera logs estruturados em JSON com `run_id` e envia métricas/eventos do ETL para o Grafana Loki (`LOKI_URL`) sem interromper a execução caso o serviço esteja indisponível.
 
 Os módulos não executam o ETL ao serem importados. A execução começa somente pelo `main.py`.
 
@@ -37,6 +38,7 @@ Os módulos não executam o ETL ao serem importados. A execução começa soment
 ├── database.py
 ├── extract.py
 ├── load.py
+├── logger.py
 ├── main.py
 ├── notebooks/
 │   └── tratamento_pandas_data.ipynb
@@ -78,6 +80,7 @@ As dependências estão em `requirements.txt`:
 - `pandas`: leitura, limpeza e transformação dos dados;
 - `SQLAlchemy`: criação da conexão e persistência dos DataFrames;
 - `PyMySQL`: driver Python para conexão com o MySQL;
+- `python-logging-loki`: envio de logs estruturados do ETL para o Grafana Loki;
 - `jupyter` e `ipykernel`: execução do notebook e seleção do ambiente no VS Code.
 
 ## Como abrir e executar o notebook
@@ -112,7 +115,7 @@ Também é possível informar outro CSV:
 python etl\main.py "caminho\para\outra-base.csv"
 ```
 
-O critério de reutilização é o mesmo do notebook: dimensões são localizadas por `name`, exercícios por `(name, gif_url)` e relações por `(exercise_id, secondary_muscle_id)`. Portanto, executar a mesma base novamente não insere exercícios ou relações duplicados.
+O critério de reutilização é o mesmo do notebook: dimensões são localizadas por `name`, exercícios por `(name, gif_url)` e relações por `(exercise_id, muscle_id)`. Portanto, executar a mesma base novamente não insere exercícios ou relações duplicados.
 
 ## Configuração do MySQL
 
@@ -133,59 +136,60 @@ O fluxo de inserção segue esta ordem. Os IDs das tabelas são gerados pelo ban
 
 O ETL não gera IDs localmente e não cria um novo registro quando o nome já existe:
 
-- se uma parte do corpo, equipamento ou músculo secundário já existir, o ETL reutiliza o `id` retornado pelo banco;
+- se uma parte do corpo, equipamento ou músculo já existir, o ETL reutiliza o `id` retornado pelo banco;
 - se o valor ainda não existir, ele é inserido e o novo `id` gerado pelo banco é utilizado;
 - se o exercício já existir, o ETL reutiliza o `id` existente;
-- se a relação entre exercício e músculo secundário já existir, ela não é inserida novamente.
+- se a relação entre exercício e músculo já existir, ela não é inserida novamente.
 
-Essa verificação é feita pelo campo `name` nas tabelas de referência, pelo par `(name, gif_url)` na tabela de exercícios e pelo par `(exercise_id, secondary_muscle_id)` na tabela associativa. Exercícios podem ter o mesmo nome quando possuem URLs de GIF diferentes. A tabela associativa deve manter sua chave primária composta. Os valores textuais devem ser normalizados de forma consistente, pois `chest`, `Chest` e `chest ` são valores diferentes para uma comparação literal.
+Essa verificação é feita pelo campo `name` nas tabelas de referência (`body_part`, `equipment` e `muscle`), pelo par `(name, gif_url)` na tabela `exercise` e pelo par `(exercise_id, muscle_id)` na tabela associativa `exercise_muscle`. Exercícios podem ter o mesmo nome quando possuem URLs de GIF diferentes. A tabela associativa mantém sua chave primária composta `(exercise_id, muscle_id)` e armazena a coluna `type` (`'principal'` para o músculo vindo da coluna `target` do CSV e `'secundario'` para os músculos vindos das colunas `secondaryMuscles/*`). Caso um mesmo músculo apareça simultaneamente em `target` e em `secondaryMuscles/*` para o mesmo exercício, prevalece a classificação `'principal'`. Os valores textuais devem ser normalizados de forma consistente, pois `chest`, `Chest` e `chest ` são valores diferentes para uma comparação literal.
 
 ```text
-body_part, equipment e secondary_muscle
+body_part, equipment e muscle
 					 ↓
 				 exercise
 					 ↓
-	  exercise_secondary_muscle
+			  exercise_muscle
 ```
 
 ## Diagrama final do banco
 
-O banco será organizado com `exercise` como tabela principal. Partes do corpo e equipamentos possuem relação de um para muitos com exercícios. Músculos secundários se relacionam com exercícios por meio da tabela associativa `exercise_secondary_muscle`.
+O banco será organizado com `exercise` como tabela principal. Partes do corpo e equipamentos possuem relação de um para muitos com exercícios. Todos os músculos (tanto o músculo-alvo `target` quanto os músculos secundários) ficam unificados na tabela `muscle`, relacionando-se com `exercise` por meio da tabela associativa `exercise_muscle`, que identifica na coluna `type` se o vínculo é `'principal'` ou `'secundario'`.
 
 ```mermaid
 erDiagram
 	BODY_PART ||--o{ EXERCISE : classifica
 	EQUIPMENT ||--o{ EXERCISE : utiliza
-	EXERCISE ||--o{ EXERCISE_SECONDARY_MUSCLE : possui
-	SECONDARY_MUSCLE ||--o{ EXERCISE_SECONDARY_MUSCLE : participa
+	EXERCISE ||--o{ EXERCISE_MUSCLE : possui
+	MUSCLE ||--o{ EXERCISE_MUSCLE : participa
 
 	BODY_PART {
-		INT id PK
+		BIGINT id PK
 		VARCHAR name UK
 	}
 
 	EQUIPMENT {
-		INT id PK
+		BIGINT id PK
 		VARCHAR name UK
 	}
 
-	SECONDARY_MUSCLE {
-		INT id PK
+	MUSCLE {
+		BIGINT id PK
 		VARCHAR name UK
 	}
 
 	EXERCISE {
-		INT id PK
+		BIGINT id PK
 		VARCHAR name
 		VARCHAR gif_url
-		TEXT instructions_sumarization
-		INT fk_body_part FK
-		INT fk_equipment FK
+		LONGTEXT instructions_sumarization
+		BIGINT fk_body_part FK
+		BIGINT fk_equipment FK
 	}
 
-	EXERCISE_SECONDARY_MUSCLE {
-		INT exercise_id PK, FK
-		INT secondary_muscle_id PK, FK
+	EXERCISE_MUSCLE {
+		BIGINT exercise_id PK, FK
+		BIGINT muscle_id PK, FK
+		VARCHAR type
 	}
 ```
 
@@ -193,10 +197,61 @@ erDiagram
 
 - `body_part.id` é referenciada por `exercise.fk_body_part`.
 - `equipment.id` é referenciada por `exercise.fk_equipment`.
-- `exercise.id` e `secondary_muscle.id` formam a chave composta da tabela associativa.
-- Um exercício pode possuir vários músculos secundários.
-- Um músculo secundário pode aparecer em vários exercícios.
+- `exercise.id` e `muscle.id` formam a chave primária composta `(exercise_id, muscle_id)` da tabela associativa `exercise_muscle`.
+- `exercise_muscle.type` indica o papel do músculo no exercício, aceitando apenas `'principal'` (1 por exercício, oriundo de `target`) ou `'secundario'` (0 ou mais por exercício, oriundos de `secondaryMuscles/*`).
+- Um exercício pode possuir 1 músculo principal e vários músculos secundários.
+- Um mesmo músculo pode atuar como principal em alguns exercícios e como secundário em outros.
 - A exclusão de um exercício ou músculo remove suas relações correspondentes na tabela associativa.
+
+## Estrutura em SQL (DDL)
+
+Schema MySQL compatível com o pipeline ETL e com o mapeamento JPA (`BIGINT` para IDs, `LONGTEXT` para instruções):
+
+```sql
+CREATE TABLE IF NOT EXISTS body_part (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_body_part_name UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS equipment (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_equipment_name UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS muscle (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_muscle_name UNIQUE (name)
+);
+
+CREATE TABLE IF NOT EXISTS exercise (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(255) NOT NULL,
+    gif_url VARCHAR(255) NULL,
+    instructions_sumarization LONGTEXT NULL,
+    fk_body_part BIGINT NULL,
+    fk_equipment BIGINT NULL,
+    PRIMARY KEY (id),
+    CONSTRAINT uk_exercise_name_gif UNIQUE (name, gif_url),
+    CONSTRAINT fk_exercise_body_part FOREIGN KEY (fk_body_part) REFERENCES body_part (id),
+    CONSTRAINT fk_exercise_equipment FOREIGN KEY (fk_equipment) REFERENCES equipment (id)
+);
+
+CREATE TABLE IF NOT EXISTS exercise_muscle (
+    exercise_id BIGINT NOT NULL,
+    muscle_id BIGINT NOT NULL,
+    type VARCHAR(20) NOT NULL,
+    PRIMARY KEY (exercise_id, muscle_id),
+    CONSTRAINT fk_exercise_muscle_exercise FOREIGN KEY (exercise_id) REFERENCES exercise (id) ON DELETE CASCADE,
+    CONSTRAINT fk_exercise_muscle_muscle FOREIGN KEY (muscle_id) REFERENCES muscle (id) ON DELETE CASCADE,
+    CONSTRAINT chk_exercise_muscle_type CHECK (type IN ('principal', 'secundario'))
+);
+```
 
 Não versionar senhas, tokens ou outras credenciais. Para o código definitivo, prefira variáveis de ambiente ou um gerenciador de segredos em vez de credenciais escritas no notebook.
 
@@ -216,7 +271,7 @@ O notebook [notebooks/clear_db.ipynb](notebooks/clear_db.ipynb) remove todos os 
 
 Configure a mesma variável usada pelo ETL:
 
-Para remover as tabelas e recriá-las do zero, use também o notebook [notebooks/drop_tables.ipynb](notebooks/drop_tables.ipynb). Ele remove primeiro `exercise_secondary_muscle`, depois as tabelas principais, sem usar `CASCADE`. Depois execute [notebooks/create_tables.ipynb](notebooks/create_tables.ipynb): as tabelas serão recriadas com IDs `AUTO_INCREMENT`.
+Para remover as tabelas e recriá-las do zero, use também o notebook [notebooks/drop_tables.ipynb](notebooks/drop_tables.ipynb). Ele remove primeiro `exercise_muscle`, depois as tabelas principais, sem usar `CASCADE`. Depois execute [notebooks/create_tables.ipynb](notebooks/create_tables.ipynb): as tabelas serão recriadas com IDs `AUTO_INCREMENT`.
 
 ```powershell
 $env:MYSQL_URL = 'mysql+pymysql://usuario:senha@localhost:3306/spring_api_system'
@@ -228,7 +283,7 @@ No notebook, execute as células de configuração e remova o comentário de `cl
 
 O notebook [notebooks/create_tables.ipynb](notebooks/create_tables.ipynb) cria o schema MySQL esperado pelo ETL. Ele usa `CREATE TABLE IF NOT EXISTS`, não apaga dados existentes e exige `create_tables(confirm=True)` para executar.
 
-As tabelas usam IDs gerados pelo banco (`AUTO_INCREMENT`), nomes únicos nas tabelas de referência e as chaves estrangeiras da tabela `exercise_secondary_muscle`. Execute este notebook antes do ETL, usando a mesma variável `MYSQL_URL`.
+As tabelas usam IDs gerados pelo banco (`AUTO_INCREMENT`), nomes únicos nas tabelas de referência e as chaves estrangeiras da tabela `exercise_muscle` (incluindo a coluna `type`). Execute este notebook antes do ETL, usando a mesma variável `MYSQL_URL`.
 
 ## Próximos passos
 
