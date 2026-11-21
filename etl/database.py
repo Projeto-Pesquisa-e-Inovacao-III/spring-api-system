@@ -6,7 +6,7 @@ from sqlalchemy import Engine, create_engine, text
 
 
 def create_database_engine(connection_string: str | None = None) -> Engine:
-    connection_string = "mysql+pymysql://root:41465490Fe*@localhost:3306/spring_api_system"
+    connection_string = "mysql+pymysql://root:root@localhost:3306/spring_api_system"
     if not connection_string:
         raise RuntimeError(
             "Defina a variável de ambiente MYSQL_URL antes de acessar o banco. "

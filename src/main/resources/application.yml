@@ -52,11 +52,18 @@ argon:
   memory: 65536
   iterations: 3
 
+observability:
+  enabled: ${OBSERVABILITY_ENABLED:true}
+
 logging:
+  loki:
+    enabled: ${LOKI_ENABLED:${observability.enabled:true}}
+    url: ${LOKI_URL:http://localhost:3100/loki/api/v1/push}
   level:
     org.example: INFO
     org.springframework.data.redis: DEBUG
     org.springframework.cache: TRACE
+    com.spring.ApiSystem.access: ${OBSERVABILITY_ACCESS_LOG_LEVEL:INFO}
 
 app:
   email:
@@ -74,7 +81,11 @@ management:
         include: health, info, prometheus
   endpoint:
     prometheus:
-      enabled: true
+      enabled: ${PROMETHEUS_ENABLED:${observability.enabled:true}}
+  prometheus:
+    metrics:
+      export:
+        enabled: ${PROMETHEUS_ENABLED:${observability.enabled:true}}
   metrics:
     tags:
       application: minha-api-java

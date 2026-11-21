@@ -94,6 +94,12 @@
                 <activatedProperties>prod</activatedProperties>
             </properties>
         </profile>
+		<profile>
+			<id>mysql</id>
+			<properties>
+				<activatedProperties>mysql</activatedProperties>
+			</properties>
+		</profile>
     </profiles>
 	<dependencies>
         <dependency>
@@ -211,6 +217,24 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-websocket</artifactId>
+		</dependency>
+		<!-- Loki4j Appender for Logback -->
+		<dependency>
+			<groupId>com.github.loki4j</groupId>
+			<artifactId>loki-logback-appender</artifactId>
+			<version>1.5.2</version>
+		</dependency>
+
+		<!-- Bucket4j Rate Limiting with Caffeine -->
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j_jdk17-caffeine</artifactId>
+			<version>8.14.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.ben-manes.caffeine</groupId>
+			<artifactId>caffeine</artifactId>
+			<version>3.1.8</version>
 		</dependency>
 	</dependencies>
 	<build>
