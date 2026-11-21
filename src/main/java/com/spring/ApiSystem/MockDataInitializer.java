@@ -30,8 +30,11 @@ import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioRepository;
+import com.spring.ApiSystem.domain.usuario.UsuarioService;
 import com.spring.ApiSystem.domain.usuario.enums.Role;
 import com.spring.ApiSystem.shared.enums.DiaSemana;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -50,12 +53,15 @@ import java.util.List;
 @DependsOn("adminUserInitializer")
 @Order(3)
 public class MockDataInitializer implements CommandLineRunner {
+    private static final Logger log = LoggerFactory.getLogger(MockDataInitializer.class);
+
     private final ProdutoExibicaoRepository produtoExibicaoRepository;
     private final AlunoRepository alunoRepository;
     private final ProdutoContratadoRepository produtoContratadoRepository;
     private final AnamneseRepository anamneseRepository;
     private final AgendamentoRepository agendamentoRepository;
     private final UsuarioRepository usuarioRepository;
+    private final UsuarioService usuarioService;
     private final EnderecoRepository enderecoRepository;
     private final CepRepository cepRepository;
     private final ResumoAgendamentoRepository resumoAgendamentoRepository;
@@ -70,6 +76,7 @@ public class MockDataInitializer implements CommandLineRunner {
             AnamneseRepository anamneseRepository,
             AgendamentoRepository agendamentoRepository,
             UsuarioRepository usuarioRepository,
+            UsuarioService usuarioService,
             EnderecoRepository enderecoRepository,
             CepRepository cepRepository,
             ResumoAgendamentoRepository resumoAgendamentoRepository,
@@ -80,6 +87,7 @@ public class MockDataInitializer implements CommandLineRunner {
         this.anamneseRepository = anamneseRepository;
         this.agendamentoRepository = agendamentoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.usuarioService = usuarioService;
         this.enderecoRepository = enderecoRepository;
         this.cepRepository = cepRepository;
         this.resumoAgendamentoRepository = resumoAgendamentoRepository;
@@ -320,6 +328,69 @@ public class MockDataInitializer implements CommandLineRunner {
                     historicoAgendamentoRepository.save(histFuturo);
                 }
             }
+
+            // 4. Create Aluno with credentials printed to screen and a past Agendamento pending conclusion confirmation
+            String emailAlunoConfirmacao = "aluno.confirmacao@teste.com";
+            String senhaAlunoConfirmacao = "Senha@123";
+
+            Usuario uConfirmacao = new Usuario();
+            uConfirmacao.setNome("Carlos Confirmacao");
+            uConfirmacao.setEmail(emailAlunoConfirmacao);
+            usuarioService.aplicarSenhaCriptografada(uConfirmacao, senhaAlunoConfirmacao);
+            uConfirmacao.setAtivo(true);
+            uConfirmacao.setDataNascimento(LocalDate.of(1995, 5, 15));
+            uConfirmacao.setSexo("M");
+            uConfirmacao.addRole(Role.ALUNO);
+            Telefone telConfirmacao = new Telefone(null, "55", "11", "988887777", uConfirmacao);
+            uConfirmacao.setTelefones(List.of(telConfirmacao));
+            Usuario savedUConfirmacao = usuarioService.salvarUsuario(uConfirmacao);
+
+            Aluno alunoConfirmacao = new Aluno(null, savedUConfirmacao, new Cpf("52998224725"), true, null, true);
+            Anamnese anamneseConfirmacao = new Anamnese(null, 175d, 75.0, "Hipertrofia", "Rotina", new ArrayList<>(),
+                    NivelDeAtividadeEnum.ATIVO, null, alunoConfirmacao);
+            alunoConfirmacao.setAnamnese(anamneseConfirmacao);
+            alunoRepository.save(alunoConfirmacao);
+
+            ProdutoContratado pcConfirmacao = new ProdutoContratado(null, true, LocalDate.now().minusMonths(1),
+                    LocalDate.now().plusMonths(1), 5, alunoConfirmacao, p1);
+            produtoContratadoRepository.save(pcConfirmacao);
+
+            LocalDateTime dataAgendamentoRealizado = LocalDateTime.now().minusHours(2);
+            Agendamento agPendenteConclusao = new Agendamento(
+                    null,
+                    dataAgendamentoRealizado,
+                    "Treino realizado aguardando confirmação de conclusão",
+                    endereco,
+                    alunoConfirmacao,
+                    personal,
+                    pcConfirmacao
+            );
+            agPendenteConclusao.setDataFim(dataAgendamentoRealizado.plusHours(1));
+            agPendenteConclusao.setDiaSemana(DiaSemana.fromDayOfWeek(dataAgendamentoRealizado.getDayOfWeek()));
+            agPendenteConclusao.aprovado();
+            agPendenteConclusao.pendentePersonalConcluir();
+            Agendamento agPendenteConclusaoSalvo = agendamentoRepository.save(agPendenteConclusao);
+
+            HistoricoAgendamento histPendenteConclusao = new HistoricoAgendamento(
+                    null,
+                    agPendenteConclusaoSalvo.getData(),
+                    agPendenteConclusaoSalvo.getProdutoContratado().getProdutoExibicao().getTipoAula(),
+                    agPendenteConclusaoSalvo.getDescricao(),
+                    agPendenteConclusaoSalvo.getStatus(),
+                    LocalDateTime.now(),
+                    agPendenteConclusaoSalvo,
+                    adminUser,
+                    agPendenteConclusaoSalvo.getEndereco()
+            );
+            histPendenteConclusao.setDataFim(agPendenteConclusaoSalvo.getDataFim());
+            historicoAgendamentoRepository.save(histPendenteConclusao);
+
+            log.info("==================================================================");
+            log.info("ALUNO CRIADO (AGENDAMENTO PENDENTE DE CONFIRMAÇÃO DE CONCLUSÃO):");
+            log.info("Email: {}", emailAlunoConfirmacao);
+            log.info("Senha: {}", senhaAlunoConfirmacao);
+            log.info("Agendamento ID: {} | Status: {}", agPendenteConclusaoSalvo.getId(), agPendenteConclusaoSalvo.getStatus());
+            log.info("==================================================================");
         }
     }
 }

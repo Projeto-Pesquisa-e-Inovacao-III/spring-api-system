@@ -22,7 +22,7 @@ public class SecurityConfig {
         private final FilterService filterService;
         private final CorsConfig corsConfig;
 
-        @Value("${spring.profiles.active:}")
+        @Value("${spring.profiles.active}")
         private String perfilAtivo;
 
         public SecurityConfig(FilterService filterService, CorsConfig corsConfig) {
@@ -57,6 +57,7 @@ public class SecurityConfig {
 
                                         // Públicas
                                         auth.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll();
+                                        auth.requestMatchers("/actuator/**", "/actuator/prometheus").permitAll();
 
                                         auth.requestMatchers(HttpMethod.GET, "/health").permitAll();
 
