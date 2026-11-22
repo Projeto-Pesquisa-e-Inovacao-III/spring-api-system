@@ -149,7 +149,7 @@ public class RecomendacaoTreinoService {
         );
 
         return promptUser.create(Map.of(
-                "tipoAgendamento", agendamento.getStatus(),
+                "tipoAgendamento", agendamento.getProdutoContratado().getProdutoExibicao().getTipoAula(),
                 "anamnese", anamnese,
                 "resumoAgendamentos", historico,
                 "todosGruposMusculares", treinoLlmMapper.formatarGrupos(
