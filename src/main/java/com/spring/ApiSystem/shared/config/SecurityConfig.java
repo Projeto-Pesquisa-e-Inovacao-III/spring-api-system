@@ -88,7 +88,8 @@ public class SecurityConfig {
                                                         .hasAnyAuthority("ROLE_PERSONAL", "ROLE_ALUNO", "ROLE_ADMIN");
 
                                         auth.requestMatchers(
-                                                "/api/agendamentos/*/resumos"
+                                                "/api/agendamentos/*/resumos",
+                                                "/api/musculos-secundarios/*"
                                         ).hasAnyAuthority("ROLE_PERSONAL", "ROLE_ADMIN");
 
                                         auth.requestMatchers(

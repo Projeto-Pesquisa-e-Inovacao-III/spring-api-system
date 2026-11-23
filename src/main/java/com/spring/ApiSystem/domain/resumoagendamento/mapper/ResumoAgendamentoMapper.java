@@ -1,5 +1,6 @@
 package com.spring.ApiSystem.domain.resumoagendamento.mapper;
 
+import com.spring.ApiSystem.domain.musculosecundario.MusculoSecundario;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamento;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResCadastrarResumoAgendamentoDTO;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
@@ -9,7 +10,11 @@ import org.mapstruct.Mapping;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
-public abstract class ResumoAgendamentoMapper {
+public abstract interface ResumoAgendamentoMapper {
+
+    default String map(MusculoSecundario musculo) {
+        return musculo == null ? null : musculo.getName();
+    }
 
     @Mapping(target = "idAluno", source = "aluno.id")
     @Mapping(target = "idPersonal", source = "personal.id")

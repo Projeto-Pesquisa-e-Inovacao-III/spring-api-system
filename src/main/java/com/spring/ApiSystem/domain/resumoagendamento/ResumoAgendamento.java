@@ -2,8 +2,8 @@ package com.spring.ApiSystem.domain.resumoagendamento;
 
 import com.spring.ApiSystem.domain.agendamento.Agendamento;
 import com.spring.ApiSystem.domain.aluno.Aluno;
+import com.spring.ApiSystem.domain.musculosecundario.MusculoSecundario;
 import com.spring.ApiSystem.domain.personal.Personal;
-import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -28,17 +28,21 @@ public class ResumoAgendamento {
 
     @Column(nullable = false, length = 200)
     private String resumo;
-
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private List<GrupoMuscular> grupoMuscular;
+    
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "resumo_agendamento_musculo_secundario",
+            joinColumns = @JoinColumn(name = "resumo_agendamento_id"),
+            inverseJoinColumns = @JoinColumn(name = "musculo_secundario_id")
+    )
+    private List<MusculoSecundario> grupoMuscular;
 
     public ResumoAgendamento() {
     }
 
-    public ResumoAgendamento(Long id, Aluno aluno, Personal personal,
-                             Agendamento agendamento, String resumo,
-                             List<GrupoMuscular> grupoMuscular) {
+    public ResumoAgendamento(Long id, Aluno aluno,
+                             Personal personal, Agendamento agendamento,
+                             String resumo, List<MusculoSecundario> grupoMuscular) {
         this.id = id;
         this.aluno = aluno;
         this.personal = personal;
@@ -87,11 +91,11 @@ public class ResumoAgendamento {
         this.resumo = resumo;
     }
 
-    public List<GrupoMuscular> getGrupoMuscular() {
+    public List<MusculoSecundario> getGrupoMuscular() {
         return grupoMuscular;
     }
 
-    public void setGrupoMuscular(List<GrupoMuscular> grupoMuscular) {
+    public void setGrupoMuscular(List<MusculoSecundario> grupoMuscular) {
         this.grupoMuscular = grupoMuscular;
     }
 }

@@ -5,6 +5,8 @@ import com.spring.ApiSystem.domain.agendamento.AgendamentoService;
 import com.spring.ApiSystem.domain.agendamento.enums.AgendamentoStatus;
 import com.spring.ApiSystem.domain.anamnese.AnamneseService;
 import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDTO;
+import com.spring.ApiSystem.domain.musculosecundario.MusculoSecundarioService;
+import com.spring.ApiSystem.domain.musculosecundario.dto.response.ResMusculosNameDTO;
 import com.spring.ApiSystem.domain.recomendacaotreino.exception.PrecisaAgendamentoException;
 import com.spring.ApiSystem.domain.recomendacaotreino.exception.RecomendacaoTreinoExistenteException;
 import com.spring.ApiSystem.domain.recomendacaotreino.exception.RecomendacaoTreinoInexistenteException;
@@ -15,14 +17,12 @@ import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendament
 import com.spring.ApiSystem.shared.dto.PaginaCursor;
 import com.spring.ApiSystem.shared.service.AiService;
 import jakarta.transaction.Transactional;
-import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -34,19 +34,22 @@ public class RecomendacaoTreinoService {
     private final TreinoLlmMapper treinoLlmMapper;
     private final RecomendacaoTreinoRepository recomendacaoTreinoRepository;
     private final AiService aiService;
+    private final MusculoSecundarioService musculoSecundarioService;
 
     public RecomendacaoTreinoService(AgendamentoService agendamentoService,
                                      AnamneseService anamneseService,
                                      ResumoAgendamentoService resumoAgendamentoService,
                                      TreinoLlmMapper treinoLlmMapper,
                                      RecomendacaoTreinoRepository recomendacaoTreinoRepository,
-                                     AiService aiService) {
+                                     AiService aiService,
+                                     MusculoSecundarioService musculoSecundarioService) {
         this.agendamentoService = agendamentoService;
         this.anamneseService = anamneseService;
         this.resumoAgendamentoService = resumoAgendamentoService;
         this.treinoLlmMapper = treinoLlmMapper;
         this.recomendacaoTreinoRepository = recomendacaoTreinoRepository;
         this.aiService = aiService;
+        this.musculoSecundarioService = musculoSecundarioService;
     }
 
     @Transactional
@@ -142,7 +145,7 @@ public class RecomendacaoTreinoService {
     ) {
         String anamnese = treinoLlmMapper.formatarAnamnese(anamneseDto);
         String historico = treinoLlmMapper.formatarHistorico(resumoAgendamento.conteudo());
-        String grupos = treinoLlmMapper.formatarGrupos(
+        String gruposMuscularesTrabalhados = treinoLlmMapper.formatarGrupos(
                 resumoAgendamento.conteudo()
                         .getFirst()
                         .grupoMuscular()
@@ -153,9 +156,9 @@ public class RecomendacaoTreinoService {
                 "anamnese", anamnese,
                 "resumoAgendamentos", historico,
                 "todosGruposMusculares", treinoLlmMapper.formatarGrupos(
-                        List.of(resumoAgendamentoService.listarGruposMusculares())
+                        musculoSecundarioService.listarMusculosSecundariosNome()
                 ),
-                "gruposMusculares", grupos
+                "gruposMuscularesTrabalhados", gruposMuscularesTrabalhados
         ));
     }
 }

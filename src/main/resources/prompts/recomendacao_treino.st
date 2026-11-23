@@ -15,6 +15,6 @@ Todos os grupos musculares disponíveis:
 {todosGruposMusculares}
 
 Grupos musculares trabalhados na última sessão:
-{gruposMusculares}
+{gruposMuscularesTrabalhados}
 
 A resposta deve seguir o formato definido (Objetivo do treino, Nível de intensidade, Grupos musculares principais, Exercícios e Cuidados).

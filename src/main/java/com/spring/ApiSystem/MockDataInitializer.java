@@ -14,6 +14,7 @@ import com.spring.ApiSystem.domain.cep.CEP;
 import com.spring.ApiSystem.domain.cep.CepRepository;
 import com.spring.ApiSystem.domain.endereco.Endereco;
 import com.spring.ApiSystem.domain.endereco.EnderecoRepository;
+import com.spring.ApiSystem.domain.musculosecundario.MusculoSecundario;
 import com.spring.ApiSystem.domain.personal.Personal;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratado;
 import com.spring.ApiSystem.domain.produtocontratado.ProdutoContratadoRepository;
@@ -26,7 +27,6 @@ import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamento;
 import com.spring.ApiSystem.domain.historicoagendamento.HistoricoAgendamentoRepository;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamento;
 import com.spring.ApiSystem.domain.resumoagendamento.ResumoAgendamentoRepository;
-import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import com.spring.ApiSystem.domain.telefone.Telefone;
 import com.spring.ApiSystem.domain.usuario.Usuario;
 import com.spring.ApiSystem.domain.usuario.UsuarioRepository;
@@ -277,7 +277,7 @@ public class MockDataInitializer implements CommandLineRunner {
                             String mensagemFinal = sb.substring(0, 200);
 
                             ResumoAgendamento resumo = new ResumoAgendamento(null, aluno, personal, agendamentoSalvo,
-                                    mensagemFinal, List.of(GrupoMuscular.PEITO, GrupoMuscular.COSTAS));
+                                    mensagemFinal, List.of(new MusculoSecundario(1L, "triceps")));
                             resumoAgendamentoRepository.save(resumo);
                             resumoIndex++;
                             

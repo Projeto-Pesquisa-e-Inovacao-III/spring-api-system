@@ -3,7 +3,6 @@ package com.spring.ApiSystem.domain.recomendacaotreino.mapper;
 import com.spring.ApiSystem.domain.anamnese.dto.CondicoesDTO;
 import com.spring.ApiSystem.domain.anamnese.dto.response.ResBuscarAnamneseDTO;
 import com.spring.ApiSystem.domain.resumoagendamento.dto.res.ResResumoAgendamentoAlunoDTO;
-import com.spring.ApiSystem.domain.resumoagendamento.enums.GrupoMuscular;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -65,13 +64,11 @@ public class TreinoLlmMapper {
         );
     }
 
-    public String formatarGrupos(List<GrupoMuscular> grupos) {
+    public String formatarGrupos(List<String> grupos) {
         if (grupos == null || grupos.isEmpty()) {
             return "Não informado";
         }
 
-        return grupos.stream()
-                .map(Enum::toString)
-                .collect(Collectors.joining(", "));
+        return String.join(", ", grupos);
     }
 }
