@@ -46,7 +46,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class AgendamentoService {
@@ -148,62 +147,43 @@ public class AgendamentoService {
     }
 
     @Transactional
-    public ResCriarAgendamentoDTO criaAgendamentoExperimental(ReqCadastrarAgendamentoDTO criarAgendamentoDTO, Aluno alunoInput) {
-        Personal usuario = jpaUserDetailsService.getCurrentPersonal();
+    public ResCriarAgendamentoDTO criaAgendamentoExperimental(
+            ReqCadastrarAgendamentoDTO dto,
+            Aluno alunoInput
+    ) {
+        // Mantém a validação de que a operação está sendo realizada por um personal autenticado.
+        jpaUserDetailsService.getCurrentPersonal();
+
         Aluno aluno = alunoService.buscarPorId(alunoInput.getId());
-        Personal personal = personalService.buscarPorId(criarAgendamentoDTO.personalId());
+        Personal personal = personalService.buscarPorId(dto.personalId());
 
-        personalService.validateDisponibilidade(
-                personal.getId(),
-                DiaSemana.fromDayOfWeek(criarAgendamentoDTO.data().getDayOfWeek())
-        );
+        LocalDateTime dataFim = validarECalcularHorario(dto, personal);
 
-        validarAntecedenciaDeHorarioMarcado(criarAgendamentoDTO.data());
-        LocalDateTime dataFim = calcularHorarioDeAulaPorTipoAula(
-                criarAgendamentoDTO.data(),
-                criarAgendamentoDTO.tipoAulaProdutoContratado()
-        );
-
-        existeAgendamentoNesteIntervalodeDeDataEHora(
+        validarDisponibilidadeDoAluno(
                 aluno.getId(),
                 personal.getId(),
-                criarAgendamentoDTO.data(),
+                dto.data(),
                 dataFim
         );
 
-        Optional<ProdutoExibicao> produtoExibicao = produtoExibicaoService.buscarProdutoExibicaoPeloTipoDeAula(criarAgendamentoDTO.tipoAulaProdutoContratado());
-
-        ResProdutoContratadoDto produtoContratado = produtoContratadoService.criarProdutoContratadoPeloIdAluno(
-                produtoExibicao.get().getId(),
-                aluno.getId()
+        ProdutoExibicao produtoExibicao = buscarProdutoExibicao(dto);
+        ResProdutoContratadoDto produtoContratado = criarProdutoContratado(
+                aluno,
+                produtoExibicao
         );
 
+        ResCadastrarEnderecoDTO endereco = cadastrarEnderecoExperimental(dto, aluno);
 
-
-        ResCadastrarEnderecoDTO enderecoSalvo = enderecoService.cadastrarEndereco(
-                criarAgendamentoDTO.novoEndereco(),
-                aluno.getUsuario(),
-                false
+        Agendamento agendamento = construirAgendamentoExperimental(
+                dto,
+                aluno,
+                personal,
+                produtoContratado.id(),
+                endereco.id(),
+                dataFim
         );
 
-        Agendamento agendamento = agendamentoMapper.toEntity(criarAgendamentoDTO);
-        agendamento.setProdutoContratado(produtoContratadoService.buscarPorId(produtoContratado.id()));
-        agendamento.setAluno(null);
-        agendamento.setEndereco(enderecoService.buscarPorId(enderecoSalvo.id()));
-        agendamento.setPersonal(personal);
-        agendamento.setDescricao(criarAgendamentoDTO.descricao());
-        agendamento.setDataFim(dataFim);
-
-        agendamento.setAluno(aluno);
-
-        DiaSemana dayOfWeek = DiaSemana.fromDayOfWeek(agendamento.getData().getDayOfWeek());
-        agendamento.setDiaSemana(dayOfWeek);
-
-        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
-        historicoAgendamentoService.cadastrar(
-                agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
-                agendamentoSalvo
-        );
+        Agendamento agendamentoSalvo = salvarAgendamentoComHistorico(agendamento);
 
         produtoContratadoService.zerarSaldoProdutoContratado(produtoContratado.id());
         agendamentoEventPublisher.publishAgendamentoCreatedEvent(agendamentoSalvo);
@@ -211,6 +191,99 @@ public class AgendamentoService {
         return agendamentoMapper.toResCriarAgendamentoDTO(agendamentoSalvo);
     }
 
+    private LocalDateTime validarECalcularHorario(
+            ReqCadastrarAgendamentoDTO dto,
+            Personal personal
+    ) {
+        personalService.validateDisponibilidade(
+                personal.getId(),
+                DiaSemana.fromDayOfWeek(dto.data().getDayOfWeek())
+        );
+
+        validarAntecedenciaDeHorarioMarcado(dto.data());
+
+        return calcularHorarioDeAulaPorTipoAula(
+                dto.data(),
+                dto.tipoAulaProdutoContratado()
+        );
+    }
+
+    private void validarDisponibilidadeDoAluno(
+            Long alunoId,
+            Long personalId,
+            LocalDateTime dataInicio,
+            LocalDateTime dataFim
+    ) {
+        existeAgendamentoNesteIntervalodeDeDataEHora(
+                alunoId,
+                personalId,
+                dataInicio,
+                dataFim
+        );
+    }
+
+    private ProdutoExibicao buscarProdutoExibicao(ReqCadastrarAgendamentoDTO dto) {
+        return produtoExibicaoService
+                .buscarProdutoExibicaoPeloTipoDeAula(dto.tipoAulaProdutoContratado())
+                .orElseThrow();
+    }
+
+    private ResProdutoContratadoDto criarProdutoContratado(
+            Aluno aluno,
+            ProdutoExibicao produtoExibicao
+    ) {
+        return produtoContratadoService.criarProdutoContratadoPeloIdAluno(
+                produtoExibicao.getId(),
+                aluno.getId()
+        );
+    }
+
+    private ResCadastrarEnderecoDTO cadastrarEnderecoExperimental(
+            ReqCadastrarAgendamentoDTO dto,
+            Aluno aluno
+    ) {
+        return enderecoService.cadastrarEndereco(
+                dto.novoEndereco(),
+                aluno.getUsuario(),
+                false
+        );
+    }
+
+    private Agendamento construirAgendamentoExperimental(
+            ReqCadastrarAgendamentoDTO dto,
+            Aluno aluno,
+            Personal personal,
+            Long produtoContratadoId,
+            Long enderecoId,
+            LocalDateTime dataFim
+    ) {
+        Agendamento agendamento = agendamentoMapper.toEntity(dto);
+
+        agendamento.setProdutoContratado(
+                produtoContratadoService.buscarPorId(produtoContratadoId)
+        );
+        agendamento.setAluno(aluno);
+        agendamento.setEndereco(enderecoService.buscarPorId(enderecoId));
+        agendamento.setPersonal(personal);
+        agendamento.setDescricao(dto.descricao());
+        agendamento.setDataFim(dataFim);
+        agendamento.setDiaSemana(
+                DiaSemana.fromDayOfWeek(agendamento.getData().getDayOfWeek())
+        );
+
+        return agendamento;
+    }
+
+    private Agendamento salvarAgendamentoComHistorico(Agendamento agendamento) {
+        Agendamento agendamentoSalvo = agendamentoRepository.save(agendamento);
+
+        historicoAgendamentoService.cadastrar(
+                agendamentoMapper.toReqCriarHistoricoAgendamentoDTO(agendamentoSalvo),
+                agendamentoSalvo
+        );
+
+        return agendamentoSalvo;
+    }
 
     @Transactional
     public void reagendamento(ReqReagendarAgendamentoDTO editarAgendamentoDTO) {
@@ -349,7 +422,7 @@ public class AgendamentoService {
             );
         }
 
-       agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
+        agendamentoEventPublisher.publishAgendamentoConcluidoEvent(agendamento);
     }
 
     @Transactional
@@ -424,14 +497,14 @@ public class AgendamentoService {
         if (usuario.isAluno()) {
             Page<Agendamento> agendamentosPage =
                     agendamentoRepository.findByAlunoIdOrderByDataDesc(
-                                    usuario.getId(),
-                                    dto.nome(),
-                                    dto.getStatusEnum(),
-                                    dto.getTipoAgendamentoEnum(),
-                                    dto.dataInic(),
-                                    dto.dataFim(),
-                                    pageable
-                            );
+                            usuario.getId(),
+                            dto.nome(),
+                            dto.getStatusEnum(),
+                            dto.getTipoAgendamentoEnum(),
+                            dto.dataInic(),
+                            dto.dataFim(),
+                            pageable
+                    );
 
             return agendamentosPage.map(
                     agendamento -> (AgendamentoSolicitacaoResponse)
