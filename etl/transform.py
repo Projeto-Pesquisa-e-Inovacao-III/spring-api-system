@@ -10,9 +10,18 @@ from logger import get_run_id, logger
 class PreparedData:
     body_parts: pd.DataFrame
     equipment: pd.DataFrame
-    secondary_muscles: pd.DataFrame
+    muscles: pd.DataFrame
     exercises: pd.DataFrame
-    exercise_secondary_muscles: pd.DataFrame
+    exercise_muscles: pd.DataFrame
+
+
+def _clean_text(value: object) -> str | None:
+    if pd.isna(value):
+        return None
+    text = str(value).strip()
+    if not text or text.lower() == "nan":
+        return None
+    return text
 
 
 def summarize_instructions(row: pd.Series, instruction_cols: list[str]) -> str:
@@ -48,16 +57,15 @@ def prepare_data(df: pd.DataFrame) -> PreparedData:
         column for column in prepared_df.columns
         if column.startswith("secondaryMuscles/")
     ]
+    muscle_cols = ["target", *secondary_cols]
     raw_muscles = []
-    for column in secondary_cols:
+    for column in muscle_cols:
         raw_muscles.extend(prepared_df[column].dropna().unique().tolist())
 
-    secondary_muscles = sorted({
-        str(muscle).strip()
+    muscles = sorted({
+        cleaned
         for muscle in raw_muscles
-        if pd.notna(muscle)
-        and str(muscle).lower() != "nan"
-        and str(muscle).strip()
+        if (cleaned := _clean_text(muscle)) is not None
     })
 
     body_parts = pd.DataFrame({
@@ -66,7 +74,7 @@ def prepare_data(df: pd.DataFrame) -> PreparedData:
     equipment = pd.DataFrame({
         "name": sorted(prepared_df["equipment"].dropna().unique())
     })
-    secondary_muscle_table = pd.DataFrame({"name": secondary_muscles})
+    muscle_table = pd.DataFrame({"name": muscles})
 
     exercises = pd.DataFrame({
         "name": prepared_df["name"],
@@ -78,23 +86,41 @@ def prepare_data(df: pd.DataFrame) -> PreparedData:
 
     relations = []
     for _, row in prepared_df.iterrows():
+        target = _clean_text(row["target"])
+        if target is not None:
+            relations.append({
+                "exercise_name": row["name"],
+                "exercise_gif_url": row["gif_url"],
+                "muscle_name": target,
+                "type": "principal",
+            })
+
         for column in secondary_cols:
-            muscle = row[column]
-            if pd.notna(muscle) and str(muscle).strip():
+            muscle = _clean_text(row[column])
+            if muscle is not None:
                 relations.append({
                     "exercise_name": row["name"],
                     "exercise_gif_url": row["gif_url"],
-                    "secondary_muscle_name": str(muscle).strip(),
+                    "muscle_name": muscle,
+                    "type": "secundario",
                 })
 
-    exercise_secondary_muscles = pd.DataFrame(
-        relations,
-        columns=[
-            "exercise_name",
-            "exercise_gif_url",
-            "secondary_muscle_name",
-        ],
-    ).drop_duplicates()
+    exercise_muscles = (
+        pd.DataFrame(
+            relations,
+            columns=[
+                "exercise_name",
+                "exercise_gif_url",
+                "muscle_name",
+                "type",
+            ],
+        )
+        .drop_duplicates(
+            subset=["exercise_name", "exercise_gif_url", "muscle_name"],
+            keep="first",
+        )
+        .reset_index(drop=True)
+    )
 
     duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
     logger.info(
@@ -110,7 +136,7 @@ def prepare_data(df: pd.DataFrame) -> PreparedData:
     return PreparedData(
         body_parts=body_parts,
         equipment=equipment,
-        secondary_muscles=secondary_muscle_table,
+        muscles=muscle_table,
         exercises=exercises,
-        exercise_secondary_muscles=exercise_secondary_muscles,
+        exercise_muscles=exercise_muscles,
     )
